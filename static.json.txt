@@ -1,0 +1,10 @@
+{
+  "root": "dist",
+  "clean_urls": true,
+  "routes": {
+    "/**": "index.html"
+  }
+}
+
+//https://www.youtube.com/watch?v=3tF0fGkd4ho
+// в конце ролика как аплодить на хероку
