@@ -1,4 +1,4 @@
-# workout_tracker
+# my-now
 
 ## Project setup
 ```
