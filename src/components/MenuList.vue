@@ -40,7 +40,7 @@
         </router-link>
 
         <!-- Contacts -->
-        <router-link class="menu-item py-1 mt-2" :to="{ name: '' }">
+        <router-link class="menu-item py-1 mt-2" :to="{ name: 'Contacts' }">
           <div class="menu-item_icon">
             <img src="../assets/images/menu/account-contacts.svg" alt="">
           </div>

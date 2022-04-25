@@ -10,6 +10,7 @@ import Orders from '../views/Orders.vue';
 import EventCalendar from '../views/EventCalendar.vue';
 import Wallet from '../views/Wallet.vue';
 import Warehouse from '../views/Warehouse.vue';
+import Contacts from '../views/Contacts.vue';
 
 const routes = [
   {
@@ -96,6 +97,16 @@ const routes = [
       title: 'Warehouse',
       auth: true,
       translation: 'Склад'
+    }
+  },
+  {
+    path: "/contacts",
+    name: "Contacts",
+    component: Contacts,
+    meta: {
+      title: 'Warehouse',
+      auth: true,
+      translation: 'Мои контакты'
     }
   },
   {
