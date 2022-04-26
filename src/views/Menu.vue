@@ -18,8 +18,6 @@
       </div>
       
     </nav>
-    
-    <!-- <h1>Menu</h1> -->
     <!-- List Item -->
     <MenuList class="pt-20"/>
   </div>

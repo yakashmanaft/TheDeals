@@ -6,7 +6,7 @@
     <!-- Может имеет смысл сделать компонентом? -->
     <router-link 
       class="fixed bottom-5 right-5 w-14 h-14 bg-blue rounded-full flex items-center justify-center"
-      :to="{ name: 'Create' }"
+      :to="{ name: 'CreateContact' }"
     >
       <img src="../assets/images/common/icon-plus.svg" alt="">
     </router-link>
@@ -16,55 +16,49 @@
       <!-- No Data -->
       <div v-if="data.length === 0">
         <h1 class="text-2xl">Looks empty here...</h1>
+        <!-- Добавить ссылку на экран создания нового контакта -->
       </div>
 
       <!-- Data -->
       <div v-else>
 
         <!-- Поиск по контактам -->
-        <!-- Пока чисто стили сделаны, функционала нет... -->
+        <!-- Может отдельным компонентом сделать -->
         <div class="search-input mx-4 h-10 flex items-center">
           <span class="search-input_icon">
             <img src="../assets/images/common/icon-search.svg" alt="">
           </span>
           <input 
-            id="searchContact"
+            id="searchedContacts"
             class="search-input_input outline-none w-full pr-2 focus:text-dark" 
             type="search"
             placeholder="Поиск..."
+            v-model="search"
           >
         </div>
 
-        <div>
+        <!-- Количество контактов (вдруг понадобится) -->
+        <!-- <div>
           {{data.length}}
-        </div>
-        <div
-          v-for="(contact, index) in data"
-          :key="index"
-        >
-          <!-- Определяем к какому типу принадлежит контакт -->
-          <div v-if="contact.contactType" class="flex">
-            <div v-if="contact.contactType.customer === true">
-              Заказчик
-            </div>
-            <div v-if="contact.contactType.supplier === true">
-              Поставщик
-            </div>
-            <div v-if="contact.contactType.personal === true">
-              Личное
-            </div>
-          </div>
+        </div> -->
 
-          <p>{{ contact.contactInfo.name }}</p>
-          <p>{{ contact.contactInfo.surname }}</p>
-          <p>{{ contact.contactInfo.company }}</p>
-          <a :href="`tel:${contact.contactInfo.phoneNumber}`">{{contact.contactInfo.phoneNumber}}</a>
-
-          <!-- Атрибут :to="" пока врменный, он должен быть динамический, для перехода к инфе конкретного контакта-->
-          <router-link :to="{ name: 'Create' }">
-            Подробнее
+        <!-- Contact Template -->
+        <ul class="px-4 pt-4">
+          <router-link
+            v-for="contact in searchedContacts"
+            :key="contact.id"
+            :to="{ name: 'View-Contact', params: { contactId: contact.id } }"
+            class="flex justify-between items-center bg-light-grey rounded-md px-4 py-2 mt-2"
+          >
+            <div>
+              <p class="text-blue text-2xl">{{ contact.contactInfo.surname }}</p>
+              <p class="text-dark-gray">{{ contact.contactInfo.name }} {{ contact.contactInfo.patronymic }}</p>
+            </div>
+            <div>
+              <p class="text-dark-gray">{{ contact.contactInfo.company }}</p>
+            </div>
           </router-link>
-        </div>
+        </ul>
       </div>
     </div>
   </div>
@@ -76,7 +70,7 @@
   import Navigation from '../components/Navigation.vue';
 
   import store from '../store/index';
-  import { ref, computed } from 'vue';
+  import { ref, computed, onMounted } from 'vue';
   import { supabase } from '../supabase/init';
   import { useRouter } from 'vue-router';
 
@@ -90,28 +84,39 @@
       const data = ref([]);
       const dataLoaded = ref(null);
 
+      const search = ref('');
+
       // Берем имя роута для заголовка
       const router = useRouter();
       const title = router.currentRoute._value.meta.translation;
-      
-      // парсим данные с БД
-      const getContacts = async () => {
+
+      onMounted(async () => {
         try {
           const { data: myContacts, error } = await supabase.from('myContacts').select('*');
           if (error) throw error;
           data.value = myContacts;
           dataLoaded.value = true;
+
         } catch (error) {
           console.warn(error.message);
         }
-      }
-      // запускаем функцию получения данных
-      getContacts();
+      })
 
-      // 
-
+      const searchedContacts = computed(() => {
+        return data.value.filter((contact) => {
+          return (
+            contact.contactInfo.name.toLowerCase().indexOf(search.value.toLowerCase()) != -1 || 
+            contact.contactInfo.surname.toLowerCase().indexOf(search.value.toLowerCase()) != -1 ||
+            contact.contactInfo.company.toLowerCase().indexOf(search.value.toLowerCase()) != -1 ||
+            contact.contactInfo.phoneNumber.toLowerCase().indexOf(search.value.toLowerCase()) != -1 ||
+            contact.contactInfo.instagram.toLowerCase().indexOf(search.value.toLowerCase()) != -1
+            // contact.contactInfo.patronymic.toLowerCase().indexOf(search.value.toLowerCase()) != -1
+          )
+        })
+      });
+      
       return {
-        user, title, data, dataLoaded
+        user, title, data, dataLoaded, search, searchedContacts
       }
     }
   }
@@ -128,19 +133,21 @@
   }
 
   .search-input_icon {
-    width: 30px;
+    width: 40px;
     height: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
-  // Пока просто удалил крестик
-  input[type="search"]::-webkit-search-decoration,
-  input[type="search"]::-webkit-search-cancel-button,
-  input[type="search"]::-webkit-search-results-button,
-  input[type="search"]::-webkit-search-results-decoration { 
-    display: none; 
+
+  input[type="search"]::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    height: 30px;
+    width: 30px;
+    margin-left: .4em;
+    background: url('../assets/images/common/icon-close.svg') center no-repeat;
+    cursor: pointer;
   }
 
 </style>

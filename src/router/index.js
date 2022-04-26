@@ -4,8 +4,10 @@ import Dashboard from '../views/Dashboard.vue';
 import Login from '../views/Login.vue';
 import Register from '../views/Register.vue';
 import Create from '../views/Create.vue';
+import CreateContact from '../views/CreateContact.vue';
 import Menu from '../views/Menu.vue';
 import ViewWorkout from '../views/ViewWorkout.vue';
+import ViewContact from '../views/ViewContact';
 import Orders from '../views/Orders.vue';
 import EventCalendar from '../views/EventCalendar.vue';
 import Wallet from '../views/Wallet.vue';
@@ -57,6 +59,15 @@ const routes = [
     component: Create,
     meta: {
       title: 'Create',
+      auth: true,
+    }
+  },
+  {
+    path: "/create-contact",
+    name: "CreateContact",
+    component: CreateContact,
+    meta: {
+      title: 'Create Contact',
       auth: true,
     }
   },
@@ -115,6 +126,15 @@ const routes = [
     component: ViewWorkout,
     meta: {
       title: 'ViewWorkout',
+      auth: true,
+    }
+  },
+  {
+    path: "/view-contact/:contactId",
+    name: "View-Contact",
+    component: ViewContact,
+    meta: {
+      title: 'ViewContact',
       auth: true,
     }
   },
