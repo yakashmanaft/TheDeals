@@ -1,18 +1,26 @@
 <template>
   <div class="container text-dark">
     <!-- Navigation -->
-    <nav class="nav container py-2 px-4 flex gap-4 items-center sm:flex-row place-content-between">
+    <nav class="fixed z-10 bg-white nav container py-2 px-4 flex gap-4 items-center sm:flex-row place-content-between">
       <div class="flex items-center">
         <div v-show="user" @click="$router.go(-1)" class="arrow-back">
           <img src="../assets/images/common/arrow-right.svg" class="arrow-back_icon" alt="">
+          <p class="text-dark text-2xl font-bold ml-2 arrow-back_text">Назад</p>
         </div>
       </div>
-      <router-link v-show="user" class="gamburger justify-self-end" :to="{ name: 'Menu' }">
-        <img src="../assets/images/common/icon-burger.svg" class="w-full h-full" alt="">
-      </router-link>
+      <!-- а как же if dataLoaded?? -->
+      <div v-if="edit" class="justify-self-end text-blue" @click="editMode">
+        <!-- Здесь надо ставить по клику @click="update" -->
+        <!-- Пока оставим как есть, не забудь исправить -->
+        <p>Готово</p>
+      </div>
+      <div v-else class="justify-self-end text-blue" @click="editMode">
+        <p>Править</p>
+      </div>
     </nav>
 
-    <div class="max-w-screen-sm mx-auto px-4">
+    <!-- Page View Current Contact -->
+    <div class="max-w-screen-sm mx-auto px-4 pt-20">
       <!-- App Msg -->
       <!-- разобраться со стилями ерроров и меседжей системных -->
       <div 
@@ -29,10 +37,54 @@
 
       <!--  -->
       <div v-if="dataLoaded">
-        <!-- General Workout Info -->
+        <!-- General Contact Info -->
+        
+          <!-- View & Edit Logo, Surname, Name -->
+          <div class="flex flex-col items-center rounded-md bg-light-grey p-8 mb-2">
+
+            <!-- Avatar -->
+            <div>
+              <!-- На будущее: -->
+              <!-- делает фото или подгружает из источника -->
+              <!-- если аватар уже загружен - можно удалить, когда нет - камера -->
+              <div v-if="edit" class="w-24 h-24 bg-white border rounded-full flex items-center justify-center">
+                <img class="w-50" src="../assets/images/common/icon-camera-photo.svg" alt="">
+              </div>
+              <div v-else class="w-24 h-24 bg-dark-gray rounded-full flex items-center justify-center">
+                
+              </div>
+            </div>
+
+            <!-- Surname -->
+            <div class="w-full mt-6">
+              <input 
+                v-if="edit" 
+                type="text" 
+                class="p-2 w-full text-gray-500 focus:outline-none"
+                v-model="data.contactInfo.surname"
+              >
+              <h1 v-else class="text-blue text-2xl text-center">
+                {{ data.contactInfo.surname }}
+              </h1>
+            </div>
+
+            <!-- Name -->
+            <div class="w-full mt-2">
+              <input 
+                type="text"
+                v-if="edit" 
+                class="p-2 w-full text-gray-500 focus:outline-none"
+                v-model="data.contactInfo.name"
+              >
+              <p v-else class="text-dark-gray text-md text-center">{{ data.contactInfo.name }}</p>
+            </div>
+          </div>
+
         <div 
           class="flex flex-col items-center p-8 rounded-md shadow-md bg-light-grey relative"
         >
+        
+       
 
           <!-- icons -->
           <div v-if="user" class="flex absolute left-2 top-2 gap-x-2">
@@ -58,22 +110,10 @@
           <span class="mt-6 py-1.5 px-5 text-xs text-white bg-at-light-green rounded-lg shadow-md">
             {{ data.workoutType }}
           </span>
-
-          <!--  -->
-          <div class="w-full mt-6">
-            <input 
-              v-if="edit" 
-              type="text" 
-              class="p-2 w-full text-gray-500 focus:outline-none"
-              v-model="data.workoutName"
-            >
-            <h1 v-else class="text-at-light-green text-2xl text-center">
-              {{ data.workoutName }}
-            </h1>
-          </div>
         </div>
         <a class="" :href="`tel:${data.contactInfo.phoneNumber}`">{{data.contactInfo.phoneNumber}}</a>
         <p>{{ data.contactInfo }}</p>
+        <p>{{ data.id }}</p>
         <!-- Exercises -->
         <div class="mt-10 p-8 rounded-md flex flex-col item-center bg-light-grey shadow-md">
 
@@ -377,7 +417,6 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-  .gamburger,
   .arrow-back {
     width: 30px;
     height: 30px;

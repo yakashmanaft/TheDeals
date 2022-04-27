@@ -52,7 +52,7 @@
           >
             <div>
               <p class="text-blue text-2xl">{{ contact.contactInfo.surname }}</p>
-              <p class="text-dark-gray">{{ contact.contactInfo.name }} {{ contact.contactInfo.patronymic }}</p>
+              <p class="text-dark-gray">{{ contact.contactInfo.name }}</p>
             </div>
             <div>
               <p class="text-dark-gray">{{ contact.contactInfo.company }}</p>
@@ -103,6 +103,7 @@
       })
 
       const searchedContacts = computed(() => {
+        // Требуется фильтр по алфавиту добавить
         return data.value.filter((contact) => {
           return (
             contact.contactInfo.name.toLowerCase().indexOf(search.value.toLowerCase()) != -1 || 
