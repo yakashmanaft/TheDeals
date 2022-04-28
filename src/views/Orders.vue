@@ -9,7 +9,7 @@
       class="fixed bottom-5 right-5 w-14 h-14 bg-blue rounded-full flex items-center justify-center"
       :to="{ name: 'Create' }"
     >
-      <img src="../assets/images/common/icon-plus.svg" alt="">
+      <img src="@/assets/images/common/icon-plus.svg" alt="">
     </router-link>
 
     <!-- Временно создание поместим сюда -->

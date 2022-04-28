@@ -7,7 +7,7 @@
         <router-link class="menu-item justify-between" :to="{ name: '' }">
           <div class="flex items-center">
             <div class="menu-item_icon">
-              <img src="../assets/images/menu/account-crew.svg" alt="">
+              <img src="@/assets/images/menu/account-crew.svg" alt="">
             </div>
             <div class="menu-item_text">
               <p class="text-dark">Команда</p>
@@ -15,7 +15,7 @@
             </div>
           </div>
           <div class="menu-item_action">
-            <img src="../assets/images/common/arrow-right.svg" alt="">
+            <img src="@/assets/images/common/arrow-right.svg" alt="">
           </div>
         </router-link>
       </li>
@@ -26,7 +26,7 @@
         <!-- Orders (all my business) -->
         <router-link class="menu-item py-1" :to="{ name: 'Orders' }">
           <div class="menu-item_icon">
-            <img src="../assets/images/menu/account-orders.svg" alt="">
+            <img src="@/assets/images/menu/account-orders.svg" alt="">
           </div>
           <p class="menu-item_text">Все мои дела</p>
         </router-link>
@@ -34,7 +34,7 @@
         <!-- Wallet -->
         <router-link class="menu-item py-1 mt-2" :to="{ name: 'Wallet' }">
           <div class="menu-item_icon">
-            <img src="../assets/images/menu/account-wallet.svg" alt="">
+            <img src="@/assets/images/menu/account-wallet.svg" alt="">
           </div>
           <p class="menu-item_text">Кошелек</p>
         </router-link>
@@ -42,7 +42,7 @@
         <!-- Contacts -->
         <router-link class="menu-item py-1 mt-2" :to="{ name: 'Contacts' }">
           <div class="menu-item_icon">
-            <img src="../assets/images/menu/account-contacts.svg" alt="">
+            <img src="@/assets/images/menu/account-contacts.svg" alt="">
           </div>
           <p class="menu-item_text">Мои контакты</p>
         </router-link>
@@ -52,7 +52,7 @@
       <li class="p-2.5 rounded-xl mt-2">
         <router-link class="menu-item" :to="{ name: 'Calendar' }">
           <div class="menu-item_icon">
-            <img src="../assets/images/menu/account-calendar.svg" alt="">
+            <img src="@/assets/images/menu/account-calendar.svg" alt="">
           </div>
           <p class="menu-item_text">Календарь событий</p>
         </router-link>
@@ -62,7 +62,7 @@
       <li class="p-2.5 rounded-xl mb-2">
         <router-link class="menu-item" :to="{ name: 'Warehouse' }">
           <div class="menu-item_icon">
-            <img src="../assets/images/menu/account-warehouse.svg" alt="">
+            <img src="@/assets/images/menu/account-warehouse.svg" alt="">
           </div>
           <p class="menu-item_text">Склад</p>
         </router-link>
@@ -73,7 +73,7 @@
         <!-- Account Settings -->
         <router-link class="menu-item py-1" :to="{ name: '' }">
           <div class="menu-item_icon">
-            <img src="../assets/images/menu/account-settings.svg" alt="">
+            <img src="@/assets/images/menu/account-settings.svg" alt="">
           </div>
           <p class="menu-item_text">Настройки аккаунта</p>
         </router-link>
@@ -81,7 +81,7 @@
         <!-- FAQ -->
         <router-link class="menu-item py-1 mt-2" :to="{ name: '' }">
           <div class="menu-item_icon">
-            <img src="../assets/images/common/questions.svg" alt="">
+            <img src="@/assets/images/common/questions.svg" alt="">
           </div>
           <p class="menu-item_text">Справка по сервису</p>
         </router-link>
@@ -92,12 +92,12 @@
         <router-link class="menu-item justify-between" :to="{ name: '' }">
           <div class="flex items-center">
             <div class="menu-item_icon">
-              <img src="../assets/images/menu/account-account.svg" alt="">
+              <img src="@/assets/images/menu/account-account.svg" alt="">
             </div>
             <p class="menu-item_text">Сменить аккаунт</p>
           </div>
           <div class="menu-item_action">
-            <img src="../assets/images/common/arrow-right.svg" alt="">
+            <img src="@/assets/images/common/arrow-right.svg" alt="">
           </div>
         </router-link>
       </li>

@@ -6,7 +6,7 @@
         :to="{ name: 'Dashboard' }"
       >
         <!-- порешать с позиционированием картинки -->
-        <img src="../assets/images/user-avatar.png" alt="">
+        <img src="@/assets/images/user-avatar.png" alt="">
       </router-link>
       <div class="flex-1">
         <p>Аккаунт</p>
@@ -14,7 +14,7 @@
       </div>
       <!-- Типа кнопки Назад... -->
       <div class="gamburger" @click="$router.go(-1)">
-        <img src="../assets/images/common/icon-close.svg" class="w-4/5 h-4/5 pl-1 pt-1" alt="">
+        <img src="@/assets/images/common/icon-close.svg" class="w-4/5 h-4/5 pl-1 pt-1" alt="">
       </div>
       
     </nav>

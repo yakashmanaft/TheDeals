@@ -2,7 +2,7 @@
     <nav class="nav container py-2 px-4 flex gap-4 items-center sm:flex-row place-content-between">
       <h1 class="text-dark text-2xl font-bold">{{ title }}</h1>
       <router-link v-show="user" class="gamburger justify-self-end" :to="{ name: 'Menu' }">
-        <img src="../assets/images/common/icon-burger.svg" class="w-full h-full" alt="">
+        <img src="@/assets/images/common/icon-burger.svg" class="w-full h-full" alt="">
       </router-link>
     </nav>
 </template>

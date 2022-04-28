@@ -8,7 +8,7 @@
       class="fixed bottom-5 right-5 w-14 h-14 bg-blue rounded-full flex items-center justify-center"
       :to="{ name: 'CreateContact' }"
     >
-      <img src="../assets/images/common/icon-plus.svg" alt="">
+      <img src="@/assets/images/common/icon-plus.svg" alt="">
     </router-link>
 
     <div v-if="dataLoaded" class="pt-20">
@@ -26,7 +26,7 @@
         <!-- Может отдельным компонентом сделать -->
         <div class="search-input mx-4 h-10 flex items-center">
           <span class="search-input_icon">
-            <img src="../assets/images/common/icon-search.svg" alt="">
+            <img src="@/assets/images/common/icon-search.svg" alt="">
           </span>
           <input 
             id="searchedContacts"

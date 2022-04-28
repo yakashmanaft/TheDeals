@@ -1,46 +1,55 @@
 <template>
   <div class="container text-dark">
+
     <!-- Navigation -->
     <nav class="fixed z-10 bg-white nav container py-2 px-4 flex gap-4 items-center sm:flex-row place-content-between">
       <div class="flex items-center">
-        <div v-show="user" @click="$router.go(-1)" class="arrow-back">
-          <img src="../assets/images/common/arrow-right.svg" class="arrow-back_icon" alt="">
+        <div class="text-blue" v-if="edit" @click="cancelEdit">
+          Отмена
+        </div>
+        <div v-else v-show="user" @click="$router.go(-1)" class="arrow-back">
+          <img src="@/assets/images/common/arrow-right.svg" class="arrow-back_icon" alt="">
           <p class="text-dark text-2xl font-bold ml-2 arrow-back_text">Назад</p>
         </div>
       </div>
       <!-- а как же if dataLoaded?? -->
-      <div v-if="edit" class="justify-self-end text-blue" @click="editMode">
-        <!-- Здесь надо ставить по клику @click="update" -->
-        <!-- Пока оставим как есть, не забудь исправить -->
-        <p>Готово</p>
+      <div v-if="edit" class="justify-self-end text-blue font-bold" @click="update">
+        Готово
       </div>
       <div v-else class="justify-self-end text-blue" @click="editMode">
         <p>Править</p>
       </div>
     </nav>
 
-    <!-- Page View Current Contact -->
-    <div class="max-w-screen-sm mx-auto px-4 pt-20">
+    <!-- View Current Contact -->
+    <main class="max-w-screen-sm mx-auto px-4 pt-20">
+
       <!-- App Msg -->
       <!-- разобраться со стилями ерроров и меседжей системных -->
       <div 
         v-if="statusMsg || errorMsg" 
-        class="mb-10 p-4 rounded-md shadow-md bg-light-grey"
+        class="fixed z-20 flex left-0 top-0 w-full mb-10 p-4 rounded-b-md shadow-md bg-white items-center place-content-between"
       >
-        <p class="text-at-light-green">
-          {{ statusMsg }}
-        </p>
-        <p class="text-red-500">
-          {{ errorMsg }}
-        </p>
+        <div>
+          <p class="text-green">
+            {{ statusMsg }}
+            
+          </p>
+          <p class="text-red-500">
+            {{ errorMsg }}
+          </p>
+        </div>
+        <div class="text-blue font-bold" @click="statusMsg = !statusMsg">
+          ОК
+        </div>
       </div>
 
       <!--  -->
       <div v-if="dataLoaded">
         <!-- General Contact Info -->
         
-          <!-- View & Edit Logo, Surname, Name -->
-          <div class="flex flex-col items-center rounded-md bg-light-grey p-8 mb-2">
+          <!-- Main info about contact -->
+          <div v-if="user" class="flex flex-col items-center rounded-md bg-light-grey p-4">
 
             <!-- Avatar -->
             <div>
@@ -48,7 +57,7 @@
               <!-- делает фото или подгружает из источника -->
               <!-- если аватар уже загружен - можно удалить, когда нет - камера -->
               <div v-if="edit" class="w-24 h-24 bg-white border rounded-full flex items-center justify-center">
-                <img class="w-50" src="../assets/images/common/icon-camera-photo.svg" alt="">
+                <img class="w-50" src="@/assets/images/common/icon-camera-photo.svg" alt="">
               </div>
               <div v-else class="w-24 h-24 bg-dark-gray rounded-full flex items-center justify-center">
                 
@@ -69,229 +78,207 @@
             </div>
 
             <!-- Name -->
-            <div class="w-full mt-2">
+            <div class="w-full">
               <input 
                 type="text"
                 v-if="edit" 
-                class="p-2 w-full text-gray-500 focus:outline-none"
+                class="p-2 w-full text-gray-500 focus:outline-none mt-2"
                 v-model="data.contactInfo.name"
               >
               <p v-else class="text-dark-gray text-md text-center">{{ data.contactInfo.name }}</p>
             </div>
-          </div>
 
-        <div 
-          class="flex flex-col items-center p-8 rounded-md shadow-md bg-light-grey relative"
-        >
-        
-       
-
-          <!-- icons -->
-          <div v-if="user" class="flex absolute left-2 top-2 gap-x-2">
-            <div 
-              class="h-7 w-7 rounded-full flex justify-center items-center cursor-pointer bg-at-light-green shadow-lg"
-              @click="editMode"
-            >
-              <img class="h-3.5 w-auto" src="@/assets/images/pencil-light.png" alt="">
-            </div>
-
-            <div 
-              @click="deleteWorkout"
-              class="h-7 w-7 rounded-full flex justify-center items-center cursor-pointer bg-at-light-green shadow-lg"
-            >
-              <img class="h-3.5 w-auto" src="@/assets/images/trash-light.png" alt="">
-            </div>
-          </div>
-
-          <!-- Type of workout-->
-          <img v-if="data.workoutType === 'cardio'" class="h-24 w-auto" src="@/assets/images/running-light-green.png" alt="">
-          <img v-else class="h-24 w-auto" src="@/assets/images/dumbbell-light-green.png" alt="">
-
-          <span class="mt-6 py-1.5 px-5 text-xs text-white bg-at-light-green rounded-lg shadow-md">
-            {{ data.workoutType }}
-          </span>
-        </div>
-        <a class="" :href="`tel:${data.contactInfo.phoneNumber}`">{{data.contactInfo.phoneNumber}}</a>
-        <p>{{ data.contactInfo }}</p>
-        <p>{{ data.id }}</p>
-        <!-- Exercises -->
-        <div class="mt-10 p-8 rounded-md flex flex-col item-center bg-light-grey shadow-md">
-
-          <!-- Strength Training -->
-          <div 
-            v-if="data.workoutType === 'strength'"
-            class="flex flex-col gap-y-4 w-full"
-          >
-            <div 
-              class="flex flex-col gap-x-6 gap-y-2 relative sm:flex-row"
-              v-for="(item, index) in data.exercises"
-              :key="index"
-            >
-              <div class="flex flex-2 flex-col md:w-1/3">
-                <label for="exercise-name" class="mb-1 text-sm text-at-light-green">
-                  Exercise
-                </label>
-                <input 
-                  id="exercise-name"
-                  v-if="edit" 
-                  type="text" 
-                  class="p-2 w-full text-gray-500 focus:outline-none"
-                  v-model="item.exercise"
-                >
-                <p v-else>{{ item.exercise }}</p>
-              </div>
-              <div class="flex flex-1 flex-col">
-                <label for="sets" class="mb-1 text-sm text-at-light-green">
-                  Sets
-                </label>
-                <input 
-                  v-if="edit" 
-                  id="sets"
-                  type="text" 
-                  class="p-2 w-full text-gray-500 focus:outline-none"
-                  v-model="item.sets"
-                >
-                <p v-else>{{ item.sets }}</p>
-              </div>
-              <div class="flex flex-1 flex-col">
-                <label for="reps" class="mb-1 text-sm text-at-light-green">
-                  Reps
-                </label>
-                <input 
-                  v-if="edit" 
-                  id="reps"
-                  type="text" 
-                  class="p-2 w-full text-gray-500 focus:outline-none"
-                  v-model="item.reps"
-                >
-                <p v-else>{{ item.reps }}</p>
-              </div>
-              <div class="flex flex-1 flex-col">
-                <label for="weight" class="mb-1 text-sm text-at-light-green">
-                  Weight (LB's)
-                </label>
-                <input 
-                  v-if="edit" 
-                  id="weight"
-                  type="text" 
-                  class="p-2 w-full text-gray-500 focus:outline-none"
-                  v-model="item.weight"
-                >
-                <p v-else>{{ item.weight }}</p>
-              </div>
-              <img 
-                @click="deleteExercise(item.id)"
+            <!-- Company -->
+            <div class="w-full">
+              <input 
+                type="text"
                 v-if="edit" 
-                class="absolute h-4 w-auto -left-5 cursor-pointer" 
-                src="@/assets/images/trash-light-green.png" 
-                alt="">
-            </div>
-            <button 
-              @click="addExercise"
-              v-if="edit"
-              type="button"
-              class="mt-6 py-2 px-6 rounded-sm self-start text-sm text-white bg-at-light-green duration-200 border-solid border-2 border-transparent hover:border-at-light-green hover:bg-white hover:text-at-light-green"
-            >
-              Add Exercise
-            </button>
-          </div>
-
-          <!-- Cardio -->
-          <div 
-            v-else
-            class="flex flex-col gap-y-4 w-full"
-          >
-            <div 
-              class="flex flex-col gap-x-6 gap-y-2 relative sm:flex-row"
-              v-for="(item, index) in data.exercises"
-              :key="index"
-            >
-              <div class="flex flex-2 flex-col md:w-1/3">
-                <label for="cardioType" class="mb-1 text-sm text-at-light-green">
-                  Type
-                </label>
-                <select 
-                  id="cardioType"
-                  v-if="edit" 
-                  type="text" 
-                  class="p-2 w-full text-gray-500 focus:outline-none"
-                  v-model="item.cardioType"
-                >
-                  <option value="#">Select Type</option>
-                  <option value="run">Runs</option>
-                  <option value="walk">Walk</option>
-                </select>
-                <p v-else>{{ item.cardioType }}</p>
-              </div>
-              <div class="flex flex-1 flex-col">
-                <label for="distance" class="mb-1 text-sm text-at-light-green">
-                  Distance
-                </label>
-                <input 
-                  v-if="edit" 
-                  id="distance"
-                  type="text" 
-                  class="p-2 w-full text-gray-500 focus:outline-none"
-                  v-model="item.distance"
-                >
-                <p v-else>{{ item.distance }}</p>
-              </div>
-              <div class="flex flex-1 flex-col">
-                <label for="duration" class="mb-1 text-sm text-at-light-green">
-                  Duration
-                </label>
-                <input 
-                  v-if="edit" 
-                  id="duration"
-                  type="text" 
-                  class="p-2 w-full text-gray-500 focus:outline-none"
-                  v-model="item.duration"
-                >
-                <p v-else>{{ item.duration }}</p>
-              </div>
-              <div class="flex flex-1 flex-col">
-                <label for="pace" class="mb-1 text-sm text-at-light-green">
-                  Pace
-                </label>
-                <input 
-                  v-if="edit" 
-                  id="pace"
-                  type="text" 
-                  class="p-2 w-full text-gray-500 focus:outline-none"
-                  v-model="item.pace"
-                >
-                <p v-else>{{ item.pace }}</p>
-              </div>
-              <img 
-                @click="deleteExercise(item.id)"
-                v-if="edit" 
-                class="absolute h-4 w-auto -left-5 cursor-pointer" 
-                src="@/assets/images/trash-light-green.png" 
-                alt=""
+                class="p-2 w-full text-gray-500 focus:outline-none mt-2"
+                v-model="data.contactInfo.company"
               >
+              <p v-else class="text-dark-gray text-md text-center font-bold">{{ data.contactInfo.company }}</p>
             </div>
+          </div>
+
+          <!-- Phone -->
+          <!-- Если ни одного контакта не добавлено -->
+          <div v-if="data.phoneNumbers.length === 0 || data.phoneNumbers === null">
+            <div v-if="user" class="flex place-content-between rounded-md bg-light-grey px-4 py-2 my-2">
+              <p>Нет телефонов для связи</p>
+              <p v-if="edit" class="text-blue" @click="addPhoneNumber">Добавить</p>
+            </div>
+          </div>
+
+          <!-- Если есть контакты уже -->
+          <div v-if="user" class="rounded-md bg-light-grey px-4 my-2">
+            <p v-if="edit && data.phoneNumbers.length !== 0 && data.phoneNumbers !== null" class="text-blue py-2 border-0" >Редактировать телефон для связи</p>
+
+            <!-- loop data about phone numbers from db -->
+            <div v-for="(number, index) in data.phoneNumbers" :key="index" class="flex place-content-between items-center phone-item">
+              
+              <div v-if="edit">
+                <!-- Edit type of phone -->
+                <div  class="flex flex-2 flex-col md:w-1/3 pb-2">
+                  <div>
+                    <label for="phone-type" class="mb-1 text-xs text-dark-gray">
+                      Тип телефонного номера
+                    </label>
+
+                    <select 
+                      id="phone-type"
+                      type="text" 
+                      class="py-2 w-full text-gray-500 focus:outline-none"
+                      v-model="number.type"
+                    >
+                      <option value="Личный">Личный</option>
+                      <option value="Рабочий">Рабочий</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Edit phone number-->
+                <div class="flex flex-2 flex-col md:w-1/3 pb-2">
+                  <label for="phone-number" class="mb-1 text-xs text-dark-gray">
+                    Номер телефона
+                  </label>
+                  <input 
+                    id="phone-number"
+                    type="text" 
+                    class="p-2 w-full text-gray-500 focus:outline-none"
+                    v-model="number.phone"
+                  >
+                </div>
+              </div>
+
+              <!-- Show phones when edit disabled -->
+              <a 
+                class="flex flex-1 items-center" 
+                :href="`tel:${number.phone}`"
+                v-else
+              >
+                <div class="icon-wrapper mr-2">
+                  <img src="@/assets/images/common/icon-phone.svg" alt="">
+                </div>
+                <div>
+                  <p class="text-sm text-dark-gray">{{ number.type }}</p>
+                  <p class="text-blue">{{ number.phone }}</p>
+                </div>
+              </a>
+
+              <!-- Button to delete current phone -->
+              <div v-if="edit" class="icon-wrapper mx-4">
+                <img 
+                  @click="deletePhoneNumber(number.id)"
+                  class="w-full w-full h-full cursor-pointer" 
+                  src="@/assets/images/common/icon-trash.svg" 
+                  alt="">
+              </div>
+            </div>
+
+            <!-- Button to add new phone to contact -->
             <button 
-              @click="addExercise"
-              v-if="edit"
+              @click="addPhoneNumber"
+              v-if="edit && data.phoneNumbers.length !== 0 && data.phoneNumbers !== null"
               type="button"
-              class="mt-6 py-2 px-6 rounded-sm self-start text-sm text-white bg-at-light-green duration-200 border-solid border-2 border-transparent hover:border-at-light-green hover:bg-white hover:text-at-light-green"
+              class="w-full my-4 text-blue cursor-pointer"
             >
-              Add Exercise
+              Добавить телефон
             </button>
           </div>
-        </div>
 
-        <!-- Update -->
-        <button 
-          @click="update"
-          v-if="edit"
-          type="button"
-          class="mt-10 py-2 px-6 rounded-sm self-start text-sm text-white bg-at-light-green duration-200 border-solid border-2 border-transparent hover:border-at-light-green hover:bg-white hover:text-at-light-green"
-        >
-        Update Workout
-        </button>
+          <!-- Social -->
+          <!-- Реализовать вохможность добавления ссылок на соц сети и перехода по ним! -->
+          <!--  -->
+          <!--  -->
+          <!-- <a href="viber://chat?number=ххххххххх">Viber</a> -->
+          <!-- https://api.whatsapp.com/send/?phone=79200000000 -->
+          <!-- https://wa.me/79200000000 короткий вариант ссылки на ватсап -->
+          <!-- Что с телегой? -->
+
+          Если нет имени, но есть логин в инсте или другой сети... ставить вместо фамилии )
+
+          <!-- Events -->
+          <!-- Если ни одного события не добавлено -->
+          <div v-if="data.contactEvents.length === 0 || data.contactEvents === null">
+            <div v-if="user" class="flex place-content-between rounded-md bg-light-grey px-4 py-2 my-2">
+              <p>Нет событий</p>
+              <p v-if="edit" class="text-blue" @click="addContactEvent">Добавить</p>
+            </div>
+          </div>
+
+          <!-- Events are exists -->
+          <div v-if="user" class="rounded-md bg-light-grey px-4 my-2">
+            <p v-if="edit && data.contactEvents.length !== 0 && data.contactEvents !== null" class="text-blue py-2" >Редактировать события</p>
+
+            <!-- loop data about events from bd -->
+            <div v-for="(event, index) in data.contactEvents" :key="index" class="flex place-content-between items-center event-item">
+
+              <div>
+                <!-- Edit title of event -->
+                <div v-if="edit" class="flex flex-2 flex-col md:w-1/3">
+                  <label for="event-title" class="mb-1 text-xs text-dark-gray">
+                    Название события
+                  </label>
+                  <input 
+                    required
+                    id="event-title"
+                    type="text" 
+                    class="p-2 w-full text-gray-500 focus:outline-none"
+                    v-model="event.title"
+                  >
+                </div>
+
+                <!-- Edit date of event -->
+                <div v-if="edit" class="flex flex-2 flex-col md:w-1/3">
+                  <label for="event-date" class="my-1 text-xs text-dark-gray">
+                    Дата события
+                  </label>
+                  <input 
+                    id="event-date"
+                    type="date" 
+                    class="p-2 w-full text-gray-500 focus:outline-none"
+                    v-model="event.date"
+                  >
+                </div>
+
+                <!-- data when editMode is desabled -->
+                <div v-else >
+                  <h3 class="text-sm">{{ event.title }}</h3>
+                  <p class="text-blue">{{ event.date }}</p>
+                </div>
+              </div>
+              
+              <!-- Delete event button-->
+              <div v-if="edit" class="icon-wrapper mx-4">
+                <img 
+                  @click="deleteContactEvent(event.id)"
+                  class="w-full w-full h-full cursor-pointer" 
+                  src="@/assets/images/common/icon-trash.svg" 
+                  alt="">
+              </div>
+
+            </div>
+
+            <!-- Button to add event of contact -->
+            <button 
+              @click="addContactEvent"
+              v-if="edit && data.contactEvents.length !== 0 && data.contactEvents !== null"
+              type="button"
+              class="w-full my-4 text-blue cursor-pointer"
+            >
+              Добавить событие
+            </button>
+
+          </div>
+
+          <!-- Settings -->
+          <!-- Button to delete current contact -->
+          <div v-if="!edit">
+            <p class="my-4 text-danger text-center cursor-pointer" @click="deleteContact">Удалить контакт</p>
+          </div>
+
       </div>
-    </div>
+    </main>
   </div>
 </template>
 
@@ -317,7 +304,7 @@ export default {
     // Get current Id of route
     const currentId = route.params.contactId;
 
-    // Get workout data
+    // Get contact data
     const getData = async () => {
       try {
         const { data: myContacts, error } = await supabase.from('myContacts').select('*').eq('id', currentId);
@@ -335,12 +322,12 @@ export default {
 
     getData();
 
-    // Delete workout
-    const deleteWorkout = async () => {
+    // Delete contact
+    const deleteContact = async () => {
       try {
-        const { error } = await supabase.from('workouts').delete().eq('id', currentId);
+        const { error } = await supabase.from('myContacts').delete().eq('id', currentId);
         if (error) throw error;
-        router.push({ name: 'Orders' })
+        router.push({ name: 'Contacts' })
       } catch (error) {
         errorMsg.value = `Error: ${error.message}`
         setTimeout(() => {
@@ -356,34 +343,61 @@ export default {
       edit.value = !edit.value;
     }
 
-    // Add exercise
-    const addExercise = () => {
-      if(data.value.workoutType === 'strength') {
-        data.value.exercises.push({
-          id: uid(),
-          exercise: '',
-          sets: '',
-          reps: '',
-          weight: '',
-        });
-        return
-      }
-      data.value.exercises.push({
+    // Cancel editMode & cancel all changes
+    const cancelEdit = () => {
+      getData();
+      edit.value = !edit.value;
+    }
+
+    // Оптимизировать функцию добавления
+    // Add contact event
+    const addContactEvent = () => {
+      // if(data.value.workoutType === 'strength') {
+      //   data.value.exercises.push({
+      //     id: uid(),
+      //     exercise: '',
+      //     sets: '',
+      //     reps: '',
+      //     weight: '',
+      //   });
+      //   return
+      // }
+      data.value.contactEvents.push({
         id: uid(),
-        cardioType: '',
-        distance: '',
-        duration: '',
-        pace: '',
+        title: '',
+        date: '',
       })
     }
 
-    // Delete exercise
-    const deleteExercise = (id) => {
-      if(data.value.exercises.length > 1) {
-        data.value.exercises = data.value.exercises.filter(exercise => exercise.id !== id);
+    // Add phone number
+    const addPhoneNumber = () => {
+      data.value.phoneNumbers.push({
+        id: uid(),
+        type: '',
+        phone: ''
+      })
+    }
+
+    //Оптимизировать в одну функцию!
+    // Delete contact events
+    const deleteContactEvent = (id) => {
+      if(data.value.contactEvents.length > 0) {
+        data.value.contactEvents = data.value.contactEvents.filter(event => event.id !== id);
         return;
       }
-      errorMsg.value = 'Error. Cannot remove, need to at least have one exercise';
+      errorMsg.value = 'Error. Cannot remove, need to at least have one event';
+      setTimeout(() => {
+        errorMsg.value = false;
+      }, 5000);
+    }
+
+    // Delete Phone Number events
+    const deletePhoneNumber = (id) => {
+      if(data.value.phoneNumbers.length > 0) {
+        data.value.phoneNumbers = data.value.phoneNumbers.filter(number => number.id !== id);
+        return;
+      }
+      errorMsg.value = 'Error. Cannot remove, need to at least have one event';
       setTimeout(() => {
         errorMsg.value = false;
       }, 5000);
@@ -392,13 +406,14 @@ export default {
     // Update Workout
     const update = async () => {
       try {
-        const { error } = await supabase.from('workouts').update({
-          workoutName: data.value.workoutName,
-          exercises: data.value.exercises
+        const { error } = await supabase.from('myContacts').update({
+          contactInfo: data.value.contactInfo,
+          contactEvents: data.value.contactEvents,
+          phoneNumbers: data.value.phoneNumbers
         }).eq('id', currentId);
         if(error) throw error;
         edit.value = false;
-        statusMsg.value = 'Success: Workout Updated!'
+        statusMsg.value = 'Success: Contact Updated!'
         setTimeout(() => {
           statusMsg.value = false;
         }, 5000);
@@ -411,7 +426,7 @@ export default {
     }
 
     return {
-      statusMsg, data, dataLoaded, errorMsg, edit, editMode, user, deleteWorkout, addExercise, deleteExercise, update
+      statusMsg, data, dataLoaded, errorMsg, edit, editMode, user, deleteContact, addContactEvent, deleteContactEvent, update, cancelEdit, deletePhoneNumber, addPhoneNumber
     };
   },
 };
@@ -435,5 +450,23 @@ export default {
     width: 60%;
     height: 60%;
     transform: rotate(180deg);
+  }
+
+  .event-item,
+  .phone-item {
+    padding: 10px 0;
+  }
+
+  .event-item:nth-child(n+2),
+  .phone-item:nth-child(n+2) {
+    border-top: 1px solid #fff;
+  }
+
+  .icon-wrapper {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 </style>
