@@ -28,19 +28,19 @@
       <!-- разобраться со стилями ерроров и меседжей системных -->
       <div 
         v-if="statusMsg || errorMsg" 
-        class="fixed z-20 flex left-0 top-0 w-full mb-10 p-4 rounded-b-md shadow-md bg-white items-center place-content-between"
+        class="fixed z-20 flex left-0 top-0 w-full h-16 mb-10 px-8 py-4 rounded-b-md shadow-md bg-white items-center place-content-between"
       >
         <div>
-          <p class="text-green">
-            {{ statusMsg }}
-            
+          <p v-if="statusMsg" class="text-green">
+            <!-- {{ statusMsg }} -->
+            Контакт успешно обновлен
           </p>
           <p class="text-red-500">
             {{ errorMsg }}
           </p>
         </div>
-        <div class="text-blue font-bold" @click="statusMsg = !statusMsg">
-          ОК
+        <div class="text-dark-gray" @click="statusMsg = !statusMsg">
+          Оk
         </div>
       </div>
 
@@ -66,12 +66,15 @@
 
             <!-- Surname -->
             <div class="w-full mt-6">
-              <input 
-                v-if="edit" 
-                type="text" 
-                class="p-2 w-full text-gray-500 focus:outline-none"
-                v-model="data.contactInfo.surname"
-              >
+              <div v-if="edit" >
+                <label for="contact-surname" class="text-xs mb-1 text-dark-gray">Фамилия</label>
+                <input 
+                  id="contact-surname"
+                  type="text" 
+                  class="p-2 w-full text-gray-500 focus:outline-none"
+                  v-model="data.contactInfo.surname"
+                >
+              </div>
               <h1 v-else class="text-blue text-2xl text-center">
                 {{ data.contactInfo.surname }}
               </h1>
@@ -79,23 +82,28 @@
 
             <!-- Name -->
             <div class="w-full">
-              <input 
-                type="text"
-                v-if="edit" 
-                class="p-2 w-full text-gray-500 focus:outline-none mt-2"
-                v-model="data.contactInfo.name"
-              >
+              <div v-if="edit" class="mt-2">
+                <label for="contact-name" class="text-xs mb-1 text-dark-gray">Имя, Отчество</label>
+                <input 
+                  id="contact-name"
+                  type="text" 
+                  class="p-2 w-full text-gray-500 focus:outline-none"
+                  v-model="data.contactInfo.name"
+                >
+              </div>
               <p v-else class="text-dark-gray text-md text-center">{{ data.contactInfo.name }}</p>
             </div>
 
             <!-- Company -->
             <div class="w-full">
-              <input 
-                type="text"
-                v-if="edit" 
-                class="p-2 w-full text-gray-500 focus:outline-none mt-2"
-                v-model="data.contactInfo.company"
-              >
+              <div v-if="edit" class="mt-2">
+                <label for="contact-company" class="text-xs mb-1 text-dark-gray">Компания</label>
+                <input 
+                  type="text"
+                  class="p-2 w-full text-gray-500 focus:outline-none"
+                  v-model="data.contactInfo.company"
+                >
+              </div>
               <p v-else class="text-dark-gray text-md text-center font-bold">{{ data.contactInfo.company }}</p>
             </div>
           </div>
@@ -163,6 +171,9 @@
                   <p class="text-sm text-dark-gray">{{ number.type }}</p>
                   <p class="text-blue">{{ number.phone }}</p>
                 </div>
+                <div>
+
+                </div>
               </a>
 
               <!-- Button to delete current phone -->
@@ -190,12 +201,19 @@
           <!-- Реализовать вохможность добавления ссылок на соц сети и перехода по ним! -->
           <!--  -->
           <!--  -->
-          <!-- <a href="viber://chat?number=ххххххххх">Viber</a> -->
-          <!-- https://api.whatsapp.com/send/?phone=79200000000 -->
-          <!-- https://wa.me/79200000000 короткий вариант ссылки на ватсап -->
-          <!-- Что с телегой? -->
-
-          Если нет имени, но есть логин в инсте или другой сети... ставить вместо фамилии )
+          <a href="viber://chat?number=%2B79223000505">Viber</a>
+          <a href="https://api.whatsapp.com/send/?phone=+79617582573">ватсап</a>
+          <a href="viber://add?number=79223000705">Добавить контакт в Viber</a>
+          <!-- https://wa.me/79200000000 короткий вариант ссылки на ватсап %2B-->
+          <!-- https://t.me/Kashmanaft --> 
+          <!-- <a href="vk.me/agvento">Написать в VK</a> -->
+          <!-- Если нет имени, но есть логин в инсте или другой сети... ставить вместо фамилии ) -->
+          <!-- <a href="https://www.messenger.com/t/jack.malbon.3">Facebook Messenger</a> -->
+          <!-- <a href="skype:LOGIN?chat">Отправить сообщение в Skype</a> -->
+          <!-- <a href="skype:LOGIN?voicemail">Отправить голосовое сообщение в Skype</a> -->
+          <!-- <a href="skype:LOGIN?call">Позвонить пользователю Skype</a> -->
+          <!-- <a href="skype:LOGIN?add">Добавить в список контактов Skype</a> -->
+          <!-- <a href="mailto:mail@example.com">Пример ссылки на емайл</a> -->
 
           <!-- Events -->
           <!-- Если ни одного события не добавлено -->
