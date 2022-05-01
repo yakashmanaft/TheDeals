@@ -49,6 +49,7 @@
         <!-- General Contact Info -->
         
           <!-- Main info about contact -->
+          <!-- Если нет имени, но есть логин в инсте или другой сети... ставить вместо фамилии ) -->
           <div v-if="user" class="flex flex-col items-center rounded-md bg-light-grey p-4">
 
             <!-- Avatar -->
@@ -146,8 +147,8 @@
                     </label>
 
                     <select 
+                      required
                       id="phone-type"
-                      type="text" 
                       class="py-2 w-full text-gray-500 focus:outline-none"
                       v-model="number.type"
                     >
@@ -157,7 +158,7 @@
                   </div>
                 </div>
 
-                <!-- Edit social (viber/ whatsup) enable or not -->
+                <!-- Edit social (viber/ whatsup) shows enable or not -->
                 <div class="flex flex-2 pb-2 mt-2">
                   <div v-for="(messenger, index) in number.messengers" :key="index" class="flex items-center">
                     <input type="checkbox" class="custom-checkbox" v-model="messenger.status" :id="messenger.id">
@@ -166,9 +167,10 @@
                 </div>
               </div>
 
-              <!-- Show phones when edit disabled -->
+              <!-- Show phones when edit is disabled -->
               <!-- Рассмотреть в дальнейшем возможность добавлять заготовленные тексты к "написать в мессенджер контакту" -->
               <div v-else class="flex w-full place-content-between">
+
                 <!-- button to make a call -->
                 <a 
                   class="flex items-center" 
@@ -187,7 +189,7 @@
                   </div>
                 </a>
 
-                <!-- button group to message cutPhoneNumber-->
+                <!-- button group to go to messages (мессенджеры) -->
                 <div class="flex items-center">
                   <!-- Ссылка на чат в вайбер %2B-->
                   <!-- Подумать как можно оптимизировать -->
@@ -211,7 +213,7 @@
               </div>
             </div>
 
-            <!-- Button to add new phone to contact -->
+            <!-- Button to add new phone to current contact -->
             <button 
               @click="addPhoneNumber"
               v-if="edit && data.phoneNumbers.length !== 0 && data.phoneNumbers !== null"
@@ -222,19 +224,207 @@
             </button>
           </div>
 
+          <!-- Email -->
+          <!-- Если ни одного имейла не добавлено -->
+          <div v-if="data.Emails.length === 0 || data.Emails === null">
+            <div v-if="user" class="flex place-content-between rounded-md bg-light-grey px-4 py-2 my-2">
+              <p>Эл.почта не указана</p>
+              <p v-if="edit" class="text-blue" @click="addEmail">Добавить</p>
+            </div>
+          </div>
+          
+          <!-- Если Имейлы уже указаны -->
+          <div v-if="user" class="rounded-md bg-light-grey px-4 my-2">
+            <p v-if="edit && data.Emails.length !== 0 && data.Emails !== null" class="text-blue py-2 border-0" >Редактировать эл.адреса</p>
+
+            <!-- loop data about emails from db -->
+            <div v-for="(email, index) in data.Emails" :key="index" class="relative flex place-content-between items-center phone-item">
+              <div v-if="edit">
+
+                <!-- Edit phone number-->
+                <div class="flex flex-2 flex-col pb-2">
+                  <label for="phone-number" class="mb-1 text-xs text-dark-gray">
+                    Адрес эл. почты
+                  </label>
+                  <input 
+                    id="phone-number"
+                    type="text" 
+                    class="p-2 w-full text-gray-500 focus:outline-none"
+                    v-model="email.email"
+                  >
+                </div>
+
+                <!-- Edit type of email -->
+                <div  class="flex flex-2 flex-col pb-2">
+                  <div>
+                    <label for="phone-type" class="mb-1 text-xs text-dark-gray">
+                      Тип эл.адреса
+                    </label>
+
+                    <select 
+                      required
+                      id="phone-type"
+                      class="py-2 w-full text-gray-500 focus:outline-none"
+                      v-model="email.type"
+                    >
+                      <option value="Личный">Личный</option>
+                      <option value="Рабочий">Рабочий</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Show emails when edit is disabled -->
+              <!-- Рассмотреть в дальнейшем возможность добавлять заготовленные тексты к "написать в чат контакту" -->
+              <div v-else class="flex w-full place-content-between">
+                <!-- button to go to write emails -->
+                <a 
+                  class="flex items-center" 
+                  :href="`mailto:${email.email}`"
+                  target="_blank"
+                  
+                >
+                  <div class="icon-wrapper mr-2">
+                    <img src="@/assets/images/common/icon-email.svg" alt="">
+                  </div>
+                  <div>
+                    <p class="text-sm text-dark-gray">{{ email.type }}</p>
+                    <p class="text-blue">{{ email.email }}</p>
+                  </div>
+                  <div>
+
+                  </div>
+                </a>
+              </div>
+
+              <!-- Button to delete current email -->
+              <div v-if="edit" class="icon-wrapper mx-4 mt-6 place-self-start">
+                <img 
+                  @click="deleteEmail(email.id)"
+                  class="cursor-pointer" 
+                  src="@/assets/images/common/icon-trash.svg" 
+                  alt="">
+              </div>
+            </div>
+            <!-- Button to add new phone to current contact -->
+            <button 
+              @click="addEmail"
+              v-if="edit && data.Emails.length !== 0 && data.Emails !== null"
+              type="button"
+              class="w-full my-4 text-blue cursor-pointer"
+            >
+              Добавить эл.адрес
+            </button>
+          </div>
+          
+
           <!-- Social -->
+          <!-- Если ни одной соц сети не добавлено -->
+          <div v-if="data.socialNetworks.length === 0 || data.socialNetworks === null">
+            <div v-if="user" class="flex place-content-between rounded-md bg-light-grey px-4 py-2 my-2">
+              <p>Социальные сети не указаны</p>
+              <p v-if="edit" class="text-blue" @click="addSocial">Добавить</p>
+            </div>
+          </div>
+
+          <!-- Если социальные сети уже указаны -->
+          <div v-if="user" class="rounded-md bg-light-grey px-4 my-2">
+            <p v-if="edit && data.socialNetworks.length !== 0 && data.socialNetworks !== null" class="text-blue py-2 border-0" >Редактировать социальные сети</p>
+
+            <!-- loop data about social networks from db -->
+            <div v-for="(social, index) in data.socialNetworks" :key="index" class="relative flex place-content-between items-center phone-item">
+
+              <div v-if="edit">
+
+                <!-- Edit link to account of your current contact-->
+                <div class="flex flex-2 flex-col pb-2">
+                  <label for="phone-number" class="mb-1 text-xs text-dark-gray">
+                    Укажите ссылку на аккаунт
+                  </label>
+                  <input 
+                    id="phone-number"
+                    type="text" 
+                    class="p-2 w-full text-gray-500 focus:outline-none"
+                    v-model="social.link"
+                  >
+                </div>
+
+                <!-- Edit name of social network -->
+                <div  class="flex flex-2 flex-col pb-2">
+                  <div>
+                    <label for="phone-type" class="mb-1 text-xs text-dark-gray">
+                      Укажите название соц.сети
+                    </label>
+
+                    <select 
+                      required
+                      id="phone-type"
+                      class="py-2 w-full text-gray-500 focus:outline-none"
+                      v-model="social.name"
+                    >
+                      <option value="instagram">Инстаграм</option>
+                      <option value="vkontakte">Вконтакте</option>
+                      <option value="telegram">Телеграм</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <!-- Show social when edit is disabled -->
+              <!-- Рассмотреть в дальнейшем возможность добавлять заготовленные тексты к "написать в чат контакту" -->
+              <!-- А также кнопку поделиться данной ссылкой -->
+              <div v-else class="flex w-full place-content-between">
+                <!-- button to go to social network -->
+                <a 
+                  class="flex items-center" 
+                  :href="`${social.link}`"
+                  target="_blank"
+                  
+                >
+                  <div class="icon-wrapper mr-2">
+                    <img v-if="social.name === 'instagram'" src="@/assets/images/social/icon-instagram.svg" alt="">
+                    <img v-if="social.name === 'vkontakte'" src="@/assets/images/social/icon-vkontakte.svg" alt="">
+                    <img v-if="social.name === 'telegram'" src="@/assets/images/social/icon-telegram.svg" alt="">
+                    <!-- <img :src="getSocialIcons" alt=""> -->
+                  </div>
+                  <div>
+                    <p class="text-sm text-dark-gray">{{ social.name }}</p>
+                  </div>
+                  <div>
+                    
+                  </div>
+                </a>
+              </div>
+
+              <!-- Button to delete current link to social -->
+              <div v-if="edit" class="icon-wrapper mx-4 mt-6 place-self-start">
+                <img 
+                  @click="deleteSocial(social.id)"
+                  class="cursor-pointer" 
+                  src="@/assets/images/common/icon-trash.svg" 
+                  alt="">
+              </div>
+            </div>
+
+            <!-- Button to add new social link to current contact -->
+            <button 
+              @click="addSocial"
+              v-if="edit && data.socialNetworks.length !== 0 && data.socialNetworks !== null"
+              type="button"
+              class="w-full my-4 text-blue cursor-pointer"
+            >
+              Добавить ссылку
+            </button>
+          </div>
           <!-- Реализовать вохможность добавления ссылок на соц сети и перехода по ним! -->
           <!--  -->
           <!--  -->
-          <!-- https://t.me/Kashmanaft --> 
-          <!-- <a href="vk.me/agvento">Написать в VK</a> -->
+          <!-- На заметку -->
           <!-- Если нет имени, но есть логин в инсте или другой сети... ставить вместо фамилии ) -->
           <!-- <a href="https://www.messenger.com/t/jack.malbon.3">Facebook Messenger</a> -->
           <!-- <a href="skype:LOGIN?chat">Отправить сообщение в Skype</a> -->
           <!-- <a href="skype:LOGIN?voicemail">Отправить голосовое сообщение в Skype</a> -->
           <!-- <a href="skype:LOGIN?call">Позвонить пользователю Skype</a> -->
           <!-- <a href="skype:LOGIN?add">Добавить в список контактов Skype</a> -->
-          <!-- <a href="mailto:mail@example.com">Пример ссылки на емайл</a> -->
 
           <!-- Events -->
           <!-- Если ни одного события не добавлено -->
@@ -259,7 +449,6 @@
                     Название события
                   </label>
                   <input 
-                    required
                     id="event-title"
                     type="text" 
                     class="p-2 w-full text-gray-500 focus:outline-none"
@@ -280,7 +469,7 @@
                   >
                 </div>
 
-                <!-- data when editMode is disabled -->
+                <!-- show data when editMode is disabled -->
                 <div v-else >
                   <h3 class="text-sm">{{ event.title }}</h3>
                   <p class="text-blue">{{ event.date }}</p>
@@ -375,7 +564,7 @@ export default {
       }
     }
 
-    // Cut Phone Number for masengers
+    // Cut Phone Number for massengers
     const cutPhoneNumber = (phoneNumber) => {
       // const updatedPhoneNumber = phoneNumber.toString().substr(phoneNumber.length, 10)
       if(phoneNumber.startsWith("+")) {
@@ -415,7 +604,7 @@ export default {
       edit.value = !edit.value;
     }
 
-    // Оптимизировать функцию добавления
+    // Оптимизировать функции добавления
     // Add contact event
     const addContactEvent = () => {
       // if(data.value.workoutType === 'strength') {
@@ -433,6 +622,7 @@ export default {
         title: '',
         date: '',
       })
+
     }
 
     // Add phone number
@@ -456,6 +646,24 @@ export default {
       })
     }
 
+    // Add Emails
+    const addEmail = () => {
+      data.value.Emails.push({
+        id: uid(),
+        type: '',
+        email: ''
+      })
+    }
+
+    // Add Social
+    const addSocial = () => {
+      data.value.socialNetworks.push({
+        id: uid(),
+        name: '',
+        link: ''
+      })
+    }
+
     //Оптимизировать в одну функцию!
     // Delete contact events
     const deleteContactEvent = (id) => {
@@ -469,10 +677,34 @@ export default {
       }, 5000);
     }
 
-    // Delete Phone Number events
+    // Delete current Phone Number events
     const deletePhoneNumber = (id) => {
       if(data.value.phoneNumbers.length > 0) {
         data.value.phoneNumbers = data.value.phoneNumbers.filter(number => number.id !== id);
+        return;
+      }
+      errorMsg.value = 'Error. Cannot remove, need to at least have one event';
+      setTimeout(() => {
+        errorMsg.value = false;
+      }, 5000);
+    }
+
+    // Delete current Email address
+    const deleteEmail = (id) => {
+      if(data.value.Emails.length > 0) {
+        data.value.Emails = data.value.Emails.filter(email => email.id !== id);
+        return;
+      }
+      errorMsg.value = 'Error. Cannot remove, need to at least have one event';
+      setTimeout(() => {
+        errorMsg.value = false;
+      }, 5000);
+    }
+
+    // Delete current link to social
+    const deleteSocial = (id) => {
+      if(data.value.socialNetworks.length > 0) {
+        data.value.socialNetworks = data.value.socialNetworks.filter(social => social.id !== id);
         return;
       }
       errorMsg.value = 'Error. Cannot remove, need to at least have one event';
@@ -487,7 +719,9 @@ export default {
         const { error } = await supabase.from('myContacts').update({
           contactInfo: data.value.contactInfo,
           contactEvents: data.value.contactEvents,
-          phoneNumbers: data.value.phoneNumbers
+          phoneNumbers: data.value.phoneNumbers,
+          socialNetworks: data.value.socialNetworks,
+          Emails: data.value.Emails
         }).eq('id', currentId);
         if(error) throw error;
         edit.value = false;
@@ -504,7 +738,7 @@ export default {
     }
 
     return {
-      statusMsg, data, dataLoaded, errorMsg, edit, editMode, user, deleteContact, addContactEvent, deleteContactEvent, update, cancelEdit, deletePhoneNumber, addPhoneNumber, cutPhoneNumber, checkMobile
+      statusMsg, data, dataLoaded, errorMsg, edit, editMode, user, deleteContact, addContactEvent, deleteContactEvent, update, cancelEdit, deletePhoneNumber, addPhoneNumber, cutPhoneNumber, checkMobile, addEmail, addSocial, deleteEmail, deleteSocial
     };
   },
 };
