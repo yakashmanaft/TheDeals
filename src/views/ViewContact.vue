@@ -122,14 +122,27 @@
             <p v-if="edit && data.phoneNumbers.length !== 0 && data.phoneNumbers !== null" class="text-blue py-2 border-0" >Редактировать телефон для связи</p>
 
             <!-- loop data about phone numbers from db -->
-            <div v-for="(number, index) in data.phoneNumbers" :key="index" class="flex place-content-between items-center phone-item">
+            <div v-for="(number, index) in data.phoneNumbers" :key="index" class="relative flex place-content-between items-center phone-item">
               
               <div v-if="edit">
+                <!-- Edit phone number-->
+                <div class="flex flex-2 flex-col pb-2">
+                  <label for="phone-number" class="mb-1 text-xs text-dark-gray">
+                    Номер телефона
+                  </label>
+                  <input 
+                    id="phone-number"
+                    type="text" 
+                    class="p-2 w-full text-gray-500 focus:outline-none"
+                    v-model="number.phone"
+                  >
+                </div>
+
                 <!-- Edit type of phone -->
-                <div  class="flex flex-2 flex-col md:w-1/3 pb-2">
+                <div  class="flex flex-2 flex-col pb-2">
                   <div>
                     <label for="phone-type" class="mb-1 text-xs text-dark-gray">
-                      Тип телефонного номера
+                      Тип номера телефона
                     </label>
 
                     <select 
@@ -144,43 +157,55 @@
                   </div>
                 </div>
 
-                <!-- Edit phone number-->
-                <div class="flex flex-2 flex-col md:w-1/3 pb-2">
-                  <label for="phone-number" class="mb-1 text-xs text-dark-gray">
-                    Номер телефона
-                  </label>
-                  <input 
-                    id="phone-number"
-                    type="text" 
-                    class="p-2 w-full text-gray-500 focus:outline-none"
-                    v-model="number.phone"
-                  >
+                <!-- Edit social (viber/ whatsup) enable or not -->
+                <div class="flex flex-2 pb-2 mt-2">
+                  <div v-for="(messenger, index) in number.messengers" :key="index" class="flex items-center">
+                    <input type="checkbox" class="custom-checkbox" v-model="messenger.status" :id="messenger.id">
+                    <label :for="messenger.id" class="w-full text-xs text-dark-gray mr-2">{{messenger.name}}</label>
+                  </div>
                 </div>
               </div>
 
               <!-- Show phones when edit disabled -->
-              <a 
-                class="flex flex-1 items-center" 
-                :href="`tel:${number.phone}`"
-                v-else
-              >
-                <div class="icon-wrapper mr-2">
-                  <img src="@/assets/images/common/icon-phone.svg" alt="">
-                </div>
-                <div>
-                  <p class="text-sm text-dark-gray">{{ number.type }}</p>
-                  <p class="text-blue">{{ number.phone }}</p>
-                </div>
-                <div>
+              <!-- Рассмотреть в дальнейшем возможность добавлять заготовленные тексты к "написать в мессенджер контакту" -->
+              <div v-else class="flex w-full place-content-between">
+                <!-- button to make a call -->
+                <a 
+                  class="flex items-center" 
+                  :href="`tel:${number.phone}`"
+                  
+                >
+                  <div class="icon-wrapper mr-2">
+                    <img src="@/assets/images/common/icon-phone.svg" alt="">
+                  </div>
+                  <div>
+                    <p class="text-sm text-dark-gray">{{ number.type }}</p>
+                    <p class="text-blue">{{ number.phone }}</p>
+                  </div>
+                  <div>
 
+                  </div>
+                </a>
+
+                <!-- button group to message cutPhoneNumber-->
+                <div class="flex items-center">
+                  <!-- Ссылка на чат в вайбер %2B-->
+                  <!-- Подумать как можно оптимизировать -->
+                  <a v-if="number.messengers[0].name === 'viber' && number.messengers[0].status === true" :href="`viber://${checkMobile()}${cutPhoneNumber(number.phone)}`" class="icon-wrapper icon-wrapper_social">
+                    <img src="@/assets/images/social/icon-viber.svg" alt="">
+                  </a>
+                  <!-- Ссылка на чат в ватсап -->
+                  <a v-if="number.messengers[1].name === 'whatsup' && number.messengers[1].status === true" :href="`https://wa.me/7${cutPhoneNumber(number.phone)}`" class="icon-wrapper icon-wrapper_social ml-4">
+                    <img src="@/assets/images/social/icon-whatsup.svg" alt="">
+                  </a>
                 </div>
-              </a>
+              </div>
 
               <!-- Button to delete current phone -->
-              <div v-if="edit" class="icon-wrapper mx-4">
+              <div v-if="edit" class="icon-wrapper mx-4 mt-6 place-self-start">
                 <img 
                   @click="deletePhoneNumber(number.id)"
-                  class="w-full w-full h-full cursor-pointer" 
+                  class="cursor-pointer" 
                   src="@/assets/images/common/icon-trash.svg" 
                   alt="">
               </div>
@@ -201,10 +226,6 @@
           <!-- Реализовать вохможность добавления ссылок на соц сети и перехода по ним! -->
           <!--  -->
           <!--  -->
-          <a href="viber://chat?number=%2B79223000505">Viber</a>
-          <a href="https://api.whatsapp.com/send/?phone=+79617582573">ватсап</a>
-          <a href="viber://add?number=79223000705">Добавить контакт в Viber</a>
-          <!-- https://wa.me/79200000000 короткий вариант ссылки на ватсап %2B-->
           <!-- https://t.me/Kashmanaft --> 
           <!-- <a href="vk.me/agvento">Написать в VK</a> -->
           <!-- Если нет имени, но есть логин в инсте или другой сети... ставить вместо фамилии ) -->
@@ -229,11 +250,11 @@
             <p v-if="edit && data.contactEvents.length !== 0 && data.contactEvents !== null" class="text-blue py-2" >Редактировать события</p>
 
             <!-- loop data about events from bd -->
-            <div v-for="(event, index) in data.contactEvents" :key="index" class="flex place-content-between items-center event-item">
+            <div v-for="(event, index) in data.contactEvents" :key="index" class="relative flex place-content-between items-center event-item">
 
               <div>
                 <!-- Edit title of event -->
-                <div v-if="edit" class="flex flex-2 flex-col md:w-1/3">
+                <div v-if="edit" class="flex flex-2 flex-col">
                   <label for="event-title" class="mb-1 text-xs text-dark-gray">
                     Название события
                   </label>
@@ -247,7 +268,7 @@
                 </div>
 
                 <!-- Edit date of event -->
-                <div v-if="edit" class="flex flex-2 flex-col md:w-1/3">
+                <div v-if="edit" class="flex flex-2 flex-col ">
                   <label for="event-date" class="my-1 text-xs text-dark-gray">
                     Дата события
                   </label>
@@ -259,7 +280,7 @@
                   >
                 </div>
 
-                <!-- data when editMode is desabled -->
+                <!-- data when editMode is disabled -->
                 <div v-else >
                   <h3 class="text-sm">{{ event.title }}</h3>
                   <p class="text-blue">{{ event.date }}</p>
@@ -267,10 +288,10 @@
               </div>
               
               <!-- Delete event button-->
-              <div v-if="edit" class="icon-wrapper mx-4">
+              <div v-if="edit" class="right-0 icon-wrapper place-self-start mt-6 mx-4">
                 <img 
                   @click="deleteContactEvent(event.id)"
-                  class="w-full w-full h-full cursor-pointer" 
+                  class="cursor-pointer" 
                   src="@/assets/images/common/icon-trash.svg" 
                   alt="">
               </div>
@@ -354,6 +375,33 @@ export default {
       }
     }
 
+    // Cut Phone Number for masengers
+    const cutPhoneNumber = (phoneNumber) => {
+      // const updatedPhoneNumber = phoneNumber.toString().substr(phoneNumber.length, 10)
+      if(phoneNumber.startsWith("+")) {
+        const updatedPhoneNumber = phoneNumber.slice(2)
+        console.log('начинается с +7' + updatedPhoneNumber)
+        return updatedPhoneNumber;
+      } else if (phoneNumber.startsWith("8")) {
+        const updatedPhoneNumber = phoneNumber.slice(1)
+        console.log('начинается с 8' + updatedPhoneNumber)
+        return updatedPhoneNumber;
+      } else {
+        console.log('неверный формат номера телефона')
+      }
+    }
+
+    //Check mobile or not
+    const checkMobile = () => {
+      if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+          const peace = 'add?number=7';
+          return peace
+        } else {
+          const peace = 'chat?number=7';
+          return peace
+      }
+    }
+
     // Edit mode
     const edit = ref(null);
 
@@ -392,7 +440,19 @@ export default {
       data.value.phoneNumbers.push({
         id: uid(),
         type: '',
-        phone: ''
+        phone: '',
+        messengers: [
+          {
+            id: uid(),
+            name: 'viber',
+            status: false
+          },
+          {
+            id: uid(),
+            name: 'whatsup',
+            status: false
+          }
+        ]
       })
     }
 
@@ -444,7 +504,7 @@ export default {
     }
 
     return {
-      statusMsg, data, dataLoaded, errorMsg, edit, editMode, user, deleteContact, addContactEvent, deleteContactEvent, update, cancelEdit, deletePhoneNumber, addPhoneNumber
+      statusMsg, data, dataLoaded, errorMsg, edit, editMode, user, deleteContact, addContactEvent, deleteContactEvent, update, cancelEdit, deletePhoneNumber, addPhoneNumber, cutPhoneNumber, checkMobile
     };
   },
 };
@@ -487,4 +547,42 @@ export default {
     align-items: center;
     justify-content: center;
   }
+
+  .icon-wrapper img{
+    width: 100%;
+    height: 100%;
+  }
+
+  .custom-checkbox {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+  }
+
+  .custom-checkbox+label {
+    display: inline-flex;
+    align-items: center;
+    user-select: none;
+  }
+  .custom-checkbox+label::before {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    flex-grow: 0;
+    border: 1px solid #838383;
+    border-radius: 0.25em;
+    margin-right: 0.5em;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 50% 50%;
+  }
+
+  .custom-checkbox:checked+label::before {
+    border-color: #4785E7;
+    background-color: #4785E7;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23fff' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z'/%3e%3c/svg%3e");
+  }
+
 </style>

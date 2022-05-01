@@ -108,10 +108,8 @@
           return (
             contact.contactInfo.name.toLowerCase().indexOf(search.value.toLowerCase()) != -1 || 
             contact.contactInfo.surname.toLowerCase().indexOf(search.value.toLowerCase()) != -1 ||
-            contact.contactInfo.company.toLowerCase().indexOf(search.value.toLowerCase()) != -1 ||
-            contact.contactInfo.phoneNumber.toLowerCase().indexOf(search.value.toLowerCase()) != -1 ||
-            contact.contactInfo.instagram.toLowerCase().indexOf(search.value.toLowerCase()) != -1
-            // contact.contactInfo.patronymic.toLowerCase().indexOf(search.value.toLowerCase()) != -1
+            contact.contactInfo.company.toLowerCase().indexOf(search.value.toLowerCase()) != -1
+            // Из каких col еще стреубется поиск? по номеру телефона? по наличию вайбера? думайте...
           )
         })
       });
