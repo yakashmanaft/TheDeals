@@ -50,62 +50,65 @@
         
           <!-- Main info about contact -->
           <!-- Если нет имени, но есть логин в инсте или другой сети... ставить вместо фамилии ) -->
-          <div v-if="user" class="flex flex-col items-center rounded-md bg-light-grey p-4">
+          <div v-if="user" class="flex flex-col items-center p-4 py-10" :class="{ bgLightGrey: edit === true }">
+            <div class="w-3/4 flex flex-col items-center">
+              <!-- Avatar -->
+              <div>
+                <!-- На будущее: -->
+                <!-- делает фото или подгружает из источника -->
+                <!-- если аватар уже загружен - можно удалить, когда нет - камера -->
+                <div v-if="edit" class="w-24 h-24 mt-4 bg-white border rounded-full flex items-center justify-center">
+                  <img class="w-50" src="@/assets/images/common/icon-camera-photo.svg" alt="">
+                </div>
+                <div v-else class="w-24 h-24 bg-dark-gray rounded-full flex items-center justify-center">
+                  <!-- Avatar -->
+                  <!--  -->
+                </div>
+              </div>
 
-            <!-- Avatar -->
-            <div>
-              <!-- На будущее: -->
-              <!-- делает фото или подгружает из источника -->
-              <!-- если аватар уже загружен - можно удалить, когда нет - камера -->
-              <div v-if="edit" class="w-24 h-24 bg-white border rounded-full flex items-center justify-center">
-                <img class="w-50" src="@/assets/images/common/icon-camera-photo.svg" alt="">
+              <!-- Surname -->
+              <div class="w-full mt-6">
+                <div v-if="edit" >
+                  <label for="contact-surname" class="text-xs mb-1 ml-2 text-dark-gray">Фамилия</label>
+                  <input 
+                    id="contact-surname"
+                    type="text" 
+                    class="p-2 w-full text-gray-500 rounded-md focus:outline-none"
+                    v-model="data.contactInfo.surname"
+                  >
+                </div>
+                <h1 v-else class="text-blue text-2xl text-center">
+                  {{ data.contactInfo.surname }}
+                </h1>
               </div>
-              <div v-else class="w-24 h-24 bg-dark-gray rounded-full flex items-center justify-center">
-                
-              </div>
-            </div>
 
-            <!-- Surname -->
-            <div class="w-full mt-6">
-              <div v-if="edit" >
-                <label for="contact-surname" class="text-xs mb-1 text-dark-gray">Фамилия</label>
-                <input 
-                  id="contact-surname"
-                  type="text" 
-                  class="p-2 w-full text-gray-500 focus:outline-none"
-                  v-model="data.contactInfo.surname"
-                >
+              <!-- Name -->
+              <div class="w-full">
+                <div v-if="edit" class="mt-2">
+                  <label for="contact-name" class="text-xs mb-1 ml-2 text-dark-gray">Имя, Отчество</label>
+                  <input 
+                    id="contact-name"
+                    type="text" 
+                    class="p-2 w-full text-gray-500 rounded-md focus:outline-none"
+                    v-model="data.contactInfo.name"
+                  >
+                </div>
+                <p v-else class="text-dark-gray text-xl text-center">{{ data.contactInfo.name }}</p>
               </div>
-              <h1 v-else class="text-blue text-2xl text-center">
-                {{ data.contactInfo.surname }}
-              </h1>
-            </div>
 
-            <!-- Name -->
-            <div class="w-full">
-              <div v-if="edit" class="mt-2">
-                <label for="contact-name" class="text-xs mb-1 text-dark-gray">Имя, Отчество</label>
-                <input 
-                  id="contact-name"
-                  type="text" 
-                  class="p-2 w-full text-gray-500 focus:outline-none"
-                  v-model="data.contactInfo.name"
-                >
+              <!-- Company -->
+              <div class="w-full">
+                <div v-if="edit" class="mt-2">
+                  <label for="contact-company" class="text-xs mb-1 ml-2 text-dark-gray">Компания</label>
+                  <input 
+                    type="text"
+                    class="p-2 w-full text-gray-500 rounded-md focus:outline-none"
+                    v-model="data.contactInfo.company"
+                  >
+                </div>
+                <p v-else class="text-dark-gray text-md mt-2 text-center">{{ data.contactInfo.company }}</p>
               </div>
-              <p v-else class="text-dark-gray text-md text-center">{{ data.contactInfo.name }}</p>
-            </div>
 
-            <!-- Company -->
-            <div class="w-full">
-              <div v-if="edit" class="mt-2">
-                <label for="contact-company" class="text-xs mb-1 text-dark-gray">Компания</label>
-                <input 
-                  type="text"
-                  class="p-2 w-full text-gray-500 focus:outline-none"
-                  v-model="data.contactInfo.company"
-                >
-              </div>
-              <p v-else class="text-dark-gray text-md text-center font-bold">{{ data.contactInfo.company }}</p>
             </div>
           </div>
 
@@ -118,8 +121,8 @@
             </div>
           </div>
 
-          <!-- Если есть контакты уже -->
-          <div v-if="user" class="rounded-md bg-light-grey px-4 my-2">
+          <!-- Если есть телефоны уже -->
+          <div v-if="user" class="px-4 my-2">
             <p v-if="edit && data.phoneNumbers.length !== 0 && data.phoneNumbers !== null" class="text-blue py-2 border-0" >Редактировать телефон для связи</p>
 
             <!-- loop data about phone numbers from db -->
@@ -764,6 +767,11 @@ export default {
     transform: rotate(180deg);
   }
 
+  .bgLightGrey {
+    background-color: #f1f1f1;
+    border-radius: 20px;
+  }
+
   .event-item,
   .phone-item {
     padding: 10px 0;
@@ -771,7 +779,7 @@ export default {
 
   .event-item:nth-child(n+2),
   .phone-item:nth-child(n+2) {
-    border-top: 1px solid #fff;
+    border-top: 1px solid #f1f1f1;
   }
 
   .icon-wrapper {

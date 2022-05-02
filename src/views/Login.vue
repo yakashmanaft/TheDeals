@@ -15,7 +15,7 @@
       <!-- Заголовок -->
       <div class="my-4">
         <!-- <p class="text-center text-dark-gray text-12">Для входа в сервис</p> -->
-        <h1 class="font-bold text-center text-3xl text-light-grey">Моё настоящее</h1>
+        <h1 class="font-bold text-center text-3xl text-light-grey">The Deals</h1>
       </div>
 
       <!-- Email Input -->

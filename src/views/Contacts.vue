@@ -14,6 +14,7 @@
     <div v-if="dataLoaded" class="pt-20">
 
       <!-- No Data -->
+      <!-- Стилизовать нормально? -->
       <div v-if="data.length === 0">
         <h1 class="text-2xl">Looks empty here...</h1>
         <!-- Добавить ссылку на экран создания нового контакта -->
@@ -24,13 +25,13 @@
 
         <!-- Поиск по контактам -->
         <!-- Может отдельным компонентом сделать -->
-        <div class="search-input mx-4 h-10 flex items-center">
+        <div class="search-input px-2 mx-4 h-10 flex items-center">
           <span class="search-input_icon">
             <img src="@/assets/images/common/icon-search.svg" alt="">
           </span>
           <input 
             id="searchedContacts"
-            class="search-input_input outline-none w-full pr-2 focus:text-dark" 
+            class="search-input_input outline-none w-full focus:text-dark" 
             type="search"
             placeholder="Поиск..."
             v-model="search"
@@ -48,10 +49,10 @@
             v-for="contact in searchedContacts"
             :key="contact.id"
             :to="{ name: 'View-Contact', params: { contactId: contact.id } }"
-            class="flex justify-between items-center bg-light-grey rounded-md px-4 py-2 mt-2"
+            class="flex justify-between border-b-2 items-center px-4 py-2 mt-2"
           >
             <div>
-              <p class="text-blue text-2xl">{{ contact.contactInfo.surname }}</p>
+              <p class="text-blue text-xl">{{ contact.contactInfo.surname }}</p>
               <p class="text-dark-gray">{{ contact.contactInfo.name }}</p>
             </div>
             <div>
@@ -127,8 +128,9 @@
   }
 
   .search-input {
-    border: 1px solid #838383;
-    border-radius: 10px;
+    // border: 1px solid #838383;
+    border-radius: 20px;
+    background-color: #f1f1f1;
   }
 
   .search-input_icon {
@@ -137,6 +139,21 @@
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+
+  input[type="search"] {
+    background-color: #f1f1f1;
+    -webkit-appearance:none;
+  }
+
+  input[type="search"]::-webkit-search-decoration {
+    background-color: red;
+  }
+
+  input[type="search"]::-webkit-search-decoration,
+  input[type="search"]::-webkit-search-results-button,
+  input[type="search"]::-webkit-search-results-decoration {
+    -webkit-appearance:none;
   }
 
 
