@@ -32,8 +32,8 @@
       >
         <div>
           <p v-if="statusMsg" class="text-green">
-            <!-- {{ statusMsg }} -->
-            Контакт успешно обновлен
+            {{ statusMsg }}
+            <!-- Контакт успешно обновлен -->
           </p>
           <p class="text-red-500">
             {{ errorMsg }}
@@ -398,8 +398,8 @@
               </div>
             </div>
             <!-- No Edit Mode -->
-            <div v-if="!edit && data.socialNetworks.length === 0 && data.socialNetworks === null" class="flex py-4">
-              <div v-for="(social, index) in data.socialNetworks" :key="index" class="mr-2">
+            <div v-else class="flex">
+              <div v-for="(social, index) in data.socialNetworks" :key="index" class="mr-2 py-4">
                 <!-- button to go to social network -->
                 <a 
                   :href="`${social.link}`"
@@ -742,7 +742,7 @@ export default {
         }).eq('id', currentId);
         if(error) throw error;
         edit.value = false;
-        statusMsg.value = 'Success: Contact Updated!'
+        statusMsg.value = 'Контакт успешно обновлен!'
         setTimeout(() => {
           statusMsg.value = false;
         }, 5000);
