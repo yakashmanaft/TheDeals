@@ -49,15 +49,15 @@
         <!-- General Contact Info -->
         
           <!-- Main info about contact -->
-          <!-- Если нет имени, но есть логин в инсте или другой сети... ставить вместо фамилии ) -->
-          <div v-if="user" class="flex flex-col items-center p-4 py-10" :class="{ bgLightGrey: edit === true }">
-            <div class="w-3/4 flex flex-col items-center">
+          <!-- Если нет имени, но есть логин в инсте или другой сети... может быть ставить вместо фамилии? -->
+          <div v-if="user" class="flex flex-col items-center p-4 py-10">
+            <div class="w-4/5 flex flex-col items-center">
               <!-- Avatar -->
               <div>
                 <!-- На будущее: -->
                 <!-- делает фото или подгружает из источника -->
                 <!-- если аватар уже загружен - можно удалить, когда нет - камера -->
-                <div v-if="edit" class="w-24 h-24 mt-4 bg-white border rounded-full flex items-center justify-center">
+                <div v-if="edit" class="w-24 h-24 bg-white border rounded-full flex items-center justify-center">
                   <img class="w-50" src="@/assets/images/common/icon-camera-photo.svg" alt="">
                 </div>
                 <div v-else class="w-24 h-24 bg-dark-gray rounded-full flex items-center justify-center">
@@ -73,7 +73,7 @@
                   <input 
                     id="contact-surname"
                     type="text" 
-                    class="p-2 w-full text-gray-500 rounded-md focus:outline-none"
+                    class="p-2 w-full text-gray-500 rounded-md focus:outline-none bg-light-grey"
                     v-model="data.contactInfo.surname"
                   >
                 </div>
@@ -89,7 +89,7 @@
                   <input 
                     id="contact-name"
                     type="text" 
-                    class="p-2 w-full text-gray-500 rounded-md focus:outline-none"
+                    class="p-2 w-full text-gray-500 rounded-md focus:outline-none bg-light-grey"
                     v-model="data.contactInfo.name"
                   >
                 </div>
@@ -102,7 +102,7 @@
                   <label for="contact-company" class="text-xs mb-1 ml-2 text-dark-gray">Компания</label>
                   <input 
                     type="text"
-                    class="p-2 w-full text-gray-500 rounded-md focus:outline-none"
+                    class="p-2 w-full text-gray-500 rounded-md focus:outline-none bg-light-grey"
                     v-model="data.contactInfo.company"
                   >
                 </div>
@@ -115,29 +115,29 @@
           <!-- Phone -->
           <!-- Если ни одного контакта не добавлено -->
           <div v-if="data.phoneNumbers.length === 0 || data.phoneNumbers === null">
-            <div v-if="user" class="flex place-content-between rounded-md bg-light-grey px-4 py-2 my-2">
+            <div v-if="user" class="flex place-content-between px-4 py-4 my-2 ">
               <p>Нет телефонов для связи</p>
               <p v-if="edit" class="text-blue" @click="addPhoneNumber">Добавить</p>
             </div>
           </div>
-
+          <!-- Phone -->
           <!-- Если есть телефоны уже -->
-          <div v-if="user" class="px-4 my-2">
-            <p v-if="edit && data.phoneNumbers.length !== 0 && data.phoneNumbers !== null" class="text-blue py-2 border-0" >Редактировать телефон для связи</p>
+          <div v-if="user" class="px-4">
+            <p v-if="edit && data.phoneNumbers.length !== 0 && data.phoneNumbers !== null" class="text-blue py-2" >Редактировать номер телефона</p>
 
             <!-- loop data about phone numbers from db -->
-            <div v-for="(number, index) in data.phoneNumbers" :key="index" class="relative flex place-content-between items-center phone-item">
+            <div v-for="(number, index) in data.phoneNumbers" :key="index" class="phone-item">
               
               <div v-if="edit">
                 <!-- Edit phone number-->
                 <div class="flex flex-2 flex-col pb-2">
-                  <label for="phone-number" class="mb-1 text-xs text-dark-gray">
+                  <label for="phone-number" class="mb-1 ml-2 text-xs text-dark-gray">
                     Номер телефона
                   </label>
                   <input 
                     id="phone-number"
                     type="text" 
-                    class="p-2 w-full text-gray-500 focus:outline-none"
+                    class="p-2 w-full text-gray-500 bg-light-grey rounded-md focus:outline-none"
                     v-model="number.phone"
                   >
                 </div>
@@ -145,27 +145,38 @@
                 <!-- Edit type of phone -->
                 <div  class="flex flex-2 flex-col pb-2">
                   <div>
-                    <label for="phone-type" class="mb-1 text-xs text-dark-gray">
+                    <label for="phone-type" class="mb-1 ml-2 text-xs text-dark-gray">
                       Тип номера телефона
                     </label>
 
                     <select 
                       required
                       id="phone-type"
-                      class="py-2 w-full text-gray-500 focus:outline-none"
+                      class="webkit p-2 w-full rounded-md text-gray-500 bg-light-grey focus:outline-none"
                       v-model="number.type"
                     >
+                      <!-- Необходимо стилизовать по мере -->
                       <option value="Личный">Личный</option>
                       <option value="Рабочий">Рабочий</option>
                     </select>
                   </div>
                 </div>
 
-                <!-- Edit social (viber/ whatsup) shows enable or not -->
-                <div class="flex flex-2 pb-2 mt-2">
-                  <div v-for="(messenger, index) in number.messengers" :key="index" class="flex items-center">
-                    <input type="checkbox" class="custom-checkbox" v-model="messenger.status" :id="messenger.id">
-                    <label :for="messenger.id" class="w-full text-xs text-dark-gray mr-2">{{messenger.name}}</label>
+                <!-- Edit Socials & button delete current number -->
+                <div class="flex items-center place-content-between pb-2 mt-2">
+                  <div class="flex items-center justify-center">
+                    <div v-for="(messenger, index) in number.messengers" :key="index" class="flex">
+                      <input type="checkbox" class="custom-checkbox" v-model="messenger.status" :id="messenger.id">
+                      <label :for="messenger.id" class="w-full text-xs text-dark-gray mr-2">{{messenger.name}}</label>
+                    </div>
+                  </div>
+                  <!-- Button to delete current phone -->
+                  <div v-if="edit" class="icon-wrapper">
+                    <img 
+                      @click="deletePhoneNumber(number.id)"
+                      class="cursor-pointer" 
+                      src="@/assets/images/common/icon-trash.svg" 
+                      alt="">
                   </div>
                 </div>
               </div>
@@ -192,7 +203,7 @@
                   </div>
                 </a>
 
-                <!-- button group to go to messages (мессенджеры) -->
+                <!-- For messengers... button group -->
                 <div class="flex items-center">
                   <!-- Ссылка на чат в вайбер %2B-->
                   <!-- Подумать как можно оптимизировать -->
@@ -206,14 +217,6 @@
                 </div>
               </div>
 
-              <!-- Button to delete current phone -->
-              <div v-if="edit" class="icon-wrapper mx-4 mt-6 place-self-start">
-                <img 
-                  @click="deletePhoneNumber(number.id)"
-                  class="cursor-pointer" 
-                  src="@/assets/images/common/icon-trash.svg" 
-                  alt="">
-              </div>
             </div>
 
             <!-- Button to add new phone to current contact -->
@@ -221,38 +224,39 @@
               @click="addPhoneNumber"
               v-if="edit && data.phoneNumbers.length !== 0 && data.phoneNumbers !== null"
               type="button"
-              class="w-full my-4 text-blue cursor-pointer"
+              class="bg-green w-full p-2 rounded-md text-white my-4 cursor-pointer"
             >
-              Добавить телефон
+              Добавить еще телефон
             </button>
           </div>
+
 
           <!-- Email -->
           <!-- Если ни одного имейла не добавлено -->
           <div v-if="data.Emails.length === 0 || data.Emails === null">
-            <div v-if="user" class="flex place-content-between rounded-md bg-light-grey px-4 py-2 my-2">
+            <div v-if="user" class="flex place-content-between px-4 py-2 my-2">
               <p>Эл.почта не указана</p>
               <p v-if="edit" class="text-blue" @click="addEmail">Добавить</p>
             </div>
           </div>
-          
-          <!-- Если Имейлы уже указаны -->
-          <div v-if="user" class="rounded-md bg-light-grey px-4 my-2">
-            <p v-if="edit && data.Emails.length !== 0 && data.Emails !== null" class="text-blue py-2 border-0" >Редактировать эл.адреса</p>
+          <!-- Email -->
+          <!-- Если есть имейлы уже -->
+          <div v-if="user" class="px-4 mt-4">
+            <p v-if="edit && data.Emails.length !== 0 && data.Emails !== null" class="text-blue py-2" >Редактировать email</p>
 
             <!-- loop data about emails from db -->
-            <div v-for="(email, index) in data.Emails" :key="index" class="relative flex place-content-between items-center phone-item">
+            <div v-for="(email, index) in data.Emails" :key="index" class="phone-item">
               <div v-if="edit">
 
-                <!-- Edit phone number-->
+                <!-- Edit email-->
                 <div class="flex flex-2 flex-col pb-2">
-                  <label for="phone-number" class="mb-1 text-xs text-dark-gray">
-                    Адрес эл. почты
+                  <label for="phone-number" class="mb-1 ml-2 text-xs text-dark-gray">
+                    Адрес почты
                   </label>
                   <input 
                     id="phone-number"
                     type="text" 
-                    class="p-2 w-full text-gray-500 focus:outline-none"
+                    class="p-2 w-full text-gray-500 bg-light-grey rounded-md focus:outline-none"
                     v-model="email.email"
                   >
                 </div>
@@ -260,14 +264,14 @@
                 <!-- Edit type of email -->
                 <div  class="flex flex-2 flex-col pb-2">
                   <div>
-                    <label for="phone-type" class="mb-1 text-xs text-dark-gray">
-                      Тип эл.адреса
+                    <label for="phone-type" class="mb-1 ml-2 text-xs text-dark-gray">
+                      Тип почты
                     </label>
 
                     <select 
                       required
                       id="phone-type"
-                      class="py-2 w-full text-gray-500 focus:outline-none"
+                      class="webkit p-2 w-full text-gray-500 bg-light-grey focus:outline-none rounded-md"
                       v-model="email.type"
                     >
                       <option value="Личный">Личный</option>
@@ -301,22 +305,25 @@
               </div>
 
               <!-- Button to delete current email -->
-              <div v-if="edit" class="icon-wrapper mx-4 mt-6 place-self-start">
-                <img 
-                  @click="deleteEmail(email.id)"
-                  class="cursor-pointer" 
-                  src="@/assets/images/common/icon-trash.svg" 
-                  alt="">
+              <div v-if="edit" class="flex items-center place-content-between justify-end pb-2 mt-2">
+                <div  class="icon-wrapper">
+                  <img 
+                    @click="deleteEmail(email.id)"
+                    class="cursor-pointer" 
+                    src="@/assets/images/common/icon-trash.svg" 
+                    alt="">
+                </div>
               </div>
             </div>
-            <!-- Button to add new phone to current contact -->
+
+            <!-- Button to add new email to current contact -->
             <button 
               @click="addEmail"
               v-if="edit && data.Emails.length !== 0 && data.Emails !== null"
               type="button"
-              class="w-full my-4 text-blue cursor-pointer"
+              class="w-full my-4 p-2 rounded-md text-white bg-green cursor-pointer"
             >
-              Добавить эл.адрес
+              Добавить еще эл.адрес
             </button>
           </div>
           
@@ -324,64 +331,79 @@
           <!-- Social -->
           <!-- Если ни одной соц сети не добавлено -->
           <div v-if="data.socialNetworks.length === 0 || data.socialNetworks === null">
-            <div v-if="user" class="flex place-content-between rounded-md bg-light-grey px-4 py-2 my-2">
+            <div v-if="user" class="flex place-content-between px-4 py-2 my-2">
               <p>Социальные сети не указаны</p>
               <p v-if="edit" class="text-blue" @click="addSocial">Добавить</p>
             </div>
           </div>
-
+          <!-- Social -->
           <!-- Если социальные сети уже указаны -->
-          <div v-if="user" class="rounded-md bg-light-grey px-4 my-2">
-            <p v-if="edit && data.socialNetworks.length !== 0 && data.socialNetworks !== null" class="text-blue py-2 border-0" >Редактировать социальные сети</p>
+          <div v-if="user" class="px-4 mt-4">
+            <p v-if="edit && data.socialNetworks.length !== 0 && data.socialNetworks !== null" class="text-blue py-2 border-bottom" >Редактировать социальные сети</p>
 
             <!-- loop data about social networks from db -->
-            <div v-for="(social, index) in data.socialNetworks" :key="index" class="relative flex place-content-between items-center phone-item">
+            <!-- Edit Mode -->
+            <div v-if="edit">
+              <div v-for="(social, index) in data.socialNetworks" :key="index" class="phone-item">
 
-              <div v-if="edit">
+                <div v-if="edit">
 
-                <!-- Edit link to account of your current contact-->
-                <div class="flex flex-2 flex-col pb-2">
-                  <label for="phone-number" class="mb-1 text-xs text-dark-gray">
-                    Укажите ссылку на аккаунт
-                  </label>
-                  <input 
-                    id="phone-number"
-                    type="text" 
-                    class="p-2 w-full text-gray-500 focus:outline-none"
-                    v-model="social.link"
-                  >
-                </div>
-
-                <!-- Edit name of social network -->
-                <div  class="flex flex-2 flex-col pb-2">
-                  <div>
-                    <label for="phone-type" class="mb-1 text-xs text-dark-gray">
-                      Укажите название соц.сети
+                  <!-- Edit social link -->
+                  <div class="flex flex-2 flex-col pb-2">
+                    <label for="social-link" class="mb-1 ml-2 text-xs text-dark-gray">
+                      Укажите ссылку на аккаунт
                     </label>
-
-                    <select 
-                      required
-                      id="phone-type"
-                      class="py-2 w-full text-gray-500 focus:outline-none"
-                      v-model="social.name"
+                    <input 
+                      id="social-link"
+                      type="text" 
+                      class="p-2 w-full text-gray-500 bg-light-grey focus:outline-none rounded-md"
+                      v-model="social.link"
                     >
-                      <option value="instagram">Инстаграм</option>
-                      <option value="vkontakte">Вконтакте</option>
-                      <option value="telegram">Телеграм</option>
-                    </select>
+                  </div>
+
+                  <!-- Edit name of social network -->
+                  <div  class="flex flex-2 flex-col pb-2">
+                    <div>
+                      <label for="social-link-type" class="mb-1 ml-2 text-xs text-dark-gray">
+                        Укажите название соц.сети
+                      </label>
+
+                      <select 
+                        required
+                        id="social-link-type"
+                        class="webkit p-2 w-full text-gray-500 bg-light-grey rounded-md focus:outline-none"
+                        v-model="social.name"
+                      >
+                        <option value="instagram">Инстаграм</option>
+                        <option value="vkontakte">Вконтакте</option>
+                        <option value="telegram">Телеграм</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <!-- Show social when edit is disabled -->
+                <!-- Рассмотреть в дальнейшем возможность добавлять заготовленные тексты к "написать в чат контакту" -->
+                <!-- А также кнопку поделиться данной ссылкой (в ios и так можно делиться, при длительном нажатии всплывает меню)-->
+
+                <!-- Button to delete current link to social -->
+                <div v-if="edit" class="flex items-center place-content-between justify-end pb-2 mt-2">
+                  <div  class="icon-wrapper">
+                    <img 
+                      @click="deleteSocial(social.id)"
+                      class="cursor-pointer" 
+                      src="@/assets/images/common/icon-trash.svg" 
+                      alt="">
                   </div>
                 </div>
               </div>
-              <!-- Show social when edit is disabled -->
-              <!-- Рассмотреть в дальнейшем возможность добавлять заготовленные тексты к "написать в чат контакту" -->
-              <!-- А также кнопку поделиться данной ссылкой -->
-              <div v-else class="flex w-full place-content-between">
+            </div>
+            <!-- No Edit Mode -->
+            <div v-if="!edit && data.socialNetworks.length === 0 && data.socialNetworks === null" class="flex py-4">
+              <div v-for="(social, index) in data.socialNetworks" :key="index" class="mr-2">
                 <!-- button to go to social network -->
                 <a 
-                  class="flex items-center" 
                   :href="`${social.link}`"
                   target="_blank"
-                  
                 >
                   <div class="icon-wrapper mr-2">
                     <img v-if="social.name === 'instagram'" src="@/assets/images/social/icon-instagram.svg" alt="">
@@ -390,21 +412,9 @@
                     <!-- <img :src="getSocialIcons" alt=""> -->
                   </div>
                   <div>
-                    <p class="text-sm text-dark-gray">{{ social.name }}</p>
-                  </div>
-                  <div>
                     
                   </div>
                 </a>
-              </div>
-
-              <!-- Button to delete current link to social -->
-              <div v-if="edit" class="icon-wrapper mx-4 mt-6 place-self-start">
-                <img 
-                  @click="deleteSocial(social.id)"
-                  class="cursor-pointer" 
-                  src="@/assets/images/common/icon-trash.svg" 
-                  alt="">
               </div>
             </div>
 
@@ -413,9 +423,9 @@
               @click="addSocial"
               v-if="edit && data.socialNetworks.length !== 0 && data.socialNetworks !== null"
               type="button"
-              class="w-full my-4 text-blue cursor-pointer"
+              class="w-full my-4 p-2 bg-green rounded-md text-white cursor-pointer"
             >
-              Добавить ссылку
+              Добавить еще ссылку
             </button>
           </div>
           <!-- Реализовать вохможность добавления ссылок на соц сети и перехода по ним! -->
@@ -430,62 +440,66 @@
           <!-- <a href="skype:LOGIN?add">Добавить в список контактов Skype</a> -->
 
           <!-- Events -->
-          <!-- Если ни одного события не добавлено -->
+          <!-- Если ни одного события не добавлено в режиме !edit-->
+          <!-- Отсчет до отмечания события должен быть... -->
           <div v-if="data.contactEvents.length === 0 || data.contactEvents === null">
-            <div v-if="user" class="flex place-content-between rounded-md bg-light-grey px-4 py-2 my-2">
+            <div v-if="user" class="flex place-content-between px-4 py-2 my-2">
               <p>Нет событий</p>
               <p v-if="edit" class="text-blue" @click="addContactEvent">Добавить</p>
             </div>
           </div>
-
-          <!-- Events are exists -->
-          <div v-if="user" class="rounded-md bg-light-grey px-4 my-2">
+          <!-- Events -->
+          <!-- Если события есть уже -->
+          <div v-if="user" class="px-4 mt-4">
             <p v-if="edit && data.contactEvents.length !== 0 && data.contactEvents !== null" class="text-blue py-2" >Редактировать события</p>
 
             <!-- loop data about events from bd -->
-            <div v-for="(event, index) in data.contactEvents" :key="index" class="relative flex place-content-between items-center event-item">
+            <div v-for="(event, index) in data.contactEvents" :key="index" class="event-item">
+                <div v-if="edit">
+                  <!-- Edit title of event -->
+                  <div class="flex flex-2 flex-col pb-2">
+                    <label for="event-title" class="mb-1 ml-2 text-xs text-dark-gray">
+                      Название события
+                    </label>
+                    <input 
+                      id="event-title"
+                      type="text" 
+                      class="p-2 w-full text-gray-500 bg-light-grey rounded-md focus:outline-none"
+                      v-model="event.title"
+                    >
+                  </div>
 
-              <div>
-                <!-- Edit title of event -->
-                <div v-if="edit" class="flex flex-2 flex-col">
-                  <label for="event-title" class="mb-1 text-xs text-dark-gray">
-                    Название события
-                  </label>
-                  <input 
-                    id="event-title"
-                    type="text" 
-                    class="p-2 w-full text-gray-500 focus:outline-none"
-                    v-model="event.title"
-                  >
+                  <!-- Edit date of event -->
+                  <div class="flex flex-2 flex-col pb-2">
+                    <label for="event-date" class="my-1 ml-2 text-xs text-dark-gray">
+                      Дата события
+                    </label>
+                    <input 
+                      id="event-date"
+                      type="date" 
+                      class="webkit bg-light-grey rounded-md p-2 w-full text-gray-500 focus:outline-none"
+                      v-model="event.date"
+                      placeholder="value"
+                    >
+                  </div>
                 </div>
 
-                <!-- Edit date of event -->
-                <div v-if="edit" class="flex flex-2 flex-col ">
-                  <label for="event-date" class="my-1 text-xs text-dark-gray">
-                    Дата события
-                  </label>
-                  <input 
-                    id="event-date"
-                    type="date" 
-                    class="p-2 w-full text-gray-500 focus:outline-none"
-                    v-model="event.date"
-                  >
-                </div>
-
-                <!-- show data when editMode is disabled -->
-                <div v-else >
-                  <h3 class="text-sm">{{ event.title }}</h3>
-                  <p class="text-blue">{{ event.date }}</p>
-                </div>
+              <!-- show data when editMode is disabled -->
+              <!-- Отсчет до отмечания события должен быть... -->
+              <div v-else >
+                <h3 class="text-sm">{{ event.title }}</h3>
+                <p class="text-blue">{{ event.date }}</p>
               </div>
               
-              <!-- Delete event button-->
-              <div v-if="edit" class="right-0 icon-wrapper place-self-start mt-6 mx-4">
-                <img 
-                  @click="deleteContactEvent(event.id)"
-                  class="cursor-pointer" 
-                  src="@/assets/images/common/icon-trash.svg" 
-                  alt="">
+              <!-- Delete current event-->
+              <div v-if="edit" class="flex items-center place-content-between justify-end pb-2 mt-2">
+                <div class="icon-wrapper">
+                  <img 
+                    @click="deleteContactEvent(event.id)"
+                    class="cursor-pointer" 
+                    src="@/assets/images/common/icon-trash.svg" 
+                    alt="">
+                </div>
               </div>
 
             </div>
@@ -495,9 +509,9 @@
               @click="addContactEvent"
               v-if="edit && data.contactEvents.length !== 0 && data.contactEvents !== null"
               type="button"
-              class="w-full my-4 text-blue cursor-pointer"
+              class="w-full my-4 p-2 rounded-md text-white bg-green cursor-pointer"
             >
-              Добавить событие
+              Добавить еще событие
             </button>
 
           </div>
@@ -767,11 +781,6 @@ export default {
     transform: rotate(180deg);
   }
 
-  .bgLightGrey {
-    background-color: #f1f1f1;
-    border-radius: 20px;
-  }
-
   .event-item,
   .phone-item {
     padding: 10px 0;
@@ -781,6 +790,11 @@ export default {
   .phone-item:nth-child(n+2) {
     border-top: 1px solid #f1f1f1;
   }
+
+  .border-bottom {
+    border-bottom: 1px solid #f1f1f1;
+  }
+
 
   .icon-wrapper {
     width: 24px;
@@ -793,6 +807,10 @@ export default {
   .icon-wrapper img{
     width: 100%;
     height: 100%;
+  }
+
+  .webkit {
+    -webkit-appearance:none;
   }
 
   .custom-checkbox {
