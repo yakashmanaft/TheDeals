@@ -5,6 +5,7 @@
     <!-- Кнопка добавления нового контакта -->
     <!-- Может имеет смысл сделать компонентом? -->
     <router-link 
+      v-if="data.length !== 0"
       class="fixed bottom-5 right-5 w-14 h-14 bg-blue rounded-full flex items-center justify-center"
       :to="{ name: 'CreateContact' }"
     >
@@ -16,7 +17,21 @@
       <!-- No Data -->
       <!-- Стилизовать нормально? -->
       <div v-if="data.length === 0">
-        <h1 class="text-2xl">Looks empty here...</h1>
+        <div class="text-center px-4">
+          <!-- Предполагаемая картинка -->
+          <div>
+            <img src="#" alt="">
+          </div>
+          <h1 class="text-dark text-xl">У вас еще нет контактов...</h1>
+          <p class="text-dark-gray mt-2">Самое время начать заполнение справочника заказчиками, коллегами. <br>И не забывайте про близких!</p>
+          <router-link 
+            :to="{ name: 'CreateContact' }"
+            type="button"
+            class="text-center bg-blue w-3/5 p-2 rounded-md text-white my-4 cursor-pointer"
+          >
+            Добавить
+          </router-link>
+        </div>
         <!-- Добавить ссылку на экран создания нового контакта -->
       </div>
 

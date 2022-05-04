@@ -75,66 +75,260 @@
         </div>
 
         <!-- add phone numbers -->
+        <div v-if="user && !phoneNumbers.length" class="w-full flex place-content-between py-4 ">
+          <p>Нет телефонов для связи</p>
+          <p class="text-blue" @click="addPhoneNumber">Добавить</p>
+        </div>
+        <!--  -->
         <div class="w-full">
-          <p class="text-blue py-2">Добавить номер телефона</p>
+          <p v-if="phoneNumbers.length" class="text-blue py-2">Добавляем номер телефона</p>
+          
+          <div class="phone-item" v-for="(number, index) in phoneNumbers" :key="index">
+            <!-- Phone number -->
             <div class="flex flex-col pb-2">
               <label for="phone-number" class="mb-1 ml-2 text-xs text-dark-gray">
                 Номер телефона
               </label>
               <input 
                 id="phone-number"
+                required
                 type="text" 
                 class="p-2 w-full text-gray-500 bg-light-grey rounded-md focus:outline-none"
-                v-model="phoneNumbers.value"
+                v-model="number.phone"
               >
             </div>
+            <!-- Type of Phone number -->
+            <div  class="flex flex-2 flex-col pb-2">
+              <div>
+                <label for="phone-type" class="mb-1 ml-2 text-xs text-dark-gray">
+                  Тип номера телефона
+                </label>
 
-          <div  class="flex flex-2 flex-col pb-2">
-            <div>
-              <label for="phone-type" class="mb-1 ml-2 text-xs text-dark-gray">
-                Тип номера телефона
-              </label>
-
-              <select 
-                required
-                id="phone-type"
-                class="webkit p-2 w-full rounded-md text-gray-500 bg-light-grey focus:outline-none"
-              >
-                <!-- Необходимо стилизовать по мере -->
-                <option value="Личный">Личный</option>
-                <option value="Рабочий">Рабочий</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="flex items-center place-content-between pb-2 mt-2">
-            <div class="flex items-center justify-center">
-              <div class="flex">
-                <input type="checkbox" class="custom-checkbox" id="viber">
-                <label for="viber" class="w-full text-xs text-dark-gray mr-2">viber</label>
-              </div>
-              <div class="flex">
-                <input type="checkbox" class="custom-checkbox" id="whatsup">
-                <label for="whatsup" class="w-full text-xs text-dark-gray mr-2">whatsup</label>
+                <select 
+                  required
+                  id="phone-type"
+                  class="webkit p-2 w-full rounded-md text-gray-500 bg-light-grey focus:outline-none"
+                  v-model="number.type"
+                >
+                  <!-- Необходимо стилизовать по мере -->
+                  <option value="Личный">Личный</option>
+                  <option value="Рабочий">Рабочий</option>
+                </select>
               </div>
             </div>
-
-            <div class="icon-wrapper">
-              <img 
-                class="cursor-pointer" 
-                src="@/assets/images/common/icon-trash.svg" 
-                alt="">
+          
+            <div class="flex items-center place-content-between pb-2 mt-2">
+              <div class="flex items-center justify-center">
+                <div v-for="(messenger, index) in number.messengers" :key="index" class="flex">
+                  <input type="checkbox" class="custom-checkbox" v-model="messenger.status" :id="messenger.id">
+                  <label :for="messenger.id" class="w-full text-xs text-dark-gray mr-2">{{messenger.name}}</label>
+                </div>
+              </div>
+              <!-- Delete current phone -->
+              <div class="icon-wrapper">
+                <img 
+                  @click="deletePhoneNumber(number.id)"
+                  class="cursor-pointer" 
+                  src="@/assets/images/common/icon-trash.svg" 
+                  alt="">
+              </div>
             </div>
-          </div>
 
             <!-- Button to add new phone to current contact -->
             <button 
-              @click="phoneNumbersChange"
+              @click="addPhoneNumber"
               type="button"
               class="bg-green w-full p-2 rounded-md text-white my-4 cursor-pointer"
             >
               Добавить еще телефон
             </button>
+          </div>
+
+        </div>
+
+        <!-- add emails -->
+        <div v-if="user && !Emails.length" class="w-full flex place-content-between py-4">
+          <p>Эл.почта не указана</p>
+          <p class="text-blue" @click="addEmail">Добавить</p>
+        </div>
+        <!--  -->
+        <div class="w-full">
+          <p v-if="Emails.length" class="text-blue py-2">Добавляем эл.адрес</p>
+
+          <div class="phone-item" v-for="(email, index) in Emails" :key="index">
+            <!-- email-->
+            <div class="flex flex-2 flex-col pb-2">
+              <label for="email" class="mb-1 ml-2 text-xs text-dark-gray">
+                Адрес почты
+              </label>
+              <input 
+                id="email"
+                type="text" 
+                class="p-2 w-full text-gray-500 bg-light-grey rounded-md focus:outline-none"
+                v-model="email.email"
+              >
+            </div>
+
+            <!-- type of email -->
+            <div  class="flex flex-2 flex-col pb-2">
+              <div>
+                <label for="email-type" class="mb-1 ml-2 text-xs text-dark-gray">
+                  Тип почты
+                </label>
+
+                <select 
+                  required
+                  id="email-type"
+                  class="webkit p-2 w-full text-gray-500 bg-light-grey focus:outline-none rounded-md"
+                  v-model="email.type"
+                >
+                  <option value="Личный">Личный</option>
+                  <option value="Рабочий">Рабочий</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Delete current email -->
+            <div class="flex items-center place-content-between justify-end pb-2 mt-2">
+              <div class="icon-wrapper">
+                <img 
+                  @click="deleteEmail(email.id)"
+                  class="cursor-pointer" 
+                  src="@/assets/images/common/icon-trash.svg" 
+                  alt="">
+              </div>
+            </div>
+
+            <!-- Button to add new email to current contact -->
+            <button 
+              @click="addEmail"
+              type="button"
+              class="bg-green w-full p-2 rounded-md text-white my-4 cursor-pointer"
+            >
+              Добавить еще email
+            </button>
+          </div>
+        </div>
+
+        <!-- add social -->
+        <div v-if="user && !socialNetworks.length" class="w-full flex place-content-between py-4">
+          <p>Социальные сети не указаны</p>
+          <p class="text-blue" @click="addSocial">Добавить</p>
+        </div>
+        <!--  -->
+        <div class="w-full">
+          <p v-if="socialNetworks.length" class="text-blue py-2">Добавляем социальные сети</p>
+
+          <div class="phone-item" v-for="(social, index) in socialNetworks" :key="index">
+            <!-- social link -->
+            <div class="flex flex-2 flex-col pb-2">
+              <label for="social-link" class="mb-1 ml-2 text-xs text-dark-gray">
+                Укажите ссылку на аккаунт
+              </label>
+              <input 
+                id="social-link"
+                type="text" 
+                class="p-2 w-full text-gray-500 bg-light-grey focus:outline-none rounded-md"
+                v-model="social.link"
+              >
+            </div>
+
+            <!-- name of social network -->
+            <div  class="flex flex-2 flex-col pb-2">
+              <div>
+                <label for="social-link-type" class="mb-1 ml-2 text-xs text-dark-gray">
+                  Укажите название соц.сети
+                </label>
+
+                <select 
+                  required
+                  id="social-link-type"
+                  class="webkit p-2 w-full text-gray-500 bg-light-grey rounded-md focus:outline-none"
+                  v-model="social.name"
+                >
+                  <option value="instagram">Инстаграм</option>
+                  <option value="vkontakte">Вконтакте</option>
+                  <option value="telegram">Телеграм</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Delete current social -->
+            <div class="flex items-center place-content-between justify-end pb-2 mt-2">
+              <div class="icon-wrapper">
+                <img 
+                  @click="deleteSocial(social.id)"
+                  class="cursor-pointer" 
+                  src="@/assets/images/common/icon-trash.svg" 
+                  alt="">
+              </div>
+            </div>
+
+            <!-- Button to add new social to current contact -->
+            <button 
+              @click="addSocial"
+              type="button"
+              class="bg-green w-full p-2 rounded-md text-white my-4 cursor-pointer"
+            >
+              Добавить еще ссылку
+            </button>
+          </div>
+        </div>
+
+        <!-- add event -->
+        <div v-if="user && !contactEvents.length" class="w-full flex place-content-between py-4">
+          <p>Нет событий</p>
+          <p class="text-blue" @click="addContactEvent">Добавить</p>
+        </div>
+        <!--  -->
+        <div class="w-full">
+          <p v-if="contactEvents.length" class="text-blue py-2">Добавляем события контакта</p>
+
+          <div class="phone-item" v-for="(event, index) in contactEvents" :key="index">
+              <!-- title of event -->
+              <div class="flex flex-2 flex-col pb-2">
+                <label for="event-title" class="mb-1 ml-2 text-xs text-dark-gray">
+                  Название события
+                </label>
+                <input 
+                  id="event-title"
+                  type="text" 
+                  class="p-2 w-full text-gray-500 bg-light-grey rounded-md focus:outline-none"
+                  v-model="event.title"
+                >
+              </div>
+              <!-- date of event -->
+              <div class="flex flex-2 flex-col pb-2">
+                <label for="event-date" class="my-1 ml-2 text-xs text-dark-gray">
+                  Дата события
+                </label>
+                <input 
+                  id="event-date"
+                  type="date"
+                  class="webkit bg-light-grey rounded-md p-2 w-full text-gray-500 focus:outline-none"
+                  v-model="event.date"
+                  placeholder="value"
+                >
+              </div>
+              <!-- Delete current social -->
+              <div class="flex items-center place-content-between justify-end pb-2 mt-2">
+                <div class="icon-wrapper">
+                  <img 
+                    @click="deleteContactEvent(event.id)"
+                    class="cursor-pointer" 
+                    src="@/assets/images/common/icon-trash.svg" 
+                    alt="">
+                </div>
+              </div>
+              <!-- Button add new event to current contact -->
+              <button 
+                @click="addContactEvent"
+                type="button"
+                class="bg-green w-full p-2 rounded-md text-white my-4 cursor-pointer"
+              >
+                Добавить еще событие
+              </button>
+          </div>  
         </div>
 
         <!-- Button submit form -->
@@ -143,178 +337,6 @@
         </button>
       </form>
     </main>
-  </div>
-  
-  <div class="max-w-screen-md mx-auto px-4">
-
-
-    <!-- Create -->
-    <div class="mt-10 p-8 flex flex-col items-start">
-
-
-
-      <!-- Form -->
-      <form @submit.prevent="createWorkout" class="flex flex-col gap-y-5 w-full">
-
-        <h1 class="text-2xl text-at-light-green">Record Workout</h1>
-
-        <!-- Workout Name -->
-        <div class="flex flex-col">
-          <label for="workout-name" class="mb-1 text-sm text-at-light-green">Workout Name</label>
-          <input 
-            type="text" 
-            required 
-            class="p-2 text-gray-500 focus:outline-none" 
-            id="workout-name"
-            v-model="workoutName"
-          >
-        </div>
-
-        <!-- Workout Type -->
-        <div class="flex flex-col">
-          <label for="workout-type" class="mb-1 text-sm text-at-light-green">Workout Type</label>
-          <select 
-            id="workout-type" 
-            class="p-2 text-gray-500 focus:outline-none" 
-            required
-            @change="workoutChange"
-            v-model="workoutType"
-          >
-            <option value="select-workout">Select Workout</option>
-            <option value="strength">Strength Training</option>
-            <option value="cardio">Cardio Training</option>
-          </select>
-        </div>
-
-        <!-- Srength Training Inputs -->
-        <div v-if="workoutType === 'strength'" class="flex flex-col gap-x-y-4"> 
-          <div 
-            class="flex flex-col gap-x-6 gap-y-2 relative md:flex-row" 
-            v-for="(item, index) in exercises"
-            :key="index"
-          >
-            <div class="flex flex-col md:w-1/3">
-              <label for="exercise-name" class="mb-1 text-sm text-at-light-green">Exercise</label>
-              <input 
-                type="text" 
-                required 
-                class="p-2 w-full text-gray-500 focus:outeline-none"
-                v-model="item.exercise"
-              >
-            </div>
-            <div class="flex flex-col flex-1">
-              <label for="sets" class="mb-1 text-sm text-at-light-green">Sets</label>
-              <input 
-                type="text" 
-                required 
-                class="p-2 w-full text-gray-500 focus:outeline-none"
-                v-model="item.sets"
-              >
-            </div>
-            <div class="flex flex-col flex-1">
-              <label for="reps" class="mb-1 text-sm text-at-light-green">Reps</label>
-              <input 
-                type="text" 
-                required 
-                class="p-2 w-full text-gray-500 focus:outeline-none"
-                v-model="item.reps"
-              >
-            </div>
-            <div class="flex flex-col flex-1">
-              <label for="weight" class="mb-1 text-sm text-at-light-green">Weight (LB's)</label>
-              <input 
-                type="text" 
-                required 
-                class="p-2 w-full text-gray-500 focus:outeline-none"
-                v-model="item.weight"
-              >
-            </div>
-            <img 
-              src="@/assets/images/trash-light-green.png" 
-              class="h-4 w-auto absolute -left-5 cursor-pointer" 
-              alt=""
-              @click="deleteExercise(item.id)"
-            >
-          </div>
-            <button 
-              @click="addExercise"
-              type="button" 
-              class="mt-6 py-2 px-6 rounded-sm self-start text-sm text-white bg-at-light-green duration-200 border-solid border-2 border-transparent hover:border-at-light-green hover:bg-white hover:text-at-light-green"
-            >
-              Add Exercise
-            </button>
-        </div>
-
-        <!-- Cardio Inputs -->
-        <div v-if="workoutType === 'cardio'" class="flex flex-col gap-x-y-4"> 
-          <div 
-            class="flex flex-col gap-x-6 gap-y-2 relative md:flex-row" 
-            v-for="(item, index) in exercises"
-            :key="index"
-          >
-            <div class="flex flex-col md:w-1/3">
-              <label for="cardio-type" class="mb-1 text-sm text-at-light-green">Type</label>
-              <select 
-                id="cardio-type" 
-                class="p-2 w-full text-gray-500 focus:outline-none"
-                v-model="item.cardioType"
-              >
-                <option value="#">Select Type</option>
-                <option value="run">Runs</option>
-                <option value="walk">Walk</option>
-              </select>
-            </div>
-            <div class="flex flex-col flex-1">
-              <label for="distance" class="mb-1 text-sm text-at-light-green">Distance</label>
-              <input 
-                type="text" 
-                required 
-                class="p-2 w-full text-gray-500 focus:outeline-none"
-                v-model="item.distance"
-              >
-            </div>
-            <div class="flex flex-col flex-1">
-              <label for="duration" class="mb-1 text-sm text-at-light-green">Duration</label>
-              <input 
-                type="text" 
-                required 
-                class="p-2 w-full text-gray-500 focus:outeline-none"
-                v-model="item.duration"
-              >
-            </div>
-            <div class="flex flex-col flex-1">
-              <label for="pace" class="mb-1 text-sm text-at-light-green">Pace</label>
-              <input 
-                type="text" 
-                required 
-                class="p-2 w-full text-gray-500 focus:outeline-none"
-                v-model="item.pace"
-              >
-            </div>
-            <img 
-              @click="deleteExercise(item.id)"
-              src="@/assets/images/trash-light-green.png" 
-              class="h-4 w-auto absolute -left-5 cursor-pointer" 
-              alt=""
-            >
-          </div>
-            <button
-              @click="addExercise" 
-              type="button" 
-              class="mt-6 py-2 px-6 rounded-sm self-start text-sm text-white bg-at-light-green duration-200 border-solid border-2 border-transparent hover:border-at-light-green hover:bg-white hover:text-at-light-green"
-            >
-              Add Exercise
-            </button>
-        </div>
-
-          <button 
-            type="submit" 
-            class="mt-6 py-2 px-6 rounded-sm self-start text-sm text-white bg-at-light-green duration-200 border-solid border-2 border-transparent hover:border-at-light-green hover:bg-white hover:text-at-light-green"
-          >
-            Record Workout
-          </button>
-      </form>
-    </div>
   </div>
 </template>
 
@@ -338,11 +360,11 @@ import { useRouter } from 'vue-router';
         const contactSurname = ref('');
         const contactName = ref('');
         const contactCompany = ref('');
-
-        const contactEvents = ref([]);
+        
         const phoneNumbers = ref([]);
-        const socialNetworks = ref([]);
         const Emails = ref([]);
+        const socialNetworks = ref([]);
+        const contactEvents = ref([]);
 
         // Add phone number
         const addPhoneNumber = () => {
@@ -365,23 +387,90 @@ import { useRouter } from 'vue-router';
           })
         }
 
-        const phoneNumbersChange = () => {
-          phoneNumbers.value = [];
-          addPhoneNumber();
+        // Add emails
+        const addEmail = () => {
+          Emails.value.push({
+            id: uid(),
+            type: '',
+            email: ''
+          })
+        }
+
+        // Add social
+        const addSocial = () => {
+          socialNetworks.value.push({
+            id: uid(),
+            name: '',
+            link: ''
+          })
+        }
+
+        // Add contact events
+        const addContactEvent = () => {
+          contactEvents.value.push({
+            id: uid(),
+            title: '',
+            date: '',
+          })
+        }
+
+        // const phoneNumbersChange = () => {
+        //   phoneNumbers.value = [];
+        //   addPhoneNumber();
+        // }
+
+        // Delete current phone number
+        const deletePhoneNumber = (id) => {
+          if(phoneNumbers.value.length > 0) {
+            phoneNumbers.value = phoneNumbers.value.filter(number => number.id !== id);
+            return;
+          }
+          errorMsg.value = 'Error. Cannot remove, need to at least have one event';
+          setTimeout(() => {
+            errorMsg.value = false;
+          }, 5000);
+        }
+
+        // Delete current email
+        const deleteEmail = (id) => {
+          if(Emails.value.length > 0) {
+            Emails.value = Emails.value.filter(email => email.id !== id);
+            return;
+          }
+          errorMsg.value = 'Error. Cannot remove, need to at least have one event';
+          setTimeout(() => {
+            errorMsg.value = false;
+          }, 5000);
+        }
+
+        // Delete current social
+        const deleteSocial = (id) => {
+          if(socialNetworks.value.length > 0) {
+            socialNetworks.value = socialNetworks.value.filter(social => social.id !== id);
+            return;
+          }
+          errorMsg.value = 'Error. Cannot remove, need to at least have one event';
+          setTimeout(() => {
+            errorMsg.value = false;
+          }, 5000);
+        }
+
+        // Delete current event
+        const deleteContactEvent = (id) => {
+          if(contactEvents.value.length > 0) {
+            contactEvents.value = contactEvents.value.filter(event => event.id !== id);
+            return;
+          }
+          errorMsg.value = 'Error. Cannot remove, need to at least have one event';
+          setTimeout(() => {
+            errorMsg.value = false;
+          }, 5000);
         }
 
         // Create contact
         const createContact = async () => {
           console.log('clicked button create contact')
-          // console.log(surname.value)
-          // console.log(name.value);
-          // console.log(company.value);
-          // const contactInfo = {
-          //   name: contactName.value,
-          //   surname: contactSurname.value,
-          //   company: contactCompany.value
-          // }
-          // console.log(contactInfo)
+
           try {
             const { error } = await supabase.from('myContacts').insert([
               {
@@ -392,7 +481,7 @@ import { useRouter } from 'vue-router';
                 },
                 contactEvents: contactEvents.value,
                 phoneNumbers: phoneNumbers.value,
-                socialNetworks: contactEvents.value,
+                socialNetworks: socialNetworks.value,
                 Emails: Emails.value
               }
             ])
@@ -418,7 +507,7 @@ import { useRouter } from 'vue-router';
         }
 
         return {
-          statusMsg, errorMsg, user, contactSurname, contactName, contactCompany, createContact, phoneNumbers, addPhoneNumber, phoneNumbersChange, contactEvents, socialNetworks, Emails
+          statusMsg, errorMsg, user, contactSurname, contactName, contactCompany, createContact, phoneNumbers, addPhoneNumber, addSocial, addContactEvent, deleteEmail, contactEvents, socialNetworks, Emails, deletePhoneNumber, deleteSocial, addEmail, deleteContactEvent
         }
       }
     

@@ -428,9 +428,6 @@
               Добавить еще ссылку
             </button>
           </div>
-          <!-- Реализовать вохможность добавления ссылок на соц сети и перехода по ним! -->
-          <!--  -->
-          <!--  -->
           <!-- На заметку -->
           <!-- Если нет имени, но есть логин в инсте или другой сети... ставить вместо фамилии ) -->
           <!-- <a href="https://www.messenger.com/t/jack.malbon.3">Facebook Messenger</a> -->
@@ -556,7 +553,7 @@ export default {
         if(error) throw error;
         data.value = myContacts[0];
         dataLoaded.value = true;
-        console.log(data.value)
+        // console.log(data.value)
       } catch (error) {
         errorMsg.value = error.message;
         setTimeout(() => {
@@ -586,11 +583,11 @@ export default {
       // const updatedPhoneNumber = phoneNumber.toString().substr(phoneNumber.length, 10)
       if(phoneNumber.startsWith("+")) {
         const updatedPhoneNumber = phoneNumber.slice(2)
-        console.log('начинается с +7' + updatedPhoneNumber)
+        // console.log('начинается с +7' + updatedPhoneNumber)
         return updatedPhoneNumber;
       } else if (phoneNumber.startsWith("8")) {
         const updatedPhoneNumber = phoneNumber.slice(1)
-        console.log('начинается с 8' + updatedPhoneNumber)
+        // console.log('начинается с 8' + updatedPhoneNumber)
         return updatedPhoneNumber;
       } else {
         console.log('неверный формат номера телефона')
