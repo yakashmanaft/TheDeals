@@ -22,12 +22,12 @@
           <div>
             <img src="#" alt="">
           </div>
-          <h1 class="text-dark text-xl">У вас еще нет контактов...</h1>
+          <h1 class="text-blue text-xl">У вас еще нет контактов...</h1>
           <p class="text-dark-gray mt-2">Самое время начать заполнение справочника заказчиками, коллегами. <br>И не забывайте про близких!</p>
           <router-link 
             :to="{ name: 'CreateContact' }"
             type="button"
-            class="text-center bg-blue w-3/5 p-2 rounded-md text-white my-4 cursor-pointer"
+            class="text-center bg-green w-3/5 p-2 rounded-md text-white my-4 cursor-pointer"
           >
             Добавить
           </router-link>
