@@ -4,11 +4,14 @@ import Dashboard from '../views/Dashboard.vue';
 import Login from '../views/Login.vue';
 import Register from '../views/Register.vue';
 import Create from '../views/Create.vue';
+import CreateDeal from '../views/CreateDeal';
 import CreateContact from '../views/CreateContact.vue';
 import Menu from '../views/Menu.vue';
 import ViewWorkout from '../views/ViewWorkout.vue';
 import ViewContact from '../views/ViewContact';
+import ViewDeal from '../views/ViewDeal';
 import Orders from '../views/Orders.vue';
+import Deals from '../views/Deals.vue';
 import EventCalendar from '../views/EventCalendar.vue';
 import Wallet from '../views/Wallet.vue';
 import Warehouse from '../views/Warehouse.vue';
@@ -31,6 +34,16 @@ const routes = [
     component: Orders,
     meta: {
       title: 'Orders',
+      auth: true,
+      translation: 'Все дела'
+    }
+  },
+  {
+    path: "/deals",
+    name: "Deals",
+    component: Deals,
+    meta: {
+      title: 'Deals',
       auth: true,
       translation: 'Все дела'
     }
@@ -68,6 +81,15 @@ const routes = [
     component: CreateContact,
     meta: {
       title: 'Create Contact',
+      auth: true,
+    }
+  },
+  {
+    path: "/create-deal",
+    name: "CreateDeal",
+    component: CreateDeal,
+    meta: {
+      title: 'Create Deal',
       auth: true,
     }
   },
@@ -135,6 +157,15 @@ const routes = [
     component: ViewContact,
     meta: {
       title: 'ViewContact',
+      auth: true,
+    }
+  },
+  {
+    path: "/view-deal/:dealId",
+    name: "View-Deal",
+    component: ViewDeal,
+    meta: {
+      title: 'ViewDeal',
       auth: true,
     }
   },

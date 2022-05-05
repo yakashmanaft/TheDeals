@@ -24,7 +24,7 @@
       <li class="border-light-grey border p-2.5 rounded-xl mt-4">
 
         <!-- Orders (all my business) -->
-        <router-link class="menu-item py-1" :to="{ name: 'Orders' }">
+        <router-link class="menu-item py-1" :to="{ name: 'Deals' }">
           <div class="menu-item_icon">
             <img src="@/assets/images/menu/account-orders.svg" alt="">
           </div>

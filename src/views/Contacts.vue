@@ -103,6 +103,8 @@
 
       const search = ref('');
 
+      const errorMsg = ref(null);
+
       // Берем имя роута для заголовка
       const router = useRouter();
       const title = router.currentRoute._value.meta.translation;
@@ -115,7 +117,10 @@
           dataLoaded.value = true;
 
         } catch (error) {
-          console.warn(error.message);
+          errorMsg.value = error.message;
+          setTimeout(() => {
+            errorMsg.value = false;
+          }, 5000);
         }
       })
 
@@ -132,7 +137,7 @@
       });
       
       return {
-        user, title, data, dataLoaded, search, searchedContacts
+        user, title, data, dataLoaded, search, searchedContacts, errorMsg,
       }
     }
   }
