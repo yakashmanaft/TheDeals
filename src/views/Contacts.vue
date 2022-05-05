@@ -17,17 +17,18 @@
       <!-- No Data -->
       <!-- Стилизовать нормально? -->
       <div v-if="data.length === 0">
-        <div class="text-center px-4">
+        <div class="text-center px-4 mt-4">
           <!-- Предполагаемая картинка -->
-          <div>
-            <img src="#" alt="">
+          <div class="icon-wrapper">
+            <!-- Картинка предполагает ссылку на авторство, заменить на свою -->
+            <img src="@/assets/images/stickers/contact-sticker.png" alt="">
           </div>
-          <h1 class="text-blue text-xl">У вас еще нет контактов...</h1>
+          <h1 class="text-blue text-xl mt-4">У вас еще нет контактов...</h1>
           <p class="text-dark-gray mt-2">Самое время начать заполнение справочника заказчиками, коллегами. <br>И не забывайте про близких!</p>
           <router-link 
             :to="{ name: 'CreateContact' }"
             type="button"
-            class="text-center bg-green w-3/5 p-2 rounded-md text-white my-4 cursor-pointer"
+            class="bg-green text-white webkit block rounded-md m-4 mt-8 p-2"
           >
             Добавить
           </router-link>
@@ -138,6 +139,10 @@
 </script>
 
 <style lang="scss" scoped>
+  .webkit {
+    -webkit-appearance:none;
+  }
+
   .contacts {
     height: 100vh;
   }
@@ -179,6 +184,13 @@
     margin-left: .4em;
     background: url('../assets/images/common/icon-close.svg') center no-repeat;
     cursor: pointer;
+  }
+
+  .icon-wrapper img{
+    width: 70%;
+    height: 70%;
+    display: block;
+    margin: 0 auto;
   }
 
 </style>

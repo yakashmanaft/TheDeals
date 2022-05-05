@@ -224,7 +224,7 @@
               @click="addPhoneNumber"
               v-if="edit && data.phoneNumbers.length !== 0 && data.phoneNumbers !== null"
               type="button"
-              class="bg-green w-full p-2 rounded-md text-white my-4 cursor-pointer"
+              class="border border-blue w-full p-2 rounded-md text-blue mb-4 cursor-pointer"
             >
               Добавить еще телефон
             </button>
@@ -321,7 +321,7 @@
               @click="addEmail"
               v-if="edit && data.Emails.length !== 0 && data.Emails !== null"
               type="button"
-              class="w-full my-4 p-2 rounded-md text-white bg-green cursor-pointer"
+              class="border border-blue w-full p-2 rounded-md text-blue mb-4 cursor-pointer"
             >
               Добавить еще эл.адрес
             </button>
@@ -423,7 +423,7 @@
               @click="addSocial"
               v-if="edit && data.socialNetworks.length !== 0 && data.socialNetworks !== null"
               type="button"
-              class="w-full my-4 p-2 bg-green rounded-md text-white cursor-pointer"
+              class="border border-blue w-full p-2 rounded-md text-blue mb-4 cursor-pointer"
             >
               Добавить еще ссылку
             </button>
@@ -506,7 +506,7 @@
               @click="addContactEvent"
               v-if="edit && data.contactEvents.length !== 0 && data.contactEvents !== null"
               type="button"
-              class="w-full my-4 p-2 rounded-md text-white bg-green cursor-pointer"
+              class="border border-blue w-full p-2 rounded-md text-blue mb-4 cursor-pointer"
             >
               Добавить еще событие
             </button>

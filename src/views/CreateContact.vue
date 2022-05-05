@@ -134,15 +134,16 @@
               </div>
             </div>
 
-            <!-- Button to add new phone to current contact -->
-            <button 
-              @click="addPhoneNumber"
-              type="button"
-              class="bg-green w-full p-2 rounded-md text-white my-4 cursor-pointer"
-            >
-              Добавить еще телефон
-            </button>
           </div>
+          <!-- Button to add new phone to current contact -->
+          <button 
+            v-if="phoneNumbers.length"
+            @click="addPhoneNumber"
+            type="button"
+            class="border border-blue w-full p-2 rounded-md text-blue mb-4 cursor-pointer"
+          >
+            Добавить еще телефон
+          </button>
 
         </div>
 
@@ -198,16 +199,17 @@
                   alt="">
               </div>
             </div>
-
-            <!-- Button to add new email to current contact -->
-            <button 
-              @click="addEmail"
-              type="button"
-              class="bg-green w-full p-2 rounded-md text-white my-4 cursor-pointer"
-            >
-              Добавить еще email
-            </button>
           </div>
+
+          <!-- Button to add new email to current contact -->
+          <button 
+            v-if="Emails.length"
+            @click="addEmail"
+            type="button"
+            class="border border-blue w-full p-2 rounded-md text-blue mb-4 cursor-pointer"
+          >
+            Добавить еще email
+          </button>
         </div>
 
         <!-- add social -->
@@ -263,16 +265,17 @@
                   alt="">
               </div>
             </div>
-
-            <!-- Button to add new social to current contact -->
-            <button 
-              @click="addSocial"
-              type="button"
-              class="bg-green w-full p-2 rounded-md text-white my-4 cursor-pointer"
-            >
-              Добавить еще ссылку
-            </button>
           </div>
+
+          <!-- Button to add new social to current contact -->
+          <button 
+            v-if="socialNetworks.length"
+            @click="addSocial"
+            type="button"
+            class="border border-blue w-full p-2 rounded-md text-blue mb-4 cursor-pointer"
+          >
+            Добавить еще ссылку
+          </button>
         </div>
 
         <!-- add event -->
@@ -320,19 +323,21 @@
                     alt="">
                 </div>
               </div>
-              <!-- Button add new event to current contact -->
-              <button 
-                @click="addContactEvent"
-                type="button"
-                class="bg-green w-full p-2 rounded-md text-white my-4 cursor-pointer"
-              >
-                Добавить еще событие
-              </button>
           </div>  
+
+          <!-- Button add new event to current contact -->
+          <button 
+            v-if="contactEvents.length"
+            @click="addContactEvent"
+            type="button"
+            class="border border-blue w-full p-2 rounded-md text-blue mb-4 cursor-pointer"
+          >
+            Добавить еще событие
+          </button>
         </div>
 
         <!-- Button submit form -->
-        <button type="submit" class="w-full my-4 cursor-pointer p-2 bg-dark text-white rounded-md">
+        <button type="submit" class="w-full my-4 cursor-pointer p-2 bg-dark text-white rounded-md font-normal">
           Создать Контакт
         </button>
       </form>
