@@ -152,7 +152,7 @@
                     <select 
                       required
                       id="phone-type"
-                      class="webkit p-2 w-full rounded-md text-gray-500 bg-light-grey focus:outline-none"
+                      class="p-2 w-full rounded-md text-gray-500 bg-light-grey focus:outline-none"
                       v-model="number.type"
                     >
                       <!-- Необходимо стилизовать по мере -->
@@ -271,7 +271,7 @@
                     <select 
                       required
                       id="phone-type"
-                      class="webkit p-2 w-full text-gray-500 bg-light-grey focus:outline-none rounded-md"
+                      class="p-2 w-full text-gray-500 bg-light-grey focus:outline-none rounded-md"
                       v-model="email.type"
                     >
                       <option value="Личный">Личный</option>
@@ -371,7 +371,7 @@
                       <select 
                         required
                         id="social-link-type"
-                        class="webkit p-2 w-full text-gray-500 bg-light-grey rounded-md focus:outline-none"
+                        class="p-2 w-full text-gray-500 bg-light-grey rounded-md focus:outline-none"
                         v-model="social.name"
                       >
                         <option value="instagram">Инстаграм</option>
@@ -474,7 +474,7 @@
                     <input 
                       id="event-date"
                       type="date" 
-                      class="webkit bg-light-grey rounded-md p-2 w-full text-gray-500 focus:outline-none"
+                      class="bg-light-grey rounded-md p-2 w-full text-gray-500 focus:outline-none"
                       v-model="event.date"
                       placeholder="value"
                     >
