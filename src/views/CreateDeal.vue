@@ -28,7 +28,7 @@
 
       <!-- Create -->
       <form id="create-deal" v-if="user" @submit.prevent="createDeal" class="flex flex-col items-center p-4 py-10">
-
+        
         <!-- Тип дела -->
         <div class="w-full flex flex-col">
           <label for="deal-type" class="mb-1 ml-2 text-xs text-dark-gray">Тип дела</label>
@@ -46,8 +46,35 @@
           </select>
         </div>
 
+        <!-- С кем заключается дело -->
+        <div class="w-full mt-2">
+          <div class="search-input px-2 h-10 flex items-center" @click.stop="openOptions" @focus="openOptions">
+            <input 
+              @focus.prevent="showSearchMenu = true"
+              autocomplete="off"
+              id="searchedContacts"
+              class="search-input_input outline-none w-full focus:text-dark" 
+              type="search"
+              placeholder="Поиск..."
+              v-model="search"
+            >
+          </div>
+          <div>
+            <!-- Зачем этот див? -->
+            {{inputText.value}}123
+          </div>
+          <div v-if="showSearchMenu">
+            <div v-for="(option, idx) in filteredOptions" :key="idx" @click.stop="selectItem(option)" >
+              {{option.contactInfo.surname}} {{option.contactInfo.name}}
+            </div>
+          </div>
+        </div>
+
+
+
+        <!-- Проба -->
         <!-- С кем дело заключается -->
-        <div class="w-full flex flex-col mt-2">
+        <!-- <div class="w-full flex flex-col mt-2">
           <label for="contact-list" class="mb-1 ml-2 text-xs text-dark-gray">Заказчик</label>
           <input 
             id="searchedContacts"
@@ -66,7 +93,7 @@
             <option v-for="(contact, index) in searchedContacts" :key="index" :value="`${contact.id}`">{{contact.contactInfo.surname}} {{contact.contactInfo.name}} {{contact.contactInfo.company}}</option>
           </select>
 
-        </div>
+        </div> -->
 
 
         <p class="mt-4">Сумма заказа: 2579,00 руб.</p>
@@ -279,6 +306,42 @@ export default {
     const dataLoaded = ref(null);
 
     const search = ref('');
+    const searchText = ref('');
+    const inputText = ref('');
+
+    // show search menu
+    const showSearchMenu = ref(null);
+
+    const editModeSearchMenu = () => {
+      showSearchMenu.value = !showSearchMenu.value;
+    }
+
+    // Select option
+    const selectItem = (option) => {
+      search.value = '';
+      closeOptions();
+      if (option.value === option.text) {
+        search.value = option.contactInfo.surname + ' ' + option.contactInfo.name;
+        console.log(option.id)
+      }
+    }
+
+    const closeOptions = () => {
+      showSearchMenu.value = false;
+    }
+
+    const openOptions = () => {
+      showSearchMenu.value = true;
+    }
+
+    // selectItem (option) {
+    //   this.searchText = '' // reset text when select item
+    //   this.closeOptions()
+    //   this.$emit('select', option)
+    //   if (option.value === option.text) {
+    //     this.searchText = option.value
+    //   }
+    // }
 
     // Get contacts (name, surname, id) from db
     const getContactFromDB = async () => {
@@ -287,7 +350,7 @@ export default {
         if (error) throw error;
         data.value = myContacts;
         dataLoaded.value = true;
-
+        console.log(data.value)
       } catch (error) {
         errorMsg.value = error.message;
         setTimeout(() => {
@@ -297,8 +360,9 @@ export default {
     }
 
     getContactFromDB();
+    
 
-    const searchedContacts = computed(() => {
+    const filteredOptions = computed(() => {
       // Требуется фильтр по алфавиту добавить
       return data.value.filter((contact) => {
         return (
@@ -390,7 +454,7 @@ export default {
     }
 
     return {
-      typeOfDeal, contactOfDeal, data, dataLoaded, getContactFromDB, searchedContacts, search, workoutName, workoutType, exercises, statusMsg, errorMsg, user, addExercise, workoutChange, deleteExercise, createDeal, createWorkout
+      typeOfDeal, contactOfDeal, data, dataLoaded, getContactFromDB, filteredOptions, search, searchText, inputText, workoutName, workoutType, exercises, statusMsg, errorMsg, user, addExercise, workoutChange, deleteExercise, createDeal, createWorkout, editModeSearchMenu, selectItem, openOptions
     };
   },
 };
@@ -401,4 +465,50 @@ export default {
     height: 76px;
     padding: 0.5rem 1rem;
   }
+  .search-input {
+    // border: 1px solid #838383;
+    border-radius: 5px;
+    background-color: #f1f1f1;
+  }
+
+  .search-input_icon {
+    width: 40px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  input[type="search"] {
+    background-color: #f1f1f1;
+    -webkit-appearance:none;
+  }
+
+  input[type="search"]::-webkit-search-decoration {
+    background-color: red;
+  }
+
+  input[type="search"]::-webkit-search-decoration,
+  input[type="search"]::-webkit-search-results-button,
+  input[type="search"]::-webkit-search-results-decoration {
+    -webkit-appearance:none;
+  }
+
+
+  input[type="search"]::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    height: 30px;
+    width: 30px;
+    margin-left: .4em;
+    background: url('../assets/images/common/icon-close.svg') center no-repeat;
+    cursor: pointer;
+  }
+
+  .icon-wrapper img{
+    width: 70%;
+    height: 70%;
+    display: block;
+    margin: 0 auto;
+  }
+
 </style>
