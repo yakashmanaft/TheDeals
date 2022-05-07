@@ -27,10 +27,39 @@
       </div>
 
       <!-- Create -->
-      <form id="create-deal" v-if="user" @submit.prevent="createDeal" class="flex flex-col items-center p-4 py-10">
+      <form id="create-deal" v-if="user" @submit.prevent="createDeal" class="flex flex-col items-center p-4 pt-0">
+
+        <!-- С кем заключается дело -->
+        <div class="w-full">
+          <label for="searchedContacts" class="ml-2 text-xs text-dark-gray">Укажите контакт</label>
+          <div class="search-input mt-1 px-2 h-10 flex items-center" @click="openOptions" @focus="openOptions">
+            <input 
+              @focus.prevent="openOptions"
+              autocomplete="off"
+              id="searchedContacts"
+              class="search-input_input outline-none w-full focus:text-dark" 
+              type="search"
+              placeholder="Поиск..."
+              v-model="search"
+              @blur="blurInput"
+            >
+          </div>
+          <div v-if="showSearchMenu">
+            <div v-for="(option, idx) in filteredOptions" :key="idx" @click.prevent="selectItem(option)">
+              {{option.contactInfo.surname}} {{option.contactInfo.name}}
+            </div>
+            <!-- Если  -->
+            <div v-if="filteredOptions.length <= 0" @click.prevent="selectAnon()">
+              <p>Нет подходящего? укажите:</p>
+              <div>Неизвестный</div>
+              <p>Либо создайте новый контакт</p>
+              <router-link :to="{ name: 'CreateContact' }">Создать контакт</router-link>
+            </div>
+          </div>
+        </div>
         
         <!-- Тип дела -->
-        <div class="w-full flex flex-col">
+        <div class="w-full flex flex-col mt-2">
           <label for="deal-type" class="mb-1 ml-2 text-xs text-dark-gray">Тип дела</label>
           <select 
             id="deal-type" 
@@ -45,31 +74,6 @@
             <option value="personal">Личное</option>
           </select>
         </div>
-
-        <!-- С кем заключается дело -->
-        <div class="w-full mt-2">
-          <div class="search-input px-2 h-10 flex items-center" @click.stop="openOptions" @focus="openOptions">
-            <input 
-              @focus.prevent="showSearchMenu = true"
-              autocomplete="off"
-              id="searchedContacts"
-              class="search-input_input outline-none w-full focus:text-dark" 
-              type="search"
-              placeholder="Поиск..."
-              v-model="search"
-            >
-          </div>
-          <div>
-            <!-- Зачем этот див? -->
-            {{inputText.value}}123
-          </div>
-          <div v-if="showSearchMenu">
-            <div v-for="(option, idx) in filteredOptions" :key="idx" @click.stop="selectItem(option)" >
-              {{option.contactInfo.surname}} {{option.contactInfo.name}}
-            </div>
-          </div>
-        </div>
-
 
 
         <!-- Проба -->
@@ -306,8 +310,8 @@ export default {
     const dataLoaded = ref(null);
 
     const search = ref('');
-    const searchText = ref('');
-    const inputText = ref('');
+
+    const contactId = ref('');
 
     // show search menu
     const showSearchMenu = ref(null);
@@ -316,13 +320,22 @@ export default {
       showSearchMenu.value = !showSearchMenu.value;
     }
 
+    // Select Anon
+    const selectAnon = () => {
+      search.value = '';
+      closeOptions();
+      search.value = 'Неизвестный'
+      // В BD надо, чтобы id проставлялся, по сути это создает новый заказ, просто с неизвестным контактом... потом если надо корректируем
+    }
+
     // Select option
     const selectItem = (option) => {
       search.value = '';
       closeOptions();
       if (option.value === option.text) {
         search.value = option.contactInfo.surname + ' ' + option.contactInfo.name;
-        console.log(option.id)
+        // console.log(option.id)
+        contactId.value = option.id
       }
     }
 
@@ -331,17 +344,15 @@ export default {
     }
 
     const openOptions = () => {
+      search.value = '';
       showSearchMenu.value = true;
     }
 
-    // selectItem (option) {
-    //   this.searchText = '' // reset text when select item
-    //   this.closeOptions()
-    //   this.$emit('select', option)
-    //   if (option.value === option.text) {
-    //     this.searchText = option.value
-    //   }
-    // }
+    const blurInput = () => {
+      setTimeout(() => {
+        closeOptions();
+      }, 200)
+    }
 
     // Get contacts (name, surname, id) from db
     const getContactFromDB = async () => {
@@ -420,8 +431,14 @@ export default {
 
     // Create deal
     const createDeal = () => {
+
+      const deal = {
+        typeOfDeal: typeOfDeal.value,
+        contact: search.value,
+        contactId: contactId.value
+      }
+      console.log(deal)
       console.log('The Deal is created!')
-      console.log(search.value)
     }
 
     // Create workout
@@ -454,7 +471,7 @@ export default {
     }
 
     return {
-      typeOfDeal, contactOfDeal, data, dataLoaded, getContactFromDB, filteredOptions, search, searchText, inputText, workoutName, workoutType, exercises, statusMsg, errorMsg, user, addExercise, workoutChange, deleteExercise, createDeal, createWorkout, editModeSearchMenu, selectItem, openOptions
+      typeOfDeal, contactOfDeal, data, dataLoaded, getContactFromDB, filteredOptions, search, workoutName, workoutType, exercises, statusMsg, errorMsg, user, addExercise, workoutChange, deleteExercise, createDeal, createWorkout, editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon
     };
   },
 };
@@ -510,5 +527,6 @@ export default {
     display: block;
     margin: 0 auto;
   }
+
 
 </style>

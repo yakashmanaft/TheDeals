@@ -501,8 +501,9 @@ import { useRouter } from 'vue-router';
             setTimeout(() => {
               statusMsg.value = false;
               // В идеале переходить к только что созданному контакту
-              router.push({ name: 'Contacts' });
-            }, 3000)
+              // router.push({ name: 'Contacts' });
+              router.go(-1)
+            }, 2000)
           } catch (error) {
             errorMsg.value = `Error: ${error.message}`;
             setTimeout(() => {
