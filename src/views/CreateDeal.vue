@@ -27,34 +27,55 @@
       </div>
 
       <!-- Create -->
-      <form id="create-deal" v-if="user" @submit.prevent="createDeal" class="flex flex-col items-center p-4 pt-0">
+      <form id="create-deal" v-if="user" @submit.prevent="createDeal" class="flex flex-col items-center pt-0">
 
         <!-- С кем заключается дело -->
         <div class="w-full">
+          <!-- В качестве примера взято https://github.com/moreta/vue-search-select/blob/master/src/lib/BasicSelect.vue -->
           <label for="searchedContacts" class="ml-2 text-xs text-dark-gray">Укажите контакт</label>
           <div class="search-input mt-1 px-2 h-10 flex items-center" @click="openOptions" @focus="openOptions">
             <input 
               @focus.prevent="openOptions"
+              required
               autocomplete="off"
               id="searchedContacts"
-              class="search-input_input outline-none w-full focus:text-dark" 
+              class="search-input_input text-gray-500 outline-none w-full focus:outline-none bg-light-grey" 
               type="search"
               placeholder="Поиск..."
               v-model="search"
               @blur="blurInput"
             >
           </div>
-          <div v-if="showSearchMenu">
-            <div v-for="(option, idx) in filteredOptions" :key="idx" @click.prevent="selectItem(option)">
-              {{option.contactInfo.surname}} {{option.contactInfo.name}}
+          <div class="relative">
+            <div v-if="showSearchMenu" class="dropdown-menu absolute top-0 left-0 bg-light-grey w-full py-2 rounded-b-md text-lg">
+              <!-- Список из справочника контактов -->
+              <div 
+                v-for="(option, index) in filteredOptions" 
+                :key="index" 
+                @click.prevent="selectItem(option)" 
+                class="dropdown-menu_item px-2 py-1"
+              >
+                <div>
+                  {{option.contactInfo.surname}} {{option.contactInfo.name}}
+                </div>
+                <div class="text-xs text-dark-gray">
+                  {{option.contactInfo.company}}
+                </div>
+              </div>
+              <!-- Если из справочника ничего не найдено -->
+              <div v-if="filteredOptions.length <= 0" @click.prevent="selectAnon()">
+                <div class="px-2 text-xs text-dark-gray">Ничего не найдено. Выберите:</div>
+                <div class="px-2 py-1">Неизвестный</div>
+                <div class="px-2 mt-2 text-xs text-dark-gray">Или добавьте новый контакт в справочник</div>
+                <router-link 
+                  class="bg-green text-white text-center webkit block mx-2 rounded-md mt-2 p-2"
+                  :to="{ name: 'CreateContact' }"
+                >
+                  Добавить
+                </router-link>
+              </div>
             </div>
-            <!-- Если  -->
-            <div v-if="filteredOptions.length <= 0" @click.prevent="selectAnon()">
-              <p>Нет подходящего? укажите:</p>
-              <div>Неизвестный</div>
-              <p>Либо создайте новый контакт</p>
-              <router-link :to="{ name: 'CreateContact' }">Создать контакт</router-link>
-            </div>
+
           </div>
         </div>
         
@@ -75,30 +96,81 @@
           </select>
         </div>
 
+        <!-- Настройки нового дела -->
+        <div class="m-2 h-40 w-full">
 
-        <!-- Проба -->
-        <!-- С кем дело заключается -->
-        <!-- <div class="w-full flex flex-col mt-2">
-          <label for="contact-list" class="mb-1 ml-2 text-xs text-dark-gray">Заказчик</label>
-          <input 
-            id="searchedContacts"
-            class="search-input_input outline-none w-full focus:text-dark" 
-            type="search"
-            :placeholder="`${search}`"
-            v-model="search"
-          >
-          <select 
-            id="contact-list" 
-            class="webkit p-2 w-full text-gray-500 bg-light-grey rounded-md focus:outline-none" 
-            required
-            size="2"
-          >
-          
-            <option v-for="(contact, index) in searchedContacts" :key="index" :value="`${contact.id}`">{{contact.contactInfo.surname}} {{contact.contactInfo.name}} {{contact.contactInfo.company}}</option>
-          </select>
+          <!-- Если новое дело - это заказ -->
+          <div v-if="typeOfDeal === 'order'" class="radio-toolbar">
+            <!-- Выбор предмета заказа -->
+            <div class="radio-toolbar-wrapper flex py-2">
 
-        </div> -->
+              <!-- Торт -->
+              <!-- <div class="radio-toolbar_item flex flex-col items-center justify-items-center">
+                <input v-model="orderSubject" value="cake" type="radio" id="cake">
+                <label for="cake" >
+                  <div class="radio-toolbar_item-img">
+                    <img src="@/assets/images/deals/orders/cake.png" alt="">
+                  </div>
+                </label>
+                <p class="text-center text-sm text-dark-gray">Торт</p>
+              </div> -->
 
+              <!-- Торт -->
+              <div class="radio-toolbar_item flex flex-col items-center justify-items-center">
+                <input v-model="orderSubject" value="cake" type="radio" id="cake">
+                <label for="cake" >
+                  <div class="radio-toolbar_item-img">
+                    <img src="@/assets/images/deals/orders/cake.png" alt="">
+                  </div>
+                </label>
+                <p class="text-center text-sm text-dark-gray">Торт</p>
+              </div>
+
+              <!-- Свадебный Торт -->
+              <div class="radio-toolbar_item flex flex-col items-center justify-items-center">
+                <input v-model="orderSubject" value="wedding-cake" type="radio" id="wedding-cake">
+                <label for="wedding-cake" >
+                  <div class="radio-toolbar_item-img">
+                    <img src="@/assets/images/deals/orders/wedding-cake.png" alt="">
+                  </div>
+                </label>
+                <p class="text-center text-sm text-dark-gray">Свадебный торт</p>
+              </div>
+
+              <!-- Торт -->
+              <div class="radio-toolbar_item flex flex-col items-center justify-items-center">
+                <input v-model="orderSubject" value="cupcake" type="radio" id="cupcake">
+                <label for="cupcake" >
+                  <div class="radio-toolbar_item-img">
+                    <img src="@/assets/images/deals/orders/cupcake.png" alt="">
+                  </div>
+                </label>
+                <p class="text-center text-sm text-dark-gray">Капкейки</p>
+              </div>
+
+              <!-- Меренговый рулет -->
+              <div class="radio-toolbar_item flex flex-col items-center justify-items-center">
+                <input v-model="orderSubject" value="meringue-roll" type="radio" id="meringue-roll">
+                <label for="meringue-roll" >
+                  <div class="radio-toolbar_item-img">
+                    <img src="@/assets/images/deals/orders/meringue-roll.png" alt="">
+                  </div>
+                </label>
+                <p class="text-center text-sm text-dark-gray">Меренговый рулет</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Если новое дело - это поставка -->
+          <div v-if="typeOfDeal === 'supply'">
+            Новое дело - поставка
+          </div>
+
+          <!-- Если новое дело - это личное -->
+          <div v-if="typeOfDeal === 'personal'">
+            Новое дело - личная задача
+          </div>
+        </div>
 
         <p class="mt-4">Сумма заказа: 2579,00 руб.</p>
         <p>Оплачено: 1000,00 руб.</p>
@@ -312,6 +384,9 @@ export default {
     const search = ref('');
 
     const contactId = ref('');
+    // Предметы заказа
+    const orderSubjects = ref([]);
+    const orderSubject = ref('');
 
     // show search menu
     const showSearchMenu = ref(null);
@@ -435,7 +510,14 @@ export default {
       const deal = {
         typeOfDeal: typeOfDeal.value,
         contact: search.value,
-        contactId: contactId.value
+        contactId: contactId.value,
+        orderSubject: orderSubject.value,
+        // orderSubjects.value.push({
+        //   orderSubject.value
+        // })
+        
+            
+
       }
       console.log(deal)
       console.log('The Deal is created!')
@@ -471,7 +553,7 @@ export default {
     }
 
     return {
-      typeOfDeal, contactOfDeal, data, dataLoaded, getContactFromDB, filteredOptions, search, workoutName, workoutType, exercises, statusMsg, errorMsg, user, addExercise, workoutChange, deleteExercise, createDeal, createWorkout, editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon
+      typeOfDeal, contactOfDeal, data, dataLoaded, getContactFromDB, filteredOptions, search, workoutName, workoutType, exercises, statusMsg, errorMsg, user, addExercise, workoutChange, deleteExercise, createDeal, createWorkout, editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, orderSubject, orderSubjects
     };
   },
 };
@@ -528,5 +610,48 @@ export default {
     margin: 0 auto;
   }
 
+  .dropdown-menu {
+    height: 250px;
+    overflow: scroll;
+    top: -3px;
+  }
+
+  .radio-toolbar-wrapper {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .radio-toolbar_item {
+
+
+    margin-left: 10px;
+  }
+
+  .radio-toolbar_item label {
+    width: 72px;
+    height: 72px;
+    background-color: #f1f1f1;
+    border-radius: 100%;
+  }
+
+  .radio-toolbar_item-img {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .radio-toolbar_item-img img {
+    width: 100%;
+    height: 100%;
+  }
+
+  .radio-toolbar_item input[type="radio"] {
+    display: none;
+  }
+
+  .radio-toolbar_item input[type=radio]:checked + label {
+    background: #4785E7;
+    border-radius: 100%;
+  }
 
 </style>
