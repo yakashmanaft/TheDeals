@@ -86,10 +86,10 @@
             id="deal-type" 
             class="webkit p-2 w-full text-gray-500 bg-light-grey rounded-md focus:outline-none" 
             required
-            @change="workoutChange"
+            @change="dealTypeChanged"
             v-model="typeOfDeal"
           >
-            <option value="select-deal-type">Выберите тип дела</option>
+            <option disabled value="select-deal-type">Выберите тип дела</option>
             <option value="order">Заказ</option>
             <option value="supply">Поставка</option>
             <option value="personal">Личное</option>
@@ -97,68 +97,42 @@
         </div>
 
         <!-- Настройки нового дела -->
-        <div class="m-2 h-40 w-full">
+        <div class="m-2 w-full">
 
           <!-- Если новое дело - это заказ -->
           <div v-if="typeOfDeal === 'order'" class="radio-toolbar">
             <!-- Выбор предмета заказа -->
+            <p for="deal-type" class="mb-1 ml-2 text-xs text-dark-gray">Предмет заказа</p>
+            <div v-if="user && !orderSubjects.length" class="w-full flex place-content-between py-4">
+              <p>Добавьте к заказу</p>
+              <p class="text-blue" @click="addOrderSubject">Добавить</p>
+            </div>
             <div class="radio-toolbar-wrapper flex py-2">
 
-              <!-- Торт -->
-              <!-- <div class="radio-toolbar_item flex flex-col items-center justify-items-center">
-                <input v-model="orderSubject" value="cake" type="radio" id="cake">
-                <label for="cake" >
-                  <div class="radio-toolbar_item-img">
-                    <img src="@/assets/images/deals/orders/cake.png" alt="">
-                  </div>
-                </label>
-                <p class="text-center text-sm text-dark-gray">Торт</p>
-              </div> -->
-
-              <!-- Торт -->
-              <div class="radio-toolbar_item flex flex-col items-center justify-items-center">
-                <input v-model="orderSubject" value="cake" type="radio" id="cake">
-                <label for="cake" >
-                  <div class="radio-toolbar_item-img">
-                    <img src="@/assets/images/deals/orders/cake.png" alt="">
-                  </div>
-                </label>
-                <p class="text-center text-sm text-dark-gray">Торт</p>
-              </div>
-
-              <!-- Свадебный Торт -->
-              <div class="radio-toolbar_item flex flex-col items-center justify-items-center">
-                <input v-model="orderSubject" value="wedding-cake" type="radio" id="wedding-cake">
-                <label for="wedding-cake" >
-                  <div class="radio-toolbar_item-img">
-                    <img src="@/assets/images/deals/orders/wedding-cake.png" alt="">
-                  </div>
-                </label>
-                <p class="text-center text-sm text-dark-gray">Свадебный торт</p>
-              </div>
-
-              <!-- Торт -->
-              <div class="radio-toolbar_item flex flex-col items-center justify-items-center">
-                <input v-model="orderSubject" value="cupcake" type="radio" id="cupcake">
-                <label for="cupcake" >
-                  <div class="radio-toolbar_item-img">
-                    <img src="@/assets/images/deals/orders/cupcake.png" alt="">
-                  </div>
-                </label>
-                <p class="text-center text-sm text-dark-gray">Капкейки</p>
-              </div>
-
-              <!-- Меренговый рулет -->
-              <div class="radio-toolbar_item flex flex-col items-center justify-items-center">
-                <input v-model="orderSubject" value="meringue-roll" type="radio" id="meringue-roll">
-                <label for="meringue-roll" >
-                  <div class="radio-toolbar_item-img">
-                    <img src="@/assets/images/deals/orders/meringue-roll.png" alt="">
-                  </div>
-                </label>
-                <p class="text-center text-sm text-dark-gray">Меренговый рулет</p>
+              <!-- Offer list -->
+              <div v-if="user && orderSubjects.length" class="flex">
+                <div v-for="(item, index) in list" :key="index" class="radio-toolbar_item flex flex-col items-center justify-items-center">
+                  <input v-model="orderSubject" name="orderSubject" :value="item.name" type="radio" :id="item.name">
+                  <label :for="item.name" >
+                    <div class="radio-toolbar_item-img">
+                      <img :src="require(`@/assets/images/deals/orders/${item.img}`)" alt="">
+                    </div>
+                  </label>
+                  <p class="text-center text-xs text-dark-gray mt-2">{{item.title}}</p>
+                </div>
               </div>
             </div>
+            Выбрано:
+            <span>{{ orderSubject }}</span>
+            <!-- Button to add new social to current contact -->
+            <button 
+              v-if="orderSubjects.length"
+              @click="addOrderSubject"
+              type="button"
+              class="border border-blue w-full p-2 rounded-md text-blue mb-4 cursor-pointer"
+            >
+              Добавить предмет заказа
+            </button>
           </div>
 
           <!-- Если новое дело - это поставка -->
@@ -172,7 +146,7 @@
           </div>
         </div>
 
-        <p class="mt-4">Сумма заказа: 2579,00 руб.</p>
+        <p class="mt-4">Общая сумма заказа: 2579,00 руб.</p>
         <p>Оплачено: 1000,00 руб.</p>
         <p>Задолженность: 1579,00 руб.</p>  
         
@@ -386,10 +360,55 @@ export default {
     const contactId = ref('');
     // Предметы заказа
     const orderSubjects = ref([]);
-    const orderSubject = ref('');
+    const orderSubject = ref('первый');
 
     // show search menu
     const showSearchMenu = ref(null);
+
+    // list of offers
+    // Временное решение
+    const list = {
+      'cake': {
+        name: 'cake',
+        img: 'cake.png',
+        title: 'Торт'
+      },
+      'wedding-cake': {
+        name: 'wedding-cake',
+        img: 'wedding-cake.png',
+        title: 'Свадебный торт'
+      },
+      'cupcake': {
+        name: 'cupcake',
+        img: 'cupcake.png',
+        title: 'Капкейк'
+      },
+      'meringue-roll': {
+        name: 'meringue-roll',
+        img: 'meringue-roll.png',
+        title: 'Меренговый рулет'
+      },
+      'brownies': {
+        name: 'brownies',
+        img: 'brownies.png',
+        title: 'Брауни'
+      },
+      'meringue': {
+        name: 'meringue',
+        img: 'meringue.png',
+        title: 'Меренге (Безе)'
+      },
+      'pavlova': {
+        name: 'pavlova',
+        img: 'pavlova.png',
+        title: 'Павлова'
+      },
+      'cake-pop': {
+        name: 'cake-pop',
+        img: 'cake-pop.png',
+        title: 'Кейк-попсы'
+      }
+    }
 
     const editModeSearchMenu = () => {
       showSearchMenu.value = !showSearchMenu.value;
@@ -464,7 +483,6 @@ export default {
     const workoutType = ref('select-workout');
     const exercises = ref([]);
 
-
     // Add exercise
     const addExercise = () => {
       if(workoutType.value === 'strength') {
@@ -498,29 +516,62 @@ export default {
       }, 5000);
     }
 
+    const addOrderSubject = () => {
+      // if(typeOfDeal.value === 'order') {
+      //   orderSubjects.value.push({
+      //     id: uid(),
+      //     orderSubject: ''
+      //   });
+      //   return
+      // }
+        // orderSubjects.value.splice(0, 1, null)
+        orderSubjects.value.push({
+          id: uid(),
+          orderSubject: orderSubject.value
+        })
+    }
+
     // Listens for chaging of workout type input
     const workoutChange = () => {
       exercises.value = [];
       addExercise();
     }
 
+    // Listens for changing of deal type input
+    const dealTypeChanged = () => {
+      orderSubjects.value = [];
+      // addOrderSubject();
+    }
+
+
     // Create deal
-    const createDeal = () => {
-
-      const deal = {
-        typeOfDeal: typeOfDeal.value,
-        contact: search.value,
-        contactId: contactId.value,
-        orderSubject: orderSubject.value,
-        // orderSubjects.value.push({
-        //   orderSubject.value
-        // })
-        
-            
-
+    const createDeal = async () => {
+      try {
+        const { error } = await supabase.from('deals').insert([
+          {
+            dealType: typeOfDeal.value,
+            // contact: search.value,
+            contactID: contactId.value,
+            orderSubjects: orderSubjects.value
+          }
+        ]);
+        console.log(orderSubject.value)
+        if (error) throw error;
+        statusMsg.value = 'Дело успешно создано';
+        typeOfDeal.value = 'select-deal-type';
+        contactOfDeal.value = 'select-deal-contact';
+        orderSubjects.value = [];
+        setTimeout(() => {
+          statusMsg.value = false;
+          // В идеале переходить к только что созданному делу
+          router.push({ name: 'Deals' });
+        }, 3000)
+      } catch (error) {
+        errorMsg.value = `Error: ${error.message}`;
+        setTimeout(() => {
+          errorMsg.value = false;
+        }, 5000)
       }
-      console.log(deal)
-      console.log('The Deal is created!')
     }
 
     // Create workout
@@ -553,7 +604,7 @@ export default {
     }
 
     return {
-      typeOfDeal, contactOfDeal, data, dataLoaded, getContactFromDB, filteredOptions, search, workoutName, workoutType, exercises, statusMsg, errorMsg, user, addExercise, workoutChange, deleteExercise, createDeal, createWorkout, editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, orderSubject, orderSubjects
+      typeOfDeal, contactOfDeal, data, dataLoaded, getContactFromDB, filteredOptions, search, workoutName, workoutType, exercises, statusMsg, errorMsg, user, addExercise, workoutChange, deleteExercise, createDeal, createWorkout, editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, orderSubjects, list, addOrderSubject, dealTypeChanged, orderSubject
     };
   },
 };
@@ -611,25 +662,34 @@ export default {
   }
 
   .dropdown-menu {
-    height: 250px;
     overflow: scroll;
     top: -3px;
   }
 
   .radio-toolbar-wrapper {
+    overflow: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
     width: 100%;
     justify-content: space-between;
+    padding-bottom: 20px;
   }
 
+  .radio-toolbar-wrapper::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+}
+
   .radio-toolbar_item {
-
-
+    width: 250px;
     margin-left: 10px;
   }
 
+  .radio-toolbar_item:first-child {
+    margin-left: 0;
+  }
+
   .radio-toolbar_item label {
-    width: 72px;
-    height: 72px;
     background-color: #f1f1f1;
     border-radius: 100%;
   }
@@ -638,11 +698,13 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 72px;
+    height: 72px;
   }
 
   .radio-toolbar_item-img img {
-    width: 100%;
-    height: 100%;
+    width: 60%;
+    height: 60%;
   }
 
   .radio-toolbar_item input[type="radio"] {

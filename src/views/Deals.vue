@@ -12,6 +12,8 @@
       <img src="@/assets/images/common/icon-plus.svg" alt="">
     </router-link>
 
+
+
     <!-- Временно создание поместим сюда -->
     <!-- <router-link class="cursor-pointer" :to="{ name: 'Create' }">Создать заказ</router-link> -->
 
@@ -19,6 +21,7 @@
     <div v-if="dataLoaded" class="container pt-20 px-4">
       <!--  -->
       Это экран deals
+
       <!-- No Data -->
       <div v-if="data.length === 0" class="w-full flex flex-col items-center">
         <h1 class="text-2xl">Looks empty here...</h1>
@@ -31,6 +34,7 @@
       </div>
 
       <!-- Data -->
+
       <div 
         v-else 
         class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
@@ -68,6 +72,21 @@
           </h1>
         </router-link>
       </div>
+
+
+      <!-- Проверка парсит ли данные из deals -->
+      <div class="flex flex-col">
+        <router-link
+          :to="{ name: 'View-Deal', params: { dealId: deal.id } }"
+          v-for="(deal, index) in list"
+          :key="index"
+        >
+          ПРивет
+          {{ deal.contactID }}
+          {{ deal.dealType }}
+          {{ deal.orderSubjects }}
+        </router-link>
+      </div>
     </div>
   </div>
 </template>
@@ -87,6 +106,7 @@ export default {
   setup() {
     // Create data / vars
     const data = ref([]);
+    const list = ref([]);
     const dataLoaded = ref(null);
 
     // Get data
@@ -104,13 +124,27 @@ export default {
     // Run data function
     getData();
 
+    // Get deals
+    const getDeals = async () => {
+      try {
+        const { data: deals, error } = await supabase.from('deals').select('*');
+        if(error) throw error;
+        list.value = deals;
+        dataLoaded.value = true;
+      } catch (error) {
+        console.warn(error.message);
+      }
+    }
+
+    // Run getDeals function
+    getDeals();
 
     const router = useRouter();
     const title = router.currentRoute._value.meta.translation;
     // console.log(router)
 
     return {
-      data, dataLoaded, title
+      data, list, dataLoaded, title
     };
   },
 };
