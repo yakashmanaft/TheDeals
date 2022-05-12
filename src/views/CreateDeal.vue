@@ -80,13 +80,14 @@
         </div>
         
         <!-- Тип дела -->
-        <div class="w-full flex flex-col mt-2">
+        <div class="w-full flex flex-col mt-4">
           <label for="deal-type" class="mb-1 ml-2 text-xs text-dark-gray">Тип дела</label>
           <select 
             id="deal-type" 
             class="webkit p-2 w-full text-gray-500 bg-light-grey rounded-md focus:outline-none" 
             required
             v-model="typeOfDeal"
+            @change="dealTypeChanged"
           >
             <option disabled value="select-deal-type">Выберите тип дела</option>
             <option value="order">Заказ</option>
@@ -99,14 +100,14 @@
         <div class="m-2 w-full">
 
           <!-- Если новое дело - это заказ -->
-          <div v-if="typeOfDeal === 'order'" class="radio-toolbar">
+          <div v-if="typeOfDeal === 'order'" class="radio-toolbar mt-4">
             <!-- Выбор предмета заказа -->
             
-            <div v-if="user && !ordersList.length" class="w-full flex place-content-between py-4">
-              <p>Добавьте к заказу</p>
+            <div v-if="user && !ordersList.length" class="w-full flex place-content-between p-2">
+              <p>Добавьте предмет заказа</p>
               <p class="text-blue" @click="addOrderSubject">Добавить</p>
             </div>
-            <div class="radio-toolbar-wrapper">
+            <div >
 
               <div v-for="(subject, idx) in ordersList" :key="idx" class="flex">
                 <!-- Add subject to orderList -->
@@ -124,17 +125,25 @@
                         alt="">
                     </div>
                   </div>
-                  <!-- order subject -->
-                  группа товаров № {{idx}}
-                  <div v-for="(item, index) in assortment" :key="index">
-                    <input 
-                      type="radio"
-                      :value="item.name"
-                      :name="idx"
-                      v-model="subject.selectedProduct"
-                    >
-                    {{item.name}}
 
+                  <!-- list of order subjects -->
+                  <div class="flex radio-toolbar-wrapper my-2">
+                    <div class="radio-toolbar_item" v-for="(item, index) in assortment" :key="index">
+                      <input 
+                        type="radio"
+                        :value="item.name"
+                        :name="idx"
+                        v-model="subject.selectedProduct"
+                        :id="index"
+                      >
+                      <label :for="index">
+                        <div class="radio-toolbar_item-img">
+                          <img :src="require(`../assets/images/deals/orders/${item.img}`)" alt=""> 
+                        </div>
+                        <div class="radio-toolbar_item-title text-center text-xs text-dark-gray mt-2">{{ item.title }}</div>
+                      </label>
+
+                    </div>
                   </div>
                   Укажите количество
                   <input type="number" v-model="subject.quantity">
@@ -549,7 +558,7 @@ export default {
       ordersList.value.push({
         id: uid(),
         selectedProduct: '',
-        quantity: '',
+        quantity: 1,
       })
     }
 
@@ -560,10 +569,10 @@ export default {
     }
 
     // Listens for changing of deal type input
-    // const dealTypeChanged = () => {
-    //   ordersList.value = [];
-    //   addOrderSubject();
-    // }
+    const dealTypeChanged = () => {
+      ordersList.value = [];
+      addOrderSubject();
+    }
 
     // Delete current order subject'
     const deleteOrderSubject = (id) => {
@@ -632,7 +641,7 @@ export default {
     }
 
     return {
-      typeOfDeal, contactOfDeal, data, dataLoaded, getContactFromDB, filteredOptions, search, workoutName, workoutType, exercises, statusMsg, errorMsg, user, addExercise, workoutChange, deleteExercise, createDeal, createWorkout, editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, ordersList, addOrderSubject, assortment, deleteOrderSubject
+      typeOfDeal, contactOfDeal, data, dataLoaded, getContactFromDB, filteredOptions, search, workoutName, workoutType, exercises, statusMsg, errorMsg, user, addExercise, workoutChange, deleteExercise, createDeal, createWorkout, editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, ordersList, addOrderSubject, assortment, deleteOrderSubject, dealTypeChanged
     };
   },
 };
@@ -697,11 +706,10 @@ export default {
   }
 
   .radio-toolbar-wrapper {
-    overflow: auto;
+    overflow-x: scroll;
+    padding: 10px 0;
     -ms-overflow-style: none;
-    scrollbar-width: none;
-    width: 100%;
-    justify-content: space-between;
+    // scrollbar-width: none;
   }
 
   .radio-toolbar-wrapper::-webkit-scrollbar {
@@ -710,7 +718,7 @@ export default {
 }
 
   .radio-toolbar_item {
-    margin-left: 10px;
+    margin-left: 15px;
   }
 
   .radio-toolbar_item:first-child {
@@ -728,20 +736,27 @@ export default {
     justify-content: center;
     width: 72px;
     height: 72px;
+    margin: 0 auto;
+    background-color: #f1f1f1;
+    border-radius: 100%;
   }
 
   .radio-toolbar_item-img img {
-    width: 60%;
-    height: 60%;
+    width: 80%;
+    height: 80%;
   }
 
-  .radio-toolbar_item input[type="radio"] {
-    display: none;
+  input[type="radio"] {
+    // display: none;
   }
 
-  .radio-toolbar_item input[type=radio]:checked + label {
+  input[type="radio"]:checked + label .radio-toolbar_item-img {
     background: #4785E7;
     border-radius: 100%;
+  }
+
+  input[type="radio"]:checked + label .radio-toolbar_item-title {
+    color: #4785E7;
   }
 
 </style>
