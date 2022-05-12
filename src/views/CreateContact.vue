@@ -133,7 +133,6 @@
                   alt="">
               </div>
             </div>
-
           </div>
           <!-- Button to add new phone to current contact -->
           <button 
@@ -418,11 +417,6 @@ import { useRouter } from 'vue-router';
             date: '',
           })
         }
-
-        // const phoneNumbersChange = () => {
-        //   phoneNumbers.value = [];
-        //   addPhoneNumber();
-        // }
 
         // Delete current phone number
         const deletePhoneNumber = (id) => {

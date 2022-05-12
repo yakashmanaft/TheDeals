@@ -81,10 +81,11 @@
           v-for="(deal, index) in list"
           :key="index"
         >
-          ПРивет
-          {{ deal.contactID }}
-          {{ deal.dealType }}
-          {{ deal.orderSubjects }}
+          <div>
+            <p>{{ deal.contactID }}</p>
+            <p>{{ deal.dealType }}</p>
+            <p>{{ deal.ordersList }}</p>
+          </div>
         </router-link>
       </div>
     </div>

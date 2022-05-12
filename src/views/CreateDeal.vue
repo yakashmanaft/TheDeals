@@ -86,7 +86,6 @@
             id="deal-type" 
             class="webkit p-2 w-full text-gray-500 bg-light-grey rounded-md focus:outline-none" 
             required
-            @change="dealTypeChanged"
             v-model="typeOfDeal"
           >
             <option disabled value="select-deal-type">Выберите тип дела</option>
@@ -102,31 +101,54 @@
           <!-- Если новое дело - это заказ -->
           <div v-if="typeOfDeal === 'order'" class="radio-toolbar">
             <!-- Выбор предмета заказа -->
-            <p for="deal-type" class="mb-1 ml-2 text-xs text-dark-gray">Предмет заказа</p>
-            <div v-if="user && !orderSubjects.length" class="w-full flex place-content-between py-4">
+            
+            <div v-if="user && !ordersList.length" class="w-full flex place-content-between py-4">
               <p>Добавьте к заказу</p>
               <p class="text-blue" @click="addOrderSubject">Добавить</p>
             </div>
-            <div class="radio-toolbar-wrapper flex py-2">
+            <div class="radio-toolbar-wrapper">
 
-              <!-- Offer list -->
-              <div v-if="user && orderSubjects.length" class="flex">
-                <div v-for="(item, index) in list" :key="index" class="radio-toolbar_item flex flex-col items-center justify-items-center">
-                  <input v-model="orderSubject" name="orderSubject" :value="item.name" type="radio" :id="item.name">
-                  <label :for="item.name" >
-                    <div class="radio-toolbar_item-img">
-                      <img :src="require(`@/assets/images/deals/orders/${item.img}`)" alt="">
+              <div v-for="(subject, idx) in ordersList" :key="idx" class="flex">
+                <!-- Add subject to orderList -->
+                <div class="flex flex-col w-full">
+                  <!-- header -->
+                  <div class="flex place-content-between">
+                    <!-- title -->
+                    <p class="ml-2 align-text-middle text-xs text-dark-gray">Предмет заказа</p>
+                    <!-- Delete current order subject -->
+                    <div class="icon-wrapper">
+                      <img 
+                        @click="deleteOrderSubject(subject.id)"
+                        class="cursor-pointer" 
+                        src="@/assets/images/common/icon-trash.svg" 
+                        alt="">
                     </div>
-                  </label>
-                  <p class="text-center text-xs text-dark-gray mt-2">{{item.title}}</p>
+                  </div>
+                  <!-- order subject -->
+                  группа товаров № {{idx}}
+                  <div v-for="(item, index) in assortment" :key="index">
+                    <input 
+                      type="radio"
+                      :value="item.name"
+                      :name="idx"
+                      v-model="subject.selectedProduct"
+                    >
+                    {{item.name}}
+
+                  </div>
+                  Укажите количество
+                  <input type="number" v-model="subject.quantity">
+                  
                 </div>
+
+
               </div>
+
             </div>
-            Выбрано:
-            <span>{{ orderSubject }}</span>
+
             <!-- Button to add new social to current contact -->
             <button 
-              v-if="orderSubjects.length"
+              v-if="ordersList.length"
               @click="addOrderSubject"
               type="button"
               class="border border-blue w-full p-2 rounded-md text-blue mb-4 cursor-pointer"
@@ -345,6 +367,8 @@ export default {
     // Create data
     const router = useRouter();
 
+    
+
     const statusMsg = ref(null);
     const errorMsg = ref(null);
     const user = computed(() => store.state.user);
@@ -359,56 +383,17 @@ export default {
 
     const contactId = ref('');
     // Предметы заказа
-    const orderSubjects = ref([]);
-    const orderSubject = ref('первый');
+    const ordersList= ref([]);
 
     // show search menu
     const showSearchMenu = ref(null);
+    // const selectedProduct = ref('');
 
-    // list of offers
-    // Временное решение
-    const list = {
-      'cake': {
-        name: 'cake',
-        img: 'cake.png',
-        title: 'Торт'
-      },
-      'wedding-cake': {
-        name: 'wedding-cake',
-        img: 'wedding-cake.png',
-        title: 'Свадебный торт'
-      },
-      'cupcake': {
-        name: 'cupcake',
-        img: 'cupcake.png',
-        title: 'Капкейк'
-      },
-      'meringue-roll': {
-        name: 'meringue-roll',
-        img: 'meringue-roll.png',
-        title: 'Меренговый рулет'
-      },
-      'brownies': {
-        name: 'brownies',
-        img: 'brownies.png',
-        title: 'Брауни'
-      },
-      'meringue': {
-        name: 'meringue',
-        img: 'meringue.png',
-        title: 'Меренге (Безе)'
-      },
-      'pavlova': {
-        name: 'pavlova',
-        img: 'pavlova.png',
-        title: 'Павлова'
-      },
-      'cake-pop': {
-        name: 'cake-pop',
-        img: 'cake-pop.png',
-        title: 'Кейк-попсы'
-      }
-    }
+    // // list of offers
+    // const onChange = (event) => {
+    //   let data = event.target.value;
+    //   console.log(data)
+    // }
 
     const editModeSearchMenu = () => {
       showSearchMenu.value = !showSearchMenu.value;
@@ -516,19 +501,56 @@ export default {
       }, 5000);
     }
 
+    // Временное решение
+    const assortment = [
+      {
+        name: 'cake',
+        img: 'cake.png',
+        title: 'Торт',
+      },
+      {
+        name: 'wedding-cake',
+        img: 'wedding-cake.png',
+        title: 'Свадебный торт',
+      },
+      {
+        name: 'cupcake',
+        img: 'cupcake.png',
+        title: 'Капкейк',
+      },
+      {
+        name: 'meringue-roll',
+        img: 'meringue-roll.png',
+        title: 'Меренговый рулет',
+      },
+      {
+        name: 'brownies',
+        img: 'brownies.png',
+        title: 'Брауни',
+      },
+      {
+        name: 'meringue',
+        img: 'meringue.png',
+        title: 'Меренге (Безе)',
+      },
+      {
+        name: 'pavlova',
+        img: 'pavlova.png',
+        title: 'Павлова',
+      },
+      {
+        name: 'cake-pop',
+        img: 'cake-pop.png',
+        title: 'Кейк-попсы',
+      }
+    ]  
+
     const addOrderSubject = () => {
-      // if(typeOfDeal.value === 'order') {
-      //   orderSubjects.value.push({
-      //     id: uid(),
-      //     orderSubject: ''
-      //   });
-      //   return
-      // }
-        // orderSubjects.value.splice(0, 1, null)
-        orderSubjects.value.push({
-          id: uid(),
-          orderSubject: orderSubject.value
-        })
+      ordersList.value.push({
+        id: uid(),
+        selectedProduct: '',
+        quantity: '',
+      })
     }
 
     // Listens for chaging of workout type input
@@ -538,11 +560,18 @@ export default {
     }
 
     // Listens for changing of deal type input
-    const dealTypeChanged = () => {
-      orderSubjects.value = [];
-      // addOrderSubject();
-    }
+    // const dealTypeChanged = () => {
+    //   ordersList.value = [];
+    //   addOrderSubject();
+    // }
 
+    // Delete current order subject'
+    const deleteOrderSubject = (id) => {
+      if(ordersList.value.length > 0) {
+        ordersList.value = ordersList.value.filter(subject => subject.id != id);
+        return;
+      }
+    }
 
     // Create deal
     const createDeal = async () => {
@@ -552,15 +581,14 @@ export default {
             dealType: typeOfDeal.value,
             // contact: search.value,
             contactID: contactId.value,
-            orderSubjects: orderSubjects.value
+            ordersList: ordersList.value
           }
         ]);
-        console.log(orderSubject.value)
         if (error) throw error;
         statusMsg.value = 'Дело успешно создано';
         typeOfDeal.value = 'select-deal-type';
         contactOfDeal.value = 'select-deal-contact';
-        orderSubjects.value = [];
+        ordersList.value = [];
         setTimeout(() => {
           statusMsg.value = false;
           // В идеале переходить к только что созданному делу
@@ -604,7 +632,7 @@ export default {
     }
 
     return {
-      typeOfDeal, contactOfDeal, data, dataLoaded, getContactFromDB, filteredOptions, search, workoutName, workoutType, exercises, statusMsg, errorMsg, user, addExercise, workoutChange, deleteExercise, createDeal, createWorkout, editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, orderSubjects, list, addOrderSubject, dealTypeChanged, orderSubject
+      typeOfDeal, contactOfDeal, data, dataLoaded, getContactFromDB, filteredOptions, search, workoutName, workoutType, exercises, statusMsg, errorMsg, user, addExercise, workoutChange, deleteExercise, createDeal, createWorkout, editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, ordersList, addOrderSubject, assortment, deleteOrderSubject
     };
   },
 };
@@ -655,9 +683,11 @@ export default {
   }
 
   .icon-wrapper img{
-    width: 70%;
-    height: 70%;
-    display: block;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     margin: 0 auto;
   }
 
@@ -672,7 +702,6 @@ export default {
     scrollbar-width: none;
     width: 100%;
     justify-content: space-between;
-    padding-bottom: 20px;
   }
 
   .radio-toolbar-wrapper::-webkit-scrollbar {
@@ -681,7 +710,6 @@ export default {
 }
 
   .radio-toolbar_item {
-    width: 250px;
     margin-left: 10px;
   }
 
