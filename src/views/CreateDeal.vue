@@ -134,9 +134,9 @@
                         :value="item.name"
                         :name="idx"
                         v-model="subject.selectedProduct"
-                        :id="index"
+                        :id="idx+' '+index"
                       >
-                      <label :for="index">
+                      <label :for="idx+' '+index">
                         <div class="radio-toolbar_item-img">
                           <img :src="require(`../assets/images/deals/orders/${item.img}`)" alt=""> 
                         </div>
@@ -747,7 +747,7 @@ export default {
   }
 
   input[type="radio"] {
-    // display: none;
+    display: none;
   }
 
   input[type="radio"]:checked + label .radio-toolbar_item-img {
