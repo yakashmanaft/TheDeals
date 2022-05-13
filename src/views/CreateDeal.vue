@@ -145,9 +145,30 @@
 
                     </div>
                   </div>
-                  Укажите количество
-                  <input type="number" v-model="subject.quantity">
-                  
+                  <!-- Change subject (product) quantity  -->
+                  <div class="flex place-content-between mb-4">
+                    <span>
+                      Количество
+                    </span>
+                    <div class="subject-quantity flex mb-2">
+                      <button 
+                        @click.prevent="if(subject.productQuantity > 1) subject.productQuantity--;"
+                        class="subject-quantity_sub"
+                      >
+                        -
+                      </button>
+                      <div class="subject-quantity_qty">
+                        {{subject.productQuantity}}
+                      </div>
+                      <button 
+                        class="subject-quantity_add"
+                        @click.prevent="subject.productQuantity++"
+                      >
+                        +
+                      </button>
+                    </div>
+
+                  </div>
                 </div>
 
 
@@ -449,7 +470,7 @@ export default {
         if (error) throw error;
         data.value = myContacts;
         dataLoaded.value = true;
-        console.log(data.value)
+        // console.log(data.value)
       } catch (error) {
         errorMsg.value = error.message;
         setTimeout(() => {
@@ -558,7 +579,7 @@ export default {
       ordersList.value.push({
         id: uid(),
         selectedProduct: '',
-        quantity: 1,
+        productQuantity: 1,
       })
     }
 
