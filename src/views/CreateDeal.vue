@@ -32,7 +32,7 @@
         <!-- С кем заключается дело -->
         <div class="w-full">
           <!-- В качестве примера взято https://github.com/moreta/vue-search-select/blob/master/src/lib/BasicSelect.vue -->
-          <label for="searchedContacts" class="ml-2 text-xs text-dark-gray">Укажите контакт</label>
+          <label for="searchedContacts" class="ml-2 text-sm text-dark-gray">Укажите контакт</label>
           <div class="search-input mt-1 px-2 h-10 flex items-center" @click="openOptions" @focus="openOptions">
             <input 
               @focus.prevent="openOptions"
@@ -81,7 +81,7 @@
         
         <!-- Тип дела -->
         <div class="w-full flex flex-col mt-4">
-          <label for="deal-type" class="mb-1 ml-2 text-xs text-dark-gray">Тип дела</label>
+          <label for="deal-type" class="mb-1 ml-2 text-sm text-dark-gray">Тип дела</label>
           <select 
             id="deal-type" 
             class="webkit p-2 w-full text-gray-500 bg-light-grey rounded-md focus:outline-none" 
@@ -109,13 +109,13 @@
             </div>
             <div >
 
-              <div v-for="(subject, idx) in ordersList" :key="idx" class="flex">
+              <div v-for="(subject, idx) in ordersList" :key="idx" class="flex subject-wrapper">
                 <!-- Add subject to orderList -->
                 <div class="flex flex-col w-full">
                   <!-- header -->
                   <div class="flex place-content-between">
                     <!-- title -->
-                    <p class="ml-2 align-text-middle text-xs text-dark-gray">Предмет заказа</p>
+                    <p class="ml-2 align-text-middle text-sm text-dark-gray">Предмет заказа</p>
                     <!-- Delete current order subject -->
                     <div class="icon-wrapper">
                       <img 
@@ -127,7 +127,7 @@
                   </div>
 
                   <!-- list of order subjects -->
-                  <div class="flex radio-toolbar-wrapper my-2">
+                  <div class="flex radio-toolbar-wrapper mt-2">
                     <div class="radio-toolbar_item" v-for="(item, index) in assortment" :key="index">
                       <input 
                         type="radio"
@@ -146,22 +146,23 @@
                     </div>
                   </div>
                   <!-- Change subject (product) quantity  -->
-                  <div class="flex place-content-between mb-4">
-                    <span>
+                  <div class="flex place-content-between ml-2 mb-4 mt-2 items-center">
+                    <span class="text-sm leading-none align-text-middle text-dark-gray">
                       Количество
                     </span>
-                    <div class="subject-quantity flex mb-2">
+                    <div class="subject-quantity flex justify-items-center">
                       <button 
                         @click.prevent="if(subject.productQuantity > 1) subject.productQuantity--;"
-                        class="subject-quantity_sub"
+                        class="subject-quantity_btn"
+                        :class="{ btn_disabled: subject.productQuantity < 2 }"
                       >
                         -
                       </button>
-                      <div class="subject-quantity_qty">
+                      <span class="subject-quantity leading-none w-8 text-center">
                         {{subject.productQuantity}}
-                      </div>
+                      </span>
                       <button 
-                        class="subject-quantity_add"
+                        class="subject-quantity_btn"
                         @click.prevent="subject.productQuantity++"
                       >
                         +
@@ -778,6 +779,31 @@ export default {
 
   input[type="radio"]:checked + label .radio-toolbar_item-title {
     color: #4785E7;
+  }
+
+  .subject-quantity_btn {
+    width: 32px;
+    height: 32px;
+    background-color: #4785E7;
+    color: white;
+    border-radius: 100%;
+  }
+
+  .subject-quantity {
+    align-items: center;
+  }
+
+  .btn_disabled {
+    background-color: #f1f1f1;
+  }
+
+  .subject-wrapper {
+    border-bottom: 1px solid #f1f1f1;
+    margin-bottom: 20px;
+  }
+
+  .subject-wrapper:last-child {
+    border-bottom: none;
   }
 
 </style>
