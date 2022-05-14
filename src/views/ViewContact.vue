@@ -720,7 +720,8 @@ export default {
 
     const deleteNote = () => {
       data.value.contactInfo.notes = '';
-      note.value = !note.value;
+      note.value = false;
+      console.log('click delete btn')
     }
 
     //Оптимизировать в одну функцию!
