@@ -335,6 +335,30 @@
           </button>
         </div>
 
+        <!-- add note -->
+        <div v-if="user && !note" class="w-full flex place-content-between py-4">
+          <p>Нет заметок</p>
+          <p class="text-blue" @click="addNote">Добавить</p>
+        </div>
+        <!--  -->
+        <div class="w-full" v-if="note">
+          <div class="flex items-center place-content-between  pb-2 mt-2">
+            <p  class="text-blue py-2">Добавляем заметку к контакту</p>
+            <!-- Delete note -->
+            <div class="icon-wrapper">
+              <img 
+                @click="addNote"
+                class="cursor-pointer" 
+                src="@/assets/images/common/icon-trash.svg" 
+                alt="">
+            </div>
+          </div>
+          <!-- Note -->
+          <div class="w-full mt-2">
+            <textarea placeholder="Текст заметки" v-model="contactNotes" class="p-2 bg-light-grey text-gray-500 rounded-md w-full focus:outline-none"></textarea>
+          </div>
+        </div>
+
         <!-- Button submit form -->
         <button type="submit" class="w-full my-4 cursor-pointer p-2 bg-dark text-white rounded-md font-normal">
           Создать Контакт
@@ -364,11 +388,20 @@ import { useRouter } from 'vue-router';
         const contactSurname = ref('');
         const contactName = ref('');
         const contactCompany = ref('');
+        const contactNotes = ref('');
         
         const phoneNumbers = ref([]);
         const Emails = ref([]);
         const socialNetworks = ref([]);
         const contactEvents = ref([]);
+
+        // has note
+        const note = ref(null);
+
+        const addNote = () => {
+          note.value = !note.value;
+          contactNotes.value = ''
+        }
 
         // Add phone number
         const addPhoneNumber = () => {
@@ -476,7 +509,8 @@ import { useRouter } from 'vue-router';
                 contactInfo: {
                   name: contactName.value,
                   surname: contactSurname.value,
-                  company: contactCompany.value
+                  company: contactCompany.value,
+                  notes: contactNotes.value
                 },
                 contactEvents: contactEvents.value,
                 phoneNumbers: phoneNumbers.value,
@@ -491,6 +525,7 @@ import { useRouter } from 'vue-router';
             contactName.value = null;
             contactSurname.value = null;
             contactCompany.value = null;
+            contactNotes.value = null
 
             setTimeout(() => {
               statusMsg.value = false;
@@ -507,7 +542,7 @@ import { useRouter } from 'vue-router';
         }
 
         return {
-          statusMsg, errorMsg, user, contactSurname, contactName, contactCompany, createContact, phoneNumbers, addPhoneNumber, addSocial, addContactEvent, deleteEmail, contactEvents, socialNetworks, Emails, deletePhoneNumber, deleteSocial, addEmail, deleteContactEvent
+          statusMsg, errorMsg, user, contactSurname, contactName, contactCompany, contactNotes, createContact, phoneNumbers, addPhoneNumber, addSocial, addContactEvent, deleteEmail, contactEvents, socialNetworks, Emails, deletePhoneNumber, deleteSocial, addEmail, deleteContactEvent, note, addNote 
         }
       }
     

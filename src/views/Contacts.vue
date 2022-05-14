@@ -65,7 +65,7 @@
             v-for="contact in searchedContacts"
             :key="contact.id"
             :to="{ name: 'View-Contact', params: { contactId: contact.id } }"
-            class="flex justify-between border-b-2 items-center px-4 py-2 mt-2"
+            class="contact-item flex justify-between border-b-2 items-center px-4 py-2 mt-2"
           >
             <div>
               <p class="text-blue text-xl">{{ contact.contactInfo.surname }}</p>
@@ -196,6 +196,10 @@
     height: 70%;
     display: block;
     margin: 0 auto;
+  }
+
+  .contact-item:last-child {
+    border-bottom: none;
   }
 
 </style>

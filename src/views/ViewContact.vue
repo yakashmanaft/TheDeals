@@ -513,6 +513,39 @@
 
           </div>
 
+          <!-- Notes -->
+          <div v-if="(data.contactInfo.notes === '' && !note)">
+            <div v-if="user" class="flex place-content-between px-4 py-2 my-2 mb-4">
+              <p>Нет заметок</p>
+              <p v-if="edit" class="text-blue" @click="addNote">Добавить</p>
+            </div>
+          </div>
+          <!-- Notes -->
+          <!-- Если заметка есть уже -->
+          <div class="w-full px-4 py-2 my-4 note-item">
+            <div v-if="(edit && data.contactInfo.notes !== '') || (data.contactInfo.notes === '' && note && edit)" class="mt-2">
+              <div class="flex items-center place-content-between  pb-2 mt-2">
+                <p  class="text-blue py-2">Редактируем заметку контакта</p>
+                <!-- Delete note -->
+                <div class="icon-wrapper">
+                  <img 
+                    @click="deleteNote"
+                    class="cursor-pointer" 
+                    src="@/assets/images/common/icon-trash.svg" 
+                    alt="">
+                </div>
+              </div>
+              <!-- Note -->
+              <div class="w-full mt-2">
+                <textarea :placeholder="data.contactInfo.notes" v-model="data.contactInfo.notes" class="p-2 bg-light-grey text-gray-500 rounded-md w-full focus:outline-none"></textarea>
+              </div>
+            </div>
+            <div v-if="data.contactInfo.notes !== '' && !edit">
+              <h3 class="text-sm">Заметки</h3>
+              <p class="text-blue">{{ data.contactInfo.notes }}</p>
+            </div>
+          </div>
+
           <!-- Settings -->
           <!-- Button to delete current contact -->
           <div v-if="!edit">
@@ -614,8 +647,9 @@ export default {
 
     // Cancel editMode & cancel all changes
     const cancelEdit = () => {
-      getData();
       edit.value = !edit.value;
+      note.value = !note.value;
+      getData();
     }
 
     // Оптимизировать функции добавления
@@ -676,6 +710,17 @@ export default {
         name: '',
         link: ''
       })
+    }
+
+    // Add Note
+    const note = ref(null);
+    const addNote = () => {
+      note.value = !note.value;
+    }
+
+    const deleteNote = () => {
+      data.value.contactInfo.notes = '';
+      note.value = !note.value;
     }
 
     //Оптимизировать в одну функцию!
@@ -752,7 +797,7 @@ export default {
     }
 
     return {
-      statusMsg, data, dataLoaded, errorMsg, edit, editMode, user, deleteContact, addContactEvent, deleteContactEvent, update, cancelEdit, deletePhoneNumber, addPhoneNumber, cutPhoneNumber, checkMobile, addEmail, addSocial, deleteEmail, deleteSocial
+      statusMsg, data, dataLoaded, errorMsg, edit, editMode, user, deleteContact, addContactEvent, deleteContactEvent, update, cancelEdit, deletePhoneNumber, addPhoneNumber, cutPhoneNumber, checkMobile, addEmail, addSocial, deleteEmail, deleteSocial, addNote, note, deleteNote
     };
   },
 };
