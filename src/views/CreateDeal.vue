@@ -26,6 +26,22 @@
         </div>
       </div>
 
+    <!-- Информационное табло по заказу -->
+    <!-- Пока общее под order|supply|personal -->
+    <!-- Может имеет смысл сделать компонентом? -->
+    <div
+      v-if="dealsList.length !== 0"
+      class="w-full fixed bottom-5 left-0 h-14 bg-blue flex items-center justify-center"
+    >
+      <div @click="showSumMenuFunc">X</div>
+      <p>Общая сумма заказа: 2579,00 руб.</p>
+
+      <div v-if="showSumMenu">
+        <p>Оплачено: 1000,00 руб.</p>
+        <p>Задолженность: 1579,00 руб.</p>  
+      </div>
+    </div>
+
       <!-- Create -->
       <form id="create-deal" v-if="user" @submit.prevent="createDeal" class="flex flex-col items-center pt-0">
 
@@ -103,14 +119,14 @@
           <div v-if="typeOfDeal === 'order'" class="radio-toolbar mt-4">
             <!-- Выбор предмета заказа -->
             
-            <div v-if="user && !ordersList.length" class="w-full flex place-content-between p-2">
+            <div v-if="user && !dealsList.length" class="w-full flex place-content-between p-2">
               <p>Добавьте предмет заказа</p>
               <p class="text-blue" @click="addOrderSubject">Добавить</p>
             </div>
             <div >
 
-              <div v-for="(subject, idx) in ordersList" :key="idx" class="flex subject-wrapper">
-                <!-- Add subject to orderList -->
+              <div v-for="(subject, idx) in dealsList" :key="idx" class="flex subject-wrapper">
+                <!-- Add subject to dealList -->
                 <div class="flex flex-col w-full">
                   <!-- header -->
                   <div class="flex place-content-between">
@@ -179,7 +195,7 @@
 
             <!-- Button to add new social to current contact -->
             <button 
-              v-if="ordersList.length"
+              v-if="dealsList.length"
               @click="addOrderSubject"
               type="button"
               class="border border-blue w-full p-2 rounded-md text-blue mb-4 cursor-pointer"
@@ -414,17 +430,24 @@ export default {
 
     const contactId = ref('');
     // Предметы заказа
-    const ordersList= ref([]);
+    const dealsList= ref([]);
 
     // show search menu
     const showSearchMenu = ref(null);
-    // const selectedProduct = ref('');
+
+    // show sum menu
+    const showSumMenu = ref(null);
 
     // // list of offers
     // const onChange = (event) => {
     //   let data = event.target.value;
     //   console.log(data)
     // }
+
+    const showSumMenuFunc = () => {
+      showSumMenu.value = !showSumMenu.value;
+      console.log(showSumMenu.value)
+    }
 
     const editModeSearchMenu = () => {
       showSearchMenu.value = !showSearchMenu.value;
@@ -577,7 +600,7 @@ export default {
     ]  
 
     const addOrderSubject = () => {
-      ordersList.value.push({
+      dealsList.value.push({
         id: uid(),
         selectedProduct: '',
         productQuantity: 1,
@@ -592,14 +615,14 @@ export default {
 
     // Listens for changing of deal type input
     const dealTypeChanged = () => {
-      ordersList.value = [];
+      dealsList.value = [];
       addOrderSubject();
     }
 
     // Delete current order subject'
     const deleteOrderSubject = (id) => {
-      if(ordersList.value.length > 0) {
-        ordersList.value = ordersList.value.filter(subject => subject.id != id);
+      if(dealsList.value.length > 0) {
+        dealsList.value = dealsList.value.filter(subject => subject.id != id);
         return;
       }
     }
@@ -612,14 +635,14 @@ export default {
             dealType: typeOfDeal.value,
             // contact: search.value,
             contactID: contactId.value,
-            ordersList: ordersList.value
+            dealsList: dealsList.value
           }
         ]);
         if (error) throw error;
         statusMsg.value = 'Дело успешно создано';
         typeOfDeal.value = 'select-deal-type';
         contactOfDeal.value = 'select-deal-contact';
-        ordersList.value = [];
+        dealsList.value = [];
         setTimeout(() => {
           statusMsg.value = false;
           // В идеале переходить к только что созданному делу
@@ -663,7 +686,7 @@ export default {
     }
 
     return {
-      typeOfDeal, contactOfDeal, data, dataLoaded, getContactFromDB, filteredOptions, search, workoutName, workoutType, exercises, statusMsg, errorMsg, user, addExercise, workoutChange, deleteExercise, createDeal, createWorkout, editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, ordersList, addOrderSubject, assortment, deleteOrderSubject, dealTypeChanged
+      typeOfDeal, contactOfDeal, data, dataLoaded, getContactFromDB, filteredOptions, search, workoutName, workoutType, exercises, statusMsg, errorMsg, user, addExercise, workoutChange, deleteExercise, createDeal, createWorkout, editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortment, deleteOrderSubject, dealTypeChanged, showSumMenuFunc, showSumMenu
     };
   },
 };
