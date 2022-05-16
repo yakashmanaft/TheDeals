@@ -34,7 +34,8 @@
       class="w-full fixed bottom-5 left-0 h-14 bg-blue flex items-center justify-center"
     >
       <div @click="showSumMenuFunc">X</div>
-      <p>Общая сумма заказа: 2579,00 руб.</p>
+      <p>Общая сумма заказа: {{sum()}} руб.</p>
+      
 
       <div v-if="showSumMenu">
         <p>Оплачено: 1000,00 руб.</p>
@@ -161,10 +162,27 @@
 
                     </div>
                   </div>
+
+                  <!-- Price per unit -->
+                  <div class="flex place-content-between mx-2 mb-4 mt-2 items-center">
+                    <span class="text-sm leading-none align-text-middle text-dark-gray">
+                      Цена за 1 шт.
+                    </span>
+                    <div>
+                      <input 
+                        type="number" 
+                        class="focus:outline-none text-dark w-20 text-right mx-1 pt-1 subject-price_value" 
+                        placeholder="0,00"
+                        v-model="subject.pricePerUnit"  
+                      >
+                      <span class="py-2">руб.</span>
+                    </div>
+                  </div>
+
                   <!-- Change subject (product) quantity  -->
                   <div class="flex place-content-between ml-2 mb-4 mt-2 items-center">
                     <span class="text-sm leading-none align-text-middle text-dark-gray">
-                      Количество
+                      Количество, шт.
                     </span>
                     <div class="subject-quantity flex justify-items-center">
                       <button 
@@ -174,9 +192,10 @@
                       >
                         -
                       </button>
-                      <span class="subject-quantity leading-none w-8 text-center">
+                      <!-- <span class="subject-quantity leading-none w-8 text-center">
                         {{subject.productQuantity}}
-                      </span>
+                      </span> -->
+                      <input type="number" class="subject-quantity leading-none w-8 text-center focus:outline-none" v-model="subject.productQuantity">
                       <button 
                         class="subject-quantity_btn"
                         @click.prevent="subject.productQuantity++"
@@ -185,6 +204,42 @@
                       </button>
                     </div>
 
+                  </div>
+
+                  <!-- discount for subject price -->
+                  <div class="flex place-content-between mx-2 mb-4 mt-2 items-center">
+                    <span class="text-sm leading-none align-text-middle text-dark-gray">
+                      Скидка, %
+                    </span>
+                    <div>
+                      <input 
+                        type="number" 
+                        class="focus:outline-none text-dark w-10 text-right mx-1 pt-1 subject-price_value" 
+                        placeholder="0"
+                        v-model="subject.discountSubjectPriceValue"
+                      >
+                    </div>
+                  </div>  
+
+                  <!-- Total subject price -->
+                  <div class="flex place-content-between mx-2 mb-4 mt-2 items-center">
+                    <span class="text-sm leading-none align-text-middle text-dark-gray">
+                      Цена за {{subject.productQuantity}} шт.
+                      <span v-if="subject.discountSubjectPriceValue > 0">с учетом скидки</span>
+                    </span>
+                    <div>
+                      <span 
+                        class="py-2"
+                      >
+                        {{(subject.totalSubjectPrice = (subject.pricePerUnit * subject.productQuantity * (1 - subject.discountSubjectPriceValue/100))).toFixed(2)}} руб.
+                      </span>
+                      
+                    </div>
+                  </div>
+
+                  <!-- Subjet notes -->
+                  <div class="w-full mt-2">
+                    <textarea placeholder="Заметки к предмету заказа" v-model="subject.productNote" class="text-sm h-20 p-2 bg-light-grey text-gray-500 rounded-md w-full focus:outline-none"></textarea>
                   </div>
                 </div>
 
@@ -200,18 +255,18 @@
               type="button"
               class="border border-blue w-full p-2 rounded-md text-blue mb-4 cursor-pointer"
             >
-              Добавить предмет заказа
+              Добавить предмет в заказ
             </button>
           </div>
 
           <!-- Если новое дело - это поставка -->
           <div v-if="typeOfDeal === 'supply'">
-            Новое дело - поставка
+            Новое дело - поставка. В разработке...
           </div>
 
           <!-- Если новое дело - это личное -->
           <div v-if="typeOfDeal === 'personal'">
-            Новое дело - личная задача
+            Новое дело - личная задача. В разработке..
           </div>
         </div>
 
@@ -446,7 +501,6 @@ export default {
 
     const showSumMenuFunc = () => {
       showSumMenu.value = !showSumMenu.value;
-      console.log(showSumMenu.value)
     }
 
     const editModeSearchMenu = () => {
@@ -596,16 +650,59 @@ export default {
         name: 'cake-pop',
         img: 'cake-pop.png',
         title: 'Кейк-попсы',
+      },
+      {
+        name: 'cake-eskimos',
+        img: 'cake-eskimos.png',
+        title: 'Эскимошки'
       }
     ]  
+
+    const additionalAttributes = [
+      {
+        name: 'rent-rack',
+        title: 'Аренда подставки',
+        price: ''
+      },
+      {
+        name: 'packing-box',
+        title: 'Упаковочная коробка',
+        price: ''
+      }, 
+      {
+        name: 'rent-tableware',
+        title: 'Аренда столовых приборов',
+        price: ''
+      }
+    ]
+
+
+    // const totalOrderPrice = ref()
 
     const addOrderSubject = () => {
       dealsList.value.push({
         id: uid(),
         selectedProduct: '',
+        pricePerUnit: '',
         productQuantity: 1,
+        discountSubjectPriceValue: '',
+        totalSubjectPrice: 0,
+        productNote: ''
       })
     }
+
+    // Total order price
+    const sum = () => {
+      // Берем массив данных
+      let array = dealsList.value;
+      // Выбираем из массива данных нужные значения
+      let numbers = array.map(item => item.totalSubjectPrice)
+      // Суммируем значения
+      let sum = numbers.reduce( (accumulator, currentValue) => accumulator + currentValue)
+      return sum.toFixed(2)
+    }
+
+    
 
     // Listens for chaging of workout type input
     const workoutChange = () => {
@@ -633,9 +730,9 @@ export default {
         const { error } = await supabase.from('deals').insert([
           {
             dealType: typeOfDeal.value,
-            // contact: search.value,
             contactID: contactId.value,
-            dealsList: dealsList.value
+            dealsList: dealsList.value,
+            // totalOrderPrice: totalOrderPrice.value
           }
         ]);
         if (error) throw error;
@@ -686,7 +783,7 @@ export default {
     }
 
     return {
-      typeOfDeal, contactOfDeal, data, dataLoaded, getContactFromDB, filteredOptions, search, workoutName, workoutType, exercises, statusMsg, errorMsg, user, addExercise, workoutChange, deleteExercise, createDeal, createWorkout, editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortment, deleteOrderSubject, dealTypeChanged, showSumMenuFunc, showSumMenu
+      typeOfDeal, contactOfDeal, data, dataLoaded, getContactFromDB, filteredOptions, search, workoutName, workoutType, exercises, statusMsg, errorMsg, user, addExercise, workoutChange, deleteExercise, createDeal, createWorkout, editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortment, deleteOrderSubject, dealTypeChanged, showSumMenuFunc, showSumMenu, additionalAttributes, sum 
     };
   },
 };
@@ -823,6 +920,10 @@ export default {
   .subject-wrapper {
     border-bottom: 1px solid #f1f1f1;
     margin-bottom: 20px;
+  }
+
+  .subject-price_value {
+    border-bottom: 1px solid #f1f1f1;
   }
 
   .subject-wrapper:last-child {
