@@ -26,26 +26,32 @@
         </div>
       </div>
 
-    <!-- Информационное табло по заказу -->
-    <!-- Пока общее под order|supply|personal -->
-    <!-- Может имеет смысл сделать компонентом? -->
-    <div
-      v-if="dealsList.length !== 0"
-      class="w-full fixed bottom-5 left-0 h-14 bg-blue flex items-center justify-center"
-    >
-      <div @click="showSumMenuFunc">X</div>
-      <p>Общая сумма заказа: {{sum()}} руб.</p>
-      
-
-      <div v-if="showSumMenu">
-        <p>Оплачено: 1000,00 руб.</p>
-        <p>Задолженность: 1579,00 руб.</p>  
-      </div>
-    </div>
-
       <!-- Create -->
       <form id="create-deal" v-if="user" @submit.prevent="createDeal" class="flex flex-col items-center pt-0">
+      <!-- Информационное табло по заказу -->
+      <!-- Пока общее под order|supply|personal -->
+      <!-- Может имеет смысл сделать компонентом? -->
+      <div
+        v-if="dealsList.length !== 0"
+        class="w-full fixed bottom-0 left-0 bg-blue flex items-center justify-center flex-col rounded-t-3xl px-4 pb-0"
+      >
+        <div @click="showSumMenuFunc">X</div>
 
+        <div v-if="showSumMenu">
+          <p>Оплачено: 1000,00 руб.</p>
+          <p>Задолженность: 1579,00 руб.</p>  
+        </div>
+
+        <p>Общая сумма: {{sum()}} руб.</p>
+
+        <button 
+          type="submit" 
+          class="w-full my-4 cursor-pointer p-2 bg-dark text-white rounded-md font-normal"
+        >
+          Создать дело
+        </button>
+
+      </div>
         <!-- С кем заключается дело -->
         <div class="w-full">
           <!-- В качестве примера взято https://github.com/moreta/vue-search-select/blob/master/src/lib/BasicSelect.vue -->
@@ -114,7 +120,7 @@
         </div>
 
         <!-- Настройки нового дела -->
-        <div class="m-2 w-full">
+        <div class="w-full">
 
           <!-- Если новое дело - это заказ -->
           <div v-if="typeOfDeal === 'order'" class="radio-toolbar mt-4">
@@ -171,9 +177,9 @@
                     <div>
                       <input 
                         type="number" 
-                        class="focus:outline-none text-dark w-20 text-right mx-1 pt-1 subject-price_value" 
+                        class="focus:outline-none text-dark text-right mx-1 pt-1 subject-price_value w-14" 
                         placeholder="0,00"
-                        v-model="subject.pricePerUnit"  
+                        v-model="subject.pricePerUnit" 
                       >
                       <span class="py-2">руб.</span>
                     </div>
@@ -270,7 +276,6 @@
           </div>
         </div>
 
-        <p class="mt-4">Общая сумма заказа: 2579,00 руб.</p>
         <p>Оплачено: 1000,00 руб.</p>
         <p>Задолженность: 1579,00 руб.</p>  
         
@@ -675,9 +680,6 @@ export default {
         price: ''
       }
     ]
-
-
-    // const totalOrderPrice = ref()
 
     const addOrderSubject = () => {
       dealsList.value.push({

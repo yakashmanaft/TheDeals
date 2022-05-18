@@ -1,4 +1,4 @@
-# my-now
+# the Deals
 
 ## Project setup
 ```
