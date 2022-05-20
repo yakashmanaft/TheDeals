@@ -54,11 +54,6 @@
           >
         </div>
 
-        <!-- Количество контактов (вдруг понадобится) -->
-        <!-- <div>
-          {{data.length}}
-        </div> -->
-
         <!-- Contact Template -->
         <ul class="px-4 pt-4">
           <router-link
@@ -76,6 +71,7 @@
             </div>
           </router-link>
         </ul>
+
       </div>
     </div>
   </div>
@@ -124,20 +120,39 @@
         }
       })
 
+
+      // Оптимизировать диублирвоание функций поиска и сортировки в КОнтактках и Создание сделки
+      //сортируем контакты по алфавиту
+      const sortedContacts = computed(() => {       
+        const sortedArray = data.value; 
+        return sortedArray.sort((a, b) => {
+          let fa = a.contactInfo.surname.toLowerCase(), fb = b.contactInfo.surname.toLowerCase();
+          if (fa < fb) {
+            return -1;
+          } 
+          if (fa > fb) {
+            return 1;
+          }
+          return 0;
+        })
+      });
+      
+      //функция поиска контактов
       const searchedContacts = computed(() => {
-        // Требуется фильтр по алфавиту добавить
-        return data.value.filter((contact) => {
+        return sortedContacts.value.filter((contact) => {
+
           return (
             contact.contactInfo.name.toLowerCase().indexOf(search.value.toLowerCase()) != -1 || 
             contact.contactInfo.surname.toLowerCase().indexOf(search.value.toLowerCase()) != -1 ||
-            contact.contactInfo.company.toLowerCase().indexOf(search.value.toLowerCase()) != -1
+            contact.contactInfo.company.toLowerCase().indexOf(search.value.toLowerCase()) != -1 
             // Из каких col еще стреубется поиск? по номеру телефона? по наличию вайбера? думайте...
           )
+
         })
       });
       
       return {
-        user, title, data, dataLoaded, search, searchedContacts, errorMsg,
+        user, title, data, dataLoaded, search, sortedContacts, searchedContacts, errorMsg
       }
     }
   }

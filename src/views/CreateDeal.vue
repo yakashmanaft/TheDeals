@@ -563,11 +563,26 @@ export default {
     }
 
     getContactFromDB();
-    
 
+    // Оптимизировать диублирвоание функций поиска и сортировки в КОнтактках и Создание сделки
+    //сортируем контакты по алфавиту
+    const sortedContacts = computed(() => {       
+      const sortedArray = data.value; 
+      return sortedArray.sort((a, b) => {
+        let fa = a.contactInfo.surname.toLowerCase(), fb = b.contactInfo.surname.toLowerCase();
+        if (fa < fb) {
+          return -1;
+        } 
+        if (fa > fb) {
+          return 1;
+        }
+        return 0;
+      })
+    });
+
+    // функция поиска контакта
     const filteredOptions = computed(() => {
-      // Требуется фильтр по алфавиту добавить
-      return data.value.filter((contact) => {
+      return sortedContacts.value.filter((contact) => {
         return (
           contact.contactInfo.name.toLowerCase().indexOf(search.value.toLowerCase()) != -1 || 
           contact.contactInfo.surname.toLowerCase().indexOf(search.value.toLowerCase()) != -1 ||
@@ -785,7 +800,7 @@ export default {
     }
 
     return {
-      typeOfDeal, contactOfDeal, data, dataLoaded, getContactFromDB, filteredOptions, search, workoutName, workoutType, exercises, statusMsg, errorMsg, user, addExercise, workoutChange, deleteExercise, createDeal, createWorkout, editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortment, deleteOrderSubject, dealTypeChanged, showSumMenuFunc, showSumMenu, additionalAttributes, sum 
+      typeOfDeal, contactOfDeal, data, dataLoaded, getContactFromDB, sortedContacts,filteredOptions, search, workoutName, workoutType, exercises, statusMsg, errorMsg, user, addExercise, workoutChange, deleteExercise, createDeal, createWorkout, editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortment, deleteOrderSubject, dealTypeChanged, showSumMenuFunc, showSumMenu, additionalAttributes, sum 
     };
   },
 };
