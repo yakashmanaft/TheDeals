@@ -70,6 +70,10 @@
               <p class="text-dark-gray">{{ contact.contactInfo.company }}</p>
             </div>
           </router-link>
+              <!-- Если из справочника ничего не найдено -->
+              <div v-if="searchedContacts.length <= 0">
+                <div class="px-2 text-xs text-dark-gray">Ничего не найдено.</div>
+              </div>
         </ul>
 
       </div>
