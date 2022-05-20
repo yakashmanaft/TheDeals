@@ -483,9 +483,12 @@
 
               <!-- show data when editMode is disabled -->
               <!-- Отсчет до отмечания события должен быть... -->
-              <div v-else >
-                <h3 class="text-sm">{{ event.title }}</h3>
-                <p class="text-blue">{{ event.date }}</p>
+              <div v-else class="flex place-content-between items-center">
+                <div>
+                  <h3 class="text-sm">{{ event.title }}</h3>
+                  <p class="text-blue">{{ showEventDate(event.date) }}</p>
+                </div>
+                <div class="text-xs text-dark-gray">{{ calcDaysUntilDate(event.date) }}</div>
               </div>
               
               <!-- Delete current event-->
@@ -609,6 +612,55 @@ export default {
           errorMsg.value = false;
         }, 5000);
       }
+    }
+
+    // Преобразуем дату события для вывода в карточкн контакта
+    const showEventDate = (eventdate) => {
+      // get data from DB or input type date
+      const date = new Date(eventdate)
+      // format time
+      const day = date.getDate().toString().padStart(2, "0");
+      const month = date.getMonth();
+      const monthTitle = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+
+      return `${day} ${monthTitle[month]}`
+    }
+
+    // Считаем сколько дней осталось до следующей даты по конкретному событию
+    const calcDaysUntilDate = (eventdate) => {
+      const now = new Date();
+      const eventDate = new Date(eventdate)
+
+      eventDate.setFullYear(now.getFullYear());
+      if (now > eventDate) {
+        eventDate.setFullYear(now.getFullYear() + 1);
+      }
+
+      const result = Math.floor((eventDate - now) / (1000*60*60*24) + 1);
+      if (result === 0 || result === 365) {
+        return 'Сегодня'
+      } else if (result % 100 === 11 || result % 100 === 12 || result % 100 === 13 || result % 100 === 14) {
+        return result + ' дней';
+      } else if (result % 10 === 1) {
+        return 'Завтра';
+      } else if (result % 10 === 2 || result % 10 === 3 || result % 10 === 4) {
+        return 'Через ' + result + ' дня';
+      } else {
+        return 'Через ' + result + ' дней'
+      }
+
+      // switch (result % 10) {
+      //   case 1: 
+      //     return result + ' день';
+      //   case 2:
+      //   case 3:
+      //   case 4:  
+      //     return result + ' дня';
+      //   case 12:
+      //     return result + ' дней';
+      //   default: 
+      //     return result + ' дней'
+      // }
     }
 
     // Cut Phone Number for massengers
@@ -798,7 +850,7 @@ export default {
     }
 
     return {
-      statusMsg, data, dataLoaded, errorMsg, edit, editMode, user, deleteContact, addContactEvent, deleteContactEvent, update, cancelEdit, deletePhoneNumber, addPhoneNumber, cutPhoneNumber, checkMobile, addEmail, addSocial, deleteEmail, deleteSocial, addNote, note, deleteNote
+      statusMsg, data, dataLoaded, errorMsg, edit, editMode, user, deleteContact, addContactEvent, deleteContactEvent, update, cancelEdit, deletePhoneNumber, addPhoneNumber, cutPhoneNumber, checkMobile, addEmail, addSocial, deleteEmail, deleteSocial, addNote, note, deleteNote, showEventDate, calcDaysUntilDate
     };
   },
 };
