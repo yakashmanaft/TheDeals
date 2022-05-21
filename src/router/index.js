@@ -137,7 +137,7 @@ const routes = [
     name: "Contacts",
     component: Contacts,
     meta: {
-      title: 'Warehouse',
+      title: 'Contacts',
       auth: true,
       translation: 'Мои контакты'
     }

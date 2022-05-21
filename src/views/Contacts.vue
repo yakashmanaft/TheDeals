@@ -72,7 +72,7 @@
           </router-link>
               <!-- Если из справочника ничего не найдено -->
               <div v-if="searchedContacts.length <= 0">
-                <div class="px-2 text-xs text-dark-gray">Ничего не найдено.</div>
+                <div class="px-4 text-sm text-dark-gray">Ничего не найдено.</div>
               </div>
         </ul>
 
@@ -90,6 +90,9 @@
   import { ref, computed, onMounted } from 'vue';
   import { supabase } from '../supabase/init';
   import { useRouter } from 'vue-router';
+
+  import { sortedArray } from '../helpers/searchSort';
+  import { filteredArray } from '../helpers/searchFilter';
 
   export default {
     components: {
@@ -124,35 +127,14 @@
         }
       })
 
-
-      // Оптимизировать диублирвоание функций поиска и сортировки в КОнтактках и Создание сделки
       //сортируем контакты по алфавиту
       const sortedContacts = computed(() => {       
-        const sortedArray = data.value; 
-        return sortedArray.sort((a, b) => {
-          let fa = a.contactInfo.surname.toLowerCase(), fb = b.contactInfo.surname.toLowerCase();
-          if (fa < fb) {
-            return -1;
-          } 
-          if (fa > fb) {
-            return 1;
-          }
-          return 0;
-        })
+        return sortedArray(data.value)
       });
       
       //функция поиска контактов
       const searchedContacts = computed(() => {
-        return sortedContacts.value.filter((contact) => {
-
-          return (
-            contact.contactInfo.name.toLowerCase().indexOf(search.value.toLowerCase()) != -1 || 
-            contact.contactInfo.surname.toLowerCase().indexOf(search.value.toLowerCase()) != -1 ||
-            contact.contactInfo.company.toLowerCase().indexOf(search.value.toLowerCase()) != -1 
-            // Из каких col еще стреубется поиск? по номеру телефона? по наличию вайбера? думайте...
-          )
-
-        })
+        return filteredArray(sortedContacts.value, search.value)
       });
       
       return {
