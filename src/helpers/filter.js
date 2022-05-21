@@ -1,6 +1,6 @@
 // поиск конкретного контакта через фильтр
 // Оптимизировать для более широкого применения
-export const filteredArray = (arrayToFilter, search) => {
+export const searchFilter = (arrayToFilter, search) => {
 
   return arrayToFilter.filter((contact) => {
 

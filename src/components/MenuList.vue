@@ -71,7 +71,7 @@
       <!-- Settings -->
       <li class="bg-light-grey p-2.5 rounded-xl">
         <!-- Account Settings -->
-        <router-link class="menu-item py-1" :to="{ name: '' }">
+        <router-link class="menu-item py-1" :to="{ name: 'AccountSettings' }">
           <div class="menu-item_icon">
             <img src="@/assets/images/menu/account-settings.svg" alt="">
           </div>

@@ -91,8 +91,8 @@
   import { supabase } from '../supabase/init';
   import { useRouter } from 'vue-router';
 
-  import { sortedArray } from '../helpers/searchSort';
-  import { filteredArray } from '../helpers/searchFilter';
+  import { sortAlphabetically } from '../helpers/sort';
+  import { searchFilter } from '../helpers/filter';
 
   export default {
     components: {
@@ -129,12 +129,12 @@
 
       //сортируем контакты по алфавиту
       const sortedContacts = computed(() => {       
-        return sortedArray(data.value)
+        return sortAlphabetically(data.value)
       });
       
       //функция поиска контактов
       const searchedContacts = computed(() => {
-        return filteredArray(sortedContacts.value, search.value)
+        return searchFilter(sortedContacts.value, search.value)
       });
       
       return {

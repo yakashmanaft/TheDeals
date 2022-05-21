@@ -1,6 +1,6 @@
 // Сортировщик списка контактов по алфавиту
 // Оптимизировать contactInfo.surname (Чтобы функция стала более универсальной)
-export const sortedArray = (arrayToSort) => {
+export const sortAlphabetically = (arrayToSort) => {
 
   return arrayToSort.sort((a, b) => {
     let fa = a.contactInfo.surname.toLowerCase(), fb = b.contactInfo.surname.toLowerCase();

@@ -16,6 +16,7 @@ import EventCalendar from '../views/EventCalendar.vue';
 import Wallet from '../views/Wallet.vue';
 import Warehouse from '../views/Warehouse.vue';
 import Contacts from '../views/Contacts.vue';
+import AccountSettings from '../views/AccountSettings.vue';
 
 const routes = [
   {
@@ -143,6 +144,16 @@ const routes = [
     }
   },
   {
+    path: "/settings",
+    name: "AccountSettings",
+    component: AccountSettings,
+    meta: {
+      title: 'AccountSettings',
+      auth: true,
+      translation: 'Настройки'
+    }
+  },
+  {
     path: "/view-workout/:workoutId",
     name: "View-Workout",
     component: ViewWorkout,
@@ -178,7 +189,7 @@ const router = createRouter({
 
 // Change document titles
 router.beforeEach((to, from, next) => {
-  document.title = `${to.meta.title} | My Now`;
+  document.title = `${to.meta.title} | My Deals`;
   next();
 })
 

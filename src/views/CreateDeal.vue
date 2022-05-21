@@ -70,7 +70,7 @@
             >
           </div>
           <div class="relative">
-            <div v-if="showSearchMenu" class="dropdown-menu absolute top-0 left-0 bg-light-grey w-full py-2 rounded-b-md text-lg">
+            <div v-if="showSearchMenu" class="dropdown-menu absolute top-0 left-0 h-40 bg-light-grey w-full py-2 rounded-b-md text-lg">
               <!-- Список из справочника контактов -->
               <div 
                 v-for="(option, index) in filteredOptions" 
@@ -88,7 +88,7 @@
               <!-- Если из справочника ничего не найдено -->
               <div v-if="filteredOptions.length <= 0" @click.prevent="selectAnon()">
                 <div class="px-2 text-xs text-dark-gray">Ничего не найдено. Выберите:</div>
-                <div class="px-2 py-1">Неизвестный</div>
+                <div class="px-2 py-1 text-blue">Неизвестный</div>
                 <div class="px-2 mt-2 text-xs text-dark-gray">Или добавьте новый контакт в справочник</div>
                 <router-link 
                   class="bg-green text-white text-center webkit block mx-2 rounded-md mt-2 p-2"
@@ -223,6 +223,8 @@
                         class="focus:outline-none text-dark w-10 text-right mx-1 pt-1 subject-price_value" 
                         placeholder="0"
                         v-model="subject.discountSubjectPriceValue"
+                        min="0"
+                        max="100"
                       >
                     </div>
                   </div>  
@@ -279,12 +281,6 @@
         <p>Оплачено: 1000,00 руб.</p>
         <p>Задолженность: 1579,00 руб.</p>  
         
-        <button 
-          type="submit" 
-          class="w-full my-4 cursor-pointer p-2 bg-dark text-white rounded-md font-normal"
-        >
-          Создать дело
-        </button>
       </form>
       
 
@@ -468,8 +464,8 @@ import { uid } from 'uid';
 import { supabase } from '../supabase/init';
 import { useRouter } from 'vue-router';
 
-import { sortedArray } from '../helpers/searchSort';
-import { filteredArray } from '../helpers/searchFilter';
+import { sortAlphabetically } from '../helpers/sort';
+import { searchFilter } from '../helpers/filter';
 
 export default {
   name: "createDeal",
@@ -569,12 +565,12 @@ export default {
 
     //сортируем контакты по алфавиту
     const sortedContacts = computed(() => {       
-      return sortedArray(data.value)
+      return sortAlphabetically(data.value)
     });
 
     // функция поиска контакта
     const filteredOptions = computed(() => {
-      return filteredArray(sortedContacts.value, search.value)
+      return searchFilter(sortedContacts.value, search.value)
     });
 
     const workoutName = ref('');
@@ -674,6 +670,7 @@ export default {
         title: 'Упаковочная коробка',
         price: ''
       }, 
+      // Продумать вариант коробки с напитком (для капкейков, кейкпопсов, эскимошек?)
       {
         name: 'rent-tableware',
         title: 'Аренда столовых приборов',
@@ -859,7 +856,7 @@ export default {
   .radio-toolbar-wrapper::-webkit-scrollbar {
       width: 0;
       height: 0;
-}
+  }
 
   .radio-toolbar_item {
     margin-left: 15px;
