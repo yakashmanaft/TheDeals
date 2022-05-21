@@ -425,8 +425,8 @@ export default {
   .ellipsis-btn_item:before {
     width: 5px;
     height: 5px;
-    background: #3d3d3d;
-    border-radius: 50%;
+    background: #4785E7;
+    border-radius: 100%;
   }
 
   .ellipsis-btn_item:after {
