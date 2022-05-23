@@ -189,7 +189,7 @@ const router = createRouter({
 
 // Change document titles
 router.beforeEach((to, from, next) => {
-  document.title = `${to.meta.title} | My Deals`;
+  document.title = `${to.meta.title} | TheDeals`;
   next();
 })
 
