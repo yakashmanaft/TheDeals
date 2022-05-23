@@ -6,7 +6,7 @@
 
     <!-- Добавление нового заказа -->
     <router-link 
-      class="fixed bottom-5 right-5 w-14 h-14 bg-blue rounded-full flex items-center justify-center"
+      class="fixed z-10 bottom-5 right-5 w-14 h-14 bg-blue rounded-full flex items-center justify-center"
       :to="{ name: 'CreateDeal' }"
     >
       <img src="@/assets/images/common/icon-plus.svg" alt="">
@@ -34,15 +34,21 @@
       <!-- Data -->
 
       <!-- Проба -->
-
-
       <div 
         v-else 
         class="grid grid-cols-1 gap-4"
       >
-        <!-- Фильтры по делам -->
+        <!-- Deal filter -->
         <div class="flex deal-filter-wrapper">
-          
+            <!-- В планах -->
+            <div class="deal-filter-item">
+              <input checked type="radio" name="deal-filter" id="in-process" value="deal-in-progress"> 
+              <label class="flex text-sm px-2 p-1 rounded-2xl" for="in-process">
+                <div class="deal-filter-item_text">Бронь даты</div> 
+                <div class="deal-filter-item_count ml-1">22</div>
+              </label>
+            </div>
+            <!-- В процессе -->
             <div class="deal-filter-item">
               <input checked type="radio" name="deal-filter" id="in-process" value="deal-in-progress"> 
               <label class="flex text-sm px-2 p-1 rounded-2xl" for="in-process">
@@ -50,6 +56,7 @@
                 <div class="deal-filter-item_count ml-1">2</div>
               </label>
             </div>
+            <!-- В доставке -->
             <div class="deal-filter-item">
               <input type="radio" name="deal-filter" id="in-delivery" value="deal-in-delivery"> 
               <label class="flex text-sm px-2 p-1 rounded-2xl" for="in-delivery">
@@ -57,6 +64,7 @@
                 <div class="deal-filter-item_count ml-1">0</div>
               </label>
             </div>
+            <!-- Долг -->
             <div class="deal-filter-item">
               <input type="radio" name="deal-filter" id="debt" value="deal-debt"> 
               <label class="flex text-sm px-2 p-1 rounded-2xl" for="debt">
@@ -64,6 +72,7 @@
                 <div class="deal-filter-item_count ml-1">1</div>
               </label>
             </div>
+            <!-- Завершен -->
             <div class="deal-filter-item">
               <input type="radio" name="deal-filter" id="complete" value="deal-complete"> 
               <label class="flex text-sm px-2 p-1 rounded-2xl" for="complete">
@@ -71,6 +80,7 @@
                 <div class="deal-filter-item_count ml-1">1</div>
               </label>
             </div>
+            <!-- Отменен -->
             <div class="deal-filter-item">
               <input type="radio" name="deal-filter" id="cancelled" value="deal-cancelled"> 
               <label class="flex text-sm px-2 p-1 rounded-2xl" for="cancelled">
@@ -82,96 +92,27 @@
           
         </div>
 
-        <!-- item deal -->
-          <div class="relative flex flex-col rounded-md bg-light-grey p-2">
-  
-            <!-- header -->
-            <div class="flex place-content-between items-center">
-              <div class="flex place-content-between items-center">
-                <span>Заказ</span>
-                <div class="flex flex-col">
-                  <span>Успеть к 31.05.2022</span>  
-                  <span>Осталось 10 дней</span>  
-                </div>
-              </div>
-            </div>
-            <!-- Предмет заказа -->
-            <div class="relative deal-subject_item mt-2">
-              <!-- item -->
-              <div class="absolute top-0 left-0 flex flex-col justify-items-center">
-                <div class="deal-subject_item-img">
-                  <img src="../assets/images/deals/orders/wedding-cake.png" alt=""> 
-                </div>
-                <div class="text-dark-gray text-xs text-center">х 1</div>
-              </div>
-              <!-- item -->
-              <div class="absolute top-0 left-10 flex flex-col justify-items-center">
-                <div class="deal-subject_item-img">
-                  <img src="../assets/images/deals/orders/cake.png" alt=""> 
-                </div>
-                <div class="text-dark-gray text-xs text-center">х 121</div>
-              </div>
-              <!-- item -->
-              <div class="absolute top-0 left-20 flex flex-col justify-items-center">
-                <div class="deal-subject_item-img">
-                  <img src="../assets/images/deals/orders/cupcake.png" alt=""> 
-                </div>
-                <div class="text-dark-gray text-xs text-center">х 66</div>
-              </div>
-            </div>
-  
-            <span class="mt-10">Оплачено</span>
-            <span>Сумма заказа: 2570,00 руб.</span>
-            <span>Контакт: Анфалов Сергей</span>  
+        <!-- Date line -->
+        <div class="relative flex items-center w-full place-content-between">
+          <div class="date-line_date ml-2 text-sm">23 мая 2022</div>
+          <div class="date-line_line"></div>
+          <div class="absolute right-2 date-line_calendar">
+            <router-link :to="{ name: 'Calendar' }">
+              <img src="@/assets/images/deals/calendar.svg" class="date-line_calendar-img">
+            </router-link>
           </div>
-
-        <!-- item deal -->
-        <div class="flex flex-col rounded-md bg-light-grey p-2">
-          <span>Заказ</span>
-          <div>
-            <span>Исполнить до 31.05.2022</span>  
-            <span>Осталось 10 дней</span>  
-          </div>
-          <!-- Предмет заказа -->
-          <div class="relative deal-subject_item">
-            <!-- item -->
-            <div class="absolute top-0 left-0 flex flex-col justify-items-center">
-              <div class="deal-subject_item-img">
-                <img src="../assets/images/deals/orders/wedding-cake.png" alt=""> 
-              </div>
-              <div class="text-dark-gray text-xs text-center">х 1</div>
-            </div>
-            <!-- item -->
-            <div class="absolute top-0 left-10 flex flex-col justify-items-center">
-              <div class="deal-subject_item-img">
-                <img src="../assets/images/deals/orders/cake.png" alt=""> 
-              </div>
-              <div class="text-dark-gray text-xs text-center">х 121</div>
-            </div>
-            <!-- item -->
-            <div class="absolute top-0 left-20 flex flex-col justify-items-center">
-              <div class="deal-subject_item-img">
-                <img src="../assets/images/deals/orders/cupcake.png" alt=""> 
-              </div>
-              <div class="text-dark-gray text-xs text-center">х 66</div>
-            </div>
-          </div>
-          <span class="mt-10">Частично оплачено</span>
-          <span>Сумма заказа: 2570,00 руб.</span>
-          <span>Оплачено: 1000,00 руб.</span>
-          <span>Задолженность: 1570,00 руб.</span>
-          <span>Контакт: Анфалов Сергей</span>  
         </div>
 
         <!-- item deal -->
-        <div class="flex flex-col rounded-md bg-light-grey p-2">
-          <span>Заказ</span>
-          <div>
-            <span>Исполнить до 31.05.2022</span>  
-            <span>Осталось 10 дней</span>  
+        <div class="relative flex flex-col rounded-md bg-light-grey p-2 pb-4 shadow-md">
+
+          <!-- header -->
+          <div class="flex place-content-between">
+            <span class="bg-white text-green px-2 rounded-md text-sm text-center my-auto">Заказ</span>
+            <router-link :to="{ name: '' }" class="text-sm text-blue">Анфалов Сергей</router-link> 
           </div>
-          <!--Предмет заказа -->
-          <div class="relative deal-subject_item">
+          <!-- Предмет заказа -->
+          <div class="relative deal-subject_item my-2 mt-4">
             <!-- item -->
             <div class="absolute top-0 left-0 flex flex-col justify-items-center">
               <div class="deal-subject_item-img">
@@ -194,11 +135,121 @@
               <div class="text-dark-gray text-xs text-center">х 66</div>
             </div>
           </div>
-          <span class="mt-10">Не оплачено</span>
-          <span>Сумма заказа: 2570,00 руб.</span>
-          <span>Оплачено: 0,00 руб.</span>
-          <span>Задолженность: 2570,00 руб.</span>
-          <span>Контакт: Анфалов Сергей</span>  
+
+          <!-- Статус оплаты -->
+          <ul class="text-sm text-dark-gray mt-2 px-2">
+            <li class="flex place-content-between">
+              <span>Оплачено</span>
+              <span>1 000,00 <span class="text-xs">из</span> 2 570,00</span>
+            </li>
+            <li class="flex place-content-between mt-2">
+              <span>Долг</span>
+              <span>1 570,00</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Date line -->
+        <div class="relative flex items-center w-full place-content-between">
+          <div class="date-line_date text-sm ml-2">21 мая 2022</div>
+          <div class="date-line_line"></div>
+          <div class="absolute right-2 date-line_calendar">
+            <router-link :to="{ name: 'Calendar' }">
+              <img src="@/assets/images/deals/calendar.svg" class="date-line_calendar-img">
+            </router-link>
+          </div>
+        </div>
+
+        <!-- item deal -->
+        <div class="relative flex flex-col rounded-md bg-light-grey p-2 shadow-md">
+
+          <!-- header -->
+          <div class="flex place-content-between">
+            <span class="bg-white text-green px-2 rounded-md text-sm text-center my-auto">Заказ</span>
+            <router-link :to="{ name: '' }" class="text-sm text-blue">Анфалов Сергей</router-link> 
+          </div>
+          <!-- Предмет заказа -->
+          <div class="relative deal-subject_item my-2 mt-4">
+            <!-- item -->
+            <div class="absolute top-0 left-0 flex flex-col justify-items-center">
+              <div class="deal-subject_item-img">
+                <img src="../assets/images/deals/orders/wedding-cake.png" alt=""> 
+              </div>
+              <div class="text-dark-gray text-xs text-center">х 1</div>
+            </div>
+            <!-- item -->
+            <div class="absolute top-0 left-10 flex flex-col justify-items-center">
+              <div class="deal-subject_item-img">
+                <img src="../assets/images/deals/orders/cake.png" alt=""> 
+              </div>
+              <div class="text-dark-gray text-xs text-center">х 121</div>
+            </div>
+            <!-- item -->
+            <div class="absolute top-0 left-20 flex flex-col justify-items-center">
+              <div class="deal-subject_item-img">
+                <img src="../assets/images/deals/orders/cupcake.png" alt=""> 
+              </div>
+              <div class="text-dark-gray text-xs text-center">х 66</div>
+            </div>
+          </div>
+
+          <!-- Статус оплаты -->
+          <ul class="text-sm text-dark-gray mt-2 px-2">
+            <li class="flex place-content-between">
+              <span>Оплачено</span>
+              <span>1 000,00 <span class="text-xs">из</span> 2 570,00</span>
+            </li>
+            <li class="flex place-content-between mt-2">
+              <span>Долг</span>
+              <span>1 570,00</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- item deal -->
+        <div class="relative flex flex-col rounded-md bg-light-grey p-2 shadow-md">
+
+          <!-- header -->
+          <div class="flex place-content-between">
+            <span class="bg-white text-green px-2 rounded-md text-sm text-center my-auto">Заказ</span>
+            <router-link :to="{ name: '' }" class="text-sm text-blue">Анфалов Сергей</router-link> 
+          </div>
+          <!-- Предмет заказа -->
+          <div class="relative deal-subject_item my-2 mt-4">
+            <!-- item -->
+            <div class="absolute top-0 left-0 flex flex-col justify-items-center">
+              <div class="deal-subject_item-img">
+                <img src="../assets/images/deals/orders/wedding-cake.png" alt=""> 
+              </div>
+              <div class="text-dark-gray text-xs text-center">х 1</div>
+            </div>
+            <!-- item -->
+            <div class="absolute top-0 left-10 flex flex-col justify-items-center">
+              <div class="deal-subject_item-img">
+                <img src="../assets/images/deals/orders/cake.png" alt=""> 
+              </div>
+              <div class="text-dark-gray text-xs text-center">х 121</div>
+            </div>
+            <!-- item -->
+            <div class="absolute top-0 left-20 flex flex-col justify-items-center">
+              <div class="deal-subject_item-img">
+                <img src="../assets/images/deals/orders/cupcake.png" alt=""> 
+              </div>
+              <div class="text-dark-gray text-xs text-center">х 66</div>
+            </div>
+          </div>
+
+          <!-- Статус оплаты -->
+          <ul class="text-sm text-dark-gray mt-2 px-2">
+            <li class="flex place-content-between">
+              <span>Оплачено</span>
+              <span>1 000,00 <span class="text-xs">из</span> 2 570,00</span>
+            </li>
+            <li class="flex place-content-between mt-2">
+              <span>Долг</span>
+              <span>1 570,00</span>
+            </li>
+          </ul>
         </div>
 
         <router-link 
@@ -319,7 +370,7 @@ export default {
   }
 
   .deal-subject_item {
-    height: 50px;
+    height: 70px;
   }
 
   .deal-subject_item-img {
@@ -435,5 +486,26 @@ export default {
     left: 0;
     height: 100%;
     background: #fff;
+  }
+
+  .date-line_date {
+    white-space: nowrap;
+    color: #838383;
+  }
+
+  .date-line_line {
+    width: 100%;
+    height: 1px;
+    background-color: #f1f1f1;
+    margin: 0 10px;
+  }
+
+  .date-line_calendar {
+    width: 32px;
+    height: 32px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
   }
 </style>

@@ -12,7 +12,7 @@ import ViewContact from '../views/ViewContact';
 import ViewDeal from '../views/ViewDeal';
 import Orders from '../views/Orders.vue';
 import Deals from '../views/Deals.vue';
-import EventCalendar from '../views/EventCalendar.vue';
+import Calendar from '../views/Calendar.vue';
 import Wallet from '../views/Wallet.vue';
 import Warehouse from '../views/Warehouse.vue';
 import Contacts from '../views/Contacts.vue';
@@ -106,11 +106,11 @@ const routes = [
   {
     path: "/calendar",
     name: "Calendar",
-    component: EventCalendar,
+    component: Calendar,
     meta: {
-      title: 'Event Calendar',
+      title: 'Calendar',
       auth: true,
-      translation: 'Календарь событий'
+      translation: 'Календарь'
     }
   },
   {

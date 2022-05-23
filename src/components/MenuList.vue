@@ -48,28 +48,36 @@
         </router-link>
       </li>
 
-      <!-- Calendar -->
-      <li class="p-2.5 rounded-xl mt-2">
-        <router-link class="menu-item" :to="{ name: 'Calendar' }">
+      <!-- Calendar, Warehouse & Dashboard -->
+      <li class="border-light-grey border p-2.5 rounded-xl mt-4">
+
+        <!-- Calendar -->
+        <router-link class="menu-item py-1" :to="{ name: 'Calendar' }">
           <div class="menu-item_icon">
             <img src="@/assets/images/menu/account-calendar.svg" alt="">
           </div>
-          <p class="menu-item_text">Календарь событий</p>
+          <p class="menu-item_text">Календарь</p>
         </router-link>
-      </li>
 
-      <!-- Warehouse -->
-      <li class="p-2.5 rounded-xl mb-2">
-        <router-link class="menu-item" :to="{ name: 'Warehouse' }">
+        <!-- Warehouse -->
+        <router-link class="menu-item py-1 mt-2" :to="{ name: 'Warehouse' }">
           <div class="menu-item_icon">
             <img src="@/assets/images/menu/account-warehouse.svg" alt="">
           </div>
           <p class="menu-item_text">Склад</p>
         </router-link>
+
+        <!-- Dashboard -->
+        <router-link class="menu-item py-1 mt-2" :to="{ name: 'Dashboard' }">
+          <div class="menu-item_icon">
+            <img src="@/assets/images/menu/account-dashboard.svg" alt="">
+          </div>
+          <p class="menu-item_text">Доска с показателями</p>
+        </router-link>
       </li>
 
       <!-- Settings -->
-      <li class="bg-light-grey p-2.5 rounded-xl">
+      <li class="bg-light-grey p-2.5 rounded-xl mt-4">
         <!-- Account Settings -->
         <router-link class="menu-item py-1" :to="{ name: 'AccountSettings' }">
           <div class="menu-item_icon">
