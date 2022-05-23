@@ -42,8 +42,8 @@
         <div class="flex deal-filter-wrapper">
             <!-- В планах -->
             <div class="deal-filter-item">
-              <input checked type="radio" name="deal-filter" id="in-process" value="deal-in-progress"> 
-              <label class="flex text-sm px-2 p-1 rounded-2xl" for="in-process">
+              <input checked type="radio" name="deal-filter" id="date-booking" value="deal-in-progress"> 
+              <label class="flex text-sm px-2 p-1 rounded-2xl" for="date-booking">
                 <div class="deal-filter-item_text">Бронь даты</div> 
                 <div class="deal-filter-item_count ml-1">22</div>
               </label>
@@ -96,161 +96,157 @@
         <div class="relative flex items-center w-full place-content-between">
           <div class="date-line_date ml-2 text-sm">23 мая 2022</div>
           <div class="date-line_line"></div>
-          <div class="absolute right-2 date-line_calendar">
-            <router-link :to="{ name: 'Calendar' }">
-              <img src="@/assets/images/deals/calendar.svg" class="date-line_calendar-img">
-            </router-link>
-          </div>
         </div>
 
         <!-- item deal -->
-        <div class="relative flex flex-col rounded-md bg-light-grey p-2 pb-4 shadow-md">
+        <router-link :to="{ name: '' }">
+          <div class="relative flex flex-col rounded-md bg-light-grey p-2 py-4 shadow-md">
 
-          <!-- header -->
-          <div class="flex place-content-between">
-            <span class="bg-white text-green px-2 rounded-md text-sm text-center my-auto">Заказ</span>
-            <router-link :to="{ name: '' }" class="text-sm text-blue">Анфалов Сергей</router-link> 
-          </div>
-          <!-- Предмет заказа -->
-          <div class="relative deal-subject_item my-2 mt-4">
-            <!-- item -->
-            <div class="absolute top-0 left-0 flex flex-col justify-items-center">
-              <div class="deal-subject_item-img">
-                <img src="../assets/images/deals/orders/wedding-cake.png" alt=""> 
-              </div>
-              <div class="text-dark-gray text-xs text-center">х 1</div>
+            <!-- header -->
+            <div class="flex place-content-between">
+              <span class="bg-white text-green px-2 rounded-md text-sm text-center my-auto">Заказ</span>
+              <router-link :to="{ name: '' }" class="text-sm text-blue mr-2">Анфалов Сергей</router-link> 
             </div>
-            <!-- item -->
-            <div class="absolute top-0 left-10 flex flex-col justify-items-center">
-              <div class="deal-subject_item-img">
-                <img src="../assets/images/deals/orders/cake.png" alt=""> 
+            <!-- Предмет заказа -->
+            <div class="relative deal-subject_item my-2 mt-4">
+              <!-- item -->
+              <div class="absolute top-0 left-0 flex flex-col justify-items-center">
+                <div class="deal-subject_item-img">
+                  <img src="../assets/images/deals/orders/wedding-cake.png" alt=""> 
+                </div>
+                <div class="text-dark-gray text-xs text-center">х 1</div>
               </div>
-              <div class="text-dark-gray text-xs text-center">х 121</div>
-            </div>
-            <!-- item -->
-            <div class="absolute top-0 left-20 flex flex-col justify-items-center">
-              <div class="deal-subject_item-img">
-                <img src="../assets/images/deals/orders/cupcake.png" alt=""> 
+              <!-- item -->
+              <div class="absolute top-0 left-10 flex flex-col justify-items-center">
+                <div class="deal-subject_item-img">
+                  <img src="../assets/images/deals/orders/cake.png" alt=""> 
+                </div>
+                <div class="text-dark-gray text-xs text-center">х 121</div>
               </div>
-              <div class="text-dark-gray text-xs text-center">х 66</div>
+              <!-- item -->
+              <div class="absolute top-0 left-20 flex flex-col justify-items-center">
+                <div class="deal-subject_item-img">
+                  <img src="../assets/images/deals/orders/cupcake.png" alt=""> 
+                </div>
+                <div class="text-dark-gray text-xs text-center">х 66</div>
+              </div>
             </div>
-          </div>
 
-          <!-- Статус оплаты -->
-          <ul class="text-sm text-dark-gray mt-2 px-2">
-            <li class="flex place-content-between">
-              <span>Оплачено</span>
-              <span>1 000,00 <span class="text-xs">из</span> 2 570,00</span>
-            </li>
-            <li class="flex place-content-between mt-2">
-              <span>Долг</span>
-              <span>1 570,00</span>
-            </li>
-          </ul>
-        </div>
+            <!-- Статус оплаты -->
+            <ul class="text-sm text-dark-gray mt-2 px-2">
+              <li class="flex place-content-between">
+                <span>Оплачено</span>
+                <span>1 000,00 <span class="text-xs">из</span> 2 570,00</span>
+              </li>
+              <li class="flex place-content-between mt-2">
+                <span>Долг</span>
+                <span>1 570,00</span>
+              </li>
+            </ul>
+          </div>
+        </router-link>
 
         <!-- Date line -->
         <div class="relative flex items-center w-full place-content-between">
           <div class="date-line_date text-sm ml-2">21 мая 2022</div>
           <div class="date-line_line"></div>
-          <div class="absolute right-2 date-line_calendar">
-            <router-link :to="{ name: 'Calendar' }">
-              <img src="@/assets/images/deals/calendar.svg" class="date-line_calendar-img">
-            </router-link>
-          </div>
         </div>
 
         <!-- item deal -->
-        <div class="relative flex flex-col rounded-md bg-light-grey p-2 shadow-md">
+        <router-link :to="{ name: '' }">
+          <div class="relative flex flex-col rounded-md bg-light-grey p-2 py-4 shadow-md">
 
-          <!-- header -->
-          <div class="flex place-content-between">
-            <span class="bg-white text-green px-2 rounded-md text-sm text-center my-auto">Заказ</span>
-            <router-link :to="{ name: '' }" class="text-sm text-blue">Анфалов Сергей</router-link> 
-          </div>
-          <!-- Предмет заказа -->
-          <div class="relative deal-subject_item my-2 mt-4">
-            <!-- item -->
-            <div class="absolute top-0 left-0 flex flex-col justify-items-center">
-              <div class="deal-subject_item-img">
-                <img src="../assets/images/deals/orders/wedding-cake.png" alt=""> 
-              </div>
-              <div class="text-dark-gray text-xs text-center">х 1</div>
+            <!-- header -->
+            <div class="flex place-content-between">
+              <span class="bg-white text-green px-2 rounded-md text-sm text-center my-auto">Заказ</span>
+              <router-link :to="{ name: '' }" class="text-sm text-blue mr-2">Анфалов Сергей</router-link> 
             </div>
-            <!-- item -->
-            <div class="absolute top-0 left-10 flex flex-col justify-items-center">
-              <div class="deal-subject_item-img">
-                <img src="../assets/images/deals/orders/cake.png" alt=""> 
+            <!-- Предмет заказа -->
+            <div class="relative deal-subject_item my-2 mt-4">
+              <!-- item -->
+              <div class="absolute top-0 left-0 flex flex-col justify-items-center">
+                <div class="deal-subject_item-img">
+                  <img src="../assets/images/deals/orders/wedding-cake.png" alt=""> 
+                </div>
+                <div class="text-dark-gray text-xs text-center">х 1</div>
               </div>
-              <div class="text-dark-gray text-xs text-center">х 121</div>
-            </div>
-            <!-- item -->
-            <div class="absolute top-0 left-20 flex flex-col justify-items-center">
-              <div class="deal-subject_item-img">
-                <img src="../assets/images/deals/orders/cupcake.png" alt=""> 
+              <!-- item -->
+              <div class="absolute top-0 left-10 flex flex-col justify-items-center">
+                <div class="deal-subject_item-img">
+                  <img src="../assets/images/deals/orders/cake.png" alt=""> 
+                </div>
+                <div class="text-dark-gray text-xs text-center">х 121</div>
               </div>
-              <div class="text-dark-gray text-xs text-center">х 66</div>
+              <!-- item -->
+              <div class="absolute top-0 left-20 flex flex-col justify-items-center">
+                <div class="deal-subject_item-img">
+                  <img src="../assets/images/deals/orders/cupcake.png" alt=""> 
+                </div>
+                <div class="text-dark-gray text-xs text-center">х 66</div>
+              </div>
             </div>
-          </div>
 
-          <!-- Статус оплаты -->
-          <ul class="text-sm text-dark-gray mt-2 px-2">
-            <li class="flex place-content-between">
-              <span>Оплачено</span>
-              <span>1 000,00 <span class="text-xs">из</span> 2 570,00</span>
-            </li>
-            <li class="flex place-content-between mt-2">
-              <span>Долг</span>
-              <span>1 570,00</span>
-            </li>
-          </ul>
-        </div>
+            <!-- Статус оплаты -->
+            <ul class="text-sm text-dark-gray mt-2 px-2">
+              <li class="flex place-content-between">
+                <span>Оплачено</span>
+                <span>1 000,00 <span class="text-xs">из</span> 2 570,00</span>
+              </li>
+              <li class="flex place-content-between mt-2">
+                <span>Долг</span>
+                <span>1 570,00</span>
+              </li>
+            </ul>
+          </div>
+        </router-link>
 
         <!-- item deal -->
-        <div class="relative flex flex-col rounded-md bg-light-grey p-2 shadow-md">
+        <router-link :to="{ name: '' }">
+          <div class="relative flex flex-col rounded-md bg-light-grey p-2 py-4 shadow-md">
 
-          <!-- header -->
-          <div class="flex place-content-between">
-            <span class="bg-white text-green px-2 rounded-md text-sm text-center my-auto">Заказ</span>
-            <router-link :to="{ name: '' }" class="text-sm text-blue">Анфалов Сергей</router-link> 
-          </div>
-          <!-- Предмет заказа -->
-          <div class="relative deal-subject_item my-2 mt-4">
-            <!-- item -->
-            <div class="absolute top-0 left-0 flex flex-col justify-items-center">
-              <div class="deal-subject_item-img">
-                <img src="../assets/images/deals/orders/wedding-cake.png" alt=""> 
-              </div>
-              <div class="text-dark-gray text-xs text-center">х 1</div>
+            <!-- header -->
+            <div class="flex place-content-between">
+              <span class="bg-white text-green px-2 rounded-md text-sm text-center my-auto">Заказ</span>
+              <router-link :to="{ name: '' }" class="text-sm text-blue mr-2">Анфалов Сергей</router-link> 
             </div>
-            <!-- item -->
-            <div class="absolute top-0 left-10 flex flex-col justify-items-center">
-              <div class="deal-subject_item-img">
-                <img src="../assets/images/deals/orders/cake.png" alt=""> 
+            <!-- Предмет заказа -->
+            <div class="relative deal-subject_item my-2 mt-4">
+              <!-- item -->
+              <div class="absolute top-0 left-0 flex flex-col justify-items-center">
+                <div class="deal-subject_item-img">
+                  <img src="../assets/images/deals/orders/wedding-cake.png" alt=""> 
+                </div>
+                <div class="text-dark-gray text-xs text-center">х 1</div>
               </div>
-              <div class="text-dark-gray text-xs text-center">х 121</div>
-            </div>
-            <!-- item -->
-            <div class="absolute top-0 left-20 flex flex-col justify-items-center">
-              <div class="deal-subject_item-img">
-                <img src="../assets/images/deals/orders/cupcake.png" alt=""> 
+              <!-- item -->
+              <div class="absolute top-0 left-10 flex flex-col justify-items-center">
+                <div class="deal-subject_item-img">
+                  <img src="../assets/images/deals/orders/cake.png" alt=""> 
+                </div>
+                <div class="text-dark-gray text-xs text-center">х 121</div>
               </div>
-              <div class="text-dark-gray text-xs text-center">х 66</div>
+              <!-- item -->
+              <div class="absolute top-0 left-20 flex flex-col justify-items-center">
+                <div class="deal-subject_item-img">
+                  <img src="../assets/images/deals/orders/cupcake.png" alt=""> 
+                </div>
+                <div class="text-dark-gray text-xs text-center">х 66</div>
+              </div>
             </div>
-          </div>
 
-          <!-- Статус оплаты -->
-          <ul class="text-sm text-dark-gray mt-2 px-2">
-            <li class="flex place-content-between">
-              <span>Оплачено</span>
-              <span>1 000,00 <span class="text-xs">из</span> 2 570,00</span>
-            </li>
-            <li class="flex place-content-between mt-2">
-              <span>Долг</span>
-              <span>1 570,00</span>
-            </li>
-          </ul>
-        </div>
+            <!-- Статус оплаты -->
+            <ul class="text-sm text-dark-gray mt-2 px-2">
+              <li class="flex place-content-between">
+                <span>Оплачено</span>
+                <span>1 000,00 <span class="text-xs">из</span> 2 570,00</span>
+              </li>
+              <li class="flex place-content-between mt-2">
+                <span>Долг</span>
+                <span>1 570,00</span>
+              </li>
+            </ul>
+          </div>
+        </router-link>
 
         <router-link 
           class="flex flex-col items-center bg-light-grey p-8 shadow-md cursor-pointer"

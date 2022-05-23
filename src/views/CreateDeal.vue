@@ -97,6 +97,10 @@
                   Добавить
                 </router-link>
               </div>
+              <!-- Если в справочнике есть даже, всеравно будет удобная возможность-->
+              <div v-if="filteredOptions.length > 1" @click.prevent="selectAnon()">
+                <div class="px-2 py-1">Неизвестный</div>
+              </div>
             </div>
 
           </div>
@@ -487,7 +491,9 @@ export default {
 
     const search = ref('');
 
+    // bind contact ID from DB myContacts
     const contactId = ref('');
+
     // Предметы заказа
     const dealsList= ref([]);
 
@@ -503,6 +509,8 @@ export default {
     //   console.log(data)
     // }
 
+    const totalDealValue = ref('');
+
     const showSumMenuFunc = () => {
       showSumMenu.value = !showSumMenu.value;
     }
@@ -516,7 +524,8 @@ export default {
       search.value = '';
       closeOptions();
       search.value = 'Неизвестный'
-      // В BD надо, чтобы id проставлялся, по сути это создает новый заказ, просто с неизвестным контактом... потом если надо корректируем
+      // Если выбрали "Неизвестный" - ему проставляется id = 000
+      contactId.value = '000'
     }
 
     // Select option
@@ -526,7 +535,7 @@ export default {
       if (option.value === option.text) {
         search.value = option.contactInfo.surname + ' ' + option.contactInfo.name;
         // console.log(option.id)
-        contactId.value = option.id
+        contactId.value = option.id;
       }
     }
 
@@ -697,11 +706,12 @@ export default {
       // Выбираем из массива данных нужные значения
       let numbers = array.map(item => item.totalSubjectPrice)
       // Суммируем значения
-      let sum = numbers.reduce( (accumulator, currentValue) => accumulator + currentValue)
-      return sum.toFixed(2)
-    }
+      let sum = numbers.reduce( (accumulator, currentValue) => accumulator + currentValue).toFixed(2)
+      // задаем значение общей стоиомсти дела
+      totalDealValue.value = sum
 
-    
+      return sum, totalDealValue.value
+    }
 
     // Listens for chaging of workout type input
     const workoutChange = () => {
@@ -731,7 +741,7 @@ export default {
             dealType: typeOfDeal.value,
             contactID: contactId.value,
             dealsList: dealsList.value,
-            // totalOrderPrice: totalOrderPrice.value
+            totalDealValue: totalDealValue.value,
           }
         ]);
         if (error) throw error;
@@ -782,7 +792,7 @@ export default {
     }
 
     return {
-      typeOfDeal, contactOfDeal, data, dataLoaded, getContactFromDB, sortedContacts,filteredOptions, search, workoutName, workoutType, exercises, statusMsg, errorMsg, user, addExercise, workoutChange, deleteExercise, createDeal, createWorkout, editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortment, deleteOrderSubject, dealTypeChanged, showSumMenuFunc, showSumMenu, additionalAttributes, sum 
+      typeOfDeal, contactOfDeal, data, dataLoaded, getContactFromDB, sortedContacts,filteredOptions, search, workoutName, workoutType, exercises, statusMsg, errorMsg, user, addExercise, workoutChange, deleteExercise, createDeal, createWorkout, editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortment, deleteOrderSubject, dealTypeChanged, showSumMenuFunc, showSumMenu, additionalAttributes, sum, totalDealValue
     };
   },
 };
