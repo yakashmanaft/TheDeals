@@ -94,9 +94,6 @@
                   <span>Осталось 10 дней</span>  
                 </div>
               </div>
-              <div @click.stop="toggleDealMenu" class="ellipsis-btn">
-                <span class="ellipsis-btn_item"></span>
-              </div>
             </div>
             <!-- Предмет заказа -->
             <div class="relative deal-subject_item mt-2">
@@ -126,7 +123,6 @@
             <span class="mt-10">Оплачено</span>
             <span>Сумма заказа: 2570,00 руб.</span>
             <span>Контакт: Анфалов Сергей</span>  
-            <div class="deal-menu" v-if="dealMenu">123134</div>
           </div>
 
         <!-- item deal -->
@@ -310,16 +306,8 @@ export default {
     const title = router.currentRoute._value.meta.translation;
     // console.log(router)
 
-    // Toggle deal menu
-    const dealMenu = ref(false)
-
-    const toggleDealMenu = () => {
-      dealMenu.value = !dealMenu.value;
-      console.log(dealMenu.value)
-    }
-
     return {
-      data, list, dataLoaded, title, dealMenu, toggleDealMenu
+      data, list, dataLoaded, title
     };
   },
 };
