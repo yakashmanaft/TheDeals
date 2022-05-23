@@ -92,161 +92,65 @@
           
         </div>
 
-        <!-- Date line -->
-        <div class="relative flex items-center w-full place-content-between">
-          <div class="date-line_date ml-2 text-sm">23 мая 2022</div>
-          <div class="date-line_line"></div>
+        <div>
+          <div v-for="(day, idx) in daysArray" :key="idx">
+            <!-- Deadline Date -->
+            <div class="flex items-center w-full place-content-between">
+              <div class="date-line_date ml-2 text-sm">{{day}}</div>
+              <div class="date-line_line"></div>
+            </div>
+
+            <div v-for="(deal, index) in list" :key="index">
+              <router-link v-if="showEventDate(deal.executionDate) === day" :to="{ name: '' }">
+                <div class="relative flex flex-col rounded-md bg-light-grey p-2 py-4 shadow-md">
+                  <!-- header -->
+                  <div class="flex place-content-between">
+                    <span class="bg-white text-green px-2 rounded-md text-sm text-center my-auto">{{mountDealType(deal.dealType)}}</span>
+                    <router-link :to="{ name: '' }" class="text-sm text-blue mr-2">Анфалов Сергей</router-link> 
+                  </div>
+                  <!-- Предмет заказа -->
+                  <div class="relative deal-subject_item my-2 mt-4">
+                    <!-- item -->
+                    <div class="absolute top-0 left-0 flex flex-col justify-items-center">
+                      <div class="deal-subject_item-img">
+                        <img src="../assets/images/deals/orders/wedding-cake.png" alt=""> 
+                      </div>
+                      <div class="text-dark-gray text-xs text-center">х 1</div>
+                    </div>
+                    <!-- item -->
+                    <div class="absolute top-0 left-10 flex flex-col justify-items-center">
+                      <div class="deal-subject_item-img">
+                        <img src="../assets/images/deals/orders/cake.png" alt=""> 
+                      </div>
+                      <div class="text-dark-gray text-xs text-center">х 121</div>
+                    </div>
+                    <!-- item -->
+                    <div class="absolute top-0 left-20 flex flex-col justify-items-center">
+                      <div class="deal-subject_item-img">
+                        <img src="../assets/images/deals/orders/cupcake.png" alt=""> 
+                      </div>
+                      <div class="text-dark-gray text-xs text-center">х 66</div>
+                    </div>
+                  </div>
+
+                  <!-- Статус оплаты -->
+                  <ul class="text-sm text-dark-gray mt-2 px-2">
+                    <li class="flex place-content-between">
+                      <span>Оплачено</span>
+                      <span>1 000,00 <span class="text-xs">из</span> 2 570,00</span>
+                    </li>
+                    <li class="flex place-content-between mt-2">
+                      <span>Долг</span>
+                      <span>1 570,00</span>
+                    </li>
+                  </ul>
+                </div>
+              </router-link>
+            </div>
+
+          </div>
+
         </div>
-
-        <!-- item deal -->
-        <router-link :to="{ name: '' }">
-          <div class="relative flex flex-col rounded-md bg-light-grey p-2 py-4 shadow-md">
-
-            <!-- header -->
-            <div class="flex place-content-between">
-              <span class="bg-white text-green px-2 rounded-md text-sm text-center my-auto">Заказ</span>
-              <router-link :to="{ name: '' }" class="text-sm text-blue mr-2">Анфалов Сергей</router-link> 
-            </div>
-            <!-- Предмет заказа -->
-            <div class="relative deal-subject_item my-2 mt-4">
-              <!-- item -->
-              <div class="absolute top-0 left-0 flex flex-col justify-items-center">
-                <div class="deal-subject_item-img">
-                  <img src="../assets/images/deals/orders/wedding-cake.png" alt=""> 
-                </div>
-                <div class="text-dark-gray text-xs text-center">х 1</div>
-              </div>
-              <!-- item -->
-              <div class="absolute top-0 left-10 flex flex-col justify-items-center">
-                <div class="deal-subject_item-img">
-                  <img src="../assets/images/deals/orders/cake.png" alt=""> 
-                </div>
-                <div class="text-dark-gray text-xs text-center">х 121</div>
-              </div>
-              <!-- item -->
-              <div class="absolute top-0 left-20 flex flex-col justify-items-center">
-                <div class="deal-subject_item-img">
-                  <img src="../assets/images/deals/orders/cupcake.png" alt=""> 
-                </div>
-                <div class="text-dark-gray text-xs text-center">х 66</div>
-              </div>
-            </div>
-
-            <!-- Статус оплаты -->
-            <ul class="text-sm text-dark-gray mt-2 px-2">
-              <li class="flex place-content-between">
-                <span>Оплачено</span>
-                <span>1 000,00 <span class="text-xs">из</span> 2 570,00</span>
-              </li>
-              <li class="flex place-content-between mt-2">
-                <span>Долг</span>
-                <span>1 570,00</span>
-              </li>
-            </ul>
-          </div>
-        </router-link>
-
-        <!-- Date line -->
-        <div class="relative flex items-center w-full place-content-between">
-          <div class="date-line_date text-sm ml-2">21 мая 2022</div>
-          <div class="date-line_line"></div>
-        </div>
-
-        <!-- item deal -->
-        <router-link :to="{ name: '' }">
-          <div class="relative flex flex-col rounded-md bg-light-grey p-2 py-4 shadow-md">
-
-            <!-- header -->
-            <div class="flex place-content-between">
-              <span class="bg-white text-green px-2 rounded-md text-sm text-center my-auto">Заказ</span>
-              <router-link :to="{ name: '' }" class="text-sm text-blue mr-2">Анфалов Сергей</router-link> 
-            </div>
-            <!-- Предмет заказа -->
-            <div class="relative deal-subject_item my-2 mt-4">
-              <!-- item -->
-              <div class="absolute top-0 left-0 flex flex-col justify-items-center">
-                <div class="deal-subject_item-img">
-                  <img src="../assets/images/deals/orders/wedding-cake.png" alt=""> 
-                </div>
-                <div class="text-dark-gray text-xs text-center">х 1</div>
-              </div>
-              <!-- item -->
-              <div class="absolute top-0 left-10 flex flex-col justify-items-center">
-                <div class="deal-subject_item-img">
-                  <img src="../assets/images/deals/orders/cake.png" alt=""> 
-                </div>
-                <div class="text-dark-gray text-xs text-center">х 121</div>
-              </div>
-              <!-- item -->
-              <div class="absolute top-0 left-20 flex flex-col justify-items-center">
-                <div class="deal-subject_item-img">
-                  <img src="../assets/images/deals/orders/cupcake.png" alt=""> 
-                </div>
-                <div class="text-dark-gray text-xs text-center">х 66</div>
-              </div>
-            </div>
-
-            <!-- Статус оплаты -->
-            <ul class="text-sm text-dark-gray mt-2 px-2">
-              <li class="flex place-content-between">
-                <span>Оплачено</span>
-                <span>1 000,00 <span class="text-xs">из</span> 2 570,00</span>
-              </li>
-              <li class="flex place-content-between mt-2">
-                <span>Долг</span>
-                <span>1 570,00</span>
-              </li>
-            </ul>
-          </div>
-        </router-link>
-
-        <!-- item deal -->
-        <router-link :to="{ name: '' }">
-          <div class="relative flex flex-col rounded-md bg-light-grey p-2 py-4 shadow-md">
-
-            <!-- header -->
-            <div class="flex place-content-between">
-              <span class="bg-white text-green px-2 rounded-md text-sm text-center my-auto">Заказ</span>
-              <router-link :to="{ name: '' }" class="text-sm text-blue mr-2">Анфалов Сергей</router-link> 
-            </div>
-            <!-- Предмет заказа -->
-            <div class="relative deal-subject_item my-2 mt-4">
-              <!-- item -->
-              <div class="absolute top-0 left-0 flex flex-col justify-items-center">
-                <div class="deal-subject_item-img">
-                  <img src="../assets/images/deals/orders/wedding-cake.png" alt=""> 
-                </div>
-                <div class="text-dark-gray text-xs text-center">х 1</div>
-              </div>
-              <!-- item -->
-              <div class="absolute top-0 left-10 flex flex-col justify-items-center">
-                <div class="deal-subject_item-img">
-                  <img src="../assets/images/deals/orders/cake.png" alt=""> 
-                </div>
-                <div class="text-dark-gray text-xs text-center">х 121</div>
-              </div>
-              <!-- item -->
-              <div class="absolute top-0 left-20 flex flex-col justify-items-center">
-                <div class="deal-subject_item-img">
-                  <img src="../assets/images/deals/orders/cupcake.png" alt=""> 
-                </div>
-                <div class="text-dark-gray text-xs text-center">х 66</div>
-              </div>
-            </div>
-
-            <!-- Статус оплаты -->
-            <ul class="text-sm text-dark-gray mt-2 px-2">
-              <li class="flex place-content-between">
-                <span>Оплачено</span>
-                <span>1 000,00 <span class="text-xs">из</span> 2 570,00</span>
-              </li>
-              <li class="flex place-content-between mt-2">
-                <span>Долг</span>
-                <span>1 570,00</span>
-              </li>
-            </ul>
-          </div>
-        </router-link>
 
         <router-link 
           class="flex flex-col items-center bg-light-grey p-8 shadow-md cursor-pointer"
@@ -352,9 +256,45 @@ export default {
     const router = useRouter();
     const title = router.currentRoute._value.meta.translation;
     // console.log(router)
+    
+    // Показываем тип дела
+    const mountDealType = (dealType) => {
+      if (dealType === 'order') {
+        return 'Заказ'
+      }
+      if (dealType === 'supply') {
+        return 'Поставка'
+      }
+      if (dealType === 'personal') {
+        return 'Личное'
+      }
+    }
+
+    // Преобразуем дату события для вывода в карточкн контакта
+    const showEventDate = (eventdate) => {
+      // get data from DB or input type date
+      const date = new Date(eventdate)
+      // format time
+      const day = date.getDate().toString().padStart(2, "0");
+      const month = date.getMonth();
+      const year = date.getFullYear();
+      const monthTitle = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+
+      return `${day} ${monthTitle[month]} ${year}`
+    }
+
+    const daysArray = [
+      '27 мая 2022',
+      '28 мая 2022',
+      '29 мая 2022',
+      '30 мая 2022',
+      '31 мая 2022',
+      '01 июня 2022',
+      '02 июня 2022'
+    ]
 
     return {
-      data, list, dataLoaded, title
+      data, list, dataLoaded, title, mountDealType, showEventDate, daysArray
     };
   },
 };

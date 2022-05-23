@@ -33,16 +33,16 @@
       <!-- Может имеет смысл сделать компонентом? -->
       <div
         v-if="dealsList.length !== 0"
-        class="w-full fixed bottom-0 left-0 bg-blue flex items-center justify-center flex-col rounded-t-3xl px-4 pb-0"
+        class="w-full fixed bottom-0 left-0 bg-light-grey flex items-center border-t justify-center flex-col rounded-t-3xl px-4 pb-0"
       >
         <div @click="showSumMenuFunc">X</div>
 
+
+        <p>Общая сумма: {{sum()}} руб.</p>
         <div v-if="showSumMenu">
           <p>Оплачено: 1000,00 руб.</p>
           <p>Задолженность: 1579,00 руб.</p>  
         </div>
-
-        <p>Общая сумма: {{sum()}} руб.</p>
 
         <button 
           type="submit" 
@@ -52,11 +52,11 @@
         </button>
 
       </div>
-        <!-- С кем заключается дело -->
+        <!-- С кем заключается дело (Укажите контакт) -->
         <div class="w-full">
           <!-- В качестве примера взято https://github.com/moreta/vue-search-select/blob/master/src/lib/BasicSelect.vue -->
           <label for="searchedContacts" class="ml-2 text-sm text-dark-gray">Укажите контакт</label>
-          <div class="search-input mt-1 px-2 h-10 flex items-center" @click="openOptions" @focus="openOptions">
+          <div class="search-input mt-1 px-2 h-10 flex items-center border" @click="openOptions" @focus="openOptions">
             <input 
               @focus.prevent="openOptions"
               required
@@ -70,7 +70,7 @@
             >
           </div>
           <div class="relative">
-            <div v-if="showSearchMenu" class="dropdown-menu absolute top-0 left-0 h-40 bg-light-grey w-full py-2 rounded-b-md text-lg">
+            <div v-if="showSearchMenu" class="dropdown-menu border absolute top-0 left-0 h-40 bg-light-grey w-full py-2 rounded-b-md text-lg">
               <!-- Список из справочника контактов -->
               <div 
                 v-for="(option, index) in filteredOptions" 
@@ -105,13 +105,27 @@
 
           </div>
         </div>
+
+        <!-- Укажите дату и время исполнения дела -->
+        <div class="w-full mt-4">
+          <label for="executionDate" class="ml-2 text-sm text-dark-gray">Бронь даты и времени</label>
+          <div class="search-input mt-1 px-2 h-10 flex items-center border">
+            <input 
+              type="datetime-local" 
+              name="execution-date" 
+              id="executionDate"
+              class="search-input_input text-gray-500 outline-none w-full focus:outline-none bg-light-grey" 
+              v-model="executionDate"
+            >
+          </div>
+        </div>
         
         <!-- Тип дела -->
         <div class="w-full flex flex-col mt-4">
           <label for="deal-type" class="mb-1 ml-2 text-sm text-dark-gray">Тип дела</label>
           <select 
             id="deal-type" 
-            class="webkit p-2 w-full text-gray-500 bg-light-grey rounded-md focus:outline-none" 
+            class="border webkit p-2 w-full text-gray-500 bg-light-grey rounded-md focus:outline-none" 
             required
             v-model="typeOfDeal"
             @change="dealTypeChanged"
@@ -490,6 +504,7 @@ export default {
     const dataLoaded = ref(null);
 
     const search = ref('');
+    const executionDate = ref('');
 
     // bind contact ID from DB myContacts
     const contactId = ref('');
@@ -740,6 +755,7 @@ export default {
           {
             dealType: typeOfDeal.value,
             contactID: contactId.value,
+            executionDate: executionDate.value,
             dealsList: dealsList.value,
             totalDealValue: totalDealValue.value,
           }
@@ -792,7 +808,7 @@ export default {
     }
 
     return {
-      typeOfDeal, contactOfDeal, data, dataLoaded, getContactFromDB, sortedContacts,filteredOptions, search, workoutName, workoutType, exercises, statusMsg, errorMsg, user, addExercise, workoutChange, deleteExercise, createDeal, createWorkout, editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortment, deleteOrderSubject, dealTypeChanged, showSumMenuFunc, showSumMenu, additionalAttributes, sum, totalDealValue
+      typeOfDeal, contactOfDeal, data, dataLoaded, getContactFromDB, sortedContacts,filteredOptions, search, workoutName, workoutType, exercises, statusMsg, errorMsg, user, addExercise, workoutChange, deleteExercise, createDeal, createWorkout, editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortment, deleteOrderSubject, dealTypeChanged, showSumMenuFunc, showSumMenu, additionalAttributes, sum, totalDealValue, executionDate
     };
   },
 };
