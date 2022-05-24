@@ -1,5 +1,6 @@
 <template>
   <div class="container text-dark">
+
     <!-- Navigation -->
     <nav class="nav w-full bg-white fixed z-10 py-2 px-4 flex items-center justify-between">
       <h1 class="text-dark text-2xl font-bold">Новое дело</h1>
@@ -26,280 +27,360 @@
         </div>
       </div>
 
-      <!-- Create -->
-      <form id="create-deal" v-if="user" @submit.prevent="createDeal" class="flex flex-col items-center pt-0">
-      <!-- Информационное табло по заказу -->
-      <!-- Пока общее под order|supply|personal -->
-      <!-- Может имеет смысл сделать компонентом? -->
-      <div
-        v-if="dealsList.length !== 0"
-        class="w-full fixed bottom-0 left-0 bg-light-grey flex items-center border-t justify-center flex-col rounded-t-3xl px-4 pb-0"
-      >
-        <div @click="showSumMenuFunc">X</div>
+      <div>
+        <!-- Create -->
+        <form id="create-deal" v-if="user" @submit.prevent="createDeal" class="flex flex-col items-center pt-0">
+  
+          <!-- total menu wrapper -->
+          <!-- Может имеет смысл сделать компонентом? -->
+          <div
+            v-if="dealsList.length !== 0"
+            class="w-full fixed bottom-0 left-0 flex items-center border-t justify-center flex-col pb-0 z-20"
+            :class="{ totalMenu_wrapper:totalDealMenu }"
+          >
+            <!-- Total Menu -->
+            <div class="bg-light-grey w-full fixed bottom-0 rounded-t-3xl" :class="{ totalMenu:totalDealMenu }">
 
+              <!-- Header -->
+              <div class="flex place-content-between px-4">
+        
+                <!-- Sum Deal Value -->
+                <div>
+                  Итого: {{sum()}} руб.
+                </div>
+      
+                <!-- open total Deal Menu -->
+                <div @click="showTotalDealMenu">
+                  <div class="flex">
+                    <div class="more-arrow">
+                      <img class="more-arrow_icon" src="../assets/images/common/arrow-right.svg" alt="">
+                    </div>
+                    <span>Подробнее</span>
+                  </div>
+                </div>
+              </div>
+      
+              <!-- Deal Sum Details -->
+              <div v-if="totalDealMenu && typeOfDeal === 'order'" class="deal-details px-4">
+                <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                          <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                          <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                          <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                          <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                          <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                          <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                          <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                          <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                          <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                          <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                          <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                          <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                          <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                          <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                          <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                                <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                          <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                          <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                          <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                          <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                          <p>Оплачено: 1000,00 руб.</p>
+                <p>Конец строки: 1579,00 руб.</p>  
+              </div>
 
-        <p>Общая сумма: {{sum()}} руб.</p>
-        <div v-if="showSumMenu">
-          <p>Оплачено: 1000,00 руб.</p>
-          <p>Задолженность: 1579,00 руб.</p>  
-        </div>
+              <!-- Btn submit -->
+              <div class="mx-4">
+                <button 
+                  type="submit" 
+                  class="w-full my-4 cursor-pointer p-2 bg-dark text-white rounded-md font-normal"
+                >
+                  Создать дело
+                </button>
+              </div>
 
-        <button 
-          type="submit" 
-          class="w-full my-4 cursor-pointer p-2 bg-dark text-white rounded-md font-normal"
-        >
-          Создать дело
-        </button>
+            </div>
+
+          </div>
+
+          <!-- set deal information inputs -->
+          <div class="w-full" :class="{fixed:totalDealMenu}">
+
+            <!-- С кем заключается дело (Укажите контакт) -->
+            <div class="w-full">
+              <!-- В качестве примера взято https://github.com/moreta/vue-search-select/blob/master/src/lib/BasicSelect.vue -->
+              <label for="searchedContacts" class="ml-2 text-sm text-dark-gray">Укажите контакт</label>
+              <div class="search-input mt-1 px-2 h-10 flex items-center border" @click="openOptions" @focus="openOptions">
+                <input 
+                  @focus.prevent="openOptions"
+                  required
+                  autocomplete="off"
+                  id="searchedContacts"
+                  class="search-input_input text-gray-500 outline-none w-full focus:outline-none bg-light-grey" 
+                  type="search"
+                  placeholder="Поиск..."
+                  v-model="search"
+                  @blur="blurInput"
+                >
+              </div>
+              <div class="relative">
+                <div v-if="showSearchMenu" class="dropdown-menu absolute top-0 left-0 h-40 bg-light-grey w-full py-2 rounded-b-md text-lg">
+                  <!-- Список из справочника контактов -->
+                  <div 
+                    v-for="(option, index) in filteredOptions" 
+                    :key="index" 
+                    @click.prevent="selectItem(option)" 
+                    class="dropdown-menu_item px-2 py-1"
+                  >
+                    <div>
+                      {{option.contactInfo.surname}} {{option.contactInfo.name}}
+                    </div>
+                    <div class="text-xs text-dark-gray">
+                      {{option.contactInfo.company}}
+                    </div>
+                  </div>
+                  <!-- Если из справочника ничего не найдено -->
+                  <div v-if="filteredOptions.length <= 0" @click.prevent="selectAnon()">
+                    <div class="px-2 text-xs text-dark-gray">Ничего не найдено. Выберите:</div>
+                    <div class="px-2 py-1 text-blue">Неизвестный</div>
+                    <div class="px-2 mt-2 text-xs text-dark-gray">Или добавьте новый контакт в справочник</div>
+                    <router-link 
+                      class="bg-green text-white text-center webkit block mx-2 rounded-md mt-2 p-2"
+                      :to="{ name: 'CreateContact' }"
+                    >
+                      Добавить
+                    </router-link>
+                  </div>
+                  <!-- Если в справочнике есть даже, всеравно будет удобная возможность-->
+                  <div v-if="filteredOptions.length > 1" @click.prevent="selectAnon()">
+                    <div class="px-2 py-1">Неизвестный</div>
+                  </div>
+                </div>
+    
+              </div>
+            </div>
+    
+            <!-- Укажите дату и время исполнения дела -->
+            <div class="w-full mt-4">
+              <label for="executionDate" class="ml-2 text-sm text-dark-gray">Бронь даты и времени</label>
+              <div class="search-input mt-1 px-2 h-10 flex items-center border">
+                <input 
+                  type="datetime-local" 
+                  name="execution-date" 
+                  id="executionDate"
+                  class="search-input_input text-gray-500 outline-none w-full focus:outline-none bg-light-grey" 
+                  v-model="executionDate"
+                >
+              </div>
+            </div>
+            
+            <!-- Тип дела -->
+            <div class="w-full flex flex-col mt-4">
+              <label for="deal-type" class="mb-1 ml-2 text-sm text-dark-gray">Тип дела</label>
+              <select 
+                id="deal-type" 
+                class="border webkit p-2 w-full text-gray-500 bg-light-grey rounded-md focus:outline-none" 
+                required
+                v-model="typeOfDeal"
+                @change="dealTypeChanged"
+              >
+                <option disabled value="select-deal-type">Выберите тип дела</option>
+                <option value="order">Заказ</option>
+                <option value="supply">Поставка</option>
+                <option value="personal">Личное</option>
+              </select>
+            </div>
+    
+            <!-- Настройки нового дела -->
+            <div class="w-full">
+    
+              <!-- Если новое дело - это заказ -->
+              <div v-if="typeOfDeal === 'order'" class="radio-toolbar mt-4">
+                <!-- Выбор предмета заказа -->
+                
+                <div v-if="user && !dealsList.length" class="w-full flex place-content-between p-2">
+                  <p>Добавьте предмет заказа</p>
+                  <p class="text-blue" @click="addOrderSubject">Добавить</p>
+                </div>
+                <div >
+    
+                  <div v-for="(subject, idx) in dealsList" :key="idx" class="flex subject-wrapper">
+                    <!-- Add subject to dealList -->
+                    <div class="flex flex-col w-full">
+                      <!-- header -->
+                      <div class="flex place-content-between">
+                        <!-- title -->
+                        <p class="ml-2 align-text-middle text-sm text-dark-gray">Предмет заказа</p>
+                        <!-- Delete current order subject -->
+                        <div class="icon-wrapper">
+                          <img 
+                            @click="deleteOrderSubject(subject.id)"
+                            class="cursor-pointer" 
+                            src="@/assets/images/common/icon-trash.svg" 
+                            alt="">
+                        </div>
+                      </div>
+    
+                      <!-- list of order subjects -->
+                      <div class="flex radio-toolbar-wrapper mt-2">
+                        <div class="radio-toolbar_item" v-for="(item, index) in assortment" :key="index">
+                          <input 
+                            type="radio"
+                            :value="item.name"
+                            :name="idx"
+                            v-model="subject.selectedProduct"
+                            :id="idx+' '+index"
+                          >
+                          <label :for="idx+' '+index">
+                            <div class="radio-toolbar_item-img">
+                              <img :src="require(`../assets/images/deals/orders/${item.img}`)" alt=""> 
+                            </div>
+                            <div class="radio-toolbar_item-title text-center text-xs text-dark-gray mt-2">{{ item.title }}</div>
+                          </label>
+    
+                        </div>
+                      </div>
+    
+                      <!-- Price per unit -->
+                      <div class="flex place-content-between mx-2 mb-4 mt-2 items-center">
+                        <span class="text-sm leading-none align-text-middle text-dark-gray">
+                          Цена за 1 шт.
+                        </span>
+                        <div>
+                          <input 
+                            type="number" 
+                            class="focus:outline-none text-dark text-right mx-1 pt-1 subject-price_value w-14" 
+                            placeholder="0,00"
+                            v-model="subject.pricePerUnit" 
+                          >
+                          <span class="py-2">руб.</span>
+                        </div>
+                      </div>
+    
+                      <!-- Change subject (product) quantity  -->
+                      <div class="flex place-content-between ml-2 mb-4 mt-2 items-center">
+                        <span class="text-sm leading-none align-text-middle text-dark-gray">
+                          Количество, шт.
+                        </span>
+                        <div class="subject-quantity flex justify-items-center">
+                          <button 
+                            @click.prevent="if(subject.productQuantity > 1) subject.productQuantity--;"
+                            class="subject-quantity_btn"
+                            :class="{ btn_disabled: subject.productQuantity < 2 }"
+                          >
+                            -
+                          </button>
+                          <!-- <span class="subject-quantity leading-none w-8 text-center">
+                            {{subject.productQuantity}}
+                          </span> -->
+                          <input type="number" class="subject-quantity leading-none w-8 text-center focus:outline-none" v-model="subject.productQuantity">
+                          <button 
+                            class="subject-quantity_btn"
+                            @click.prevent="subject.productQuantity++"
+                          >
+                            +
+                          </button>
+                        </div>
+    
+                      </div>
+    
+                      <!-- discount for subject price -->
+                      <div class="flex place-content-between mx-2 mb-4 mt-2 items-center">
+                        <span class="text-sm leading-none align-text-middle text-dark-gray">
+                          Скидка, %
+                        </span>
+                        <div>
+                          <input 
+                            type="number" 
+                            class="focus:outline-none text-dark w-10 text-right mx-1 pt-1 subject-price_value" 
+                            placeholder="0"
+                            v-model="subject.discountSubjectPriceValue"
+                            min="0"
+                            max="100"
+                          >
+                        </div>
+                      </div>  
+    
+                      <!-- Total subject price -->
+                      <div class="flex place-content-between mx-2 mb-4 mt-2 items-center">
+                        <span class="text-sm leading-none align-text-middle text-dark-gray">
+                          Цена за {{subject.productQuantity}} шт.
+                          <span v-if="subject.discountSubjectPriceValue > 0">с учетом скидки</span>
+                        </span>
+                        <div>
+                          <span 
+                            class="py-2"
+                          >
+                            {{(subject.totalSubjectPrice = (subject.pricePerUnit * subject.productQuantity * (1 - subject.discountSubjectPriceValue/100))).toFixed(2)}} руб.
+                          </span>
+                          
+                        </div>
+                      </div>
+    
+                      <!-- Subjet notes -->
+                      <div class="w-full mt-2">
+                        <textarea placeholder="Заметки к предмету заказа" v-model="subject.productNote" class="text-sm h-20 p-2 bg-light-grey text-gray-500 rounded-md w-full focus:outline-none"></textarea>
+                      </div>
+                    </div>
+    
+    
+                  </div>
+    
+                </div>
+    
+                <!-- Button to add new social to current contact -->
+                <button 
+                  v-if="dealsList.length"
+                  @click="addOrderSubject"
+                  type="button"
+                  class="border border-blue w-full p-2 rounded-md text-blue mb-4 cursor-pointer"
+                >
+                  Добавить предмет в заказ
+                </button>
+              </div>
+    
+              <!-- Если новое дело - это поставка -->
+              <div v-if="typeOfDeal === 'supply'">
+                Новое дело - поставка. В разработке...
+              </div>
+    
+              <!-- Если новое дело - это личное -->
+              <div v-if="typeOfDeal === 'personal'">
+                Новое дело - личная задача. В разработке..
+              </div>
+            </div>
+    
+            <p>Оплачено: 1000,00 руб.</p>
+            <p>Задолженность: 1579,00 руб.</p>  
+          </div>
+
+          
+        </form>
 
       </div>
-        <!-- С кем заключается дело (Укажите контакт) -->
-        <div class="w-full">
-          <!-- В качестве примера взято https://github.com/moreta/vue-search-select/blob/master/src/lib/BasicSelect.vue -->
-          <label for="searchedContacts" class="ml-2 text-sm text-dark-gray">Укажите контакт</label>
-          <div class="search-input mt-1 px-2 h-10 flex items-center border" @click="openOptions" @focus="openOptions">
-            <input 
-              @focus.prevent="openOptions"
-              required
-              autocomplete="off"
-              id="searchedContacts"
-              class="search-input_input text-gray-500 outline-none w-full focus:outline-none bg-light-grey" 
-              type="search"
-              placeholder="Поиск..."
-              v-model="search"
-              @blur="blurInput"
-            >
-          </div>
-          <div class="relative">
-            <div v-if="showSearchMenu" class="dropdown-menu absolute top-0 left-0 h-40 bg-light-grey w-full py-2 rounded-b-md text-lg">
-              <!-- Список из справочника контактов -->
-              <div 
-                v-for="(option, index) in filteredOptions" 
-                :key="index" 
-                @click.prevent="selectItem(option)" 
-                class="dropdown-menu_item px-2 py-1"
-              >
-                <div>
-                  {{option.contactInfo.surname}} {{option.contactInfo.name}}
-                </div>
-                <div class="text-xs text-dark-gray">
-                  {{option.contactInfo.company}}
-                </div>
-              </div>
-              <!-- Если из справочника ничего не найдено -->
-              <div v-if="filteredOptions.length <= 0" @click.prevent="selectAnon()">
-                <div class="px-2 text-xs text-dark-gray">Ничего не найдено. Выберите:</div>
-                <div class="px-2 py-1 text-blue">Неизвестный</div>
-                <div class="px-2 mt-2 text-xs text-dark-gray">Или добавьте новый контакт в справочник</div>
-                <router-link 
-                  class="bg-green text-white text-center webkit block mx-2 rounded-md mt-2 p-2"
-                  :to="{ name: 'CreateContact' }"
-                >
-                  Добавить
-                </router-link>
-              </div>
-              <!-- Если в справочнике есть даже, всеравно будет удобная возможность-->
-              <div v-if="filteredOptions.length > 1" @click.prevent="selectAnon()">
-                <div class="px-2 py-1">Неизвестный</div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-        <!-- Укажите дату и время исполнения дела -->
-        <div class="w-full mt-4">
-          <label for="executionDate" class="ml-2 text-sm text-dark-gray">Бронь даты и времени</label>
-          <div class="search-input mt-1 px-2 h-10 flex items-center border">
-            <input 
-              type="datetime-local" 
-              name="execution-date" 
-              id="executionDate"
-              class="search-input_input text-gray-500 outline-none w-full focus:outline-none bg-light-grey" 
-              v-model="executionDate"
-            >
-          </div>
-        </div>
-        
-        <!-- Тип дела -->
-        <div class="w-full flex flex-col mt-4">
-          <label for="deal-type" class="mb-1 ml-2 text-sm text-dark-gray">Тип дела</label>
-          <select 
-            id="deal-type" 
-            class="border webkit p-2 w-full text-gray-500 bg-light-grey rounded-md focus:outline-none" 
-            required
-            v-model="typeOfDeal"
-            @change="dealTypeChanged"
-          >
-            <option disabled value="select-deal-type">Выберите тип дела</option>
-            <option value="order">Заказ</option>
-            <option value="supply">Поставка</option>
-            <option value="personal">Личное</option>
-          </select>
-        </div>
-
-        <!-- Настройки нового дела -->
-        <div class="w-full">
-
-          <!-- Если новое дело - это заказ -->
-          <div v-if="typeOfDeal === 'order'" class="radio-toolbar mt-4">
-            <!-- Выбор предмета заказа -->
-            
-            <div v-if="user && !dealsList.length" class="w-full flex place-content-between p-2">
-              <p>Добавьте предмет заказа</p>
-              <p class="text-blue" @click="addOrderSubject">Добавить</p>
-            </div>
-            <div >
-
-              <div v-for="(subject, idx) in dealsList" :key="idx" class="flex subject-wrapper">
-                <!-- Add subject to dealList -->
-                <div class="flex flex-col w-full">
-                  <!-- header -->
-                  <div class="flex place-content-between">
-                    <!-- title -->
-                    <p class="ml-2 align-text-middle text-sm text-dark-gray">Предмет заказа</p>
-                    <!-- Delete current order subject -->
-                    <div class="icon-wrapper">
-                      <img 
-                        @click="deleteOrderSubject(subject.id)"
-                        class="cursor-pointer" 
-                        src="@/assets/images/common/icon-trash.svg" 
-                        alt="">
-                    </div>
-                  </div>
-
-                  <!-- list of order subjects -->
-                  <div class="flex radio-toolbar-wrapper mt-2">
-                    <div class="radio-toolbar_item" v-for="(item, index) in assortment" :key="index">
-                      <input 
-                        type="radio"
-                        :value="item.name"
-                        :name="idx"
-                        v-model="subject.selectedProduct"
-                        :id="idx+' '+index"
-                      >
-                      <label :for="idx+' '+index">
-                        <div class="radio-toolbar_item-img">
-                          <img :src="require(`../assets/images/deals/orders/${item.img}`)" alt=""> 
-                        </div>
-                        <div class="radio-toolbar_item-title text-center text-xs text-dark-gray mt-2">{{ item.title }}</div>
-                      </label>
-
-                    </div>
-                  </div>
-
-                  <!-- Price per unit -->
-                  <div class="flex place-content-between mx-2 mb-4 mt-2 items-center">
-                    <span class="text-sm leading-none align-text-middle text-dark-gray">
-                      Цена за 1 шт.
-                    </span>
-                    <div>
-                      <input 
-                        type="number" 
-                        class="focus:outline-none text-dark text-right mx-1 pt-1 subject-price_value w-14" 
-                        placeholder="0,00"
-                        v-model="subject.pricePerUnit" 
-                      >
-                      <span class="py-2">руб.</span>
-                    </div>
-                  </div>
-
-                  <!-- Change subject (product) quantity  -->
-                  <div class="flex place-content-between ml-2 mb-4 mt-2 items-center">
-                    <span class="text-sm leading-none align-text-middle text-dark-gray">
-                      Количество, шт.
-                    </span>
-                    <div class="subject-quantity flex justify-items-center">
-                      <button 
-                        @click.prevent="if(subject.productQuantity > 1) subject.productQuantity--;"
-                        class="subject-quantity_btn"
-                        :class="{ btn_disabled: subject.productQuantity < 2 }"
-                      >
-                        -
-                      </button>
-                      <!-- <span class="subject-quantity leading-none w-8 text-center">
-                        {{subject.productQuantity}}
-                      </span> -->
-                      <input type="number" class="subject-quantity leading-none w-8 text-center focus:outline-none" v-model="subject.productQuantity">
-                      <button 
-                        class="subject-quantity_btn"
-                        @click.prevent="subject.productQuantity++"
-                      >
-                        +
-                      </button>
-                    </div>
-
-                  </div>
-
-                  <!-- discount for subject price -->
-                  <div class="flex place-content-between mx-2 mb-4 mt-2 items-center">
-                    <span class="text-sm leading-none align-text-middle text-dark-gray">
-                      Скидка, %
-                    </span>
-                    <div>
-                      <input 
-                        type="number" 
-                        class="focus:outline-none text-dark w-10 text-right mx-1 pt-1 subject-price_value" 
-                        placeholder="0"
-                        v-model="subject.discountSubjectPriceValue"
-                        min="0"
-                        max="100"
-                      >
-                    </div>
-                  </div>  
-
-                  <!-- Total subject price -->
-                  <div class="flex place-content-between mx-2 mb-4 mt-2 items-center">
-                    <span class="text-sm leading-none align-text-middle text-dark-gray">
-                      Цена за {{subject.productQuantity}} шт.
-                      <span v-if="subject.discountSubjectPriceValue > 0">с учетом скидки</span>
-                    </span>
-                    <div>
-                      <span 
-                        class="py-2"
-                      >
-                        {{(subject.totalSubjectPrice = (subject.pricePerUnit * subject.productQuantity * (1 - subject.discountSubjectPriceValue/100))).toFixed(2)}} руб.
-                      </span>
-                      
-                    </div>
-                  </div>
-
-                  <!-- Subjet notes -->
-                  <div class="w-full mt-2">
-                    <textarea placeholder="Заметки к предмету заказа" v-model="subject.productNote" class="text-sm h-20 p-2 bg-light-grey text-gray-500 rounded-md w-full focus:outline-none"></textarea>
-                  </div>
-                </div>
-
-
-              </div>
-
-            </div>
-
-            <!-- Button to add new social to current contact -->
-            <button 
-              v-if="dealsList.length"
-              @click="addOrderSubject"
-              type="button"
-              class="border border-blue w-full p-2 rounded-md text-blue mb-4 cursor-pointer"
-            >
-              Добавить предмет в заказ
-            </button>
-          </div>
-
-          <!-- Если новое дело - это поставка -->
-          <div v-if="typeOfDeal === 'supply'">
-            Новое дело - поставка. В разработке...
-          </div>
-
-          <!-- Если новое дело - это личное -->
-          <div v-if="typeOfDeal === 'personal'">
-            Новое дело - личная задача. В разработке..
-          </div>
-        </div>
-
-        <p>Оплачено: 1000,00 руб.</p>
-        <p>Задолженность: 1579,00 руб.</p>  
-        
-      </form>
       
 
 
@@ -516,7 +597,7 @@ export default {
     const showSearchMenu = ref(null);
 
     // show sum menu
-    const showSumMenu = ref(null);
+    const totalDealMenu = ref(null);
 
     // // list of offers
     // const onChange = (event) => {
@@ -526,8 +607,8 @@ export default {
 
     const totalDealValue = ref('');
 
-    const showSumMenuFunc = () => {
-      showSumMenu.value = !showSumMenu.value;
+    const showTotalDealMenu = () => {
+      totalDealMenu.value = !totalDealMenu.value;
     }
 
     const editModeSearchMenu = () => {
@@ -808,7 +889,7 @@ export default {
     }
 
     return {
-      typeOfDeal, contactOfDeal, data, dataLoaded, getContactFromDB, sortedContacts,filteredOptions, search, workoutName, workoutType, exercises, statusMsg, errorMsg, user, addExercise, workoutChange, deleteExercise, createDeal, createWorkout, editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortment, deleteOrderSubject, dealTypeChanged, showSumMenuFunc, showSumMenu, additionalAttributes, sum, totalDealValue, executionDate
+      typeOfDeal, contactOfDeal, data, dataLoaded, getContactFromDB, sortedContacts,filteredOptions, search, workoutName, workoutType, exercises, statusMsg, errorMsg, user, addExercise, workoutChange, deleteExercise, createDeal, createWorkout, editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortment, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributes, sum, totalDealValue, executionDate
     };
   },
 };
@@ -952,6 +1033,37 @@ export default {
 
   .subject-wrapper:last-child {
     border-bottom: none;
+  }
+
+  .totalMenu {
+    height: 50vh;
+    background: #f1f1f1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .totalMenu_wrapper {
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.7);
+  }
+
+  .deal-details {
+    height: 100%;
+    overflow-y: scroll;
+  }
+
+  .more-arrow {
+    width: 15px;
+    height: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .more-arrow_icon {
+    width: 100%;
+    height: 100%;
   }
 
 </style>
