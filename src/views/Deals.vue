@@ -96,11 +96,11 @@
           <div v-for="(day, idx) in daysArray" :key="idx">
             <!-- Deadline Date -->
             <div class="flex items-center w-full place-content-between">
-              <div class="date-line_date ml-2 text-sm">{{day}}</div>
+              <div class="date-line_date ml-2 text-md">{{day}}</div>
               <div class="date-line_line"></div>
             </div>
 
-            <div v-for="(deal, index) in list" :key="index">
+            <div v-for="(deal, index) in list" :key="index" class="my-4">
               <router-link v-if="showEventDate(deal.executionDate) === day" :to="{ name: '' }">
                 <div class="relative flex flex-col rounded-md bg-light-grey p-2 py-4 shadow-md">
                   <!-- header -->
@@ -283,18 +283,54 @@ export default {
       return `${day} ${monthTitle[month]} ${year}`
     }
 
-    const daysArray = [
-      '27 мая 2022',
-      '28 мая 2022',
-      '29 мая 2022',
-      '30 мая 2022',
-      '31 мая 2022',
-      '01 июня 2022',
-      '02 июня 2022'
-    ]
+    // Список дат, для которых есть дела (заказы, поставки, личное)
+    const daysArray = ref([])
+
+    // Все даты по заказам
+    const executionDatesArray = ref([])
+
+    // Get execution date
+    const getExecutionDate = async () => {
+      // Выдергиваем из БД строки с датой исполнения дела
+      try {
+        const { data: deals, error } = await supabase.from('deals').select('executionDate');
+        if(error) throw error;
+        executionDatesArray.value = deals;
+        // dataLoaded.value = true;
+
+        //создаем на их основании новый массив
+        const arr = executionDatesArray.value.map(item => {
+          return {...item}
+        })
+
+        // делаем из массива массивов массив с датами и сортируем их
+        const newArray = []
+
+        arr.forEach(item => {
+          newArray.push(item.executionDate)
+          // Сортируем массив дат по порядку (от более свежей к более старой)
+          newArray.sort((a,b) => {
+            return new Date(b) - new Date(a);
+          })
+        })
+
+        // Задаем нужный формат отображения
+        const newsArray = newArray.map(item => {
+          return showEventDate(item)
+        })
+
+        daysArray.value = new Set(newsArray)
+        
+      } catch (error) {
+        console.warn(error.message);
+      }
+    }
+
+    // Run execution date function
+    getExecutionDate();
 
     return {
-      data, list, dataLoaded, title, mountDealType, showEventDate, daysArray
+      data, list, dataLoaded, title, executionDatesArray, mountDealType, showEventDate, daysArray
     };
   },
 };
