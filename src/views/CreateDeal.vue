@@ -70,7 +70,7 @@
             >
           </div>
           <div class="relative">
-            <div v-if="showSearchMenu" class="dropdown-menu border absolute top-0 left-0 h-40 bg-light-grey w-full py-2 rounded-b-md text-lg">
+            <div v-if="showSearchMenu" class="dropdown-menu absolute top-0 left-0 h-40 bg-light-grey w-full py-2 rounded-b-md text-lg">
               <!-- Список из справочника контактов -->
               <div 
                 v-for="(option, index) in filteredOptions" 
@@ -820,7 +820,6 @@ export default {
     padding: 0.5rem 1rem;
   }
   .search-input {
-    // border: 1px solid #838383;
     border-radius: 5px;
     background-color: #f1f1f1;
   }
