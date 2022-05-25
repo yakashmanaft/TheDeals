@@ -9,52 +9,57 @@
       <p class="text-red-500">{{ errorMsg }}</p>
     </div>
 
-    <!-- Login -->
-    <form @submit.prevent='login()' class="form flex flex-col rounded-md w-full mb-6 z-10">
-      
+    <!-- Content -->
+    <div class="content w-full flex flex-col place-content-between">
       <!-- Заголовок -->
-      <div class="my-4">
-        <!-- <p class="text-center text-dark-gray text-12">Для входа в сервис</p> -->
-        <h1 class="font-bold text-center text-3xl text-light-grey">The Deals</h1>
+      <div class="header">
+        <div>
+          <h1 class="font-bold text-7xl text-blue">Deals<span class="text-green">.</span></h1>
+          <h2 class="text-dark-gray ml-1 mt-1 leading-snug">Маленькие дела - <br>шаг к большому событию</h2>
+        </div>
       </div>
 
-      <!-- Email Input -->
-      <div class="flex flex-col mb-2 mt-10">
-        <!-- <label for="email" class="mb-1 text-sm text-dark-gray">Email</label> -->
-        <input 
-          type="text" 
-          required 
-          class="p-2 text-md bg-transparent border text-white rounded-md focus:text-dark focus:bg-white focus:outline-none" 
-          id="email"
-          v-model="email"
-          placeholder="Введите имейл"
-        />
-      </div>
+      <!-- Login -->
+      <form @submit.prevent='login()' class="form flex flex-col px-2 mb-6 z-10">
 
-      <!-- Password Input -->
-      <div class="flex flex-col my-4">
-        <!-- <label for="password" class="mb-1 text-sm text-dark-gray">Password</label> -->
-        <input 
-          type="password" 
-          required 
-          class="p-2 text-md text-white bg-transparent border rounded-md focus:text-dark focus:bg-white focus:outline-none" 
-          id="password"
-          v-model="password"
-          placeholder="Укажите пароль"
-        />
-      </div>
+        <!-- Email Input -->
+        <div class="flex flex-col mb-2 mt-10">
+          <!-- <label for="email" class="mb-1 text-sm text-dark-gray">Email</label> -->
+          <input 
+            type="text" 
+            required 
+            class="p-2 text-md bg-sand border rounded-md focus:text-dark focus:bg-light-blue focus:outline-none" 
+            id="email"
+            v-model="email"
+            placeholder="Введите имейл"
+          />
+        </div>
 
-      <button 
-        type="submit" 
-        class="mt-6 py-2 px-6 rounded-md self-center w-full text-md text-white bg-green duration-200 border-solid border-2 border-transparent hover:border-green hover:bg-transparent hover:text-green"
-      >
-        ОК
-      </button>
+        <!-- Password Input -->
+        <div class="flex flex-col my-4">
+          <!-- <label for="password" class="mb-1 ml-2 text-sm text-dark-gray">Пароль</label> -->
+          <input 
+            type="password" 
+            required 
+            class="p-2 text-md bg-sand border rounded-md focus:text-dark focus:bg-light-blue focus:outline-none" 
+            id="password"
+            v-model="password"
+            placeholder="Введите пароль"
+          />
+        </div>
 
-      <router-link class="text-sm mt-6 text-center" :to="{ name: 'Register' }">
-        <span class="text-white">Еще нет аккаунта?</span>
-      </router-link>
-    </form>
+        <button 
+          type="submit" 
+          class="mt-6 py-2 rounded-md self-center w-full text-sm text-white bg-green duration-200 border-solid border-2 border-transparent hover:border-green hover:bg-transparent hover:text-green shadow-md hover:shadow-none" 
+        >
+          Войти
+        </button>
+
+        <router-link class="text-sm mt-6 text-center" :to="{ name: 'Register' }">
+          <span class="text-blue">Еще нет аккаунта?</span>
+        </router-link>
+      </form>
+    </div>
   </div>
 </template>
 
@@ -98,36 +103,26 @@ export default {
 </script>
 
 <style scoped>
-  .form {
-    
-  }
-
   .entrance-image {
-    /* оптимизировать в webp формат у изображения */
-    background: url('../assets/images/entrance-image.png') 0px 0px no-repeat;
+    background-color: #f1f1f1
+  }
+  
+  .content {
     height: 100vh;
-    background-size: cover;
   }
 
-  .entrance-image:before {
-    content: '';
-    display: block;
-    width: 100%;
-    height: 100vh;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color:rgba(61, 61, 61, .4);
-}
+  .header {
+    height: 50%;
+    display: flex;
+    align-items: flex-end;
+  }
 
   input::-moz-placeholder { 
-    color: white; 
+    color: #3d3d3d; 
   }
 
   input::-webkit-input-placeholder { 
-    color: white; 
+    color: #3d3d3d; 
   }
 
   button {

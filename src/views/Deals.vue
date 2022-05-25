@@ -106,7 +106,7 @@
                   <!-- header -->
                   <div class="flex place-content-between">
                     <span class="bg-white text-green px-2 rounded-md text-sm text-center my-auto">{{mountDealType(deal.dealType)}}</span>
-                    <router-link :to="{ name: '' }" class="text-sm text-blue mr-2">Анфалов Сергей</router-link> 
+                    <router-link :to="{ name: '' }" class="text-sm text-blue mr-2">{{showNameByID(deal.contactID)}}Анфалов Сергей</router-link> 
                   </div>
                   <!-- Предмет заказа -->
                   <div class="relative deal-subject_item my-2 mt-4">
@@ -329,8 +329,14 @@ export default {
     // Run execution date function
     getExecutionDate();
 
+    // Show name of contact by ID
+    const showNameByID = (contactID) => {
+      // Сопоставить ID в deals с ID в myContacts и возвращать surname & name 
+      return contactID
+    }
+
     return {
-      data, list, dataLoaded, title, executionDatesArray, mountDealType, showEventDate, daysArray
+      data, list, dataLoaded, title, executionDatesArray, mountDealType, showEventDate, daysArray, showNameByID
     };
   },
 };

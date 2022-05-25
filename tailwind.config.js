@@ -11,8 +11,10 @@ module.exports = {
         "dark": "#3D3D3D",
         "green": "#78D86F",
         "blue": "#4785E7",
-        "danger": "#FF8B8B"
-      },
+        "light-blue": "#D8E7FF",
+        "danger": "#FF8B8B",
+        "sand": "#FFEB99"
+      }
     },
     fontFamily: {
       Poppins: ["Poppins, sans-serif"],

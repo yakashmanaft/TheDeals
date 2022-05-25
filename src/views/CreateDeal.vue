@@ -42,26 +42,36 @@
             <div class="bg-light-grey border-t w-full fixed bottom-0 rounded-t-3xl" :class="{ totalMenu:totalDealMenu }">
 
               <!-- Header -->
-              <div class="flex place-content-between px-4">
-        
+              <div class="flex items-center place-content-between px-4 mt-2">
                 <!-- Sum Deal Value -->
-                <div>
-                  Итого: {{sum()}} руб.
+                <div class="ml-2">
+                  <div class="text-xs text-dark-gray">
+                  Итого: 
+                  </div>
+                  <div class="text-xl">
+                    {{sum()}} руб.
+                  </div>
                 </div>
       
-                <!-- open total Deal Menu -->
+                <!-- btn to open total Deal Menu -->
                 <div @click="showTotalDealMenu">
-                  <div class="flex">
-                    <div class="more-arrow">
-                      <img class="more-arrow_icon" src="../assets/images/common/arrow-right.svg" alt="">
+                  <div class="flex items-center mr-2">
+                    <div v-if="totalDealMenu === false" class="text-sm text-blue mr-2">Подробнее</div>
+                    <div v-if="totalDealMenu === true" class="text-sm text-blue mr-2">Скрыть</div>
+                    <div class="totalMenu-more_arrow">
+                      <img 
+                        class="more-arrow_icon" 
+                        src="../assets/images/common/arrow-right.svg"
+                        :class="[{ more_arrow_icon_opened_menu: totalDealMenu === true }, {more_arrow_icon_closed_menu: totalDealMenu === false}]" 
+                        alt="">
                     </div>
-                    <span>Подробнее</span>
                   </div>
                 </div>
               </div>
       
               <!-- Deal Sum Details -->
-              <div v-if="totalDealMenu && typeOfDeal === 'order'" class="deal-details px-4">
+              <div v-if="totalDealMenu && typeOfDeal === 'order'" class="deal-details px-4 border-t mt-2">
+                {{dealsList}}
                 <p>Оплачено: 1000,00 руб.</p>
                 <p>Задолженность: 1579,00 руб.</p>  
                           <p>Оплачено: 1000,00 руб.</p>
@@ -427,7 +437,7 @@ export default {
     const showSearchMenu = ref(null);
 
     // show sum menu
-    const totalDealMenu = ref(null);
+    const totalDealMenu = ref(false);
 
     // // list of offers
     // const onChange = (event) => {
@@ -866,7 +876,7 @@ export default {
   }
 
   .totalMenu {
-    height: 50vh;
+    height: 70vh;
     background: #f1f1f1;
     display: flex;
     flex-direction: column;
@@ -889,17 +899,25 @@ export default {
     padding: 0 1rem;
   }
 
-  .more-arrow {
-    width: 15px;
-    height: 15px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  .totalMenu-more_arrow {
+    width: 17px;
+    height: 17px;
+    padding: 2px;
+    // background-color: white;
+    border-radius: 100%;
   }
 
   .more-arrow_icon {
     width: 100%;
     height: 100%;
+  }
+
+  .more_arrow_icon_closed_menu {
+    transform: rotate(270deg);
+  }
+
+  .more_arrow_icon_opened_menu {
+    transform: rotate(90deg);
   }
 
 </style>
