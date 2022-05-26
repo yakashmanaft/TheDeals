@@ -101,12 +101,12 @@
             </div>
 
             <div v-for="(deal, index) in list" :key="index" class="my-4">
-              <router-link v-if="showEventDate(deal.executionDate) === day" :to="{ name: '' }">
+              <router-link v-if="showEventDate(deal.executionDate) === day" :to="{ name: 'View-Deal', params: { dealId: deal.id } }">
                 <div class="relative flex flex-col rounded-md bg-light-grey p-2 py-4 shadow-md">
                   <!-- header -->
                   <div class="flex place-content-between">
                     <span class="bg-white text-green px-2 rounded-md text-sm text-center my-auto">{{mountDealType(deal.dealType)}}</span>
-                    <router-link :to="{ name: '' }" class="text-sm text-blue mr-2">{{showNameByID(deal.contactID)}}</router-link> 
+                    <router-link :to="{ name: 'View-Contact', params: { contactId: deal.id } }" class="text-sm text-blue mr-2">{{showNameByID(deal.contactID)}}</router-link> 
                   </div>
                   <!-- Предмет заказа -->
                   <div class="relative deal-subject_item my-2 mt-4">
