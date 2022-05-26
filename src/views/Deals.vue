@@ -6,7 +6,7 @@
 
     <!-- Добавление нового заказа -->
     <router-link 
-      class="fixed z-10 bottom-5 right-5 w-14 h-14 bg-blue rounded-full flex items-center justify-center"
+      class="fixed z-10 bottom-5 right-5 w-14 h-14 bg-blue rounded-full flex items-center justify-center shadow-md"
       :to="{ name: 'CreateDeal' }"
     >
       <img src="@/assets/images/common/icon-plus.svg" alt="">
@@ -106,7 +106,7 @@
                   <!-- header -->
                   <div class="flex place-content-between">
                     <span class="bg-white text-green px-2 rounded-md text-sm text-center my-auto">{{mountDealType(deal.dealType)}}</span>
-                    <router-link :to="{ name: '' }" class="text-sm text-blue mr-2">{{showNameByID(deal.contactID)}}Анфалов Сергей</router-link> 
+                    <router-link :to="{ name: '' }" class="text-sm text-blue mr-2">{{showNameByID(deal.contactID)}}</router-link> 
                   </div>
                   <!-- Предмет заказа -->
                   <div class="relative deal-subject_item my-2 mt-4">
@@ -303,7 +303,7 @@ export default {
           return {...item}
         })
 
-        // делаем из массива массивов массив с датами и сортируем их
+        // делаем из массива массивов... массив с датами и сортируем их
         const newArray = []
 
         arr.forEach(item => {
@@ -329,14 +329,62 @@ export default {
     // Run execution date function
     getExecutionDate();
 
-    // Show name of contact by ID
-    const showNameByID = (contactID) => {
-      // Сопоставить ID в deals с ID в myContacts и возвращать surname & name 
-      return contactID
+
+    //
+    const contactInfo = ref([]);
+
+    const getContactInfo = async () => {
+      try {
+        const { data: myContacts, error } = await supabase.from('myContacts').select('*');
+        if(error) throw error;
+        contactInfo.value = myContacts
+        
+      } catch (error) {
+        console.warn(error)
+      }
     }
 
+    getContactInfo();
+    // Show name of contact by ID
+    const showNameByID = (contactID) => {
+
+      //создаем на их основании новый массив
+      const arr = contactInfo.value.map(item => {
+        return {...item}
+      })
+
+      let result = arr.filter(obj => {
+        return obj.id === +contactID
+      })
+
+      let nameByID = JSON.stringify(result[0].contactInfo.surname + ' ' + result[0].contactInfo.name).toString().replace(/"/g, "")
+      
+      return nameByID
+    }
+
+    // const filterNameByID = async () => {
+    //   // Сопоставить ID в deals с ID в myContacts и возвращать surname & name 
+    //   const nameById = ref('')
+    //   try {
+    //     const { data: myContacts, error } = await supabase.from('myContacts').select('*');
+    //     if(error) throw error;
+
+    //     let result = myContacts.filter(obj => {
+    //       return obj.id === +contactID
+    //     })
+
+    //     const infoByID = result[0].contactInfo
+
+    //     nameById.value = infoByID.name
+
+
+    //   } catch (error ){
+    //     console.warn(error)
+    //   }
+    // }
+
     return {
-      data, list, dataLoaded, title, executionDatesArray, mountDealType, showEventDate, daysArray, showNameByID
+      data, list, dataLoaded, title, executionDatesArray, mountDealType, showEventDate, daysArray, showNameByID, contactInfo
     };
   },
 };
