@@ -12,7 +12,7 @@
     <!-- Content -->
     <div class="content w-full flex flex-col place-content-between">
       <!-- Заголовок -->
-      <div class="header">
+      <div class="header px-2">
         <div>
           <h1 class="font-bold text-7xl text-blue">Deals<span class="text-green">.</span></h1>
           <h2 class="text-dark-gray ml-1 mt-1 leading-snug">Маленькие дела - <br>шаг к большому событию</h2>
