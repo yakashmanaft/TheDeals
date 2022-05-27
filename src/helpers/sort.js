@@ -11,6 +11,6 @@ export const sortAlphabetically = (arrayToSort) => {
       return 1;
     }
     return 0;
-  })
+  });
   
 }; 
