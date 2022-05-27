@@ -31,110 +31,7 @@
         <!-- Create -->
         <form id="create-deal" v-if="user" @submit.prevent="createDeal" class="flex flex-col items-center pt-0">
   
-          <!-- total menu wrapper -->
-          <!-- Может имеет смысл сделать компонентом? -->
-          <div
-            v-if="dealsList.length !== 0"
-            class="w-full fixed bottom-0 left-0 flex items-center  justify-center flex-col pb-0 z-20"
-            :class="{ totalMenu_wrapper:totalDealMenu }"
-          >
-            <!-- Total Menu -->
-            <div class="bg-light-grey border-t w-full fixed bottom-0 rounded-t-3xl" :class="{ totalMenu:totalDealMenu }">
 
-              <!-- Header -->
-              <div class="flex items-center place-content-between px-4 mt-2">
-                <!-- Sum Deal Value -->
-                <div class="ml-2">
-                  <div class="text-xs text-dark-gray">
-                  Итого: 
-                  </div>
-                  <div class="text-xl">
-                    {{sum()}} руб.
-                  </div>
-                </div>
-      
-                <!-- btn to open total Deal Menu -->
-                <div @click="showTotalDealMenu">
-                  <div class="flex items-center mr-2">
-                    <div v-if="totalDealMenu === false" class="text-sm text-blue mr-2">Подробнее</div>
-                    <div v-if="totalDealMenu === true" class="text-sm text-blue mr-2">Скрыть</div>
-                    <div class="totalMenu-more_arrow">
-                      <img 
-                        class="more-arrow_icon" 
-                        src="../assets/images/common/arrow-right.svg"
-                        :class="[{ more_arrow_icon_opened_menu: totalDealMenu === true }, {more_arrow_icon_closed_menu: totalDealMenu === false}]" 
-                        alt="">
-                    </div>
-                  </div>
-                </div>
-              </div>
-      
-              <!-- Deal Sum Details -->
-              <div v-if="totalDealMenu && typeOfDeal === 'order'" class="deal-details px-4 border-t mt-2">
-                {{dealsList}}
-                <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                          <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                          <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                          <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                          <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                          <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                          <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                          <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                          <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                          <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                          <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                          <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                          <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                          <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                          <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                          <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                                <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                          <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                          <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                          <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                          <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                          <p>Оплачено: 1000,00 руб.</p>
-                <p>Конец строки: 1579,00 руб.</p>  
-              </div>
-
-              <!-- Btn submit -->
-              <div class="mx-4">
-                <button 
-                  type="submit" 
-                  class="w-full my-4 cursor-pointer p-2 bg-dark text-white rounded-md font-normal"
-                >
-                  Создать дело
-                </button>
-              </div>
-
-            </div>
-
-          </div>
 
           <!-- set deal information inputs -->
           <div class="w-full mb-32" :class="{deal_information_inputs:totalDealMenu}">
@@ -385,8 +282,120 @@
     
             <p>Оплачено: 1000,00 руб.</p>
             <p>Задолженность: 1579,00 руб.</p>  
+
+            <p>Оплачено: 1000,00 руб.</p>
+            <p>Задолженность: 1579,00 руб.</p>  
+
+            <p>Оплачено: 1000,00 руб.</p>
+            <p>Задолженность: 1579,00 руб.</p>  
           </div>
           
+
+          <!-- total menu wrapper -->
+          <!-- Может имеет смысл сделать компонентом? -->
+          <div
+            v-if="dealsList.length !== 0"
+            class="w-full fixed bottom-0 left-0 flex items-center  justify-center flex-col pb-0 z-20"
+            :class="{ totalMenu_wrapper:totalDealMenu }"
+            @click="totalDealMenuClose"
+          >
+            <!-- Total Menu -->
+            <div class="bg-light-grey bottom-0 border-t w-full fixed  rounded-t-3xl" :class="{ totalMenu:totalDealMenu }">
+
+              <!-- Header -->
+              <div class="flex items-center place-content-between px-4 mt-2">
+                <!-- Sum Deal Value -->
+                <div class="ml-2">
+                  <div class="text-xs text-dark-gray">
+                  Итого: 
+                  </div>
+                  <div class="text-xl">
+                    {{sum()}} руб.
+                  </div>
+                </div>
+      
+                <!-- btn to open total Deal Menu -->
+                <div @click="showTotalDealMenu">
+                  <div class="flex items-center mr-2">
+                    <div v-if="totalDealMenu === false" class="text-sm text-blue mr-2">Подробнее</div>
+                    <div v-if="totalDealMenu === true" class="text-sm text-blue mr-2">Скрыть</div>
+                    <div class="totalMenu-more_arrow">
+                      <img 
+                        class="more-arrow_icon" 
+                        src="../assets/images/common/arrow-right.svg"
+                        :class="[{ more_arrow_icon_opened_menu: totalDealMenu === true }, {more_arrow_icon_closed_menu: totalDealMenu === false}]" 
+                        alt="">
+                    </div>
+                  </div>
+                </div>
+              </div>
+      
+              <!-- Deal Sum Details -->
+              <div v-if="totalDealMenu && typeOfDeal === 'order'" class="deal-details px-4 border-t mt-2">
+                {{dealsList}}
+                <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                          <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                          <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                          <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                          <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                          <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                          <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                          <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                          <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                          <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                          <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                          <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                          <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                          <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                          <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                          <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                                <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                          <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                          <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                          <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                          <p>Оплачено: 1000,00 руб.</p>
+                <p>Задолженность: 1579,00 руб.</p>  
+                          <p>Оплачено: 1000,00 руб.</p>
+                <p>Конец строки: 1579,00 руб.</p>  
+              </div>
+
+              <!-- Btn submit -->
+              <div class="mx-4">
+                <button 
+                  type="submit" 
+                  class="w-full my-4 cursor-pointer p-2 bg-dark text-white rounded-md font-normal"
+                >
+                  Создать дело
+                </button>
+              </div>
+
+            </div>
+
+          </div>
         </form>
 
       </div>
@@ -444,6 +453,15 @@ export default {
     //   let data = event.target.value;
     //   console.log(data)
     // }
+
+    const totalDealMenuClose = (e) => {
+      console.log(e.target.classList.contains('totalMenu_wrapper'))
+      console.log(totalDealMenu.value)
+      // showTotalDealMenu()
+      if (e.target.classList.contains('totalMenu_wrapper')) {
+        showTotalDealMenu()
+      }
+    }
 
     const totalDealValue = ref('');
 
@@ -729,13 +747,17 @@ export default {
     }
 
     return {
-      typeOfDeal, contactOfDeal, data, dataLoaded, getContactFromDB, sortedContacts,filteredOptions, search, workoutName, workoutType, exercises, statusMsg, errorMsg, user, addExercise, workoutChange, deleteExercise, createDeal, createWorkout, editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortment, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributes, sum, totalDealValue, executionDate
+      typeOfDeal, contactOfDeal, data, dataLoaded, getContactFromDB, sortedContacts,filteredOptions, search, workoutName, workoutType, exercises, statusMsg, errorMsg, user, addExercise, workoutChange, deleteExercise, createDeal, createWorkout, editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortment, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributes, sum, totalDealValue, executionDate, totalDealMenuClose
     };
   },
 };
 </script>
 
 <style lang="scss" scoped>
+  .container {
+    height: 100vh;
+  }
+
   .nav {
     height: 76px;
     padding: 0.5rem 1rem;
@@ -864,7 +886,7 @@ export default {
 
   .subject-wrapper {
     border-bottom: 1px solid #f1f1f1;
-    margin-bottom: 20px;
+    // margin-bottom: 20px;
   }
 
   .subject-price_value {
@@ -887,6 +909,7 @@ export default {
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(2px);
+
   }
 
   .deal-details {
