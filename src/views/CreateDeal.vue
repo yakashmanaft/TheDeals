@@ -455,9 +455,6 @@ export default {
     // }
 
     const totalDealMenuClose = (e) => {
-      console.log(e.target.classList.contains('totalMenu_wrapper'))
-      console.log(totalDealMenu.value)
-      // showTotalDealMenu()
       if (e.target.classList.contains('totalMenu_wrapper')) {
         showTotalDealMenu()
       }
