@@ -1,4 +1,4 @@
-import { supabase } from '../supabase/init';
+import { supabase } from './init';
 
 export const getContactInfo = async (contactInfo) => {
     try {

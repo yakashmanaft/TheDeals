@@ -44,7 +44,8 @@
 
       <!--  -->
       <div v-if="dataLoaded" class="mt-10">
-        <p>Заказ № {{ data.id }}</p>
+        <p>Дело № {{ data.id }}</p>
+        <p>Тип дела: {{ translateDealType(data.dealType) }}</p>
         <p>Заказчик: {{ getNameId(data.contactID) }}</p>
         <p>Сумма заказа: 2579,00 руб.</p>
         <p>Оплачено: 1000,00 руб.</p>
@@ -76,8 +77,9 @@ import { useRoute, useRouter } from 'vue-router';
 import store from '../store/index';
 import { uid } from 'uid';
 
-import { getContactInfo } from '../helpers/getContactInfoFromDB';
+import { getContactInfo } from '../supabase/getContactInfoFromDB';
 import { showNameByID } from '../helpers/compareNameByID';
+import { translateDealType } from '../helpers/translateDealType';
 
 export default {
   name: "view-deal",
@@ -205,7 +207,7 @@ export default {
     }
 
     return {
-      statusMsg, data, dataLoaded, errorMsg, edit, cancelEdit, editMode, user, deleteWorkout, addExercise, deleteExercise, update, getNameId
+      statusMsg, data, dataLoaded, errorMsg, edit, cancelEdit, editMode, user, deleteWorkout, addExercise, deleteExercise, update, getNameId, translateDealType
     };
   },
 };

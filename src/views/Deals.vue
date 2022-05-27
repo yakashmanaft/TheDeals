@@ -105,8 +105,8 @@
                 <div class="relative flex flex-col rounded-md bg-light-grey p-2 py-4 shadow-md">
                   <!-- header -->
                   <div class="flex place-content-between">
-                    <span class="bg-white text-green px-2 rounded-md text-sm text-center my-auto">{{mountDealType(deal.dealType)}}</span>
-                    <router-link :to="{ name: 'View-Contact', params: { contactId: deal.id } }" class="text-sm text-blue mr-2">{{ getNameId(deal.contactID) }}</router-link> 
+                    <span class="bg-white text-green px-2 rounded-md text-sm text-center my-auto">{{translateDealType(deal.dealType)}}</span>
+                    <router-link :to="{ name: 'View-Contact', params: { contactId: deal.contactID } }" class="text-sm text-blue mr-2">{{ getNameId(deal.contactID) }}</router-link> 
                   </div>
                   <!-- Предмет заказа -->
                   <div class="relative deal-subject_item my-2 mt-4">
@@ -212,8 +212,9 @@ import { ref } from 'vue';
 import { supabase } from '../supabase/init';
 import { useRouter } from 'vue-router';
 
-import { getContactInfo  } from '../helpers/getContactInfoFromDB';
+import { getContactInfo  } from '../supabase/getContactInfoFromDB';
 import { showNameByID } from '../helpers/compareNameByID';
+import { translateDealType } from '../helpers/translateDealType';
 
 export default {
   name: "Deals",
@@ -259,19 +260,7 @@ export default {
     const router = useRouter();
     const title = router.currentRoute._value.meta.translation;
     // console.log(router)
-    
-    // Показываем тип дела
-    const mountDealType = (dealType) => {
-      if (dealType === 'order') {
-        return 'Заказ'
-      }
-      if (dealType === 'supply') {
-        return 'Поставка'
-      }
-      if (dealType === 'personal') {
-        return 'Личное'
-      }
-    }
+  
 
     // Преобразуем дату события для вывода в карточкн контакта
     const showEventDate = (eventdate) => {
@@ -346,7 +335,7 @@ export default {
     
 
     return {
-      data, list, dataLoaded, title, executionDatesArray, mountDealType, showEventDate, daysArray, contactInfo, getNameId
+      data, list, dataLoaded, title, executionDatesArray, translateDealType, showEventDate, daysArray, contactInfo, getNameId
     };
   },
 };
