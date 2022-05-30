@@ -136,7 +136,7 @@
     
                   <div v-for="(subject, idx) in dealsList" :key="idx" class="flex subject-wrapper">
                     <!-- Add subject to dealList -->
-                    <div class="flex flex-col w-full">
+                    <div class="flex flex-col w-full mb-2">
                       <!-- header -->
                       <div class="flex place-content-between">
                         <!-- title -->
@@ -250,6 +250,10 @@
                       <!-- Subjet notes -->
                       <div class="w-full mt-2">
                         <textarea placeholder="Заметки к предмету заказа" v-model="subject.productNote" class="text-sm h-20 p-2 bg-light-grey text-gray-500 rounded-md w-full focus:outline-none"></textarea>
+                      </div>
+
+                      <div>
+                        123
                       </div>
                     </div>
     
@@ -883,7 +887,7 @@ export default {
 
   .subject-wrapper {
     border-bottom: 1px solid #f1f1f1;
-    // margin-bottom: 20px;
+    margin-top: 10px;
   }
 
   .subject-price_value {
