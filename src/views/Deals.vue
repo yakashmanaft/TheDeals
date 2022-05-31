@@ -53,7 +53,7 @@
               <input checked type="radio" name="deal-filter" id="in-process" value="deal-in-process" v-model="setDealStatus" @change="func"> 
               <label class="flex text-sm px-2 p-1 rounded-2xl" for="in-process">
                 <div class="deal-filter-item_text">В процессе</div> 
-                <div class="deal-filter-item_count ml-1">2</div>
+                <div class="deal-filter-item_count ml-1">99</div>
               </label>
             </div>
             <!-- В доставке -->
@@ -61,7 +61,7 @@
               <input type="radio" name="deal-filter" id="in-delivery" value="deal-in-delivery" v-model="setDealStatus" @change="func"> 
               <label class="flex text-sm px-2 p-1 rounded-2xl" for="in-delivery">
                 <div class="deal-filter-item_text">В доставке</div> 
-                <div class="deal-filter-item_count ml-1">0</div>
+                <div class="deal-filter-item_count ml-1">99</div>
               </label>
             </div>
             <!-- Долг -->
@@ -69,7 +69,7 @@
               <input type="radio" name="deal-filter" id="debt" value="deal-in-debt" v-model="setDealStatus" @change="func"> 
               <label class="flex text-sm px-2 p-1 rounded-2xl" for="debt">
                 <div class="deal-filter-item_text">Долг</div> 
-                <div class="deal-filter-item_count ml-1">1</div>
+                <div class="deal-filter-item_count ml-1">99</div>
               </label>
             </div>
             <!-- Завершен -->
@@ -77,7 +77,7 @@
               <input type="radio" name="deal-filter" id="complete" value="deal-complete" v-model="setDealStatus" @change="func"> 
               <label class="flex text-sm px-2 p-1 rounded-2xl" for="complete">
                 <div class="deal-filter-item_text">Завершен</div>
-                <div class="deal-filter-item_count ml-1">1</div>
+                <div class="deal-filter-item_count ml-1">99</div>
               </label>
             </div>
             <!-- Отменен -->
@@ -85,7 +85,7 @@
               <input type="radio" name="deal-filter" id="cancelled" value="deal-cancelled" v-model="setDealStatus" @change="func"> 
               <label class="flex text-sm px-2 p-1 rounded-2xl" for="cancelled">
                 <div class="deal-filter-item_text">Отменен</div>
-                <div class="deal-filter-item_count ml-1">{{ daysArray.size }}</div>
+                <div class="deal-filter-item_count ml-1">99</div>
               </label>
             </div>
         </div>
@@ -164,7 +164,9 @@
             </div>
 
           </div>
-
+          <div v-if="setLength('deal-cancelled') === 0">
+            Ни одного отмененного дела! Поздарваляю! Так держать! Вы супер!
+          </div>
         </div>
 
       </div>
