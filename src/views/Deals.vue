@@ -27,7 +27,7 @@
           class="mt-6 py-2 px-6 rounded-sm text-sm text-white bg-at-light-green duration-200 border-solid border-2 border-transparent hover:border-at-light-green hover:bg-white hover:text-at-light-green" 
           :to="{ name: 'Create' }"
         >
-          Create Workout
+          Create deal
         </router-link>
       </div>
 
@@ -42,15 +42,15 @@
         <div class="flex deal-filter-wrapper">
             <!-- В планах -->
             <div class="deal-filter-item">
-              <input checked type="radio" name="deal-filter" id="date-booking" value="deal-in-progress"> 
+              <input checked type="radio" name="deal-filter" id="date-booking" value="deal-in-booking" v-model="setDealStatus" @change="func"> 
               <label class="flex text-sm px-2 p-1 rounded-2xl" for="date-booking">
                 <div class="deal-filter-item_text">Бронь даты</div> 
-                <div class="deal-filter-item_count ml-1">22</div>
+                <div class="deal-filter-item_count ml-1">{{setLength('deal-in-booking')}}</div>
               </label>
             </div>
             <!-- В процессе -->
             <div class="deal-filter-item">
-              <input checked type="radio" name="deal-filter" id="in-process" value="deal-in-progress"> 
+              <input checked type="radio" name="deal-filter" id="in-process" value="deal-in-process" v-model="setDealStatus" @change="func"> 
               <label class="flex text-sm px-2 p-1 rounded-2xl" for="in-process">
                 <div class="deal-filter-item_text">В процессе</div> 
                 <div class="deal-filter-item_count ml-1">2</div>
@@ -58,7 +58,7 @@
             </div>
             <!-- В доставке -->
             <div class="deal-filter-item">
-              <input type="radio" name="deal-filter" id="in-delivery" value="deal-in-delivery"> 
+              <input type="radio" name="deal-filter" id="in-delivery" value="deal-in-delivery" v-model="setDealStatus" @change="func"> 
               <label class="flex text-sm px-2 p-1 rounded-2xl" for="in-delivery">
                 <div class="deal-filter-item_text">В доставке</div> 
                 <div class="deal-filter-item_count ml-1">0</div>
@@ -66,7 +66,7 @@
             </div>
             <!-- Долг -->
             <div class="deal-filter-item">
-              <input type="radio" name="deal-filter" id="debt" value="deal-debt"> 
+              <input type="radio" name="deal-filter" id="debt" value="deal-in-debt" v-model="setDealStatus" @change="func"> 
               <label class="flex text-sm px-2 p-1 rounded-2xl" for="debt">
                 <div class="deal-filter-item_text">Долг</div> 
                 <div class="deal-filter-item_count ml-1">1</div>
@@ -74,7 +74,7 @@
             </div>
             <!-- Завершен -->
             <div class="deal-filter-item">
-              <input type="radio" name="deal-filter" id="complete" value="deal-complete"> 
+              <input type="radio" name="deal-filter" id="complete" value="deal-complete" v-model="setDealStatus" @change="func"> 
               <label class="flex text-sm px-2 p-1 rounded-2xl" for="complete">
                 <div class="deal-filter-item_text">Завершен</div>
                 <div class="deal-filter-item_count ml-1">1</div>
@@ -82,32 +82,46 @@
             </div>
             <!-- Отменен -->
             <div class="deal-filter-item">
-              <input type="radio" name="deal-filter" id="cancelled" value="deal-cancelled"> 
+              <input type="radio" name="deal-filter" id="cancelled" value="deal-cancelled" v-model="setDealStatus" @change="func"> 
               <label class="flex text-sm px-2 p-1 rounded-2xl" for="cancelled">
                 <div class="deal-filter-item_text">Отменен</div>
-                <div class="deal-filter-item_count ml-1">1</div>
+                <div class="deal-filter-item_count ml-1">{{ daysArray.size }}</div>
               </label>
             </div>
-
-          
         </div>
 
-        <div>
+          <div>
+            {{ setLength('deal-in-booking') }}
+            {{ setLength('deal-in-process') }}
+            {{ setLength('deal-in-delivery') }}
+            {{ setLength('deal-in-debt') }}
+            {{ setLength('deal-complete') }}
+            {{ setLength('deal-cancelled') }}
+          </div>
+
+        <!-- deal card && date -->
+        <div class="mb-4">
           <div v-for="(day, idx) in daysArray" :key="idx">
-            <!-- Deadline Date -->
+
+            <!-- Deadline Date (Execution date of deal)-->
             <div class="flex items-center w-full place-content-between">
               <div class="date-line_date ml-2 text-md">{{day}}</div>
               <div class="date-line_line"></div>
             </div>
 
             <div v-for="(deal, index) in list" :key="index" class="my-4">
-              <router-link v-if="showEventDate(deal.executionDate) === day" :to="{ name: 'View-Deal', params: { dealId: deal.id } }">
+              <router-link v-if="showEventDate(deal.executionDate) === day && deal.dealStatus === setDealStatus" :to="{ name: 'View-Deal', params: { dealId: deal.id } }">
                 <div class="relative flex flex-col rounded-md bg-light-grey p-2 py-4 shadow-md">
+
                   <!-- header -->
                   <div class="flex place-content-between">
-                    <span class="bg-white text-green px-2 rounded-md text-sm text-center my-auto">{{translateDealType(deal.dealType)}}</span>
+                    <div class="flex items-center">
+                      <span class="bg-white text-green px-2 rounded-md text-sm text-center my-auto">{{translateDealType(deal.dealType)}}</span>
+                      <span class="ml-2 text-xs text-dark-gray">{{ translateDealStatus(deal.dealStatus) }}</span>
+                    </div>
                     <router-link :to="{ name: 'View-Contact', params: { contactId: deal.contactID } }" class="text-sm text-blue mr-2">{{ getNameId(deal.contactID) }}</router-link> 
                   </div>
+
                   <!-- Предмет заказа -->
                   <div class="relative deal-subject_item my-2 mt-4">
                     <!-- item -->
@@ -144,6 +158,7 @@
                       <span>1 570,00</span>
                     </li>
                   </ul>
+
                 </div>
               </router-link>
             </div>
@@ -152,54 +167,6 @@
 
         </div>
 
-        <router-link 
-          class="flex flex-col items-center bg-light-grey p-8 shadow-md cursor-pointer"
-          :to="{ name: 'View-Deal', params: { dealId: deal.id } }"
-          v-for="(deal, index) in data"
-          :key="index"
-        >
-          <!-- Cardio Img -->
-          <img 
-            v-if="deal.workoutType === 'cardio'"
-            src="@/assets/images/running-light-green.png" 
-            class="h-24 w-auto" 
-            alt=""
-          />
-
-          <!-- Strength Training -->
-          <img 
-            v-else
-            src="@/assets/images/dumbbell-light-green.png" 
-            class="h-24 w-auto" 
-            alt=""
-          />
-
-          <p 
-            class="mt-6 py-1 px-3 text-xs text-white bg-at-light-green shadow-md rounded-lg"
-          >
-            {{ deal.workoutType }}
-          </p>
-
-          <h1 class="mt-8 mb-2 text-center text-xl text-at-light-green">
-            {{ deal.workoutName }}
-          </h1>
-        </router-link>
-      </div>
-
-
-      <!-- Проверка парсит ли данные из deals -->
-      <div class="flex flex-col">
-        <router-link
-          :to="{ name: 'View-Deal', params: { dealId: deal.id } }"
-          v-for="(deal, index) in list"
-          :key="index"
-        >
-          <div>
-            <p>{{ deal.contactID }}</p>
-            <p>{{ deal.dealType }}</p>
-            <p>{{ deal.ordersList }}</p>
-          </div>
-        </router-link>
       </div>
     </div>
   </div>
@@ -212,9 +179,9 @@ import { ref } from 'vue';
 import { supabase } from '../supabase/init';
 import { useRouter } from 'vue-router';
 
-import { getContactInfo  } from '../supabase/getContactInfoFromDB';
+import { getContactInfo } from '../supabase/getContactInfoFromDB';
 import { showNameByID } from '../helpers/compareNameByID';
-import { translateDealType } from '../helpers/translateDealType';
+import { translateDealType, translateDealStatus } from '../helpers/translators';
 
 export default {
   name: "Deals",
@@ -227,6 +194,9 @@ export default {
     const list = ref([]);
     const dataLoaded = ref(null);
 
+    // Заббирает value из выбранно чекбокса (по умолчанию ставим "В процессе")
+    const setDealStatus = ref('deal-in-process');
+    
     // Get data
     const getData = async () => {
       try {
@@ -282,13 +252,12 @@ export default {
     const executionDatesArray = ref([])
 
     // Get execution date
-    const getExecutionDate = async () => {
+    const getExecutionDate = async (dealStatus) => {
       // Выдергиваем из БД строки с датой исполнения дела
       try {
-        const { data: deals, error } = await supabase.from('deals').select('executionDate');
+        const { data: deals, error } = await supabase.from('deals').select('*').eq('dealStatus', dealStatus);
         if(error) throw error;
         executionDatesArray.value = deals;
-        // dataLoaded.value = true;
 
         //создаем на их основании новый массив
         const arr = executionDatesArray.value.map(item => {
@@ -318,9 +287,16 @@ export default {
       }
     }
 
-    // Run execution date function
-    getExecutionDate();
+    // Меняем статус дела и запускаем функцию сопоставления дат дел
+    const func = () => {
+      // console.log('clicked')
+      // console.log(setDealStatus.value)
+      
+      getExecutionDate(setDealStatus.value);
+    }
 
+    // Run execution date function
+    getExecutionDate(setDealStatus.value);
 
     // Get contactInfo from DB MyContacts
     const contactInfo = ref([]);
@@ -332,10 +308,38 @@ export default {
       // compare contactID form deals with contactInfo from MyContacts
       return showNameByID(contactInfo, contactID)
     }
-    
+
+    //
+    const length = ref([])
+    const lengthDealStatus = async () => {
+
+      try {
+        let { data: deals, error } = await supabase
+        .from('deals')
+        .select('dealStatus')
+  
+        if(error) throw error;
+        length.value = deals 
+      } catch (error) {
+        console.warn(error.message)
+      }
+    }
+
+    lengthDealStatus()
+
+    const setLength = (dealStatus) => {
+        //создаем на их основании новый массив
+        const arr = length.value.map(item => {
+          return {...item}
+        })
+
+        const dealStatusLength = arr.filter(item => item.dealStatus === dealStatus.toString())
+
+        return dealStatusLength.length
+    }
 
     return {
-      data, list, dataLoaded, title, executionDatesArray, translateDealType, showEventDate, daysArray, contactInfo, getNameId
+      data, list, setDealStatus, dataLoaded, title, executionDatesArray, translateDealType, translateDealStatus, showEventDate, daysArray, contactInfo, getNameId, func, length, lengthDealStatus, setLength
     };
   },
 };

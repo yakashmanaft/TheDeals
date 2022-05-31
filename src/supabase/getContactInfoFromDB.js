@@ -7,6 +7,6 @@ export const getContactInfo = async (contactInfo) => {
     contactInfo.value = myContacts;
     
     } catch (error) {
-    console.warn(error);
+    console.warn(error.message);
     }
 };

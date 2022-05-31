@@ -79,7 +79,7 @@ import { uid } from 'uid';
 
 import { getContactInfo } from '../supabase/getContactInfoFromDB';
 import { showNameByID } from '../helpers/compareNameByID';
-import { translateDealType } from '../helpers/translateDealType';
+import { translateDealType } from '../helpers/translators';
 
 export default {
   name: "view-deal",

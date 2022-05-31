@@ -252,6 +252,7 @@
                         <textarea placeholder="Заметки к предмету заказа" v-model="subject.productNote" class="text-sm h-20 p-2 bg-light-grey text-gray-500 rounded-md w-full focus:outline-none"></textarea>
                       </div>
 
+                      <!-- Set additional attributes -->
                       <div>
                         123
                       </div>
@@ -267,7 +268,7 @@
                   v-if="dealsList.length"
                   @click="addOrderSubject"
                   type="button"
-                  class="border border-blue w-full p-2 rounded-md text-blue mb-4 cursor-pointer"
+                  class="border border-blue w-full p-2 rounded-md text-blue cursor-pointer"
                 >
                   Добавить предмет в заказ
                 </button>
@@ -282,6 +283,24 @@
               <div v-if="typeOfDeal === 'personal'">
                 Новое дело - личная задача. В разработке..
               </div>
+            </div>
+
+            <!-- set deal Status -->
+            <div class="w-full flex flex-col mt-4">
+              <label for="deal-status" class="mb-1 ml-2 text-sm text-dark-gray">Статус дела</label>
+              <select 
+                id="deal-status" 
+                class="border webkit p-2 w-full text-gray-500 bg-light-grey rounded-md focus:outline-none" 
+                required
+                v-model="dealStatus"
+              >
+                <option value="deal-in-booking">Бронируем дату</option>
+                <option value="deal-in-process">Уже в процессе</option>
+                <option value="deal-in-delivery">В доставке</option>
+                <option value="deal-in-debt">Долг</option>
+                <option value="deal-complete">Дело сделано</option>
+
+              </select>
             </div>
     
             <p>Оплачено: 1000,00 руб.</p>
@@ -337,6 +356,9 @@
               <!-- Deal Sum Details -->
               <div v-if="totalDealMenu && typeOfDeal === 'order'" class="deal-details px-4 border-t mt-2">
                 {{dealsList}}
+
+
+                Статус дела: {{dealStatus ? dealStatus : 'не выбран'}}
                 <p>Оплачено: 1000,00 руб.</p>
                 <p>Задолженность: 1579,00 руб.</p>  
                           <p>Оплачено: 1000,00 руб.</p>
@@ -400,6 +422,7 @@
             </div>
 
           </div>
+
         </form>
 
       </div>
@@ -433,12 +456,14 @@ export default {
 
     const typeOfDeal = ref('select-deal-type');
     const contactOfDeal = ref('select-deal-contact');
+    const dealStatus = ref('');
 
     const data = ref([]);
     const dataLoaded = ref(null);
 
     const search = ref('');
     const executionDate = ref('');
+    console.log(executionDate.value)
 
     // bind contact ID from DB myContacts
     const contactId = ref('');
@@ -694,6 +719,7 @@ export default {
         const { error } = await supabase.from('deals').insert([
           {
             dealType: typeOfDeal.value,
+            dealStatus: dealStatus.value,
             contactID: contactId.value,
             executionDate: executionDate.value,
             dealsList: dealsList.value,
@@ -748,7 +774,7 @@ export default {
     }
 
     return {
-      typeOfDeal, contactOfDeal, data, dataLoaded, getContactFromDB, sortedContacts,filteredOptions, search, workoutName, workoutType, exercises, statusMsg, errorMsg, user, addExercise, workoutChange, deleteExercise, createDeal, createWorkout, editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortment, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributes, sum, totalDealValue, executionDate, totalDealMenuClose
+      typeOfDeal, dealStatus, contactOfDeal, data, dataLoaded, getContactFromDB, sortedContacts,filteredOptions, search, workoutName, workoutType, exercises, statusMsg, errorMsg, user, addExercise, workoutChange, deleteExercise, createDeal, createWorkout, editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortment, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributes, sum, totalDealValue, executionDate, totalDealMenuClose
     };
   },
 };
