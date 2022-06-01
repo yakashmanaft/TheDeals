@@ -176,10 +176,10 @@
                         <span class="text-sm leading-none align-text-middle text-dark-gray">
                           Цена за 1 шт.
                         </span>
-                        <div>
+                        <div class="subject-price_value">
                           <input 
                             type="number" 
-                            class="focus:outline-none text-dark text-right mx-1 pt-1 subject-price_value w-14" 
+                            class="focus:outline-none text-dark text-right mx-1 pt-1 w-14" 
                             placeholder="0,00"
                             v-model="subject.pricePerUnit" 
                           >
@@ -200,9 +200,7 @@
                           >
                             -
                           </button>
-                          <!-- <span class="subject-quantity leading-none w-8 text-center">
-                            {{subject.productQuantity}}
-                          </span> -->
+
                           <input type="number" class="subject-quantity leading-none w-8 text-center focus:outline-none" v-model="subject.productQuantity">
                           <button 
                             class="subject-quantity_btn"
@@ -215,24 +213,23 @@
                       </div>
     
                       <!-- discount for subject price -->
-                      <div class="flex place-content-between mx-2 mb-4 mt-2 items-center">
+                      <div class="flex place-content-between ml-2 mb-4 mt-4 items-center">
                         <span class="text-sm leading-none align-text-middle text-dark-gray">
-                          Скидка, %
+                          Скидка, {{subject.discountSubjectPriceValue}}%
                         </span>
-                        <div>
                           <input 
-                            type="number" 
-                            class="focus:outline-none text-dark w-10 text-right mx-1 pt-1 subject-price_value" 
+                            type="range" 
+                            class="focus:outline-none w-36" 
                             placeholder="0"
                             v-model="subject.discountSubjectPriceValue"
                             min="0"
                             max="100"
+                            step="1"
                           >
-                        </div>
                       </div>  
     
                       <!-- Total subject price -->
-                      <div class="flex place-content-between mx-2 mb-4 mt-2 items-center">
+                      <div class="flex place-content-between mx-2 mb-4 mt-4 items-center">
                         <span class="text-sm leading-none align-text-middle text-dark-gray">
                           Цена за {{subject.productQuantity}} шт.
                           <span v-if="subject.discountSubjectPriceValue > 0">с учетом скидки</span>
@@ -311,6 +308,7 @@
 
             <p>Оплачено: 1000,00 руб.</p>
             <p>Задолженность: 1579,00 руб.</p>  
+            конец строки
           </div>
           
 
@@ -439,6 +437,8 @@ import { uid } from 'uid';
 import { supabase } from '../supabase/init';
 import { useRouter } from 'vue-router';
 
+import { getContactInfo } from '../supabase/getContactInfoFromDB';
+
 import { sortAlphabetically } from '../helpers/sort';
 import { searchFilter } from '../helpers/filter';
 
@@ -447,9 +447,6 @@ export default {
   setup() {
     // Create data
     const router = useRouter();
-
-    
-
     const statusMsg = ref(null);
     const errorMsg = ref(null);
     const user = computed(() => store.state.user);
@@ -458,12 +455,11 @@ export default {
     const contactOfDeal = ref('select-deal-contact');
     const dealStatus = ref('');
 
-    const data = ref([]);
+    const contactInfo = ref([]);
     const dataLoaded = ref(null);
 
     const search = ref('');
     const executionDate = ref('');
-    console.log(executionDate.value)
 
     // bind contact ID from DB myContacts
     const contactId = ref('');
@@ -476,12 +472,6 @@ export default {
 
     // show sum menu
     const totalDealMenu = ref(false);
-
-    // // list of offers
-    // const onChange = (event) => {
-    //   let data = event.target.value;
-    //   console.log(data)
-    // }
 
     const totalDealMenuClose = (e) => {
       if (e.target.classList.contains('totalMenu_wrapper')) {
@@ -534,27 +524,12 @@ export default {
       }, 200)
     }
 
-    // Get contacts (name, surname, id) from db
-    const getContactFromDB = async () => {
-      try {
-        const { data: myContacts, error } = await supabase.from('myContacts').select('*');
-        if (error) throw error;
-        data.value = myContacts;
-        dataLoaded.value = true;
-        // console.log(data.value)
-      } catch (error) {
-        errorMsg.value = error.message;
-        setTimeout(() => {
-          errorMsg.value = false;
-        }, 5000);
-      }
-    }
-
-    getContactFromDB();
+    // Получаем данные по контактам из БД
+    getContactInfo(contactInfo, errorMsg, dataLoaded);
 
     //сортируем контакты по алфавиту
     const sortedContacts = computed(() => {       
-      return sortAlphabetically(data.value)
+      return sortAlphabetically(contactInfo.value)
     });
 
     // функция поиска контакта
@@ -673,7 +648,7 @@ export default {
         selectedProduct: '',
         pricePerUnit: '',
         productQuantity: 1,
-        discountSubjectPriceValue: '',
+        discountSubjectPriceValue: 0,
         totalSubjectPrice: 0,
         productNote: ''
       })
@@ -774,7 +749,7 @@ export default {
     }
 
     return {
-      typeOfDeal, dealStatus, contactOfDeal, data, dataLoaded, getContactFromDB, sortedContacts,filteredOptions, search, workoutName, workoutType, exercises, statusMsg, errorMsg, user, addExercise, workoutChange, deleteExercise, createDeal, createWorkout, editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortment, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributes, sum, totalDealValue, executionDate, totalDealMenuClose
+      typeOfDeal, dealStatus, contactOfDeal, contactInfo, dataLoaded, sortedContacts,filteredOptions, search, workoutName, workoutType, exercises, statusMsg, errorMsg, user, addExercise, workoutChange, deleteExercise, createDeal, createWorkout, editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortment, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributes, sum, totalDealValue, executionDate, totalDealMenuClose
     };
   },
 };

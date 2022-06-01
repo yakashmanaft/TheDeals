@@ -143,7 +143,7 @@ export default {
 
     // Get contactInfo from DB MyContacts
     const contactInfo = ref([]);
-    getContactInfo(contactInfo)
+    getContactInfo(contactInfo, errorMsg, dataLoaded)
     
     
     // Show name of contact comparing by ID

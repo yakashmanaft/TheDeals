@@ -648,19 +648,6 @@ export default {
       } else {
         return 'Через ' + result + ' дней'
       }
-
-      // switch (result % 10) {
-      //   case 1: 
-      //     return result + ' день';
-      //   case 2:
-      //   case 3:
-      //   case 4:  
-      //     return result + ' дня';
-      //   case 12:
-      //     return result + ' дней';
-      //   default: 
-      //     return result + ' дней'
-      // }
     }
 
     // Cut Phone Number for massengers

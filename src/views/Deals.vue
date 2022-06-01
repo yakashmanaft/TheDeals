@@ -21,7 +21,7 @@
     <div v-if="dataLoaded" class="container pt-20 px-4">
 
       <!-- No Data -->
-      <div v-if="data.length === 0" class="w-full flex flex-col items-center">
+      <div v-if="list.length === 0" class="w-full flex flex-col items-center">
         <h1 class="text-2xl">Looks empty here...</h1>
         <router-link 
           class="mt-6 py-2 px-6 rounded-sm text-sm text-white bg-at-light-green duration-200 border-solid border-2 border-transparent hover:border-at-light-green hover:bg-white hover:text-at-light-green" 
@@ -42,61 +42,61 @@
         <div class="flex deal-filter-wrapper">
             <!-- В планах -->
             <div class="deal-filter-item">
-              <input checked type="radio" name="deal-filter" id="date-booking" value="deal-in-booking" v-model="setDealStatus" @change="func"> 
+              <input checked type="radio" name="deal-filter" id="date-booking" value="deal-in-booking" v-model="setDealStatus" @change="checkChangeStatus"> 
               <label class="flex text-sm px-2 p-1 rounded-2xl" for="date-booking">
                 <div class="deal-filter-item_text">Бронь даты</div> 
-                <div class="deal-filter-item_count ml-1">{{setLength('deal-in-booking')}}</div>
+                <div class="deal-filter-item_count ml-1">{{getStatusArrLength('deal-in-booking')}}</div>
               </label>
             </div>
             <!-- В процессе -->
             <div class="deal-filter-item">
-              <input checked type="radio" name="deal-filter" id="in-process" value="deal-in-process" v-model="setDealStatus" @change="func"> 
+              <input checked type="radio" name="deal-filter" id="in-process" value="deal-in-process" v-model="setDealStatus" @change="checkChangeStatus"> 
               <label class="flex text-sm px-2 p-1 rounded-2xl" for="in-process">
                 <div class="deal-filter-item_text">В процессе</div> 
-                <div class="deal-filter-item_count ml-1">99</div>
+                <div class="deal-filter-item_count ml-1">{{ getStatusArrLength('deal-in-process') }}</div>
               </label>
             </div>
             <!-- В доставке -->
             <div class="deal-filter-item">
-              <input type="radio" name="deal-filter" id="in-delivery" value="deal-in-delivery" v-model="setDealStatus" @change="func"> 
+              <input type="radio" name="deal-filter" id="in-delivery" value="deal-in-delivery" v-model="setDealStatus" @change="checkChangeStatus"> 
               <label class="flex text-sm px-2 p-1 rounded-2xl" for="in-delivery">
                 <div class="deal-filter-item_text">В доставке</div> 
-                <div class="deal-filter-item_count ml-1">99</div>
+                <div class="deal-filter-item_count ml-1">{{ getStatusArrLength('deal-in-delivery') }}</div>
               </label>
             </div>
             <!-- Долг -->
             <div class="deal-filter-item">
-              <input type="radio" name="deal-filter" id="debt" value="deal-in-debt" v-model="setDealStatus" @change="func"> 
+              <input type="radio" name="deal-filter" id="debt" value="deal-in-debt" v-model="setDealStatus" @change="checkChangeStatus"> 
               <label class="flex text-sm px-2 p-1 rounded-2xl" for="debt">
                 <div class="deal-filter-item_text">Долг</div> 
-                <div class="deal-filter-item_count ml-1">99</div>
+                <div class="deal-filter-item_count ml-1">{{ getStatusArrLength('deal-in-debt') }}</div>
               </label>
             </div>
             <!-- Завершен -->
             <div class="deal-filter-item">
-              <input type="radio" name="deal-filter" id="complete" value="deal-complete" v-model="setDealStatus" @change="func"> 
+              <input type="radio" name="deal-filter" id="complete" value="deal-complete" v-model="setDealStatus" @change="checkChangeStatus"> 
               <label class="flex text-sm px-2 p-1 rounded-2xl" for="complete">
                 <div class="deal-filter-item_text">Завершен</div>
-                <div class="deal-filter-item_count ml-1">99</div>
+                <div class="deal-filter-item_count ml-1">{{ getStatusArrLength('deal-complete') }}</div>
               </label>
             </div>
             <!-- Отменен -->
             <div class="deal-filter-item">
-              <input type="radio" name="deal-filter" id="cancelled" value="deal-cancelled" v-model="setDealStatus" @change="func"> 
+              <input type="radio" name="deal-filter" id="cancelled" value="deal-cancelled" v-model="setDealStatus" @change="checkChangeStatus"> 
               <label class="flex text-sm px-2 p-1 rounded-2xl" for="cancelled">
                 <div class="deal-filter-item_text">Отменен</div>
-                <div class="deal-filter-item_count ml-1">99</div>
+                <div class="deal-filter-item_count ml-1">{{ getStatusArrLength('deal-cancelled') }}</div>
               </label>
             </div>
         </div>
 
           <div>
-            {{ setLength('deal-in-booking') }}
-            {{ setLength('deal-in-process') }}
-            {{ setLength('deal-in-delivery') }}
-            {{ setLength('deal-in-debt') }}
-            {{ setLength('deal-complete') }}
-            {{ setLength('deal-cancelled') }}
+            {{ getStatusArrLength('deal-in-booking') }}
+            {{ getStatusArrLength('deal-in-process') }}
+            {{ getStatusArrLength('deal-in-delivery') }}
+            {{ getStatusArrLength('deal-in-debt') }}
+            {{ getStatusArrLength('deal-complete') }}
+            {{ getStatusArrLength('deal-cancelled') }}
           </div>
 
         <!-- deal card && date -->
@@ -164,8 +164,8 @@
             </div>
 
           </div>
-          <div v-if="setLength('deal-cancelled') === 0">
-            Ни одного отмененного дела! Поздарваляю! Так держать! Вы супер!
+          <div v-if="setDealStatus === 'deal-cancelled' && getStatusArrLength('deal-cancelled') === 0">
+            Ни одного отмененного дела! Поздарваляю! Так держать! Вы супер! {{ setDealStatus }}
           </div>
         </div>
 
@@ -182,6 +182,8 @@ import { supabase } from '../supabase/init';
 import { useRouter } from 'vue-router';
 
 import { getContactInfo } from '../supabase/getContactInfoFromDB';
+import { getDeals, getDealStatus } from '../supabase/getDealsFromDB';
+
 import { showNameByID } from '../helpers/compareNameByID';
 import { translateDealType, translateDealStatus } from '../helpers/translators';
 
@@ -192,47 +194,18 @@ export default {
   },
   setup() {
     // Create data / vars
-    const data = ref([]);
     const list = ref([]);
     const dataLoaded = ref(null);
+    const errorMsg = ref(null);
 
-    // Заббирает value из выбранно чекбокса (по умолчанию ставим "В процессе")
+    // Забирает value из выбранно чекбокса (по умолчанию ставим "В процессе")
     const setDealStatus = ref('deal-in-process');
-    
-    // Get data
-    const getData = async () => {
-      try {
-        const { data: workouts, error } = await supabase.from('workouts').select('*');
-        if(error) throw error;
-        data.value = workouts;
-        dataLoaded.value = true;
-      } catch (error) {
-        console.warn(error.message);
-      }
-    }
-
-    // Run data function
-    getData();
-
-    // Get deals
-    const getDeals = async () => {
-      try {
-        const { data: deals, error } = await supabase.from('deals').select('*');
-        if(error) throw error;
-        list.value = deals;
-        dataLoaded.value = true;
-      } catch (error) {
-        console.warn(error.message);
-      }
-    }
 
     // Run getDeals function
-    getDeals();
+    getDeals(list, dataLoaded, errorMsg);
 
     const router = useRouter();
     const title = router.currentRoute._value.meta.translation;
-    // console.log(router)
-  
 
     // Преобразуем дату события для вывода в карточкн контакта
     const showEventDate = (eventdate) => {
@@ -252,7 +225,6 @@ export default {
 
     // Все даты по заказам
     const executionDatesArray = ref([])
-
     // Get execution date
     const getExecutionDate = async (dealStatus) => {
       // Выдергиваем из БД строки с датой исполнения дела
@@ -290,10 +262,7 @@ export default {
     }
 
     // Меняем статус дела и запускаем функцию сопоставления дат дел
-    const func = () => {
-      // console.log('clicked')
-      // console.log(setDealStatus.value)
-      
+    const checkChangeStatus = () => {
       getExecutionDate(setDealStatus.value);
     }
 
@@ -302,8 +271,7 @@ export default {
 
     // Get contactInfo from DB MyContacts
     const contactInfo = ref([]);
-    getContactInfo(contactInfo)
-    
+    getContactInfo(contactInfo, errorMsg)
     
     // Show name of contact comparing by ID
     const getNameId = (contactID) => {
@@ -311,37 +279,26 @@ export default {
       return showNameByID(contactInfo, contactID)
     }
 
-    //
-    const length = ref([])
-    const lengthDealStatus = async () => {
+    const dealStatusArray = ref([])
 
-      try {
-        let { data: deals, error } = await supabase
-        .from('deals')
-        .select('dealStatus')
-  
-        if(error) throw error;
-        length.value = deals 
-      } catch (error) {
-        console.warn(error.message)
-      }
-    }
+    // Запускаем функцию получаения из БД статусы всех дел
+    getDealStatus(dealStatusArray, dataLoaded, errorMsg)
 
-    lengthDealStatus()
-
-    const setLength = (dealStatus) => {
-        //создаем на их основании новый массив
-        const arr = length.value.map(item => {
+    // Получаем количество дел по конкретному статусу
+    const getStatusArrLength = (dealStatus) => {
+        //создаем на основании массива dealStatusArray новый массив
+        const arr = dealStatusArray.value.map(item => {
           return {...item}
         })
 
+        // Сопоставляем с checkbox с значением checked
         const dealStatusLength = arr.filter(item => item.dealStatus === dealStatus.toString())
-
+        // Возвращаем из функции количество дел
         return dealStatusLength.length
     }
 
     return {
-      data, list, setDealStatus, dataLoaded, title, executionDatesArray, translateDealType, translateDealStatus, showEventDate, daysArray, contactInfo, getNameId, func, length, lengthDealStatus, setLength
+      list, setDealStatus, dataLoaded, title, executionDatesArray, translateDealType, translateDealStatus, showEventDate, daysArray, contactInfo, getNameId, checkChangeStatus, dealStatusArray, getDealStatus, getStatusArrLength
     };
   },
 };
