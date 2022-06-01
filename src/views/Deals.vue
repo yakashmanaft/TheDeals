@@ -40,66 +40,17 @@
       >
         <!-- Deal filter -->
         <div class="flex deal-filter-wrapper">
-            <!-- В планах -->
-            <div class="deal-filter-item">
-              <input checked type="radio" name="deal-filter" id="date-booking" value="deal-in-booking" v-model="setDealStatus" @change="checkChangeStatus"> 
-              <label class="flex text-sm px-2 p-1 rounded-2xl" for="date-booking">
-                <div class="deal-filter-item_text">Бронь даты</div> 
-                <div class="deal-filter-item_count ml-1">{{getStatusArrLength('deal-in-booking')}}</div>
-              </label>
-            </div>
-            <!-- В процессе -->
-            <div class="deal-filter-item">
-              <input checked type="radio" name="deal-filter" id="in-process" value="deal-in-process" v-model="setDealStatus" @change="checkChangeStatus"> 
-              <label class="flex text-sm px-2 p-1 rounded-2xl" for="in-process">
-                <div class="deal-filter-item_text">В процессе</div> 
-                <div class="deal-filter-item_count ml-1">{{ getStatusArrLength('deal-in-process') }}</div>
-              </label>
-            </div>
-            <!-- В доставке -->
-            <div class="deal-filter-item">
-              <input type="radio" name="deal-filter" id="in-delivery" value="deal-in-delivery" v-model="setDealStatus" @change="checkChangeStatus"> 
-              <label class="flex text-sm px-2 p-1 rounded-2xl" for="in-delivery">
-                <div class="deal-filter-item_text">В доставке</div> 
-                <div class="deal-filter-item_count ml-1">{{ getStatusArrLength('deal-in-delivery') }}</div>
-              </label>
-            </div>
-            <!-- Долг -->
-            <div class="deal-filter-item">
-              <input type="radio" name="deal-filter" id="debt" value="deal-in-debt" v-model="setDealStatus" @change="checkChangeStatus"> 
-              <label class="flex text-sm px-2 p-1 rounded-2xl" for="debt">
-                <div class="deal-filter-item_text">Долг</div> 
-                <div class="deal-filter-item_count ml-1">{{ getStatusArrLength('deal-in-debt') }}</div>
-              </label>
-            </div>
-            <!-- Завершен -->
-            <div class="deal-filter-item">
-              <input type="radio" name="deal-filter" id="complete" value="deal-complete" v-model="setDealStatus" @change="checkChangeStatus"> 
-              <label class="flex text-sm px-2 p-1 rounded-2xl" for="complete">
-                <div class="deal-filter-item_text">Завершен</div>
-                <div class="deal-filter-item_count ml-1">{{ getStatusArrLength('deal-complete') }}</div>
-              </label>
-            </div>
-            <!-- Отменен -->
-            <div class="deal-filter-item">
-              <input type="radio" name="deal-filter" id="cancelled" value="deal-cancelled" v-model="setDealStatus" @change="checkChangeStatus"> 
-              <label class="flex text-sm px-2 p-1 rounded-2xl" for="cancelled">
-                <div class="deal-filter-item_text">Отменен</div>
-                <div class="deal-filter-item_count ml-1">{{ getStatusArrLength('deal-cancelled') }}</div>
+            <!--  -->
+            <div class="deal-filter-item" v-for="(dealStatus, index) in dealStatusList" :key="index">
+              <input type="radio" name="deal-filter" :id="dealStatus.name" :value="dealStatus.name" v-model="setDealStatus" @change="checkChangeStatus"> 
+              <label class="flex text-sm px-2 p-1 rounded-2xl" :for="dealStatus.name">
+                <div class="deal-filter-item_text">{{ dealStatus.title }}</div> 
+                <div class="deal-filter-item_count ml-1">{{getStatusArrLength(`${dealStatus.name}`)}}</div>
               </label>
             </div>
         </div>
 
-          <div>
-            {{ getStatusArrLength('deal-in-booking') }}
-            {{ getStatusArrLength('deal-in-process') }}
-            {{ getStatusArrLength('deal-in-delivery') }}
-            {{ getStatusArrLength('deal-in-debt') }}
-            {{ getStatusArrLength('deal-complete') }}
-            {{ getStatusArrLength('deal-cancelled') }}
-          </div>
-
-        <!-- deal card && date -->
+        <!-- deal card && date && zero messages -->
         <div class="mb-4">
           <div v-for="(day, idx) in daysArray" :key="idx">
 
@@ -109,6 +60,7 @@
               <div class="date-line_line"></div>
             </div>
 
+            <!-- Cards of deals -->
             <div v-for="(deal, index) in list" :key="index" class="my-4">
               <router-link v-if="showEventDate(deal.executionDate) === day && deal.dealStatus === setDealStatus" :to="{ name: 'View-Deal', params: { dealId: deal.id } }">
                 <div class="relative flex flex-col rounded-md bg-light-grey p-2 py-4 shadow-md">
@@ -164,8 +116,32 @@
             </div>
 
           </div>
-          <div v-if="setDealStatus === 'deal-cancelled' && getStatusArrLength('deal-cancelled') === 0">
-            Ни одного отмененного дела! Поздарваляю! Так держать! Вы супер! {{ setDealStatus }}
+
+          <!-- zero deal status messages -->
+          <div class="px-2 zero-status_wrapper">
+
+            <!-- deal-in-booking -->
+            <div v-if="setDealStatus === 'deal-in-booking' && getStatusArrLength('deal-in-booking') === 0">
+              <div class="flex flex-col items-center">
+                <div>
+                  <img src="../assets/images/deals/status/date.svg" alt="">
+                </div>
+                <h2 class="text-blue text-xl mt-8">Нет забронированных дат</h2> 
+                <p class="text-dark-gray mt-2 text-center">Создайте дело и укажите дату</p>
+              </div>
+            </div>
+
+            <!-- deal-cancelled -->
+            <div v-if="setDealStatus === 'deal-cancelled' && getStatusArrLength('deal-cancelled') === 0">
+              <div class="flex flex-col items-center">
+                <div>
+                  <img src="../assets/images/deals/status/success.svg" alt="">
+                </div>
+                <h2 class="text-blue text-xl mt-8">Ни одного отмененного дела!</h2> 
+                <p class="text-dark-gray mt-2">Вы супер! Так держать!</p>
+              </div>
+            </div>
+
           </div>
         </div>
 
@@ -197,6 +173,34 @@ export default {
     const list = ref([]);
     const dataLoaded = ref(null);
     const errorMsg = ref(null);
+
+    // deal status list
+    const dealStatusList = [
+      {
+        name: 'deal-in-booking',
+        title: 'Бронь даты',
+      },
+      {
+        name: 'deal-in-process',
+        title: 'В процессе',
+      },
+      {
+        name: 'deal-in-delivery',
+        title: 'В доставке',
+      },
+      {
+        name: 'deal-in-debt',
+        title: 'Долг'
+      },
+      {
+        name: 'deal-complete',
+        title: 'Завершен'
+      },
+      {
+        name: 'deal-cancelled',
+        title: 'Отменен'
+      }
+    ]
 
     // Забирает value из выбранно чекбокса (по умолчанию ставим "В процессе")
     const setDealStatus = ref('deal-in-process');
@@ -298,7 +302,7 @@ export default {
     }
 
     return {
-      list, setDealStatus, dataLoaded, title, executionDatesArray, translateDealType, translateDealStatus, showEventDate, daysArray, contactInfo, getNameId, checkChangeStatus, dealStatusArray, getDealStatus, getStatusArrLength
+      list, setDealStatus, dataLoaded, title, executionDatesArray, translateDealType, translateDealStatus, showEventDate, daysArray, contactInfo, getNameId, checkChangeStatus, dealStatusArray, getDealStatus, getStatusArrLength, dealStatusList
     };
   },
 };
@@ -447,5 +451,12 @@ export default {
     display: flex;
     align-items: center;
     justify-content: flex-end;
+  }
+
+  .zero-status_wrapper {
+    height: 65vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 </style>

@@ -153,7 +153,7 @@
     
                       <!-- list of order subjects -->
                       <div class="flex radio-toolbar-wrapper mt-2">
-                        <div class="radio-toolbar_item" v-for="(item, index) in assortment" :key="index">
+                        <div class="radio-toolbar_item" v-for="(item, index) in assortmentList" :key="index">
                           <input 
                             type="radio"
                             :value="item.name"
@@ -575,7 +575,7 @@ export default {
     }
 
     // Временное решение
-    const assortment = [
+    const assortmentList = [
       {
         name: 'cake',
         img: 'cake.png',
@@ -623,7 +623,7 @@ export default {
       }
     ]  
 
-    const additionalAttributes = [
+    const additionalAttributesList = [
       {
         name: 'rent-rack',
         title: 'Аренда подставки',
@@ -749,7 +749,7 @@ export default {
     }
 
     return {
-      typeOfDeal, dealStatus, contactOfDeal, contactInfo, dataLoaded, sortedContacts,filteredOptions, search, workoutName, workoutType, exercises, statusMsg, errorMsg, user, addExercise, workoutChange, deleteExercise, createDeal, createWorkout, editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortment, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributes, sum, totalDealValue, executionDate, totalDealMenuClose
+      typeOfDeal, dealStatus, contactOfDeal, contactInfo, dataLoaded, sortedContacts,filteredOptions, search, workoutName, workoutType, exercises, statusMsg, errorMsg, user, addExercise, workoutChange, deleteExercise, createDeal, createWorkout, editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortmentList, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributesList, sum, totalDealValue, executionDate, totalDealMenuClose
     };
   },
 };
