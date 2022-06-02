@@ -39,7 +39,7 @@
             <!-- С кем заключается дело (Укажите контакт) -->
             <div class="w-full">
               <!-- В качестве примера взято https://github.com/moreta/vue-search-select/blob/master/src/lib/BasicSelect.vue -->
-              <label for="searchedContacts" class="ml-2 text-sm text-dark-gray">Укажите контакт</label>
+              <label for="searchedContacts" class="ml-2 text-sm text-blue">Укажите контакт</label>
               <div class="search-input mt-1 px-2 h-10 flex items-center border" @click="openOptions" @focus="openOptions">
                 <input 
                   @focus.prevent="openOptions"
@@ -92,7 +92,7 @@
     
             <!-- Укажите дату и время исполнения дела -->
             <div class="w-full mt-4">
-              <label for="executionDate" class="ml-2 text-sm text-dark-gray">Бронь даты и времени</label>
+              <label for="executionDate" class="ml-2 text-sm text-blue">Бронь даты и времени</label>
               <div class="search-input mt-1 px-2 h-10 flex items-center border">
                 <input 
                   type="datetime-local" 
@@ -106,7 +106,7 @@
             
             <!-- Тип дела -->
             <div class="w-full flex flex-col mt-4">
-              <label for="deal-type" class="mb-1 ml-2 text-sm text-dark-gray">Тип дела</label>
+              <label for="deal-type" class="mb-1 ml-2 text-sm text-blue">Тип дела</label>
               <select 
                 id="deal-type" 
                 class="border webkit p-2 w-full text-gray-500 bg-light-grey rounded-md focus:outline-none" 
@@ -128,12 +128,14 @@
               <div v-if="typeOfDeal === 'order'" class="radio-toolbar mt-4">
                 <!-- Выбор предмета заказа -->
                 
-                <div v-if="user && !dealsList.length" class="w-full flex place-content-between p-2">
-                  <p>Добавьте предмет заказа</p>
+                <!-- Если ниодного предмета нет в заказе -->
+                <div v-if="user && !dealsList.length" class="w-full flex place-content-between px-2">
+                  <p class="text-dark-gray text-sm">0 предметов в заказе</p>
                   <p class="text-blue" @click="addOrderSubject">Добавить</p>
                 </div>
-                <div >
-    
+
+                <!-- Предметы заказа -->
+                <div>
                   <div v-for="(subject, idx) in dealsList" :key="idx" class="flex subject-wrapper">
                     <!-- Add subject to dealList -->
                     <div class="flex flex-col w-full mb-2">
@@ -222,8 +224,8 @@
                             class="focus:outline-none w-36" 
                             placeholder="0"
                             v-model="subject.discountSubjectPriceValue"
-                            min="0"
-                            max="100"
+                            :min="setDiscountRange('min')"
+                            :max="setDiscountRange('max')"
                             step="1"
                           >
                       </div>  
@@ -257,7 +259,6 @@
     
     
                   </div>
-    
                 </div>
     
                 <!-- Button to add new social to current contact -->
@@ -267,7 +268,7 @@
                   type="button"
                   class="border border-blue w-full p-2 rounded-md text-blue cursor-pointer"
                 >
-                  Добавить предмет в заказ
+                  Добавить
                 </button>
               </div>
     
@@ -284,7 +285,7 @@
 
             <!-- set deal Status -->
             <div class="w-full flex flex-col mt-4">
-              <label for="deal-status" class="mb-1 ml-2 text-sm text-dark-gray">Статус дела</label>
+              <label for="deal-status" class="mb-1 ml-2 text-sm text-blue">Статус дела</label>
               <select 
                 id="deal-status" 
                 class="border webkit p-2 w-full text-gray-500 bg-light-grey rounded-md focus:outline-none" 
@@ -453,7 +454,7 @@ export default {
 
     const typeOfDeal = ref('select-deal-type');
     const contactOfDeal = ref('select-deal-contact');
-    const dealStatus = ref('');
+    const dealStatus = ref('deal-in-booking');
 
     const contactInfo = ref([]);
     const dataLoaded = ref(null);
@@ -623,6 +624,7 @@ export default {
       }
     ]  
 
+    // Дополнительные услуги к основным товарам /услугам
     const additionalAttributesList = [
       {
         name: 'rent-rack',
@@ -642,13 +644,39 @@ export default {
       }
     ]
 
+    // Максимально допустимую скидку (устанавливается в настройках аккаунта)
+    const userDiscountRangeValue = [
+      {
+        name: 'min',
+        value: 0
+      },
+      {
+        name: 'max',
+        value: 30
+      }
+    ]
+
+    // Устанавливаем значение скидок
+    const setDiscountRange = (name) => {
+
+      if(name === 'min') {
+        const value = userDiscountRangeValue[0].value
+        return value
+      }
+      if(name === 'max') {
+        const value = userDiscountRangeValue[1].value
+        return value
+      }
+    }
+
+    // Добавляем еще предмет заказа
     const addOrderSubject = () => {
       dealsList.value.push({
         id: uid(),
         selectedProduct: '',
         pricePerUnit: '',
         productQuantity: 1,
-        discountSubjectPriceValue: 0,
+        discountSubjectPriceValue: setDiscountRange('min'),
         totalSubjectPrice: 0,
         productNote: ''
       })
@@ -749,7 +777,7 @@ export default {
     }
 
     return {
-      typeOfDeal, dealStatus, contactOfDeal, contactInfo, dataLoaded, sortedContacts,filteredOptions, search, workoutName, workoutType, exercises, statusMsg, errorMsg, user, addExercise, workoutChange, deleteExercise, createDeal, createWorkout, editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortmentList, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributesList, sum, totalDealValue, executionDate, totalDealMenuClose
+      typeOfDeal, dealStatus, contactOfDeal, contactInfo, dataLoaded, sortedContacts,filteredOptions, search, workoutName, workoutType, exercises, statusMsg, errorMsg, user, addExercise, workoutChange, deleteExercise, createDeal, createWorkout, editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortmentList, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributesList, userDiscountRangeValue, sum, totalDealValue, executionDate, totalDealMenuClose, setDiscountRange
     };
   },
 };
@@ -944,5 +972,70 @@ export default {
   .more_arrow_icon_opened_menu {
     transform: rotate(90deg);
   }
+
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+    width: 50%;
+  }
+
+  // Chrome, Safari, Opera, and Edge Chromium
+  input[type="range"]::-webkit-slider-runnable-track {
+    background: #D8E7FF;
+    height: 0.5rem;
+    border-radius: 10px;
+  }
+
+  // Firefox
+  input[type="range"]::-moz-range-track {
+    background: #D8E7FF;
+    height: 0.5rem;
+    border-radius: 10px;
+  }
+
+  // Thumb Styles
+  // Chrome, Safari, Opera, and Edge Chromium
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; /* Override default look */
+    appearance: none;
+    margin-top: -12px; /* Centers thumb on the track */
+    background: url('../assets/images/deals/orders/brownies.png');
+    background-color: #4785E7;
+    height: 32px;
+    width: 32px;  
+    border-radius: 50%;  
+  }
+
+  // Firefox
+  input[type="range"]::-moz-range-thumb {
+    border: none; /*Removes extra border that FF applies*/
+    border-radius: 0; /*Removes default border-radius that FF applies*/
+    background-color: #4785E7;
+    height: 32px;
+    width: 32px;  
+    border-radius: 50%; 
+  }
+
+  input[type="range"]:focus {
+    outline: none;
+  }
+
+
+  /***** Chrome, Safari, Opera, and Edge Chromium *****/
+  //input[type="range"]:focus::-webkit-slider-thumb {
+  //  border: 1px solid #053a5f;
+  //  outline: 3px solid #053a5f;
+  //  outline-offset: 0.125rem;
+  //}
+
+  /******** Firefox ********/
+  //input[type="range"]:focus::-moz-range-thumb {
+  //  border: 1px solid #053a5f;
+  //  outline: 3px solid #053a5f;
+  //  outline-offset: 0.125rem;     
+  //}
+
 
 </style>
