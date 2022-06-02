@@ -93,12 +93,12 @@
             <!-- Укажите дату и время исполнения дела -->
             <div class="w-full mt-4">
               <label for="executionDate" class="ml-2 text-sm text-blue">Бронь даты и времени</label>
-              <div class="search-input mt-1 px-2 h-10 flex items-center border">
+              <div class="search-input mt-1 h-10 flex items-center border">
                 <input 
                   type="datetime-local" 
                   name="execution-date" 
                   id="executionDate"
-                  class="search-input_input text-gray-500 outline-none w-full focus:outline-none bg-light-grey" 
+                  class="webkit w-full text-gray-500 p-2 outline-none focus:outline-none bg-light-grey" 
                   v-model="executionDate"
                 >
               </div>
@@ -181,6 +181,7 @@
                         <div class="subject-price_value">
                           <input 
                             type="number" 
+                            inputmode="decimal"
                             class="focus:outline-none text-dark text-right mx-1 pt-1 w-14" 
                             placeholder="0,00"
                             v-model="subject.pricePerUnit" 
@@ -786,6 +787,9 @@ export default {
 <style lang="scss" scoped>
   .container {
     height: 100vh;
+  }
+  .webkit {
+    -webkit-appearance:none;
   }
 
   .nav {

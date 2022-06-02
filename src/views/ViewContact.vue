@@ -136,7 +136,7 @@
                   </label>
                   <input 
                     id="phone-number"
-                    type="text" 
+                    type="tel" 
                     class="p-2 w-full text-gray-500 bg-light-grey rounded-md focus:outline-none"
                     v-model="number.phone"
                   >
@@ -156,6 +156,7 @@
                       v-model="number.type"
                     >
                       <!-- Необходимо стилизовать по мере -->
+                      <option disabled value="Укажите тип">Укажите тип</option>
                       <option value="Личный">Личный</option>
                       <option value="Рабочий">Рабочий</option>
                     </select>
@@ -165,10 +166,15 @@
                 <!-- Edit Socials & button delete current number -->
                 <div class="flex items-center place-content-between pb-2 mt-2">
                   <div class="flex items-center justify-center">
-                    <div v-for="(messenger, index) in number.messengers" :key="index" class="flex">
-                      <input type="checkbox" class="custom-checkbox" v-model="messenger.status" :id="messenger.id">
-                      <label :for="messenger.id" class="w-full text-xs text-dark-gray mr-2">{{messenger.name}}</label>
-                    </div>
+                    <div class="ml-2">
+                      <p class="text-xs text-dark-gray mb-2">Привязка к мессенджерам</p>
+                      <div class="flex">
+                        <div v-for="(messenger, index) in number.messengers" :key="index" class="flex">
+                          <input type="checkbox" class="custom-checkbox" v-model="messenger.status" :id="messenger.id">
+                          <label :for="messenger.id" class="w-full text-xs text-dark-gray mr-2">{{messenger.name}}</label>
+                        </div>
+                      </div>
+                    </div> 
                   </div>
                   <!-- Button to delete current phone -->
                   <div v-if="edit" class="icon-wrapper">
@@ -274,6 +280,7 @@
                       class="p-2 w-full text-gray-500 bg-light-grey focus:outline-none rounded-md"
                       v-model="email.type"
                     >
+                      <option disabled value="Укажите тип">Укажите тип</option>
                       <option value="Личный">Личный</option>
                       <option value="Рабочий">Рабочий</option>
                     </select>
@@ -355,7 +362,7 @@
                     </label>
                     <input 
                       id="social-link"
-                      type="text" 
+                      type="url" 
                       class="p-2 w-full text-gray-500 bg-light-grey focus:outline-none rounded-md"
                       v-model="social.link"
                     >
@@ -374,6 +381,7 @@
                         class="p-2 w-full text-gray-500 bg-light-grey rounded-md focus:outline-none"
                         v-model="social.name"
                       >
+                        <option disabled value="Укажите название">Укажите название</option>
                         <option value="instagram">Инстаграм</option>
                         <option value="vkontakte">Вконтакте</option>
                         <option value="telegram">Телеграм</option>
@@ -400,8 +408,13 @@
             <!-- No Edit Mode -->
             <div v-else class="flex">
               <div v-for="(social, index) in data.socialNetworks" :key="index" class="mr-2 py-4">
+                <div v-if="social.name === 'Укажите название'">
+                  <p>Не выбрана соц.сеть</p> 
+                  <span class="text-xs text-dark-gray">(отсутствует название)</span>
+                </div>
                 <!-- button to go to social network -->
                 <a 
+                  v-if="social.name !== 'Укажите название'"
                   :href="`${social.link}`"
                   target="_blank"
                 >
@@ -716,7 +729,7 @@ export default {
     const addPhoneNumber = () => {
       data.value.phoneNumbers.push({
         id: uid(),
-        type: '',
+        type: 'Укажите тип',
         phone: '',
         messengers: [
           {
@@ -737,7 +750,7 @@ export default {
     const addEmail = () => {
       data.value.Emails.push({
         id: uid(),
-        type: '',
+        type: 'Укажите тип',
         email: ''
       })
     }
@@ -746,7 +759,7 @@ export default {
     const addSocial = () => {
       data.value.socialNetworks.push({
         id: uid(),
-        name: '',
+        name: 'Укажите название',
         link: ''
       })
     }

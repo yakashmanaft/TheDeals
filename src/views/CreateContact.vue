@@ -92,7 +92,7 @@
               <input 
                 id="phone-number"
                 required
-                type="text" 
+                type="tel" 
                 class="p-2 w-full text-gray-500 bg-light-grey rounded-md focus:outline-none"
                 v-model="number.phone"
               >
@@ -111,6 +111,7 @@
                   v-model="number.type"
                 >
                   <!-- Необходимо стилизовать по мере -->
+                  <option disabled value="Укажите тип">Укажите тип</option>
                   <option value="Личный">Личный</option>
                   <option value="Рабочий">Рабочий</option>
                 </select>
@@ -119,10 +120,15 @@
           
             <div class="flex items-center place-content-between pb-2 mt-2">
               <div class="flex items-center justify-center">
-                <div v-for="(messenger, index) in number.messengers" :key="index" class="flex">
-                  <input type="checkbox" class="custom-checkbox" v-model="messenger.status" :id="messenger.id">
-                  <label :for="messenger.id" class="w-full text-xs text-dark-gray mr-2">{{messenger.name}}</label>
-                </div>
+                <div class="ml-2">
+                  <p class="text-xs text-dark-gray mb-2">Привязка к мессенджерам</p>
+                  <div class="flex">
+                    <div v-for="(messenger, index) in number.messengers" :key="index" class="flex">
+                      <input type="checkbox" class="custom-checkbox" v-model="messenger.status" :id="messenger.id">
+                      <label :for="messenger.id" class="w-full text-xs text-dark-gray mr-2">{{messenger.name}}</label>
+                    </div>
+                  </div>
+                </div> 
               </div>
               <!-- Delete current phone -->
               <div class="icon-wrapper">
@@ -163,7 +169,7 @@
               </label>
               <input 
                 id="email"
-                type="text" 
+                type="email" 
                 class="p-2 w-full text-gray-500 bg-light-grey rounded-md focus:outline-none"
                 v-model="email.email"
               >
@@ -182,6 +188,7 @@
                   class="webkit p-2 w-full text-gray-500 bg-light-grey focus:outline-none rounded-md"
                   v-model="email.type"
                 >
+                  <option disabled value="Укажите тип">Укажите тип</option>
                   <option value="Личный">Личный</option>
                   <option value="Рабочий">Рабочий</option>
                 </select>
@@ -228,7 +235,7 @@
               </label>
               <input 
                 id="social-link"
-                type="text" 
+                type="url" 
                 class="p-2 w-full text-gray-500 bg-light-grey focus:outline-none rounded-md"
                 v-model="social.link"
               >
@@ -247,6 +254,7 @@
                   class="webkit p-2 w-full text-gray-500 bg-light-grey rounded-md focus:outline-none"
                   v-model="social.name"
                 >
+                  <option disabled value="Укажите название">Укажите название</option>
                   <option value="instagram">Инстаграм</option>
                   <option value="vkontakte">Вконтакте</option>
                   <option value="telegram">Телеграм</option>
@@ -307,7 +315,7 @@
                 <input 
                   id="event-date"
                   type="date"
-                  class="webkit bg-light-grey rounded-md p-2 w-full text-gray-500 focus:outline-none"
+                  class="webkit bg-light-grey rounded-md h-10 p-2 w-full text-gray-500 focus:outline-none"
                   v-model="event.date"
                   placeholder="value"
                 >
@@ -407,7 +415,7 @@ import { useRouter } from 'vue-router';
         const addPhoneNumber = () => {
           phoneNumbers.value.push({
             id: uid(),
-            type: '',
+            type: 'Укажите тип',
             phone: '',
             messengers: [
               {
@@ -428,7 +436,7 @@ import { useRouter } from 'vue-router';
         const addEmail = () => {
           Emails.value.push({
             id: uid(),
-            type: '',
+            type: 'Укажите тип',
             email: ''
           })
         }
@@ -437,7 +445,7 @@ import { useRouter } from 'vue-router';
         const addSocial = () => {
           socialNetworks.value.push({
             id: uid(),
-            name: '',
+            name: 'Укажите название',
             link: ''
           })
         }
