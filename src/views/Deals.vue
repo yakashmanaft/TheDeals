@@ -50,8 +50,12 @@
             </div>
         </div>
 
-        <!-- deal card && date && zero messages -->
-        <div class="mb-4">
+        <!-- Loading spinner -->
+        <div v-if="spinner" class="spinner"></div>
+
+        <!-- Deals, dates, zero-deals -->
+        <div v-else class="mb-4">
+
           <div v-for="(day, idx) in daysArray" :key="idx">
 
             <!-- Deadline Date (Execution date of deal)-->
@@ -117,32 +121,44 @@
 
           </div>
 
-          <!-- zero deal status messages -->
-          <div class="px-2 zero-status_wrapper">
+        </div>
 
-            <!-- deal-in-booking -->
-            <div v-if="setDealStatus === 'deal-in-booking' && getStatusArrLength('deal-in-booking') === 0">
-              <div class="flex flex-col items-center">
-                <div>
-                  <img src="../assets/images/deals/status/date.svg" alt="">
-                </div>
-                <h2 class="text-blue text-xl mt-8">Нет забронированных дат</h2> 
-                <p class="text-dark-gray mt-2 text-center">Создайте дело и укажите дату</p>
+        <!-- zero deal status messages -->
+        <div v-if="!spinner" class="zero-status_wrapper">
+
+          <!-- deal-in-booking -->
+          <div v-if="setDealStatus === 'deal-in-booking' && getStatusArrLength('deal-in-booking') === 0">
+            <div class="flex flex-col items-center">
+              <div>
+                <img src="../assets/images/deals/status/date.svg" alt="">
               </div>
+              <h2 class="text-blue text-xl mt-8">Нет забронированных дат</h2> 
+              <p class="text-dark-gray mt-2 text-center">Создайте дело и укажите дату</p>
             </div>
-
-            <!-- deal-cancelled -->
-            <div v-if="setDealStatus === 'deal-cancelled' && getStatusArrLength('deal-cancelled') === 0">
-              <div class="flex flex-col items-center">
-                <div>
-                  <img src="../assets/images/deals/status/success.svg" alt="">
-                </div>
-                <h2 class="text-blue text-xl mt-8">Ни одного отмененного дела!</h2> 
-                <p class="text-dark-gray mt-2">Вы супер! Так держать!</p>
-              </div>
-            </div>
-
           </div>
+
+          <!-- deal-in-booking -->
+          <div v-if="setDealStatus === 'deal-in-process' && getStatusArrLength('deal-in-process') === 0">
+            <div class="flex flex-col items-center">
+              <div>
+                <img src="../assets/images/deals/status/date.svg" alt="">
+              </div>
+              <h2 class="text-blue text-xl mt-8">Не вижу дел в процессе...</h2> 
+              <p class="text-dark-gray mt-2 text-center">Создайте дело и приступайте к реализации.</p>
+            </div>
+          </div>
+
+          <!-- deal-cancelled -->
+          <div v-if="setDealStatus === 'deal-cancelled' && getStatusArrLength('deal-cancelled') === 0">
+            <div class="flex flex-col items-center">
+              <div>
+                <img src="../assets/images/deals/status/success.svg" alt="">
+              </div>
+              <h2 class="text-blue text-xl mt-8">Ни одного отмененного дела!</h2> 
+              <p class="text-dark-gray mt-2">Вы супер! Так держать!</p>
+            </div>
+          </div>
+
         </div>
 
       </div>
@@ -227,6 +243,13 @@ export default {
     // Список дат, для которых есть дела (заказы, поставки, личное)
     const daysArray = ref([])
 
+    // Spiner data
+    const spinner = ref(false);
+
+    // const loadSpinner = () => {
+
+    // }
+
     // Все даты по заказам
     const executionDatesArray = ref([])
     // Get execution date
@@ -263,30 +286,22 @@ export default {
       } catch (error) {
         console.warn(error.message);
       }
-    }
-
-    // Меняем статус дела и запускаем функцию сопоставления дат дел
-    const checkChangeStatus = () => {
-      getExecutionDate(setDealStatus.value);
+      spinner.value = false;
     }
 
     // Run execution date function
     getExecutionDate(setDealStatus.value);
 
-    // Get contactInfo from DB MyContacts
-    const contactInfo = ref([]);
-    getContactInfo(contactInfo, errorMsg)
-    
-    // Show name of contact comparing by ID
-    const getNameId = (contactID) => {
-      // compare contactID form deals with contactInfo from MyContacts
-      return showNameByID(contactInfo, contactID)
-    }
-
     const dealStatusArray = ref([])
 
     // Запускаем функцию получаения из БД статусы всех дел
     getDealStatus(dealStatusArray, dataLoaded, errorMsg)
+
+    // Меняем статус дела и запускаем функцию сопоставления дат дел
+    const checkChangeStatus = () => {
+      getExecutionDate(setDealStatus.value);
+      spinner.value = !spinner.value;
+    }
 
     // Получаем количество дел по конкретному статусу
     const getStatusArrLength = (dealStatus) => {
@@ -301,8 +316,18 @@ export default {
         return dealStatusLength.length
     }
 
+    // Get contactInfo from DB MyContacts
+    const contactInfo = ref([]);
+    getContactInfo(contactInfo, errorMsg)
+    
+    // Show name of contact comparing by ID
+    const getNameId = (contactID) => {
+      // compare contactID form deals with contactInfo from MyContacts
+      return showNameByID(contactInfo, contactID)
+    }
+
     return {
-      list, setDealStatus, dataLoaded, title, executionDatesArray, translateDealType, translateDealStatus, showEventDate, daysArray, contactInfo, getNameId, checkChangeStatus, dealStatusArray, getDealStatus, getStatusArrLength, dealStatusList
+      list, setDealStatus, dataLoaded, title, executionDatesArray, translateDealType, translateDealStatus, showEventDate, daysArray, contactInfo, getNameId, checkChangeStatus, dealStatusArray, getDealStatus, getStatusArrLength, dealStatusList, spinner
     };
   },
 };
@@ -454,9 +479,54 @@ export default {
   }
 
   .zero-status_wrapper {
-    height: 65vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
   }
+
+  .spinner {
+    position: absolute;
+    height: 60px;
+    width: 60px;
+    border: 3px solid transparent;
+    border-top-color: #3D3D3D;
+    top: 50%;
+    left: 50%;
+    margin: -30px;
+    border-radius: 50%;
+    animation: spin 2s linear infinite;
+  }
+
+  .spinner:before, .spinner:after{
+    content:'';
+    position: absolute;
+    border: 3px solid transparent;
+    border-radius: 50%;
+  }
+
+  .spinner:before{
+    border-top-color: #78D86F;
+    top: -12px;
+    left: -12px;
+    right: -12px;
+    bottom: -12px;
+    animation: spin 3s linear infinite;
+  }
+
+  .spinner:after{
+    border-top-color: #4785E7;
+    top: 6px;
+    left: 6px;
+    right: 6px;
+    bottom: 6px;  
+    animation: spin 4s linear infinite;
+  }
+
+  @keyframes spin{
+    0% {transform: rotate(0deg);}
+    100% {transform: rotate(360deg);}
+  }
+
 </style>
