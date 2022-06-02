@@ -53,7 +53,7 @@
 
           <!-- Name -->
           <div class="w-full mt-2">
-            <label for="contact-name" class="text-xs mb-1 ml-2 text-dark-gray">Имя, Отчество</label>
+            <label for="contact-name" class="text-xs mb-1 ml-2 text-dark-gray">Имя</label>
             <input 
               required
               id="contact-name"

@@ -70,12 +70,12 @@
                 <div class="relative flex flex-col rounded-md bg-light-grey p-2 py-4 shadow-md">
 
                   <!-- header -->
-                  <div class="flex place-content-between">
+                  <div class="flex place-content-between items-center">
                     <div class="flex items-center">
-                      <span class="bg-white text-green px-2 rounded-md shadow-sm text-sm">{{translateDealType(deal.dealType)}}</span>
-                      <span class="bg-white px-2 ml-2 text-sm rounded-md shadow-sm text-dark-gray">{{ translateDealStatus(deal.dealStatus) }}</span>
+                      <span class="bg-white text-green px-2 py-1 rounded-md shadow-sm text-sm">{{translateDealType(deal.dealType)}}</span>
+                      <span class="bg-white px-2 ml-2 py-1 text-sm rounded-md shadow-sm text-dark-gray whitespace-nowrap">{{ translateDealStatus(deal.dealStatus) }}</span>
                     </div>
-                    <router-link :to="{ name: 'View-Contact', params: { contactId: deal.contactID } }" class="text-sm text-blue mr-2">{{ getNameId(deal.contactID) }}</router-link> 
+                    <router-link :to="{ name: 'View-Contact', params: { contactId: deal.contactID } }" class="text-sm text-right text-blue mr-2">{{ getNameId(deal.contactID) }}</router-link> 
                   </div>
 
                   <!-- Предмет заказа -->
@@ -514,7 +514,7 @@ export default {
 
   .zero-status_wrapper {
     position: absolute;
-    top: 50%;
+    top: 60%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: 100%;
@@ -526,7 +526,7 @@ export default {
     width: 60px;
     border: 3px solid transparent;
     border-top-color: #3D3D3D;
-    top: 50%;
+    top: 60%;
     left: 50%;
     margin: -30px;
     border-radius: 50%;
