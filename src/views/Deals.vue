@@ -53,7 +53,7 @@
         <!-- Loading spinner -->
         <div v-if="spinner" class="spinner"></div>
 
-        <!-- Deals, dates, zero-deals -->
+        <!-- Deals, dates -->
         <div v-else class="mb-4">
 
           <div v-for="(day, idx) in daysArray" :key="idx">
@@ -72,8 +72,8 @@
                   <!-- header -->
                   <div class="flex place-content-between">
                     <div class="flex items-center">
-                      <span class="bg-white text-green px-2 rounded-md text-sm text-center my-auto">{{translateDealType(deal.dealType)}}</span>
-                      <span class="ml-2 text-xs text-dark-gray">{{ translateDealStatus(deal.dealStatus) }}</span>
+                      <span class="bg-white text-green px-2 rounded-md shadow-sm text-sm">{{translateDealType(deal.dealType)}}</span>
+                      <span class="bg-white px-2 ml-2 text-sm rounded-md shadow-sm text-dark-gray">{{ translateDealStatus(deal.dealStatus) }}</span>
                     </div>
                     <router-link :to="{ name: 'View-Contact', params: { contactId: deal.contactID } }" class="text-sm text-blue mr-2">{{ getNameId(deal.contactID) }}</router-link> 
                   </div>
@@ -123,6 +123,7 @@
 
         </div>
 
+        <!-- ОПТИМИЗИРОВАТЬ! -->
         <!-- zero deal status messages -->
         <div v-if="!spinner" class="zero-status_wrapper">
 
@@ -130,21 +131,54 @@
           <div v-if="setDealStatus === 'deal-in-booking' && getStatusArrLength('deal-in-booking') === 0">
             <div class="flex flex-col items-center">
               <div>
-                <img src="../assets/images/deals/status/date.svg" alt="">
+                <img src="../assets/images/deals/status/deal-in-booking.svg" alt="">
               </div>
               <h2 class="text-blue text-xl mt-8">Нет забронированных дат</h2> 
               <p class="text-dark-gray mt-2 text-center">Создайте дело и укажите дату</p>
             </div>
           </div>
 
-          <!-- deal-in-booking -->
+          <!-- deal-in-process -->
           <div v-if="setDealStatus === 'deal-in-process' && getStatusArrLength('deal-in-process') === 0">
             <div class="flex flex-col items-center">
               <div>
-                <img src="../assets/images/deals/status/date.svg" alt="">
+                <img src="../assets/images/deals/status/deal-in-process.svg" alt="">
               </div>
-              <h2 class="text-blue text-xl mt-8">Не вижу дел в процессе...</h2> 
-              <p class="text-dark-gray mt-2 text-center">Создайте дело и приступайте к реализации.</p>
+              <h2 class="text-blue text-xl mt-8">Где дела в процессе?</h2> 
+              <p class="text-dark-gray mt-2 text-center">Создайте дело и приступайте.</p>
+            </div>
+          </div>
+
+          <!-- deal-in-delivery -->
+          <div v-if="setDealStatus === 'deal-in-delivery' && getStatusArrLength('deal-in-delivery') === 0">
+            <div class="flex flex-col items-center">
+              <div>
+                <img src="../assets/images/deals/status/deal-in-delivery.svg" alt="">
+              </div>
+              <h2 class="text-blue text-xl mt-8">А как же доставка?</h2> 
+              <p class="text-dark-gray mt-2 text-center">Сделали дело, доставьте товар.</p>
+            </div>
+          </div>
+
+          <!-- deal-in-debt -->
+          <div v-if="setDealStatus === 'deal-in-debt' && getStatusArrLength('deal-in-debt') === 0">
+            <div class="flex flex-col items-center">
+              <div>
+                <img src="../assets/images/deals/status/deal-in-debt.svg" alt="">
+              </div>
+              <h2 class="text-blue text-xl mt-8">У вас нет дел с долгами</h2> 
+              <p class="text-dark-gray mt-2 text-center">Никто никому ничего не должен.</p>
+            </div>
+          </div>
+
+          <!-- deal-cancelled -->
+          <div v-if="setDealStatus === 'deal-complete' && getStatusArrLength('deal-complete') === 0">
+            <div class="flex flex-col items-center">
+              <div>
+                <img src="../assets/images/deals/status/deal-complete.svg" alt="">
+              </div>
+              <h2 class="text-blue text-xl mt-8">Где завершенные дела?</h2> 
+              <p class="text-dark-gray mt-2">Кажется, вы беретесь и не доделываете...</p>
             </div>
           </div>
 
@@ -152,7 +186,7 @@
           <div v-if="setDealStatus === 'deal-cancelled' && getStatusArrLength('deal-cancelled') === 0">
             <div class="flex flex-col items-center">
               <div>
-                <img src="../assets/images/deals/status/success.svg" alt="">
+                <img src="../assets/images/deals/status/deal-cancelled.svg" alt="">
               </div>
               <h2 class="text-blue text-xl mt-8">Ни одного отмененного дела!</h2> 
               <p class="text-dark-gray mt-2">Вы супер! Так держать!</p>
