@@ -46,7 +46,7 @@
                   required
                   autocomplete="off"
                   id="searchedContacts"
-                  class="search-input_input text-gray-500 outline-none w-full focus:outline-none bg-light-grey" 
+                  class="text-dark-gray outline-none w-full focus:outline-none bg-light-grey" 
                   type="search"
                   placeholder="Поиск..."
                   v-model="search"

@@ -32,8 +32,6 @@
       </div>
 
       <!-- Data -->
-
-      <!-- Проба -->
       <div 
         v-else 
         class="grid grid-cols-1 gap-4"
@@ -67,7 +65,7 @@
             <!-- Cards of deals -->
             <div v-for="(deal, index) in list" :key="index" class="my-4">
               <router-link v-if="showEventDate(deal.executionDate) === day && deal.dealStatus === setDealStatus" :to="{ name: 'View-Deal', params: { dealId: deal.id } }">
-                <div class="relative flex flex-col rounded-md bg-light-grey p-2 py-4 shadow-md">
+                <div class="relative flex flex-col rounded-md bg-light-grey p-2 pb-4 shadow-md">
 
                   <!-- header -->
                   <div class="flex place-content-between items-center">
@@ -80,26 +78,13 @@
 
                   <!-- Предмет заказа -->
                   <div class="relative deal-subject_item my-2 mt-4">
-                    <!-- item -->
-                    <div class="absolute top-0 left-0 flex flex-col justify-items-center">
+                    <div v-for="(item, index) in deal.dealsList" :key="index" :class="`left-${index}0`" class="absolute top-0 left-0 flex flex-col justify-items-center">
+                      
+                      <!-- item -->
                       <div class="deal-subject_item-img">
-                        <img src="../assets/images/deals/orders/wedding-cake.png" alt=""> 
+                        <img :src="require(`../assets/images/deals/orders/${item.selectedProduct}.png`)" alt=""> 
                       </div>
-                      <div class="text-dark-gray text-xs text-center">х 1</div>
-                    </div>
-                    <!-- item -->
-                    <div class="absolute top-0 left-10 flex flex-col justify-items-center">
-                      <div class="deal-subject_item-img">
-                        <img src="../assets/images/deals/orders/cake.png" alt=""> 
-                      </div>
-                      <div class="text-dark-gray text-xs text-center">х 121</div>
-                    </div>
-                    <!-- item -->
-                    <div class="absolute top-0 left-20 flex flex-col justify-items-center">
-                      <div class="deal-subject_item-img">
-                        <img src="../assets/images/deals/orders/cupcake.png" alt=""> 
-                      </div>
-                      <div class="text-dark-gray text-xs text-center">х 66</div>
+                      <div class="text-dark-gray text-xs text-center">х {{ item.productQuantity }}</div>
                     </div>
                   </div>
 
@@ -123,76 +108,21 @@
 
         </div>
 
-        <!-- ОПТИМИЗИРОВАТЬ! -->
         <!-- zero deal status messages -->
-        <div v-if="!spinner" class="zero-status_wrapper">
-
-          <!-- deal-in-booking -->
-          <div v-if="setDealStatus === 'deal-in-booking' && getStatusArrLength('deal-in-booking') === 0">
-            <div class="flex flex-col items-center">
-              <div>
-                <img src="../assets/images/deals/status/deal-in-booking.svg" alt="">
+        <div v-if="!spinner && dealStatusArray.length !== 0" class="zero-status_wrapper">
+          
+          <!-- looping deal status -->
+          <div v-for="(item, index) in dealStatusList" :key="index">
+            <div v-if="setDealStatus === item.name && getStatusArrLength(item.name) === 0">
+              <div class="flex flex-col items-center">
+                <div>
+                  <img :src="require(`../assets/images/deals/status/${item.name}.svg`)" alt="">
+                </div>
+                <h2 class="text-blue text-xl mt-8">{{ item.caption }}</h2> 
+                <p class="text-dark-gray mt-2 text-center">{{ item.text }}</p>
               </div>
-              <h2 class="text-blue text-xl mt-8">Нет забронированных дат</h2> 
-              <p class="text-dark-gray mt-2 text-center">Создайте дело и укажите дату</p>
             </div>
           </div>
-
-          <!-- deal-in-process -->
-          <div v-if="setDealStatus === 'deal-in-process' && getStatusArrLength('deal-in-process') === 0">
-            <div class="flex flex-col items-center">
-              <div>
-                <img src="../assets/images/deals/status/deal-in-process.svg" alt="">
-              </div>
-              <h2 class="text-blue text-xl mt-8">Где дела в процессе?</h2> 
-              <p class="text-dark-gray mt-2 text-center">Создайте дело и приступайте.</p>
-            </div>
-          </div>
-
-          <!-- deal-in-delivery -->
-          <div v-if="setDealStatus === 'deal-in-delivery' && getStatusArrLength('deal-in-delivery') === 0">
-            <div class="flex flex-col items-center">
-              <div>
-                <img src="../assets/images/deals/status/deal-in-delivery.svg" alt="">
-              </div>
-              <h2 class="text-blue text-xl mt-8">А как же доставка?</h2> 
-              <p class="text-dark-gray mt-2 text-center">Сделали дело, доставьте товар.</p>
-            </div>
-          </div>
-
-          <!-- deal-in-debt -->
-          <div v-if="setDealStatus === 'deal-in-debt' && getStatusArrLength('deal-in-debt') === 0">
-            <div class="flex flex-col items-center">
-              <div>
-                <img src="../assets/images/deals/status/deal-in-debt.svg" alt="">
-              </div>
-              <h2 class="text-blue text-xl mt-8">У вас нет дел с долгами</h2> 
-              <p class="text-dark-gray mt-2 text-center">Никто никому ничего не должен.</p>
-            </div>
-          </div>
-
-          <!-- deal-cancelled -->
-          <div v-if="setDealStatus === 'deal-complete' && getStatusArrLength('deal-complete') === 0">
-            <div class="flex flex-col items-center">
-              <div>
-                <img src="../assets/images/deals/status/deal-complete.svg" alt="">
-              </div>
-              <h2 class="text-blue text-xl mt-8">Где завершенные дела?</h2> 
-              <p class="text-dark-gray mt-2">Кажется, вы беретесь и не доделываете...</p>
-            </div>
-          </div>
-
-          <!-- deal-cancelled -->
-          <div v-if="setDealStatus === 'deal-cancelled' && getStatusArrLength('deal-cancelled') === 0">
-            <div class="flex flex-col items-center">
-              <div>
-                <img src="../assets/images/deals/status/deal-cancelled.svg" alt="">
-              </div>
-              <h2 class="text-blue text-xl mt-8">Ни одного отмененного дела!</h2> 
-              <p class="text-dark-gray mt-2">Вы супер! Так держать!</p>
-            </div>
-          </div>
-
         </div>
 
       </div>
@@ -223,32 +153,54 @@ export default {
     const list = ref([]);
     const dataLoaded = ref(null);
     const errorMsg = ref(null);
+    // Spiner data
+    const spinner = ref(false);
+
+    //
+    const wait = () => {
+      if (!dataLoaded.value && list.value.length === 0) {
+        spinner.value = !spinner.value
+      }
+    }
+    wait()
 
     // deal status list
     const dealStatusList = [
       {
         name: 'deal-in-booking',
         title: 'Бронь даты',
+        caption: 'Нет забронированных дат',
+        text: 'Создайте дело и укажите дату.'
       },
       {
         name: 'deal-in-process',
         title: 'В процессе',
+        caption: 'Где дела в процессе?',
+        text: 'Создайте дело и приступайте.'
       },
       {
         name: 'deal-in-delivery',
         title: 'В доставке',
+        caption: 'А как же доставка?',
+        text: 'Сделали дело, доставьте товар.'
       },
       {
         name: 'deal-in-debt',
-        title: 'Долг'
+        title: 'Долг',
+        caption: 'У вас нет дел с долгами',
+        text: 'Никто никому ничего не должен.'
       },
       {
         name: 'deal-complete',
-        title: 'Завершен'
+        title: 'Завершен',
+        caption: 'Где завершенные дела?',
+        text: 'Кажется, вы беретесь и не доделываете...'
       },
       {
         name: 'deal-cancelled',
-        title: 'Отменен'
+        title: 'Отменен',
+        caption: 'Ни одного отмененного дела!',
+        text: 'Вы супер! Так держать!'
       }
     ]
 
@@ -277,13 +229,6 @@ export default {
     // Список дат, для которых есть дела (заказы, поставки, личное)
     const daysArray = ref([])
 
-    // Spiner data
-    const spinner = ref(false);
-
-    // const loadSpinner = () => {
-
-    // }
-
     // Все даты по заказам
     const executionDatesArray = ref([])
     // Get execution date
@@ -293,7 +238,6 @@ export default {
         const { data: deals, error } = await supabase.from('deals').select('*').eq('dealStatus', dealStatus);
         if(error) throw error;
         executionDatesArray.value = deals;
-
         //создаем на их основании новый массив
         const arr = executionDatesArray.value.map(item => {
           return {...item}
@@ -328,7 +272,7 @@ export default {
 
     const dealStatusArray = ref([])
 
-    // Запускаем функцию получаения из БД статусы всех дел
+    // Запускаем функцию получения из БД статусы всех дел
     getDealStatus(dealStatusArray, dataLoaded, errorMsg)
 
     // Меняем статус дела и запускаем функцию сопоставления дат дел
