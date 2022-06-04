@@ -12,11 +12,6 @@
       <img src="@/assets/images/common/icon-plus.svg" alt="">
     </router-link>
 
-
-
-    <!-- Временно создание поместим сюда -->
-    <!-- <router-link class="cursor-pointer" :to="{ name: 'Create' }">Создать заказ</router-link> -->
-
     <!-- Когда Data загружена -->
     <div v-if="dataLoaded" class="container pt-20 px-4">
 
@@ -35,6 +30,7 @@
       <div 
         v-else 
         class="grid grid-cols-1 gap-4"
+        :class="{ fixed: dealStatusMenu }"
       >
         <!-- Deal filter -->
         <div class="flex deal-filter-wrapper">
@@ -70,8 +66,8 @@
                   <!-- header -->
                   <div class="flex place-content-between items-center">
                     <div class="flex items-center">
-                      <span class="bg-white text-green px-2 py-1 rounded-md shadow-sm text-sm">{{translateDealType(deal.dealType)}}</span>
-                      <span class="bg-white px-2 ml-2 py-1 text-sm rounded-md shadow-sm text-dark-gray whitespace-nowrap">{{ translateDealStatus(deal.dealStatus) }}</span>
+                      <span class="leading-5 px-2 py-1 border border-green text-green rounded-md text-sm">{{translateDealType(deal.dealType)}}</span>
+                      <span @click.prevent.stop="dealStatusMenuToggle(deal.id, deal.dealStatus)" class="bg-white px-2 ml-2 py-1 text-sm rounded-md shadow-sm text-blue whitespace-nowrap">{{ translateDealStatus(deal.dealStatus) }}</span>
                     </div>
                     <router-link :to="{ name: 'View-Contact', params: { contactId: deal.contactID } }" class="text-sm text-right text-blue mr-2">{{ getNameId(deal.contactID) }}</router-link> 
                   </div>
@@ -111,7 +107,7 @@
         <!-- zero deal status messages -->
         <div v-if="!spinner && dealStatusArray.length !== 0" class="zero-status_wrapper">
           
-          <!-- looping deal status -->
+          <!-- looping zero deal status -->
           <div v-for="(item, index) in dealStatusList" :key="index">
             <div v-if="setDealStatus === item.name && getStatusArrLength(item.name) === 0">
               <div class="flex flex-col items-center">
@@ -125,6 +121,27 @@
           </div>
         </div>
 
+      </div>
+      
+      <!-- Deal status menu wrapper -->
+      <div v-if="dealStatusMenu" class="w-full fixed bottom-0 left-0 flex items-center justify-center flex-col pb-0 z-20" :class="{ dealStatusMenu_wrapper: dealStatusMenu}" @click="closeDealStatusMenu">
+        <!-- menu -->
+        <div class="bg-light-grey bottom-0 border-t w-full fixed  rounded-t-3xl">
+          <!-- menu header -->
+          <div class="text-blue flex items-center place-content-between px-4 my-4">
+            <span class="dealStatusMenu-btn_close">Отменить</span>
+            <span>Готово</span>
+          </div>
+          <!-- menu content -->
+          <div class="px-4 mt-2 mb-4">
+            <p>Бронь даты</p>
+            <p>В процессе</p>
+            <p>В доставке</p>
+            <p>Долг</p>
+            <p>Завершен</p>
+            <p>Отменен</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -155,6 +172,23 @@ export default {
     const errorMsg = ref(null);
     // Spiner data
     const spinner = ref(false);
+
+    // deal status menu
+    const dealStatusMenu = ref(false);
+    // deal status menu toggle
+    const dealStatusMenuToggle = (currentDealID, currentDealStatus) => {
+      dealStatusMenu.value = !dealStatusMenu.value;
+      console.log(dealStatusMenu.value)
+      console.log(currentDealID)
+      console.log(currentDealStatus)
+    }
+
+    const closeDealStatusMenu = (e) => {
+      if (e.target.classList.contains('dealStatusMenu_wrapper') || e.target.classList.contains('dealStatusMenu-btn_close')) {
+          dealStatusMenu.value = !dealStatusMenu.value;
+      }
+
+    }
 
     //
     const wait = () => {
@@ -305,7 +339,7 @@ export default {
     }
 
     return {
-      list, setDealStatus, dataLoaded, title, executionDatesArray, translateDealType, translateDealStatus, showEventDate, daysArray, contactInfo, getNameId, checkChangeStatus, dealStatusArray, getDealStatus, getStatusArrLength, dealStatusList, spinner
+      list, setDealStatus, dataLoaded, title, executionDatesArray, translateDealType, translateDealStatus, showEventDate, daysArray, contactInfo, getNameId, checkChangeStatus, dealStatusArray, getDealStatus, getStatusArrLength, dealStatusList, spinner, dealStatusMenu, dealStatusMenuToggle, closeDealStatusMenu
     };
   },
 };
@@ -505,6 +539,12 @@ export default {
   @keyframes spin{
     0% {transform: rotate(0deg);}
     100% {transform: rotate(360deg);}
+  }
+
+  .dealStatusMenu_wrapper {
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(2px);
   }
 
 </style>
