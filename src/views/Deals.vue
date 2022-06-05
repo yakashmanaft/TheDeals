@@ -123,23 +123,23 @@
 
       </div>
       
-      <!-- Deal status menu wrapper -->
+      <!-- Change Deal status menu wrapper -->
       <div v-if="dealStatusMenu" class="w-full fixed bottom-0 left-0 flex items-center justify-center flex-col pb-0 z-20" :class="{ dealStatusMenu_wrapper: dealStatusMenu}" @click="closeDealStatusMenu">
         <!-- menu -->
         <div class="bg-light-grey bottom-0 border-t w-full fixed  rounded-t-3xl">
           <!-- menu header -->
-          <div class="text-blue flex items-center place-content-between px-4 my-4">
+          <div class="text-blue flex items-center place-content-between p-4 deal-status-menu">
             <span class="dealStatusMenu-btn_close">Отменить</span>
             <span @click="updateStatus">Готово</span>
           </div>
           <!-- menu content -->
-          <div class="mb-4">
+          <div class="mb-4 border-t">
             <!-- status item -->
-            <div v-for="(status, index) in dealStatusList" :key="index" class="flex flex-col mt-1 px-4">
+            <div v-for="(status, index) in dealStatusList" :key="index" class="flex flex-col">
               <!--  -->
               <input class="custom-radio" name="changeDealStatus" type="radio" :id="`${status.name}1`" :value="status.name"
               v-model="statusDeal.currentDealStatus" >
-              <label :for="`${status.name}1`">{{ status.title }}</label>
+              <label class="px-4 py-2.5 text-dark-gray" :for="`${status.name}1`">{{ status.title }}</label>
 
             </div>
           </div>
@@ -572,11 +572,16 @@ export default {
   }
 
   /* для элемента input c type="radio" */
-  /* .custom-radio {
+  .custom-radio {
     position: absolute;
     z-index: -1;
     opacity: 0;
-  } */
+  }
+
+  .custom-radio:checked+label {
+    background-color: white !important;
+    color: #4785E7 !important;
+  }
 
   /* для элемента label связанного с .custom-radio */
   .custom-radio+label {
@@ -589,11 +594,11 @@ export default {
   .custom-radio+label::after {
     content: '';
     display: inline-block;
-    width: 1em;
-    height: 1em;
+    width: 1.3em;
+    height: 1.3em;
     flex-shrink: 0;
     flex-grow: 0;
-    border: 1px solid #adb5bd;
+    border: 1px solid #4785E7;
     border-radius: 50%;
     margin-left: auto;
     margin-right: 1%;
@@ -603,20 +608,20 @@ export default {
   }
 
   /* стили при наведении курсора на радио */
-  /* .custom-radio:not(:disabled):not(:checked)+label:hover::before {
+  /* .custom-radio:not(:disabled):not(:checked)+label:hover::after {
     border-color: #b3d7ff;
   } */
 
   /* стили для активной радиокнопки (при нажатии на неё) */
-  /* .custom-radio:not(:disabled):active+label::before {
-    background-color: #b3d7ff;
-    border-color: #b3d7ff;
-  } */
+  .custom-radio:not(:disabled):active+label::after {
+    background-color: #D8E7FF;
+    border-color: #D8E7FF;
+  }
 
   /* стили для радиокнопки, находящейся в фокусе */
-  /* .custom-radio:focus+label::before {
+  .custom-radio:focus+label::after {
     box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-  } */
+  }
 
   /* стили для радиокнопки, находящейся в фокусе и не находящейся в состоянии checked */
   /* .custom-radio:focus:not(:checked)+label::before {
@@ -624,9 +629,9 @@ export default {
   } */
   /* стили для радиокнопки, находящейся в состоянии checked */
   .custom-radio:checked+label::after {
-    border-color: #0b76ef;
-    background-color: #0b76ef;
-    /* background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e"); */
+    border-color: #4785E7;
+    background-color: #4785E7;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%234785E7'/%3e%3c/svg%3e");
   }
   /* стили для радиокнопки, находящейся в состоянии disabled */
   /* .custom-radio:disabled+label::before {
