@@ -65,7 +65,7 @@
         <div v-if="spinner" class="spinner"></div>
 
         <!-- Deals, dates -->
-        <div v-else class="mb-16">
+        <div v-else class="mb-12">
 
           <div v-for="(day, idx) in daysArray" :key="idx">
 
