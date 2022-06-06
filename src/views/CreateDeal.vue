@@ -114,6 +114,7 @@
                 v-model="typeOfDeal"
                 @change="dealTypeChanged"
               >
+              <!-- Возможно , в дальнейшем динамическое, исходя из настроек аккаунта -->
                 <option disabled value="select-deal-type">Выберите тип дела</option>
                 <option value="order">Заказ</option>
                 <option value="supply">Поставка</option>
@@ -175,18 +176,18 @@
     
                       <!-- Price per unit -->
                       <div class="flex place-content-between mx-2 mb-4 mt-2 items-center">
-                        <span class="text-sm leading-none align-text-middle text-dark-gray">
-                          Цена за 1 шт.
-                        </span>
+                        <label for="pricePerUnit" class="text-sm leading-none align-text-middle text-dark-gray">
+                          Цена за 1 шт. (RUB)
+                        </label>
                         <div class="subject-price_value">
                           <input 
+                            id="pricePerUnit"
                             type="number" 
                             inputmode="decimal"
-                            class="focus:outline-none text-dark text-right mx-1 pt-1 w-14" 
+                            class="focus:outline-none text-dark text-right mx-1 pt-1 w-16" 
                             placeholder="0,00"
                             v-model="subject.pricePerUnit" 
                           >
-                          <span class="py-2">руб.</span>
                         </div>
                       </div>
     
@@ -233,15 +234,16 @@
     
                       <!-- Total subject price -->
                       <div class="flex place-content-between mx-2 mb-4 mt-4 items-center">
-                        <span class="text-sm leading-none align-text-middle text-dark-gray">
-                          Цена за {{subject.productQuantity}} шт.
+                        <span class="text-sm leading-2 align-text-middle text-dark-gray">
+                          За {{subject.productQuantity}} шт. 
                           <span v-if="subject.discountSubjectPriceValue > 0">с учетом скидки</span>
+                          (RUB)
                         </span>
                         <div>
                           <span 
                             class="py-2"
                           >
-                            {{(subject.totalSubjectPrice = (subject.pricePerUnit * subject.productQuantity * (1 - subject.discountSubjectPriceValue/100))).toFixed(2)}} руб.
+                            {{(subject.totalSubjectPrice = (subject.pricePerUnit * subject.productQuantity * (1 - subject.discountSubjectPriceValue/100))).toFixed(2)}}
                           </span>
                           
                         </div>
@@ -269,7 +271,7 @@
                   type="button"
                   class="border border-blue w-full p-2 rounded-md text-blue cursor-pointer"
                 >
-                  Добавить
+                  Добавить предмет
                 </button>
               </div>
     
@@ -293,24 +295,34 @@
                 required
                 v-model="dealStatus"
               >
-                <option value="deal-in-booking">Бронируем дату</option>
-                <option value="deal-in-process">Уже в процессе</option>
-                <option value="deal-in-delivery">В доставке</option>
-                <option value="deal-in-debt">Долг</option>
-                <option value="deal-complete">Дело сделано</option>
+                <option v-for="(item, index) in dealStatusList" :key="index" :value="item.name">{{ item.title }}</option>
 
               </select>
             </div>
-    
-            <p>Оплачено: 1000,00 руб.</p>
-            <p>Задолженность: 1579,00 руб.</p>  
 
-            <p>Оплачено: 1000,00 руб.</p>
-            <p>Задолженность: 1579,00 руб.</p>  
+            <!-- Внести оплату (dealPaid) -->
+            <div class="w-full flex flex-col mt-4">
+              <p class="mb-1 ml-2 text-sm text-blue">Предоплата (RUB)</p>
+              <div class="flex place-content-between border mb-4 items-center p-2 rounded-md">
+                <label for="dealPaid" class="text-sm leading-none align-text-middle text-dark-gray">
+                  Впишите сумму
+                </label>
+                <div class="subject-price_value">
+                  <input 
+                    type="number" 
+                    id="dealPaid"
+                    inputmode="decimal"
+                    class="focus:outline-none text-dark text-right mx-1 pt-1 w-16" 
+                    placeholder="0,00"
+                    v-model="dealPaid" 
+                  >
+                </div>
+              </div>
+              
+            </div>
+            <!-- Для input -->
+            <!-- pattern="[0-9]+([\.,][0-9]+)?" step="0.01" -->
 
-            <p>Оплачено: 1000,00 руб.</p>
-            <p>Задолженность: 1579,00 руб.</p>  
-            конец строки
           </div>
           
 
@@ -330,7 +342,7 @@
                 <!-- Sum Deal Value -->
                 <div class="ml-2">
                   <div class="text-xs text-dark-gray">
-                  Итого: 
+                  Общая сумма дела: 
                   </div>
                   <div class="text-xl">
                     {{sum()}} руб.
@@ -358,7 +370,8 @@
                 {{dealsList}}
 
 
-                Статус дела: {{dealStatus ? dealStatus : 'не выбран'}}
+                <p>Статус дела: {{dealStatus ? dealStatus : 'не выбран'}}</p>
+                <p>Остаток к уплате: {{sum() - dealPaid}}</p>
                 <p>Оплачено: 1000,00 руб.</p>
                 <p>Задолженность: 1579,00 руб.</p>  
                           <p>Оплачено: 1000,00 руб.</p>
@@ -457,11 +470,53 @@ export default {
     const contactOfDeal = ref('select-deal-contact');
     const dealStatus = ref('deal-in-booking');
 
+    const dealPaid = ref('');
+
     const contactInfo = ref([]);
     const dataLoaded = ref(null);
 
     const search = ref('');
     const executionDate = ref('');
+
+    // deal status list
+    const dealStatusList = [
+      {
+        name: 'deal-in-booking',
+        title: 'Бронь даты',
+        caption: 'Нет забронированных дат',
+        text: 'Создайте дело и укажите дату.'
+      },
+      {
+        name: 'deal-in-process',
+        title: 'В процессе',
+        caption: 'Где дела в процессе?',
+        text: 'Создайте дело и приступайте.'
+      },
+      {
+        name: 'deal-in-delivery',
+        title: 'В доставке',
+        caption: 'А как же доставка?',
+        text: 'Сделали дело, доставьте товар.'
+      },
+      {
+        name: 'deal-in-debt',
+        title: 'Долг',
+        caption: 'У вас нет дел с долгами',
+        text: 'Никто никому ничего не должен.'
+      },
+      {
+        name: 'deal-complete',
+        title: 'Завершен',
+        caption: 'Где завершенные дела?',
+        text: 'Кажется, вы беретесь и не доделываете...'
+      },
+      {
+        name: 'deal-cancelled',
+        title: 'Отменен',
+        caption: 'Ни одного отмененного дела!',
+        text: 'Вы супер! Так держать!'
+      }
+    ]
 
     // bind contact ID from DB myContacts
     const contactId = ref('');
@@ -728,6 +783,7 @@ export default {
             executionDate: executionDate.value,
             dealsList: dealsList.value,
             totalDealValue: totalDealValue.value,
+            dealPaid: dealPaid.value
           }
         ]);
         if (error) throw error;
@@ -778,7 +834,7 @@ export default {
     }
 
     return {
-      typeOfDeal, dealStatus, contactOfDeal, contactInfo, dataLoaded, sortedContacts,filteredOptions, search, workoutName, workoutType, exercises, statusMsg, errorMsg, user, addExercise, workoutChange, deleteExercise, createDeal, createWorkout, editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortmentList, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributesList, userDiscountRangeValue, sum, totalDealValue, executionDate, totalDealMenuClose, setDiscountRange
+      typeOfDeal, dealStatus, contactOfDeal, contactInfo, dataLoaded, sortedContacts,filteredOptions, search, workoutName, workoutType, exercises, statusMsg, errorMsg, user, addExercise, workoutChange, deleteExercise, createDeal, createWorkout, editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortmentList, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributesList, userDiscountRangeValue, sum, totalDealValue, executionDate, totalDealMenuClose, setDiscountRange, dealStatusList, dealPaid
     };
   },
 };

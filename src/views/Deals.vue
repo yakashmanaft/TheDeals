@@ -15,6 +15,23 @@
     <!-- Когда Data загружена -->
     <div v-if="dataLoaded" class="container pt-20 px-4">
 
+      <!-- App Msg -->
+      <!-- разобраться со стилями ерроров и меседжей системных -->
+      <!-- Status Message -->
+      <div v-if="statusMsg || errorMsg" class="fixed z-20 flex left-0 top-0 w-full h-16 mb-10 px-8 py-4 rounded-b-md shadow-md bg-white items-center place-content-between">
+        <div>
+          <p class="text-green">
+            {{ statusMsg }}
+          </p>
+          <p class="text-red-500">
+            {{ errorMsg }}
+          </p>
+        </div>
+        <div class="text-dark-gray" @click="statusMsg = !statusMsg">
+          Ok
+        </div>
+      </div>
+
       <!-- No Data -->
       <div v-if="list.length === 0" class="w-full flex flex-col items-center">
         <h1 class="text-2xl">Looks empty here...</h1>
@@ -48,7 +65,7 @@
         <div v-if="spinner" class="spinner"></div>
 
         <!-- Deals, dates -->
-        <div v-else class="mb-4">
+        <div v-else class="mb-16">
 
           <div v-for="(day, idx) in daysArray" :key="idx">
 
@@ -64,16 +81,21 @@
                 <div class="relative flex flex-col rounded-md bg-light-grey p-2 pb-4 shadow-md">
 
                   <!-- header -->
-                  <div class="flex place-content-between items-center">
-                    <div class="flex items-center">
-                      <span class="leading-5 px-2 py-1 border border-green text-green rounded-md text-sm">{{translateDealType(deal.dealType)}}</span>
-                      <span @click.prevent.stop="dealStatusMenuToggle(deal.id, deal.dealStatus)" class="bg-white px-2 ml-2 py-1 text-sm rounded-md shadow-sm text-blue whitespace-nowrap">{{ translateDealStatus(deal.dealStatus) }}</span>
-                    </div>
-                    <router-link :to="{ name: 'View-Contact', params: { contactId: deal.contactID } }" class="text-sm text-right text-blue mr-2">{{ getNameId(deal.contactID) }}</router-link> 
+                  <div class="flex place-content-between items-center border-b pb-2">
+
+                    <!-- Тип дела -->
+                    <span class="leading-5 px-2 py-1 mr-4 border border-green text-green rounded-md text-sm">{{translateDealType(deal.dealType)}}</span>
+                    
+                    <!-- Контакт по делу -->
+                    <router-link :to="{ name: 'View-Contact', params: { contactId: deal.contactID } }" class="text-sm text-center text-blue mr-2">{{ deal.contactID === '000' ? 'Неизвестный' : getNameId(deal.contactID)}}</router-link> 
+
+                    <!-- Статус дела -->
+                    <span @click.prevent.stop="dealStatusMenuToggle(deal.id, deal.dealStatus)" class=" px-2 py-1 text-sm rounded-md text-blue whitespace-nowrap">{{ translateDealStatus(deal.dealStatus) }}</span>
+
                   </div>
 
                   <!-- Предмет заказа -->
-                  <div class="relative deal-subject_item my-2 mt-4">
+                  <div class="relative deal-subject_item my-2">
                     <div v-for="(item, index) in deal.dealsList" :key="index" :class="`left-${index}0`" class="absolute top-0 left-0 flex flex-col justify-items-center">
                       
                       <!-- item -->
@@ -88,12 +110,13 @@
                   <ul class="text-sm text-dark-gray mt-2 px-2">
                     <li class="flex place-content-between">
                       <span>Оплачено</span>
-                      <span>1 000,00 <span class="text-xs">из</span> 2 570,00</span>
+                      <span>{{ deal.dealPaid }}<span class="text-xs"> из</span> {{ deal.totalDealValue }}</span>
                     </li>
                     <li class="flex place-content-between mt-2">
                       <span>Долг</span>
-                      <span>1 570,00</span>
+                      <span>{{ (deal.totalDealValue - deal.dealPaid).toFixed()  }}</span>
                     </li>
+
                   </ul>
 
                 </div>
@@ -128,18 +151,18 @@
         <!-- menu -->
         <div class="bg-light-grey bottom-0 border-t w-full fixed  rounded-t-3xl">
           <!-- menu header -->
-          <div class="text-blue flex items-center place-content-between p-4 deal-status-menu">
+          <div class="text-blue text-sm flex items-center place-content-between p-4 deal-status-menu">
             <span class="dealStatusMenu-btn_close">Отменить</span>
             <span @click="updateStatus">Готово</span>
           </div>
           <!-- menu content -->
-          <div class="mb-4 border-t">
+          <div class="mb-4 border-t text-sm pt-2">
             <!-- status item -->
             <div v-for="(status, index) in dealStatusList" :key="index" class="flex flex-col">
               <!--  -->
               <input class="custom-radio" name="changeDealStatus" type="radio" :id="`${status.name}1`" :value="status.name"
               v-model="statusDeal.currentDealStatus" >
-              <label class="px-4 py-2.5 text-dark-gray" :for="`${status.name}1`">{{ status.title }}</label>
+              <label class="px-6 py-2 text-dark-gray" :for="`${status.name}1`">{{ status.title }}</label>
 
             </div>
           </div>
@@ -171,6 +194,7 @@ export default {
     // Create data / vars
     const list = ref([]);
     const dataLoaded = ref(null);
+    const statusMsg = ref(null);
     const errorMsg = ref(null);
     // Spiner data
     const spinner = ref(false);
@@ -199,19 +223,6 @@ export default {
           dealStatusMenu.value = !dealStatusMenu.value;
       }
 
-    }
-
-    const updateStatus = () => {
-      // Закрываем меню изменения статуса
-      dealStatusMenu.value = !dealStatusMenu.value;
-
-      // Преобразования и вычисления
-      const deal = statusDeal.value
-      console.log(deal.currentDealID)
-      console.log(deal.currentDealStatus)
-
-      // Обновляем данные в БД
-      // Требуется функция проверки дела на долги!!!
     }
 
     //
@@ -320,7 +331,11 @@ export default {
         daysArray.value = new Set(newsArray)
         
       } catch (error) {
-        console.warn(error.message);
+        errorMsg.value = `Error: ${error.message}`;
+        // setTimeout(() => {
+        //   errorMsg.value = false;
+        //   console.warn(error.message);
+        // }, 5000);
       }
       spinner.value = false;
     }
@@ -345,6 +360,7 @@ export default {
         const arr = dealStatusArray.value.map(item => {
           return {...item}
         })
+        
 
         // Сопоставляем с checkbox с значением checked
         const dealStatusLength = arr.filter(item => item.dealStatus === dealStatus.toString())
@@ -362,8 +378,45 @@ export default {
       return showNameByID(contactInfo, contactID)
     }
 
+    const updateStatus = async () => {
+      // Закрываем меню изменения статуса
+      dealStatusMenu.value = !dealStatusMenu.value;
+
+      // Преобразования и вычисления
+      const deal = statusDeal.value
+
+      // Обновляем данные в БД
+      // Требуется функция проверки дела на долги!!!
+      try {
+        const { error } = await supabase.from('deals').update({
+          dealStatus: deal.currentDealStatus
+        }).eq('id', deal.currentDealID);
+        if(error) throw error;
+        statusMsg.value = `Статус дела #${deal.currentDealID} успешно обновлен`;
+        setTimeout(() => {
+          statusMsg.value = false;
+        }, 5000);
+      } catch (error) {
+        errorMsg.value = `Error: ${error.message}`;
+        setTimeout(() => {
+          errorMsg.value = false;
+          console.warn(error.message);
+        }, 5000);
+      }
+
+      // Run getDeals function
+      getDeals(list, dataLoaded, errorMsg);
+      // Запускаем функцию получения из БД статусы всех дел
+      getDealStatus(dealStatusArray, dataLoaded, errorMsg)
+      //
+      checkChangeStatus()
+ 
+      console.log(deal.currentDealID)
+      console.log(deal.currentDealStatus)
+    }
+
     return {
-      list, setDealStatus, dataLoaded, title, executionDatesArray, translateDealType, translateDealStatus, showEventDate, daysArray, contactInfo, getNameId, checkChangeStatus, dealStatusArray, getDealStatus, getStatusArrLength, dealStatusList, spinner, dealStatusMenu, dealStatusMenuToggle, closeDealStatusMenu, statusDeal, updateStatus
+      list, setDealStatus, dataLoaded, title, executionDatesArray, translateDealType, translateDealStatus, showEventDate, daysArray, contactInfo, getNameId, checkChangeStatus, dealStatusArray, getDealStatus, getStatusArrLength, dealStatusList, spinner, dealStatusMenu, dealStatusMenuToggle, closeDealStatusMenu, statusDeal, updateStatus, statusMsg, errorMsg
     };
   },
 };

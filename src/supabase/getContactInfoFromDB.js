@@ -7,10 +7,10 @@ export const getContactInfo = async (contactInfo, errorMsg, dataLoaded) => {
         contactInfo.value = myContacts;
         dataLoaded.value = true;
     } catch (error) {
-        // console.warn(error.message);
-        errorMsg.value = error.message;
-        setTimeout(() => {
-            errorMsg.value = false;
-          }, 5000);
+        // 
+        // errorMsg.value = `Error: ${error.message}`;
+        // setTimeout(() => {
+        //     errorMsg.value = false;
+        //   }, 5000);
     }
 };

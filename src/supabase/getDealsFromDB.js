@@ -8,9 +8,9 @@ export const getDeals = async (list, dataLoaded, errorMsg) => {
       dataLoaded.value = true;
     } catch (error) {
       errorMsg.value = error.message;
-      setTimeout(() => {
-        errorMsg.value = false;
-      }, 5000);
+      // setTimeout(() => {
+      //   errorMsg.value = false;
+      // }, 5000);
       // console.warn(error.message);
     }
 };
@@ -23,9 +23,9 @@ export const getDealStatus = async (dealStatusArray, dataLoaded, errorMsg) => {
     dataLoaded.value = true;
   } catch (error) {
     errorMsg.value = error.message;
-    setTimeout(() => {
-      errorMsg.value = false;
-    }, 5000);
+    // setTimeout(() => {
+    //   errorMsg.value = false;
+    // }, 5000);
     // console.warn(error.message);
   }
 };
