@@ -980,7 +980,7 @@ export default {
   }
 
   .subject-price_value {
-    border-bottom: 1px solid #f1f1f1;
+    border-bottom: 1px dashed #f1f1f1;
   }
 
   .subject-wrapper:last-child {

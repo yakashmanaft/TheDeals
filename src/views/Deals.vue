@@ -87,7 +87,10 @@
                     <span class="leading-5 px-2 py-1 mr-4 border border-green text-green rounded-md text-sm">{{translateDealType(deal.dealType)}}</span>
                     
                     <!-- Контакт по делу -->
-                    <router-link :to="{ name: 'View-Contact', params: { contactId: deal.contactID } }" class="text-sm text-center text-blue mr-2">{{ deal.contactID === '000' ? 'Неизвестный' : getNameId(deal.contactID)}}</router-link> 
+                    <div class="flex flex-col item-center">
+                      <p v-if="deal.contactID === '000'" class="text-sm text-center text-dark-gray mr-2">Неизвестный</p>
+                      <router-link else :to="{ name: 'View-Contact', params: { contactId: deal.contactID } }" class="text-sm text-center text-blue mr-2">{{ getNameId(deal.contactID)}}</router-link> 
+                    </div>
 
                     <!-- Статус дела -->
                     <span @click.prevent.stop="dealStatusMenuToggle(deal.id, deal.dealStatus)" class=" px-2 py-1 text-sm rounded-md text-blue whitespace-nowrap">{{ translateDealStatus(deal.dealStatus) }}</span>
@@ -106,7 +109,7 @@
                     </div>
                   </div>
 
-                  <!-- Статус оплаты -->
+                  <!-- Оплата -->
                   <ul class="text-sm text-dark-gray mt-2 px-2">
                     <li class="flex place-content-between">
                       <span>Оплачено</span>
@@ -114,7 +117,7 @@
                     </li>
                     <li class="flex place-content-between mt-2">
                       <span>Долг</span>
-                      <span>{{ (deal.totalDealValue - deal.dealPaid).toFixed()  }}</span>
+                      <span>{{ (deal.totalDealValue - deal.dealPaid).toFixed(2)  }}</span>
                     </li>
 
                   </ul>
