@@ -110,16 +110,31 @@
                   </div>
 
                   <!-- Оплата -->
-                  <ul class="text-sm text-dark-gray mt-2 px-2">
-                    <li class="flex place-content-between">
-                      <span>Оплачено</span>
-                      <span>{{ deal.dealPaid }}<span class="text-xs"> из</span> {{ deal.totalDealValue }}</span>
+                  <!-- Если имеется долг по делу -->
+                  <ul class="text-sm text-dark-gray mt-2 px-2" v-if="deal.totalDealValue - deal.dealPaid > 0">
+                    <li class="flex place-content-between items-center">
+                      <span>Оплачено (RUB)</span>
+                      <span>{{ deal.dealPaid }}<span class="text-xs"> из</span> <span class="text-lg text-dark">{{ deal.totalDealValue }}</span></span>
                     </li>
                     <li class="flex place-content-between mt-2">
-                      <span>Долг</span>
-                      <span>{{ (deal.totalDealValue - deal.dealPaid).toFixed(2)  }}</span>
+                      <div class="flex items-center">
+                        <span>Долг (RUB)</span>
+                        <span class="text-xs text-blue ml-2 border-b border-blue border-dashed">Внести оплату</span>
+                      </div>
+                      <span>{{ (deal.totalDealValue - deal.dealPaid).toFixed(2)  }} </span>
+                      
                     </li>
-
+                  </ul>
+                  <!-- Если долг отсутствует -->
+                  <ul class="text-sm text-dark-gray mt-2 px-2" v-if="deal.totalDealValue - deal.dealPaid === 0">
+                    <li class="flex place-content-between">
+                      <span>Оплачено (RUB)</span>
+                      <span>{{ deal.totalDealValue }}</span>
+                    </li>
+                    <li class="flex items-center justify-end mt-2">
+                      <div class="checkmark"></div>
+                      <span class="text-green ml-1">Оплата 100%</span>
+                    </li>  
                   </ul>
 
                 </div>
@@ -693,5 +708,11 @@ export default {
   /* .custom-radio:disabled+label::before {
     background-color: #e9ecef;
   } */
+
+  .checkmark {
+    width: 15px;
+    height: 15px;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2378D86F' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z'/%3e%3c/svg%3e");
+  }
 
 </style>

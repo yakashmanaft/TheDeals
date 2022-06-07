@@ -111,6 +111,7 @@
                   v-model="number.type"
                 >
                   <!-- Необходимо стилизовать по мере -->
+                  <!-- Динамически может? Из настроек аккаунта? -->
                   <option disabled value="Укажите тип">Укажите тип</option>
                   <option value="Личный">Личный</option>
                   <option value="Рабочий">Рабочий</option>
