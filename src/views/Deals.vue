@@ -282,7 +282,7 @@ export default {
     }
 
     const debtValue = ref();
-    const makePayment = ref(0);
+    const makePayment = ref();
 
     const copyDebtValue = () => {
       makePayment.value = debtValue.value;
@@ -525,9 +525,13 @@ export default {
           console.warn(error.message);
         }, 5000);
       }
+      setTimeout(() => {
+        getDeals(list, dataLoaded, errorMsg);
+        spinner.value = !spinner.value;
+      }, 1000)
       // Run getDeals function
-      getDeals(list, dataLoaded, errorMsg);
-
+      spinner.value = !spinner.value;
+      makePayment.value = ''
     }
 
     return {
