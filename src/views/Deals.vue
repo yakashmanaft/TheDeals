@@ -119,7 +119,12 @@
                     <li class="flex place-content-between mt-2">
                       <div class="flex items-center">
                         <span>Долг (RUB)</span>
-                        <span class="text-xs text-blue ml-2 border-b border-blue border-dashed">Внести оплату</span>
+                        <span 
+                          class="text-xs text-blue ml-2 border-b border-blue border-dashed"
+                          @click.prevent.stop="makePaymMenuToggle(deal.id, deal.dealPaid, deal.totalDealValue)"
+                          >
+                            Внести оплату
+                          </span>
                       </div>
                       <span>{{ (deal.totalDealValue - deal.dealPaid).toFixed(2)  }} </span>
                       
@@ -127,9 +132,9 @@
                   </ul>
                   <!-- Если долг отсутствует -->
                   <ul class="text-sm text-dark-gray mt-2 px-2" v-if="deal.totalDealValue - deal.dealPaid === 0">
-                    <li class="flex place-content-between">
+                    <li class="flex place-content-between items-center">
                       <span>Оплачено (RUB)</span>
-                      <span>{{ deal.totalDealValue }}</span>
+                      <span class="text-lg text-dark">{{ deal.totalDealValue }}</span>
                     </li>
                     <li class="flex items-center justify-end mt-2">
                       <div class="checkmark"></div>
@@ -186,6 +191,27 @@
           </div>
         </div>
       </div>
+
+      <!-- Make Payment menu wrapper -->
+      <div v-if="dealPaidMenu" class="w-full fixed bottom-0 left-0 flex items-center justify-center flex-col pb-0 z-20" :class="{ dealStatusMenu_wrapper: dealPaidMenu}" @click="closeDealPaidMenu">
+        <!-- menu -->
+        <div class="bg-light-grey bottom-0 border-t w-full fixed  rounded-t-3xl">
+          <!-- menu header -->
+          <div class="text-blue text-sm flex items-center place-content-between p-4 deal-status-menu">
+            <span class="dealStatusMenu-btn_close">Отменить</span>
+            <span @click="updateDealPaid">Готово</span>
+          </div>
+          <!-- menu content -->
+          <div class="mb-4 border-t text-sm pt-2">
+            {{dealPaid}}
+            <div class="flex place-content-between">
+              <p>Долг по делу (RUB)</p>
+              <p @click="copyDebtValue" class="text-blue border-b border-dashed border-blue">{{debt(dealPaid.totalDealValue, dealPaid.currentDealPaid)}}</p>
+            </div>
+            <input type="number" placeholder="0.00" inputmode="decimal" v-model="makePayment">
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -236,11 +262,52 @@ export default {
       return statusDeal.value = currentDeal
     }
 
+    // Открытие Закрытие меню внесения оплаты
+    const dealPaidMenu = ref(false);
+    // Помещаем сюда current статус выбранного дела
+    const dealPaid = ref('')
+
+    // make payment menu toggle
+    // Забираем у текущего дела id и сколько уже оплачено 
+    const makePaymMenuToggle = (currentDealID, currentDealPaid, totalDealValue) => {
+      dealPaidMenu.value = !dealPaidMenu.value;
+      
+      const currentDeal = {
+        currentDealID: currentDealID,
+        currentDealPaid: currentDealPaid,
+        totalDealValue: totalDealValue
+      }
+      // console.log(currentDeal)
+      return dealPaid.value = currentDeal;
+    }
+
+    const debtValue = ref();
+    const makePayment = ref(0);
+
+    const copyDebtValue = () => {
+      makePayment.value = debtValue.value;
+    }
+
+
+    const debt = (totalDealValue, currentDealPaid) => {
+      const isDebt = (totalDealValue -  currentDealPaid).toFixed(2);
+      debtValue.value = isDebt;
+      return isDebt;
+    }
+
+
+    // Закрываем DealStatusMenu
     const closeDealStatusMenu = (e) => {
       if (e.target.classList.contains('dealStatusMenu_wrapper') || e.target.classList.contains('dealStatusMenu-btn_close')) {
           dealStatusMenu.value = !dealStatusMenu.value;
       }
+    }
 
+    // Закрываем DealStatusMenu
+    const closeDealPaidMenu = (e) => {
+      if (e.target.classList.contains('dealStatusMenu_wrapper') || e.target.classList.contains('dealStatusMenu-btn_close')) {
+          dealPaidMenu.value = !dealPaidMenu.value;
+      }
     }
 
     //
@@ -396,6 +463,7 @@ export default {
       return showNameByID(contactInfo, contactID)
     }
 
+    // Обновляем в БД Статус дела
     const updateStatus = async () => {
       // Закрываем меню изменения статуса
       dealStatusMenu.value = !dealStatusMenu.value;
@@ -429,12 +497,41 @@ export default {
       //
       checkChangeStatus()
  
-      console.log(deal.currentDealID)
-      console.log(deal.currentDealStatus)
+      // console.log(deal.currentDealID)
+      // console.log(deal.currentDealStatus)
+    }
+
+    // Обновляем в БД внесенную сумму по делу 
+    const updateDealPaid = async () => {
+      dealPaidMenu.value = !dealPaidMenu.value
+      // console.log('Deal paid value is updated')
+
+      const totalPaid = +dealPaid.value.currentDealPaid + +makePayment.value;
+      // console.log(totalPaid)
+
+      try {
+        const { error } = await supabase.from('deals').update({
+          dealPaid: totalPaid
+        }).eq('id', dealPaid.value.currentDealID)
+        if(error) throw error;
+        statusMsg.value = `Оплата по делу #${dealPaid.value.currentDealID} внесена`;
+        setTimeout(() => {
+          statusMsg.value = false;
+        }, 5000);
+      } catch (error) {
+        errorMsg.value = `Error: ${error.message}`;
+        setTimeout(() => {
+          errorMsg.value = false;
+          console.warn(error.message);
+        }, 5000);
+      }
+      // Run getDeals function
+      getDeals(list, dataLoaded, errorMsg);
+
     }
 
     return {
-      list, setDealStatus, dataLoaded, title, executionDatesArray, translateDealType, translateDealStatus, showEventDate, daysArray, contactInfo, getNameId, checkChangeStatus, dealStatusArray, getDealStatus, getStatusArrLength, dealStatusList, spinner, dealStatusMenu, dealStatusMenuToggle, closeDealStatusMenu, statusDeal, updateStatus, statusMsg, errorMsg
+      list, setDealStatus, dataLoaded, title, executionDatesArray, translateDealType, translateDealStatus, showEventDate, daysArray, contactInfo, getNameId, checkChangeStatus, dealStatusArray, getDealStatus, getStatusArrLength, dealStatusList, spinner, dealStatusMenu, dealStatusMenuToggle, closeDealStatusMenu, statusDeal, updateStatus, statusMsg, errorMsg, dealPaid, makePaymMenuToggle, updateDealPaid, dealPaidMenu, closeDealPaidMenu, debt, debtValue, makePayment, copyDebtValue
     };
   },
 };
