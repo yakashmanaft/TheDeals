@@ -47,7 +47,7 @@
       <div 
         v-else 
         class="grid grid-cols-1 gap-4"
-        :class="{ fixed: dealStatusMenu }"
+        :class="{ blurred_content: dealStatusMenu || dealPaidMenu || dealWithDebt }"
       >
         <!-- Deal filter -->
         <div class="flex deal-filter-wrapper">
@@ -136,9 +136,16 @@
                       <span>Оплачено (RUB)</span>
                       <span class="text-lg text-dark">{{ deal.totalDealValue }}</span>
                     </li>
-                    <li class="flex items-center justify-end mt-2">
-                      <div class="checkmark"></div>
-                      <span class="text-green ml-1">Оплата 100%</span>
+                    <li class="flex items-center place-content-between">
+                      <!-- Оплата -->
+                      <div class="flex items-center mt-2">
+                        <div class="checkmark"></div>
+                        <span class="text-green ml-1">Оплата 100%</span>
+                      </div>
+                      <!-- Причина отмены -->
+                      <div v-if="deal.dealStatus === 'deal-cancelled'" class="border-b border-dashed border-blue text-blue text-xs mt-2">
+                        Причина отмены
+                      </div>
                     </li>  
                   </ul>
 
@@ -228,7 +235,7 @@
           <div class="text-center border-b pb-4"> 
             <p>По данному делу имеется долг (RUB)</p>
             <p class="text-2xl text-blue my-2">{{statusDeal.debtValue}}</p>
-            <p class="text-sm text-dark-gray">Поэтому установлен статус "Долг"</p>
+            <p class="text-sm text-dark-gray">Мы не можем завершить дело пока долг не будет погашен, поэтому помещаем в статус "Долг"</p>
           </div>
           <p class="w-full text-blue text-center mt-4 dealStatusMenu-btn_close">Ок</p>
         </div>
@@ -515,9 +522,10 @@ export default {
         dealWithDebt.value = !dealWithDebt.value;
         // Перемещаем во вкладку deal-in-debt
         setDealStatus.value = "deal-in-debt"
-        console.log(dealWithDebt.value)
-      }
-      
+        // console.log(dealWithDebt.value)
+        // dealStatusArray.value = []
+        list.value = []
+      } 
       // Обновляем данные в БД
       // Требуется функция проверки дела на долги!!!
       try {
@@ -528,7 +536,6 @@ export default {
         if(dealWithDebt.value === true) {
           statusMsg.value = false
         } else {
-
           statusMsg.value = `Статус дела #${deal.currentDealID} успешно обновлен`;
         }
         setTimeout(() => {
@@ -541,26 +548,22 @@ export default {
           console.warn(error.message);
         }, 5000);
       }
-
-      // Run getDeals function
-      getDeals(list, dataLoaded, errorMsg);
       // Запускаем функцию получения из БД статусы всех дел
       getDealStatus(dealStatusArray, dataLoaded, errorMsg)
       //
       checkChangeStatus()
+      // Run getDeals function
+      getDeals(list, dataLoaded, errorMsg);
  
       // console.log(deal.currentDealID)
       // console.log(deal.currentDealStatus)
-      debtValue.value = ''
+      
     }
 
     // Обновляем в БД внесенную сумму по делу 
     const updateDealPaid = async () => {
       dealPaidMenu.value = !dealPaidMenu.value
-      // console.log('Deal paid value is updated')
-
       const totalPaid = +dealPaid.value.currentDealPaid + +makePayment.value;
-      // console.log(totalPaid)
 
       try {
         const { error } = await supabase.from('deals').update({
@@ -579,10 +582,10 @@ export default {
         }, 5000);
       }
       setTimeout(() => {
+        // Run getDeals function
         getDeals(list, dataLoaded, errorMsg);
         spinner.value = !spinner.value;
       }, 1000)
-      // Run getDeals function
       spinner.value = !spinner.value;
       makePayment.value = ''
       debtValue.value = ''
@@ -877,6 +880,12 @@ export default {
     width: 15px;
     height: 15px;
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2378D86F' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z'/%3e%3c/svg%3e");
+  }
+
+  .blurred_content {
+    position: fixed;
+    padding: 0 1rem 0 0;
+    overflow-y: hidden;
   }
 
 </style>
