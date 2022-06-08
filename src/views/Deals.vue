@@ -228,7 +228,7 @@
           <div class="text-center border-b pb-4"> 
             <p>По данному делу имеется долг (RUB)</p>
             <p class="text-2xl text-blue my-2">{{statusDeal.debtValue}}</p>
-            <p class="text-sm text-dark-gray">Поэтому установлен статус дела "Долг"</p>
+            <p class="text-sm text-dark-gray">Поэтому установлен статус "Долг"</p>
           </div>
           <p class="w-full text-blue text-center mt-4 dealStatusMenu-btn_close">Ок</p>
         </div>
@@ -508,7 +508,7 @@ export default {
 
       // Преобразования и вычисления
       const deal = statusDeal.value
-
+      
       if(deal.debtValue > 0 && deal.currentDealStatus === 'deal-complete') {
         deal.currentDealStatus = 'deal-in-debt';
         // Открываем notify
@@ -517,7 +517,7 @@ export default {
         setDealStatus.value = "deal-in-debt"
         console.log(dealWithDebt.value)
       }
-
+      
       // Обновляем данные в БД
       // Требуется функция проверки дела на долги!!!
       try {
@@ -525,7 +525,12 @@ export default {
           dealStatus: deal.currentDealStatus
         }).eq('id', deal.currentDealID);
         if(error) throw error;
-        statusMsg.value = `Статус дела #${deal.currentDealID} успешно обновлен`;
+        if(dealWithDebt.value === true) {
+          statusMsg.value = false
+        } else {
+
+          statusMsg.value = `Статус дела #${deal.currentDealID} успешно обновлен`;
+        }
         setTimeout(() => {
           statusMsg.value = false;
         }, 5000);
