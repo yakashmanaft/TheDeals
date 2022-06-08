@@ -300,7 +300,7 @@
               </select>
             </div>
 
-            <!-- Внести оплату (dealPaid) -->
+            <!-- Внести оплату | предоплату (dealPaid) -->
             <div class="w-full flex flex-col mt-4">
               <p class="mb-1 ml-2 text-sm text-blue">Предоплата (RUB)</p>
               <div class="flex place-content-between border mb-4 items-center p-2 rounded-md">
@@ -313,7 +313,7 @@
                     id="dealPaid"
                     inputmode="decimal"
                     class="focus:outline-none text-dark text-right mx-1 pt-1 w-16" 
-                    placeholder="0,00"
+                    placeholder="0.00"
                     v-model="dealPaid" 
                   >
                 </div>

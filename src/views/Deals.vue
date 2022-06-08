@@ -93,7 +93,7 @@
                     </div>
 
                     <!-- Статус дела -->
-                    <span @click.prevent.stop="dealStatusMenuToggle(deal.id, deal.dealStatus)" class=" px-2 py-1 text-sm rounded-md text-blue whitespace-nowrap">{{ translateDealStatus(deal.dealStatus) }}</span>
+                    <span @click.prevent.stop="dealStatusMenuToggle(deal.id, deal.dealStatus, deal.dealPaid, deal.totalDealValue)" class=" px-2 py-1 text-sm rounded-md text-blue whitespace-nowrap">{{ translateDealStatus(deal.dealStatus) }}</span>
 
                   </div>
 
@@ -114,7 +114,7 @@
                   <ul class="text-sm text-dark-gray mt-2 px-2" v-if="deal.totalDealValue - deal.dealPaid > 0">
                     <li class="flex place-content-between items-center">
                       <span>Оплачено (RUB)</span>
-                      <span>{{ deal.dealPaid }}<span class="text-xs"> из</span> <span class="text-lg text-dark">{{ deal.totalDealValue }}</span></span>
+                      <span>{{ dealPaidValuePattern(deal.dealPaid) }}<span class="text-xs"> из</span> <span class="text-lg text-dark">{{ deal.totalDealValue }}</span></span>
                     </li>
                     <li class="flex place-content-between mt-2">
                       <div class="flex items-center">
@@ -126,7 +126,7 @@
                             Внести оплату
                           </span>
                       </div>
-                      <span>{{ (deal.totalDealValue - deal.dealPaid).toFixed(2)  }} </span>
+                      <span>{{ debt(deal.totalDealValue, deal.dealPaid) }} </span>
                       
                     </li>
                   </ul>
@@ -202,14 +202,35 @@
             <span @click="updateDealPaid">Готово</span>
           </div>
           <!-- menu content -->
-          <div class="mb-4 border-t text-sm pt-2">
-            {{dealPaid}}
-            <div class="flex place-content-between">
-              <p>Долг по делу (RUB)</p>
-              <p @click="copyDebtValue" class="text-blue border-b border-dashed border-blue">{{debt(dealPaid.totalDealValue, dealPaid.currentDealPaid)}}</p>
+          <div class="mb-6 border-t text-sm pt-2">
+            <!-- debt value -->
+            <div class="flex place-content-between mt-2 items-center px-6">
+              <p class="text-dark-gray">Долг по делу (RUB)</p>
+              <p @click="copyDebtValue" class="text-blue border-b border-dashed border-blue text-lg mr-1">{{debt(dealPaid.totalDealValue, dealPaid.currentDealPaid)}}</p>
             </div>
-            <input type="number" placeholder="0.00" inputmode="decimal" v-model="makePayment">
+            <!-- make payment value input -->
+            <div class="px-4 mt-4">
+              <div class="flex place-content-between border mb-4 items-center p-2 rounded-md">
+                <label for="makePayment" class="leading-none align-text-middle text-blue">Укажите сумму пополнения (RUB)</label>
+                <div class="subject-price_value">
+                  <input id="makePayment" type="number" placeholder="0.00" inputmode="decimal" v-model="makePayment" class="focus:outline-none bg-transparent text-lg text-dark text-right mx-1 pt-1 w-20">
+                </div>
+              </div>
+            </div>
           </div>
+        </div>
+      </div>
+
+      <!-- Deal With Debt notify wrapper -->
+      <div v-if="dealWithDebt" class="w-full fixed bottom-0 left-0 flex items-center justify-center flex-col pb-0 z-20" :class="{ dealStatusMenu_wrapper: dealWithDebt}" @click="closeDealWithDebtMenu">
+        <!-- content -->
+        <div class="mx-6 text-dark bg-light-grey inset-x-2/4 border-t rounded-2xl p-4">
+          <div class="text-center border-b pb-4"> 
+            <p>По данному делу имеется долг (RUB)</p>
+            <p class="text-2xl text-blue my-2">{{statusDeal.debtValue}}</p>
+            <p class="text-sm text-dark-gray">Поэтому установлен статус дела "Долг"</p>
+          </div>
+          <p class="w-full text-blue text-center mt-4 dealStatusMenu-btn_close">Ок</p>
         </div>
       </div>
     </div>
@@ -242,7 +263,10 @@ export default {
     const errorMsg = ref(null);
     // Spiner data
     const spinner = ref(false);
-
+    // Значение долга
+    const debtValue = ref('');
+    // Значение сколько мы хотим оплатить
+    const makePayment = ref('');
     // deal status menu
     const dealStatusMenu = ref(false);
 
@@ -251,14 +275,18 @@ export default {
 
     // deal status menu toggle
     // Забираем у текущего дела id и значение статуса 
-    const dealStatusMenuToggle = (currentDealID, currentDealStatus) => {
+    const dealStatusMenuToggle = (currentDealID, currentDealStatus, currentDealPaid, totalDealValue) => {
       dealStatusMenu.value = !dealStatusMenu.value;
       
       const currentDeal = {
         currentDealID: currentDealID,
-        currentDealStatus: currentDealStatus
+        currentDealStatus: currentDealStatus,
+        currentDealPaid: currentDealPaid,
+        totalDealValue: totalDealValue,
+        debtValue: (totalDealValue - currentDealPaid).toFixed(2)
       }
       // console.log(currentDeal)
+      // console.log(currentDeal.debtValue > 0)
       return statusDeal.value = currentDeal
     }
 
@@ -268,45 +296,56 @@ export default {
     const dealPaid = ref('')
 
     // make payment menu toggle
-    // Забираем у текущего дела id и сколько уже оплачено 
+    // Забираем у текущего дела id, сколько уже оплачено и total заказа
     const makePaymMenuToggle = (currentDealID, currentDealPaid, totalDealValue) => {
       dealPaidMenu.value = !dealPaidMenu.value;
       
       const currentDeal = {
         currentDealID: currentDealID,
         currentDealPaid: currentDealPaid,
-        totalDealValue: totalDealValue
+        totalDealValue: totalDealValue,
+        debtValue: (totalDealValue - currentDealPaid).toFixed(2)
       }
+
       // console.log(currentDeal)
       return dealPaid.value = currentDeal;
     }
 
-    const debtValue = ref();
-    const makePayment = ref();
-
+    
+    // По клику копируем величину долга по делу в значение сколько хотим оплатить
     const copyDebtValue = () => {
-      makePayment.value = debtValue.value;
+      makePayment.value = dealPaid.value.debtValue;
+    }
+
+    // Шаблон отображения цены оплаченной
+    const dealPaidValuePattern = (dealPaid) => {
+      const changedDealPaid = +dealPaid;
+      return changedDealPaid.toFixed(2);
     }
 
 
-    const debt = (totalDealValue, currentDealPaid) => {
-      const isDebt = (totalDealValue -  currentDealPaid).toFixed(2);
-      debtValue.value = isDebt;
-      return isDebt;
-    }
-
-
-    // Закрываем DealStatusMenu
+    // Закрываем DealStatusMenu, нажимая по фону
     const closeDealStatusMenu = (e) => {
       if (e.target.classList.contains('dealStatusMenu_wrapper') || e.target.classList.contains('dealStatusMenu-btn_close')) {
           dealStatusMenu.value = !dealStatusMenu.value;
+          debtValue.value = '';
       }
     }
 
-    // Закрываем DealStatusMenu
+    // Закрываем DealPaidMenu, нажимая по фону
     const closeDealPaidMenu = (e) => {
       if (e.target.classList.contains('dealStatusMenu_wrapper') || e.target.classList.contains('dealStatusMenu-btn_close')) {
           dealPaidMenu.value = !dealPaidMenu.value;
+          makePayment.value = '';
+          debtValue.value = '';
+      }
+    }
+
+    // Закрываем DealPaidMenu, нажимая по фону
+    const closeDealWithDebtMenu = (e) => {
+      if (e.target.classList.contains('dealStatusMenu_wrapper') || e.target.classList.contains('dealStatusMenu-btn_close')) {
+          dealWithDebt.value = !dealWithDebt.value;
+
       }
     }
 
@@ -379,7 +418,6 @@ export default {
 
       return `${day} ${monthTitle[month]} ${year}`
     }
-
     // Список дат, для которых есть дела (заказы, поставки, личное)
     const daysArray = ref([])
 
@@ -427,7 +465,6 @@ export default {
 
     // Run execution date function
     getExecutionDate(setDealStatus.value);
-
     const dealStatusArray = ref([])
 
     // Запускаем функцию получения из БД статусы всех дел
@@ -445,7 +482,6 @@ export default {
         const arr = dealStatusArray.value.map(item => {
           return {...item}
         })
-        
 
         // Сопоставляем с checkbox с значением checked
         const dealStatusLength = arr.filter(item => item.dealStatus === dealStatus.toString())
@@ -463,6 +499,8 @@ export default {
       return showNameByID(contactInfo, contactID)
     }
 
+    const dealWithDebt = ref(false);
+
     // Обновляем в БД Статус дела
     const updateStatus = async () => {
       // Закрываем меню изменения статуса
@@ -470,6 +508,15 @@ export default {
 
       // Преобразования и вычисления
       const deal = statusDeal.value
+
+      if(deal.debtValue > 0 && deal.currentDealStatus === 'deal-complete') {
+        deal.currentDealStatus = 'deal-in-debt';
+        // Открываем notify
+        dealWithDebt.value = !dealWithDebt.value;
+        // Перемещаем во вкладку deal-in-debt
+        setDealStatus.value = "deal-in-debt"
+        console.log(dealWithDebt.value)
+      }
 
       // Обновляем данные в БД
       // Требуется функция проверки дела на долги!!!
@@ -499,6 +546,7 @@ export default {
  
       // console.log(deal.currentDealID)
       // console.log(deal.currentDealStatus)
+      debtValue.value = ''
     }
 
     // Обновляем в БД внесенную сумму по делу 
@@ -532,10 +580,20 @@ export default {
       // Run getDeals function
       spinner.value = !spinner.value;
       makePayment.value = ''
+      debtValue.value = ''
     }
 
+
+    // Шаблон отображения цены задолженности
+    const debt = (totalDealValue, currentDealPaid) => {
+      const debt = (totalDealValue -  currentDealPaid).toFixed(2);
+      debtValue.value = debt;
+      return debt;
+    }
+
+
     return {
-      list, setDealStatus, dataLoaded, title, executionDatesArray, translateDealType, translateDealStatus, showEventDate, daysArray, contactInfo, getNameId, checkChangeStatus, dealStatusArray, getDealStatus, getStatusArrLength, dealStatusList, spinner, dealStatusMenu, dealStatusMenuToggle, closeDealStatusMenu, statusDeal, updateStatus, statusMsg, errorMsg, dealPaid, makePaymMenuToggle, updateDealPaid, dealPaidMenu, closeDealPaidMenu, debt, debtValue, makePayment, copyDebtValue
+      list, setDealStatus, dataLoaded, title, executionDatesArray, translateDealType, translateDealStatus, showEventDate, daysArray, contactInfo, getNameId, checkChangeStatus, dealStatusArray, getDealStatus, getStatusArrLength, dealStatusList, spinner, dealStatusMenu, dealStatusMenuToggle, closeDealStatusMenu, statusDeal, updateStatus, statusMsg, errorMsg, dealPaid, makePaymMenuToggle, updateDealPaid, dealPaidMenu, closeDealPaidMenu, debt, debtValue, makePayment, copyDebtValue, dealPaidValuePattern, dealWithDebt, closeDealWithDebtMenu
     };
   },
 };
