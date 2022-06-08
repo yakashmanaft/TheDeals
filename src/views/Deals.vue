@@ -33,14 +33,23 @@
       </div>
 
       <!-- No Data -->
-      <div v-if="list.length === 0" class="w-full flex flex-col items-center">
-        <h1 class="text-2xl">Looks empty here...</h1>
-        <router-link 
-          class="mt-6 py-2 px-6 rounded-sm text-sm text-white bg-at-light-green duration-200 border-solid border-2 border-transparent hover:border-at-light-green hover:bg-white hover:text-at-light-green" 
-          :to="{ name: 'Create' }"
-        >
-          Create deal
-        </router-link>
+      <div v-if="list.length === 0">
+        <div class="text-center px-4 mt-12">
+          <!-- Предполагаемая картинка -->
+          <div class="icon-wrapper flex items-center justify-center">
+            <!-- Картинка предполагает ссылку на авторство, заменить на свою -->
+            <img src="@/assets/images/stickers/deals-sticker.png" alt="">
+          </div>
+          <h1 class="text-blue text-xl mt-4">У вас еще нет дел...</h1>
+          <p class="text-dark-gray mt-2">Самое время начать заниматься деятельностью и создать первое дело!</p>
+          <router-link 
+            :to="{ name: 'CreateDeal' }"
+            type="button"
+            class="bg-green text-white webkit block rounded-md m-4 mt-8 p-2"
+          >
+            Добавить
+          </router-link>
+        </div>
       </div>
 
       <!-- Data -->
@@ -62,7 +71,7 @@
         </div>
 
         <!-- Loading spinner -->
-        <div v-if="spinner" class="spinner"></div>
+        <div v-if="spinner" class="spinner z-20"></div>
 
         <!-- Deals, dates -->
         <div v-else class="mb-12">
@@ -523,11 +532,10 @@ export default {
         // Перемещаем во вкладку deal-in-debt
         setDealStatus.value = "deal-in-debt"
         // console.log(dealWithDebt.value)
-        // dealStatusArray.value = []
-        list.value = []
+        dealStatusArray.value = []
+        // list.value = []
       } 
       // Обновляем данные в БД
-      // Требуется функция проверки дела на долги!!!
       try {
         const { error } = await supabase.from('deals').update({
           dealStatus: deal.currentDealStatus
