@@ -110,7 +110,7 @@
                     </div>
 
                     <!-- Статус дела -->
-                    <span @click.prevent.stop="dealStatusMenuToggle(deal.id, deal.dealStatus, deal.dealPaid, deal.totalDealValue)" class=" px-2 py-1 text-sm rounded-md text-blue whitespace-nowrap">{{ translateDealStatus(deal.dealStatus) }}</span>
+                    <span @click.prevent.stop="dealStatusMenuToggle(deal.id, deal.dealStatus, deal.dealPaid, deal.totalDealValue, deal.cancelledReason)" class=" px-2 py-1 text-sm rounded-md text-blue whitespace-nowrap">{{ translateDealStatus(deal.dealStatus) }}</span>
 
                   </div>
 
@@ -276,11 +276,12 @@
               <p v-if="!editCancelledReason" @click="editCancelledReason = !editCancelledReason" class="text-sm text-blue border-b border-dashed border-blue">Редактировать</p>
             </div>
 
-            <p class="text-dark-gray text-left" v-if="!editCancelledReason" >
+            <div class="text-dark-gray text-left" v-if="!editCancelledReason" >
+              <p v-if="сancelledDeal.cancelledReason === ''">Причина не указана</p>
               {{сancelledDeal.cancelledReason}}
-            </p>
+            </div>
 
-            <textarea v-if="editCancelledReason" placeholder="Укажите причину" v-model="dealCancelledReason" maxlength="200" class="mt-2 h-fit bg-light-grey text-gray-500 rounded-md w-full focus:outline-none h-36"></textarea>
+            <textarea required v-if="editCancelledReason" placeholder="Укажите причину" v-model="dealCancelledReason" maxlength="200" class="mt-2 h-fit bg-light-grey text-gray-500 rounded-md w-full focus:outline-none h-36"></textarea>
           </div>
            <p v-if="!editCancelledReason" class="w-full text-blue text-center mt-4 dealStatusMenu-btn_close">Ок</p>
            <p @click="updateCancelledReason" v-if="editCancelledReason" class="w-full text-blue text-center mt-4 dealStatusMenu-btn_close">Сохранить</p>
@@ -328,7 +329,7 @@ export default {
 
     // deal status menu toggle
     // Забираем у текущего дела id и значение статуса 
-    const dealStatusMenuToggle = (currentDealID, currentDealStatus, currentDealPaid, totalDealValue) => {
+    const dealStatusMenuToggle = (currentDealID, currentDealStatus, currentDealPaid, totalDealValue, cancelledReason) => {
       dealStatusMenu.value = !dealStatusMenu.value;
       
       const currentDeal = {
@@ -336,7 +337,8 @@ export default {
         currentDealStatus: currentDealStatus,
         currentDealPaid: currentDealPaid,
         totalDealValue: totalDealValue,
-        debtValue: (totalDealValue - currentDealPaid).toFixed(2)
+        debtValue: (totalDealValue - currentDealPaid).toFixed(2),
+        cancelledReason: cancelledReason
       }
       // console.log(currentDeal)
       // console.log(currentDeal.debtValue > 0)
@@ -579,8 +581,11 @@ export default {
         setDealStatus.value = "deal-cancelled";
         //
         editCancelledReason.value = !editCancelledReason.value
-        // Ставим текст
-        console.log(dealCancelledReason.value)
+      }
+      // Если возвращаем из отмененных, надо убрать причины отказа
+      if(deal.currentDealStatus !== 'deal-cancelled') {
+        console.log(deal.currentDealID)
+        console.log(deal.cancelledReason)
       }
 
       // Обновляем данные в БД
@@ -683,7 +688,7 @@ export default {
           dealCancelledReasonMenu.value = !dealCancelledReasonMenu.value;
       }
       if (editCancelledReason.value === true && e.target.classList.contains('dealStatusMenu-btn_close')) {
-        dealCancelledReasonMenu.value = false;
+        dealCancelledReasonMenu.value = !dealCancelledReasonMenu.value;
       }
     }
 
@@ -699,20 +704,32 @@ export default {
 
       dealCancelledReason.value = cancelledReason
 
-      // console.log(currentDeal)
       return сancelledDeal.value = currentDeal;
     }
 
 
-    const editCancelledReason = ref(null)
-
+    const editCancelledReason = ref(false)
+    // id дела приходящий из разных функций
+    const id = ref(undefined);
+    // Обновляем инфу по причине отмены дела
     const updateCancelledReason = () => {
       editCancelledReason.value = !editCancelledReason.value;
-      console.log(dealCancelledReason.value)
+      // из statusDeal
+      if (statusDeal.value.currentDealID === undefined) {
+        id.value = сancelledDeal.value.currentDealID
+      }
+      // из сancelledDeal
+      if (сancelledDeal.value.currentDealID === undefined) {
+        id.value = statusDeal.value.currentDealID
+      }
+
+      console.log(`id: ${id.value}`)
+      console.log(`reason: ${dealCancelledReason.value}`)
+
     }
 
     return {
-      list, setDealStatus, dataLoaded, title, executionDatesArray, translateDealType, translateDealStatus, showEventDate, daysArray, contactInfo, getNameId, checkChangeStatus, dealStatusArray, getDealStatus, getStatusArrLength, dealStatusList, spinner, dealStatusMenu, dealStatusMenuToggle, closeDealStatusMenu, statusDeal, updateStatus, statusMsg, errorMsg, dealPaid, makePaymMenuToggle, updateDealPaid, dealPaidMenu, closeDealPaidMenu, debt, debtValue, makePayment, copyDebtValue, dealPaidValuePattern, dealWithDebt, closeDealWithDebtMenu, dealStatusClassObject, dealCancelledReason, dealCancelledReasonMenu, closeDealCancelledReasonMenu, openCancelledReasonMenu, editCancelledReason, updateCancelledReason, сancelledDeal
+      list, setDealStatus, dataLoaded, title, executionDatesArray, translateDealType, translateDealStatus, showEventDate, daysArray, contactInfo, getNameId, checkChangeStatus, dealStatusArray, getDealStatus, getStatusArrLength, dealStatusList, spinner, dealStatusMenu, dealStatusMenuToggle, closeDealStatusMenu, statusDeal, updateStatus, statusMsg, errorMsg, dealPaid, makePaymMenuToggle, updateDealPaid, dealPaidMenu, closeDealPaidMenu, debt, debtValue, makePayment, copyDebtValue, dealPaidValuePattern, dealWithDebt, closeDealWithDebtMenu, dealStatusClassObject, dealCancelledReason, dealCancelledReasonMenu, closeDealCancelledReasonMenu, openCancelledReasonMenu, editCancelledReason, updateCancelledReason, сancelledDeal, id
     };
   },
 };
