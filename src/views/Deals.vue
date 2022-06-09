@@ -63,9 +63,13 @@
             <!--  -->
             <div class="deal-filter-item" v-for="(dealStatus, index) in dealStatusList" :key="index">
               <input type="radio" name="deal-filter" :id="dealStatus.name" :value="dealStatus.name" v-model="setDealStatus" @change="checkChangeStatus"> 
-              <label class="flex text-sm px-2 p-1 rounded-2xl" :for="dealStatus.name">
-                <div class="deal-filter-item_text">{{ dealStatus.title }}</div> 
-                <div class="deal-filter-item_count ml-1">{{getStatusArrLength(`${dealStatus.name}`)}}</div>
+              <label :class="[{'bg-danger': dealStatus.name === 'deal-cancelled'},{'bg-green': dealStatus.name === 'deal-complete'}]" class="flex text-sm px-2 p-1 rounded-2xl" :for="dealStatus.name">
+                <div class="deal-filter-item_text" :class="[{ 'text-white': dealStatus.name === 'deal-cancelled' }, { 'text-white': dealStatus.name === 'deal-complete' }]">{{ dealStatus.title }}</div> 
+                <div 
+                  v-if="dealStatus.name !== 'deal-cancelled' && dealStatus.name !== 'deal-complete'" class="deal-filter-item_count ml-1"
+                >
+                  {{getStatusArrLength(`${dealStatus.name}`)}}
+                </div>
               </label>
             </div>
         </div>
