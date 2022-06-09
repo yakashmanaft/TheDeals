@@ -28,6 +28,8 @@
       </div>
 
       <div>
+        <!-- Loading spinner -->
+        <div v-if="spinner" class="spinner z-20"></div>
         <!-- Create -->
         <form id="create-deal" v-if="user" @submit.prevent="createDeal" class="flex flex-col items-center pt-0">
   
@@ -95,7 +97,7 @@
               <label for="executionDate" class="ml-2 text-sm text-blue">Бронь даты и времени</label>
               <div class="search-input mt-1 h-10 flex items-center border">
                 <input 
-                  type="datetime-local" 
+                  type="date" 
                   name="execution-date" 
                   id="executionDate"
                   class="webkit w-full text-gray-500 p-2 outline-none focus:outline-none bg-light-grey" 
@@ -772,6 +774,9 @@ export default {
       }
     }
 
+    // Spiner data
+    const spinner = ref(false);
+
     // Create deal
     const createDeal = async () => {
       try {
@@ -791,6 +796,7 @@ export default {
         typeOfDeal.value = 'select-deal-type';
         contactOfDeal.value = 'select-deal-contact';
         dealsList.value = [];
+        spinner.value = !spinner.value;
         setTimeout(() => {
           statusMsg.value = false;
           // В идеале переходить к только что созданному делу
@@ -834,13 +840,56 @@ export default {
     }
 
     return {
-      typeOfDeal, dealStatus, contactOfDeal, contactInfo, dataLoaded, sortedContacts,filteredOptions, search, workoutName, workoutType, exercises, statusMsg, errorMsg, user, addExercise, workoutChange, deleteExercise, createDeal, createWorkout, editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortmentList, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributesList, userDiscountRangeValue, sum, totalDealValue, executionDate, totalDealMenuClose, setDiscountRange, dealStatusList, dealPaid
+      typeOfDeal, dealStatus, contactOfDeal, contactInfo, dataLoaded, sortedContacts,filteredOptions, search, workoutName, workoutType, exercises, statusMsg, errorMsg, user, addExercise, workoutChange, deleteExercise, createDeal, createWorkout, editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortmentList, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributesList, userDiscountRangeValue, sum, totalDealValue, executionDate, totalDealMenuClose, setDiscountRange, dealStatusList, dealPaid, spinner
     };
   },
 };
 </script>
 
 <style lang="scss" scoped>
+  .spinner {
+    position: absolute;
+    height: 60px;
+    width: 60px;
+    border: 3px solid transparent;
+    border-top-color: #3D3D3D;
+    top: 60%;
+    left: 50%;
+    margin: -30px;
+    border-radius: 50%;
+    animation: spin 2s linear infinite;
+  }
+
+  .spinner:before, .spinner:after{
+    content:'';
+    position: absolute;
+    border: 3px solid transparent;
+    border-radius: 50%;
+  }
+
+  .spinner:before{
+    border-top-color: #78D86F;
+    top: -12px;
+    left: -12px;
+    right: -12px;
+    bottom: -12px;
+    animation: spin 3s linear infinite;
+  }
+
+  .spinner:after{
+    border-top-color: #4785E7;
+    top: 6px;
+    left: 6px;
+    right: 6px;
+    bottom: 6px;  
+    animation: spin 4s linear infinite;
+  }
+
+  @keyframes spin{
+    0% {transform: rotate(0deg);}
+    100% {transform: rotate(360deg);}
+  }
+
   .container {
     height: 100vh;
   }

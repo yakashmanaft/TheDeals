@@ -56,15 +56,19 @@
       <div 
         v-else 
         class="grid grid-cols-1 gap-4"
-        :class="{ blurred_content: dealStatusMenu || dealPaidMenu || dealWithDebt }"
+        :class="{ blurred_content: dealStatusMenu || dealPaidMenu || dealWithDebt || dealCancelledReasonMenu }"
       >
         <!-- Deal filter -->
         <div class="flex deal-filter-wrapper">
             <!--  -->
             <div class="deal-filter-item" v-for="(dealStatus, index) in dealStatusList" :key="index">
               <input type="radio" name="deal-filter" :id="dealStatus.name" :value="dealStatus.name" v-model="setDealStatus" @change="checkChangeStatus"> 
-              <label :class="[{'bg-danger': dealStatus.name === 'deal-cancelled'},{'bg-green': dealStatus.name === 'deal-complete'}]" class="flex text-sm px-2 p-1 rounded-2xl" :for="dealStatus.name">
-                <div class="deal-filter-item_text" :class="[{ 'text-white': dealStatus.name === 'deal-cancelled' }, { 'text-white': dealStatus.name === 'deal-complete' }]">{{ dealStatus.title }}</div> 
+              <label :class="dealStatusClassObject(dealStatus.name)" class="flex text-sm px-2 p-1 rounded-2xl" :for="dealStatus.name">
+                <div 
+                  class="deal-filter-item_text"
+                >
+                  {{ dealStatus.title }}
+                </div> 
                 <div 
                   v-if="dealStatus.name !== 'deal-cancelled' && dealStatus.name !== 'deal-complete'" class="deal-filter-item_count ml-1"
                 >
@@ -142,6 +146,12 @@
                       <span>{{ debt(deal.totalDealValue, deal.dealPaid) }} </span>
                       
                     </li>
+                    <li class="flex items-center place-content-between justify-end">
+                      <!-- Причина отмены -->
+                      <div @click.prevent.stop="openCancelledReasonMenu(deal.id, deal.cancelledReason)" v-if="deal.dealStatus === 'deal-cancelled'" class="border-b border-dashed border-blue text-blue text-xs mt-2">
+                        Причина отмены
+                      </div>
+                    </li>  
                   </ul>
                   <!-- Если долг отсутствует -->
                   <ul class="text-sm text-dark-gray mt-2 px-2" v-if="deal.totalDealValue - deal.dealPaid === 0">
@@ -156,7 +166,7 @@
                         <span class="text-green ml-1">Оплата 100%</span>
                       </div>
                       <!-- Причина отмены -->
-                      <div v-if="deal.dealStatus === 'deal-cancelled'" class="border-b border-dashed border-blue text-blue text-xs mt-2">
+                      <div @click.prevent.stop="openCancelledReasonMenu(deal.id, deal.cancelledReason)" v-if="deal.dealStatus === 'deal-cancelled'" class="border-b border-dashed border-blue text-blue text-xs mt-2">
                         Причина отмены
                       </div>
                     </li>  
@@ -251,6 +261,29 @@
             <p class="text-sm text-dark-gray">Мы не можем завершить дело пока долг не будет погашен, поэтому помещаем в статус "Долг"</p>
           </div>
           <p class="w-full text-blue text-center mt-4 dealStatusMenu-btn_close">Ок</p>
+        </div>
+      </div>
+
+      <!-- Deal Cancelled Reason Menu wrapper -->
+      <div v-if="dealCancelledReasonMenu" class="w-full fixed bottom-0 left-0 flex items-center justify-center flex-col pb-0 z-20" :class="{ dealStatusMenu_wrapper: dealCancelledReasonMenu}" @click="closeDealCancelledReasonMenu">
+        <!-- content -->
+        <div class="w-11/12 mx-6 text-dark bg-light-grey inset-x-2/4 border-t rounded-2xl p-4">
+          <div class="text-center border-b pb-4"> 
+            <div class="flex place-content-between mb-2 items-center">
+              <p>Причина отмены дела</p>
+              <p v-if="editCancelledReason" class="text-sm text-dark-gray">200 символов</p>
+              <!-- Если режим редактирования выключен -->
+              <p v-if="!editCancelledReason" @click="editCancelledReason = !editCancelledReason" class="text-sm text-blue border-b border-dashed border-blue">Редактировать</p>
+            </div>
+
+            <p class="text-dark-gray text-left" v-if="!editCancelledReason" >
+              {{сancelledDeal.cancelledReason}}
+            </p>
+
+            <textarea v-if="editCancelledReason" placeholder="Укажите причину" v-model="dealCancelledReason" maxlength="200" class="mt-2 h-fit bg-light-grey text-gray-500 rounded-md w-full focus:outline-none h-36"></textarea>
+          </div>
+           <p v-if="!editCancelledReason" class="w-full text-blue text-center mt-4 dealStatusMenu-btn_close">Ок</p>
+           <p @click="updateCancelledReason" v-if="editCancelledReason" class="w-full text-blue text-center mt-4 dealStatusMenu-btn_close">Сохранить</p>
         </div>
       </div>
     </div>
@@ -365,7 +398,6 @@ export default {
     const closeDealWithDebtMenu = (e) => {
       if (e.target.classList.contains('dealStatusMenu_wrapper') || e.target.classList.contains('dealStatusMenu-btn_close')) {
           dealWithDebt.value = !dealWithDebt.value;
-
       }
     }
 
@@ -528,7 +560,7 @@ export default {
 
       // Преобразования и вычисления
       const deal = statusDeal.value
-      
+      // Когда хотим сменить статус на "Завершен" делу с долгом...
       if(deal.debtValue > 0 && deal.currentDealStatus === 'deal-complete') {
         deal.currentDealStatus = 'deal-in-debt';
         // Открываем notify
@@ -539,6 +571,18 @@ export default {
         dealStatusArray.value = []
         // list.value = []
       } 
+      // Когда хотим сменить статус на "Отменен"
+      if(deal.currentDealStatus === 'deal-cancelled') {
+        //Открываем deal cancelled reason menu
+        dealCancelledReasonMenu.value = !dealCancelledReasonMenu.value;
+        // Перемещаем во вкладку deal-cancelled
+        setDealStatus.value = "deal-cancelled";
+        //
+        editCancelledReason.value = !editCancelledReason.value
+        // Ставим текст
+        console.log(dealCancelledReason.value)
+      }
+
       // Обновляем данные в БД
       try {
         const { error } = await supabase.from('deals').update({
@@ -611,9 +655,64 @@ export default {
       return debt;
     }
 
+    // Меняем цвета кнопки завершенных и отмененных дел
+    const dealStatusClassObject = (dealStatus) => {
+      if(dealStatus === 'deal-cancelled') {
+        return {
+          'deal-cancelled': true,
+          'text-danger' : dealStatus === 'deal-cancelled',
+        }
+      }
+      if(dealStatus === 'deal-complete') {
+        return {
+          'deal-completed': true,
+          'text-green' : dealStatus === 'deal-complete'
+        }
+      }
+    }
+
+    // причина отмены
+    const dealCancelledReason = ref('');
+    const сancelledDeal = ref('');
+    //
+    const dealCancelledReasonMenu = ref(false);
+    //
+    // Закрываем dealCancelledReasonMenu, нажимая по фону
+    const closeDealCancelledReasonMenu = (e) => {
+      if (editCancelledReason.value === false && (e.target.classList.contains('dealStatusMenu_wrapper') || e.target.classList.contains('dealStatusMenu-btn_close'))) {
+          dealCancelledReasonMenu.value = !dealCancelledReasonMenu.value;
+      }
+      if (editCancelledReason.value === true && e.target.classList.contains('dealStatusMenu-btn_close')) {
+        dealCancelledReasonMenu.value = false;
+      }
+    }
+
+    // deal Cancelled Reason Menu Toggle
+    // Забираем у текущего дела id и причину отмены дела
+    const openCancelledReasonMenu = (currentDealID, cancelledReason) => {
+      dealCancelledReasonMenu.value = !dealCancelledReasonMenu.value;
+      
+      const currentDeal = {
+        currentDealID: currentDealID,
+        cancelledReason: cancelledReason,
+      }
+
+      dealCancelledReason.value = cancelledReason
+
+      // console.log(currentDeal)
+      return сancelledDeal.value = currentDeal;
+    }
+
+
+    const editCancelledReason = ref(null)
+
+    const updateCancelledReason = () => {
+      editCancelledReason.value = !editCancelledReason.value;
+      console.log(dealCancelledReason.value)
+    }
 
     return {
-      list, setDealStatus, dataLoaded, title, executionDatesArray, translateDealType, translateDealStatus, showEventDate, daysArray, contactInfo, getNameId, checkChangeStatus, dealStatusArray, getDealStatus, getStatusArrLength, dealStatusList, spinner, dealStatusMenu, dealStatusMenuToggle, closeDealStatusMenu, statusDeal, updateStatus, statusMsg, errorMsg, dealPaid, makePaymMenuToggle, updateDealPaid, dealPaidMenu, closeDealPaidMenu, debt, debtValue, makePayment, copyDebtValue, dealPaidValuePattern, dealWithDebt, closeDealWithDebtMenu
+      list, setDealStatus, dataLoaded, title, executionDatesArray, translateDealType, translateDealStatus, showEventDate, daysArray, contactInfo, getNameId, checkChangeStatus, dealStatusArray, getDealStatus, getStatusArrLength, dealStatusList, spinner, dealStatusMenu, dealStatusMenuToggle, closeDealStatusMenu, statusDeal, updateStatus, statusMsg, errorMsg, dealPaid, makePaymMenuToggle, updateDealPaid, dealPaidMenu, closeDealPaidMenu, debt, debtValue, makePayment, copyDebtValue, dealPaidValuePattern, dealWithDebt, closeDealWithDebtMenu, dealStatusClassObject, dealCancelledReason, dealCancelledReasonMenu, closeDealCancelledReasonMenu, openCancelledReasonMenu, editCancelledReason, updateCancelledReason, сancelledDeal
     };
   },
 };
@@ -675,6 +774,14 @@ export default {
 
   input[type="radio"]:checked + label {
     background:#4785E7;
+  }
+
+  input[type="radio"]:checked + label.deal-completed {
+    background:#78D86F;
+  }
+
+  input[type="radio"]:checked + label.deal-cancelled {
+    background:#FF8B8B;
   }
 
   input[type="radio"] + label {
