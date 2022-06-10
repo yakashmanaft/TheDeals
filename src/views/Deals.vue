@@ -181,10 +181,9 @@
         </div>
 
         <!-- zero deal status messages -->
-        <div v-if="!spinner && dealStatusArray.length !== 0" class="zero-status_wrapper">
-          
+        <div v-if="!spinner && dealStatusArray.length !== 0 && !dealWithDebt && !dealCancelledReasonMenu" class="zero-status_wrapper">
           <!-- looping zero deal status -->
-          <div v-for="(item, index) in dealStatusList" :key="index">
+          <div else v-for="(item, index) in dealStatusList" :key="index">
             <div v-if="setDealStatus === item.name && getStatusArrLength(item.name) === 0">
               <div class="flex flex-col items-center">
                 <div>
@@ -281,7 +280,7 @@
               {{сancelledDeal.cancelledReason}}
             </div>
 
-            <textarea required v-if="editCancelledReason" placeholder="Укажите причину" v-model="dealCancelledReason" maxlength="200" class="mt-2 h-fit bg-light-grey text-gray-500 rounded-md w-full focus:outline-none h-36"></textarea>
+            <textarea required v-if="editCancelledReason" placeholder="Укажите причину" v-model="dealCancelledReason" inputmode="text" maxlength="200" class="mt-2 h-fit bg-light-grey text-gray-500 rounded-md w-full focus:outline-none h-36"></textarea>
           </div>
            <p v-if="!editCancelledReason" class="w-full text-blue text-center mt-4 dealStatusMenu-btn_close">Ок</p>
            <p @click="updateCancelledReason" v-if="editCancelledReason" class="w-full text-blue text-center mt-4 dealStatusMenu-btn_close">Сохранить</p>
@@ -568,7 +567,7 @@ export default {
         // Открываем notify
         dealWithDebt.value = !dealWithDebt.value;
         // Перемещаем во вкладку deal-in-debt
-        setDealStatus.value = "deal-in-debt"
+        // setDealStatus.value = "deal-in-debt"
         // console.log(dealWithDebt.value)
         dealStatusArray.value = []
         // list.value = []
@@ -578,14 +577,31 @@ export default {
         //Открываем deal cancelled reason menu
         dealCancelledReasonMenu.value = !dealCancelledReasonMenu.value;
         // Перемещаем во вкладку deal-cancelled
-        setDealStatus.value = "deal-cancelled";
+        // setDealStatus.value = "deal-cancelled";
         //
         editCancelledReason.value = !editCancelledReason.value
       }
       // Если возвращаем из отмененных, надо убрать причины отказа
       if(deal.currentDealStatus !== 'deal-cancelled') {
-        console.log(deal.currentDealID)
-        console.log(deal.cancelledReason)
+        // console.log(deal.currentDealID)
+        // console.log(deal.cancelledReason)
+        dealCancelledReason.value = '';
+        сancelledDeal.value = '';
+        // const emptyCancelledReason = ''
+        try {
+          const { error } = await supabase.from('deals').update({
+            cancelledReason: dealCancelledReason.value
+          }).eq('id', deal.currentDealID);
+          if(error) throw error;
+
+        } catch (error) {
+          errorMsg.value = `Error: ${error.message}`;
+          setTimeout(() => {
+            errorMsg.value = false;
+            console.warn(error.message);
+          }, 5000);
+        }
+        
       }
 
       // Обновляем данные в БД
@@ -601,7 +617,8 @@ export default {
         }
         setTimeout(() => {
           statusMsg.value = false;
-        }, 5000);
+        }, 3000);
+        
       } catch (error) {
         errorMsg.value = `Error: ${error.message}`;
         setTimeout(() => {
@@ -609,6 +626,8 @@ export default {
           console.warn(error.message);
         }, 5000);
       }
+      
+      dealCancelledReason.value = '';
       // Запускаем функцию получения из БД статусы всех дел
       getDealStatus(dealStatusArray, dataLoaded, errorMsg)
       //
@@ -618,7 +637,6 @@ export default {
  
       // console.log(deal.currentDealID)
       // console.log(deal.currentDealStatus)
-      
     }
 
     // Обновляем в БД внесенную сумму по делу 
@@ -679,14 +697,16 @@ export default {
     // причина отмены
     const dealCancelledReason = ref('');
     const сancelledDeal = ref('');
-    //
+
+    // меню указания причины омтены дела
     const dealCancelledReasonMenu = ref(false);
-    //
+
     // Закрываем dealCancelledReasonMenu, нажимая по фону
     const closeDealCancelledReasonMenu = (e) => {
       if (editCancelledReason.value === false && (e.target.classList.contains('dealStatusMenu_wrapper') || e.target.classList.contains('dealStatusMenu-btn_close'))) {
           dealCancelledReasonMenu.value = !dealCancelledReasonMenu.value;
       }
+      // Если режим редактирования причины true, то по фону закрыть не получится
       if (editCancelledReason.value === true && e.target.classList.contains('dealStatusMenu-btn_close')) {
         dealCancelledReasonMenu.value = !dealCancelledReasonMenu.value;
       }
@@ -707,25 +727,50 @@ export default {
       return сancelledDeal.value = currentDeal;
     }
 
-
+    // Режим редактирования причины отмены дела
     const editCancelledReason = ref(false)
-    // id дела приходящий из разных функций
+
+    // id дела приходящий из разных функций (из функции изменения статуса, из функции редактирования причины омтены дела)
     const id = ref(undefined);
+
     // Обновляем инфу по причине отмены дела
-    const updateCancelledReason = () => {
+    const updateCancelledReason = async () => {
       editCancelledReason.value = !editCancelledReason.value;
       // из statusDeal
       if (statusDeal.value.currentDealID === undefined) {
-        id.value = сancelledDeal.value.currentDealID
+        id.value = +сancelledDeal.value.currentDealID
       }
       // из сancelledDeal
       if (сancelledDeal.value.currentDealID === undefined) {
-        id.value = statusDeal.value.currentDealID
+        id.value = +statusDeal.value.currentDealID
       }
+      // Обновляем данные в БД
+      try {
+        const { error } = await supabase.from('deals').update({
+          cancelledReason: dealCancelledReason.value
+        }).eq('id', id.value);
+        if(error) throw error;
+        // Надо ли какой-то статус месдж
+        // statusMsg.value = `Статус дела #${deal.currentDealID} успешно обновлен`;
+        spinner.value = !spinner.value;
+        setTimeout(() => {
+          statusMsg.value = false;
+          spinner.value = !spinner.value
 
-      console.log(`id: ${id.value}`)
-      console.log(`reason: ${dealCancelledReason.value}`)
+        }, 1000);
+      } catch (error) {
+        errorMsg.value = `Error: ${error.message}`;
+        setTimeout(() => {
+          errorMsg.value = false;
+          console.warn(error.message);
+        }, 5000);
+      }
+      сancelledDeal.value = '',
+      statusDeal.value = ''
 
+      getDeals(list, dataLoaded, errorMsg);
+      // console.log(id.value)
+      // console.log(dealCancelledReason.value)
     }
 
     return {
