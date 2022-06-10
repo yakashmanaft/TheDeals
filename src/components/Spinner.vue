@@ -1,7 +1,12 @@
 <template>
-<div class="wrapper">
-
-    <div class="spinner z-20"></div>
+<!-- В шаблонах, где используется спиннер, элементу, который должен спрятаться под спинером добавляем фиксированность, дабы перестать скролить
+  .item_fixed {
+    posiition: fixed;
+    width: 100%;
+  }
+-->
+<div class="spinner-item_wrapper">
+    <div class="spinner-item z-20"></div>
 </div>
 </template>
 
@@ -12,7 +17,17 @@
 </script>
 
 <style scoped>
-.spinner {
+.spinner-item_wrapper {
+    backdrop-filter: blur(2px);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 10
+}
+
+.spinner-item {
     position: fixed;
     height: 60px;
     width: 60px;
@@ -25,14 +40,14 @@
     animation: spin 2s linear infinite;
   }
 
-  .spinner:before, .spinner:after{
+  .spinner-item:before, .spinner-item:after{
     content:'';
     position: absolute;
     border: 3px solid transparent;
     border-radius: 50%;
   }
 
-  .spinner:before{
+  .spinner-item:before{
     border-top-color: #78D86F;
     top: -12px;
     left: -12px;
@@ -41,7 +56,7 @@
     animation: spin 3s linear infinite;
   }
 
-  .spinner:after{
+  .spinner-item:after{
     border-top-color: #4785E7;
     top: 6px;
     left: 6px;

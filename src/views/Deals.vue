@@ -3,12 +3,12 @@
     <Navigation :title="title" class="fixed z-10 bg-white"/>  
 
     <!-- Добавление нового заказа -->
-    <router-link 
-      class="fixed z-10 bottom-5 right-5 w-14 h-14 bg-blue rounded-full flex items-center justify-center shadow-md"
-      :to="{ name: 'CreateDeal' }"
-    >
-      <img src="@/assets/images/common/icon-plus.svg" alt="">
-    </router-link>
+    <!-- Возможно меню быстрого доступа -->
+    <div class="fixed w-full bg-transparent h-1 z-20 bottom-0 flex items-end justify-end overflow-visible">
+      <router-link :to="{ name: 'CreateDeal' }" class="h-14 w-14 mr-5 mb-5 bg-dark flex items-center justify-center shadow-md rounded-full">
+          <img class="w-5" src="@/assets/images/common/icon-plus.svg" alt="">
+      </router-link>
+    </div>
 
     <!-- Когда Data загружена -->
     <div v-if="dataLoaded" class="container pt-20">
@@ -77,10 +77,10 @@
         </div>
 
         <!-- Loading spinner -->
-        <Spinner v-if="spinner" ></Spinner>
+        <Spinner v-if="spinner"></Spinner>
 
         <!-- Deals, dates -->
-        <div v-else class="mb-12 mx-4">
+        <div v-else class="mb-12 mx-4" :class="{ item_fixed: spinner }">
 
           <div v-for="(day, idx) in daysArray" :key="idx">
 
@@ -1019,9 +1019,9 @@ export default {
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2378D86F' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z'/%3e%3c/svg%3e");
   }
 
-  .blurred_content {
-    position: fixed;
-    overflow-y: hidden;
+  .item_fixed {
+    posiition: fixed;
+    width: 100%;
   }
 
 </style>

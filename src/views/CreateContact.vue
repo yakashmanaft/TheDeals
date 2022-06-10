@@ -30,10 +30,9 @@
 
       <!-- Loading spinner -->
       <Spinner v-if="spinner"></Spinner>
-      <div :class="{ shading_background_white: spinner }"></div>
 
       <!-- Create -->
-      <form v-if="user" @submit.prevent="createContact" class="flex flex-col items-center p-4 py-10" :class="{ fixed: spinner}">
+      <form v-if="user" @submit.prevent="createContact" class="flex flex-col items-center p-4 py-10" :class="{ item_fixed: spinner}">
 
         <!-- add main contact info -->
         <div class="w-4/5 flex flex-col items-center pb-10">
@@ -642,17 +641,7 @@ import { useRouter } from 'vue-router';
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23fff' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z'/%3e%3c/svg%3e");
   }
 
-  .shading_background_white {
-    backdrop-filter: blur(2px);
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
-    z-index: 10
-  }
-
-  .fixed {
+  .item_fixed {
     posiition: fixed;
     width: 100%;
   }

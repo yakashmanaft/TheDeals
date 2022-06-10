@@ -29,16 +29,15 @@
 
       <div>
         <!-- Loading spinner -->
-        <Spinner v-if="spinner"></Spinner>
-        <!-- Чисто фон для имитации загрузки -->
-        <div :class="{shading_background_white: spinner}" class="w-full"></div>
+        <Spinner v-if="spinner"></Spinner>          
+        
         <!-- Create -->
         <form 
           id="create-deal" 
           v-if="user" 
           @submit.prevent="createDeal" 
-          class="flex flex-col items-center pt-0 mx-4"
-          :class="{ fixed: spinner}"
+          class="flex flex-col items-center pt-0 px-4"
+          :class="{ item_fixed: spinner}"
         >
 
           <!-- set deal information inputs -->
@@ -611,42 +610,7 @@ export default {
       return searchFilter(sortedContacts.value, search.value)
     });
 
-    const workoutName = ref('');
-    const workoutType = ref('select-workout');
-    const exercises = ref([]);
 
-    // Add exercise
-    const addExercise = () => {
-      if(workoutType.value === 'strength') {
-        exercises.value.push({
-          id: uid(),
-          exercise: '',
-          sets: '',
-          reps: '',
-          weight: '',
-        });
-        return
-      }
-      exercises.value.push({
-        id: uid(),
-        cardioType: '',
-        distance: '',
-        duration: '',
-        pace: '',
-      })
-    }
-
-    // Delete exercise
-    const deleteExercise = (id) => {
-      if(exercises.value.length > 1) {
-        exercises.value = exercises.value.filter(exercise => exercise.id !== id);
-        return;
-      }
-      errorMsg.value = 'Error. Cannot remove, need to at least have one exercise';
-      setTimeout(() => {
-        errorMsg.value = false;
-      }, 5000);
-    }
 
     // Временное решение
     const assortmentList = [
@@ -769,12 +733,6 @@ export default {
       return sum, totalDealValue.value
     }
 
-    // Listens for chaging of workout type input
-    const workoutChange = () => {
-      exercises.value = [];
-      addExercise();
-    }
-
     // Listens for changing of deal type input
     const dealTypeChanged = () => {
       dealsList.value = [];
@@ -822,37 +780,8 @@ export default {
       }
     }
 
-    // Create workout
-    const createWorkout = async () => {
-      try {
-        const { error } = await supabase.from('workouts').insert([
-          {
-            workoutName: workoutName.value,
-            workoutType: workoutType.value,
-            exercises: exercises.value,
-          }
-        ]);
-        if (error) throw error;
-        statusMsg.value = 'Дело успешно создано'
-        workoutName.value = null;
-        workoutType.value = 'select-workout';
-        exercises.value = [];
-        setTimeout(() => {
-          statusMsg.value = false;
-          // В идеале переходить к только что созданному делу
-          router.push({ name: 'Deals' });
-        }, 3000)
-
-      } catch (error) {
-        errorMsg.value = `Error: ${error.message}`;
-        setTimeout(() => {
-          errorMsg.value = false;
-        }, 5000)
-      }
-    }
-
     return {
-      typeOfDeal, dealStatus, contactOfDeal, contactInfo, dataLoaded, sortedContacts,filteredOptions, search, workoutName, workoutType, exercises, statusMsg, errorMsg, user, addExercise, workoutChange, deleteExercise, createDeal, createWorkout, editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortmentList, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributesList, userDiscountRangeValue, sum, totalDealValue, executionDate, totalDealMenuClose, setDiscountRange, dealStatusList, dealPaid, spinner
+      typeOfDeal, dealStatus, contactOfDeal, contactInfo, dataLoaded, sortedContacts,filteredOptions, search, statusMsg, errorMsg, user, createDeal , editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortmentList, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributesList, userDiscountRangeValue, sum, totalDealValue, executionDate, totalDealMenuClose, setDiscountRange, dealStatusList, dealPaid, spinner
     };
   },
 };
@@ -1020,17 +949,7 @@ export default {
     backdrop-filter: blur(2px);
   }
 
-  .shading_background_white {
-    backdrop-filter: blur(2px);
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
-    z-index: 10
-  }
-
-  .fixed {
+  .item_fixed {
     posiition: fixed;
     width: 100%;
   }
