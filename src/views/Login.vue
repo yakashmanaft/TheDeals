@@ -26,7 +26,7 @@
         <div class="flex flex-col mb-2 mt-10">
           <!-- <label for="email" class="mb-1 text-sm text-dark-gray">Email</label> -->
           <input 
-            type="text" 
+            type="email" 
             required 
             class="p-2 text-md bg-sand border rounded-md focus:text-dark focus:bg-light-blue focus:outline-none" 
             id="email"

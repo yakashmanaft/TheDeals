@@ -126,6 +126,27 @@
                   :value="item.name">{{ item.title }}</option>
               </select>
             </div>
+
+            <!-- Внести оплату | предоплату (dealPaid) -->
+            <div class="w-full flex flex-col mt-4">
+              <p class="mb-1 ml-2 text-sm text-blue">Предоплата (RUB)</p>
+              <div class="flex place-content-between border items-center p-2 rounded-md">
+                <label for="dealPaid" class="text-sm leading-none align-text-middle text-dark-gray">
+                  Впишите сумму
+                </label>
+                <div class="subject-price_value">
+                  <input 
+                    type="number" 
+                    id="dealPaid"
+                    inputmode="decimal"
+                    class="focus:outline-none text-dark text-right mx-1 pt-1 w-16" 
+                    placeholder="0.00"
+                    v-model="dealPaid" 
+                  >
+                </div>
+              </div>
+              
+            </div>
             
             <!-- Тип дела -->
             <div class="w-full flex flex-col mt-4">
@@ -144,7 +165,8 @@
                 <option value="personal">Личное</option>
               </select>
             </div>
-    
+
+            <!-- Тип дела -->
             <!-- Настройки нового дела -->
             <div class="w-full">
     
@@ -309,26 +331,7 @@
               </div>
             </div>
 
-            <!-- Внести оплату | предоплату (dealPaid) -->
-            <div class="w-full flex flex-col mt-4">
-              <p class="mb-1 ml-2 text-sm text-blue">Предоплата (RUB)</p>
-              <div class="flex place-content-between border mb-4 items-center p-2 rounded-md">
-                <label for="dealPaid" class="text-sm leading-none align-text-middle text-dark-gray">
-                  Впишите сумму
-                </label>
-                <div class="subject-price_value">
-                  <input 
-                    type="number" 
-                    id="dealPaid"
-                    inputmode="decimal"
-                    class="focus:outline-none text-dark text-right mx-1 pt-1 w-16" 
-                    placeholder="0.00"
-                    v-model="dealPaid" 
-                  >
-                </div>
-              </div>
-              
-            </div>
+
             <!-- Для input -->
             <!-- pattern="[0-9]+([\.,][0-9]+)?" step="0.01" -->
 

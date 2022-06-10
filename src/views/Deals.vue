@@ -94,82 +94,109 @@
             <!-- Cards of deals -->
             <div v-for="(deal, index) in list" :key="index" class="my-4">
               <router-link v-if="showEventDate(deal.executionDate) === day && deal.dealStatus === setDealStatus" :to="{ name: 'View-Deal', params: { dealId: deal.id } }">
-                <div class="relative flex flex-col rounded-md bg-light-grey p-2 pb-4 shadow-md">
+                <div class="relative flex flex-col rounded-md bg-light-grey p-2  shadow-md">
 
                   <!-- header -->
                   <div class="flex place-content-between items-center border-b pb-2">
-
-                    <!-- Тип дела -->
-                    <span class="leading-5 px-2 py-1 mr-4 border border-green text-green rounded-md text-sm">{{translateDealType(deal.dealType)}}</span>
-                    
-                    <!-- Контакт по делу -->
-                    <div class="flex flex-col item-center">
-                      <p v-if="deal.contactID === '000'" class="text-sm text-center text-dark-gray mr-2">Неизвестный</p>
-                      <router-link else :to="{ name: 'View-Contact', params: { contactId: deal.contactID } }" class="text-sm text-center text-blue mr-2">{{ getNameId(deal.contactID)}}</router-link> 
+                    <div class="flex items-center">
+                      <!-- Тип дела -->
+                      <span class="leading-5 px-2 py-1 mr-2 border border-green text-green rounded-md text-sm">{{translateDealType(deal.dealType)}}</span>
+                      
+                      <!-- Контакт по делу -->
+                      <div class="flex flex-col item-center">
+                        <p v-if="deal.contactID === '000'" class="text-sm text-center text-dark-gray mr-2">Неизвестный</p>
+                        <router-link else :to="{ name: 'View-Contact', params: { contactId: deal.contactID } }" class="text-sm text-center text-blue mr-2">{{ getNameId(deal.contactID)}}</router-link> 
+                      </div>
                     </div>
 
                     <!-- Статус дела -->
                     <span @click.prevent.stop="dealStatusMenuToggle(deal.id, deal.dealStatus, deal.dealPaid, deal.totalDealValue, deal.cancelledReason)" class=" px-2 py-1 text-sm rounded-md text-blue whitespace-nowrap">{{ translateDealStatus(deal.dealStatus) }}</span>
 
                   </div>
+                  
 
-                  <!-- Предмет заказа -->
-                  <div class="relative deal-subject_item my-2">
-                    <div v-for="(item, index) in deal.dealsList" :key="index" :class="`left-${index}0`" class="absolute top-0 left-0 flex flex-col justify-items-center">
-                      
-                      <!-- item -->
-                      <div class="deal-subject_item-img">
-                        <img :src="require(`../assets/images/deals/orders/${item.selectedProduct}.png`)" alt=""> 
+                  <div v-if="deal.isExpend" class="border-b pb-2">
+                    <!-- Предмет заказа -->
+                    <div class="relative deal-subject_item my-2">
+                      <div v-for="(item, index) in deal.dealsList" :key="index" :class="`left-${index}0`" class="absolute top-0 left-0 flex flex-col justify-items-center">
+                        
+                        <!-- item -->
+                        <div class="deal-subject_item-img">
+                          <img :src="require(`../assets/images/deals/orders/${item.selectedProduct}.png`)" alt=""> 
+                        </div>
+                        <div class="text-dark-gray text-xs text-center">х {{ item.productQuantity }}</div>
                       </div>
-                      <div class="text-dark-gray text-xs text-center">х {{ item.productQuantity }}</div>
                     </div>
-                  </div>
 
-                  <!-- Оплата -->
-                  <!-- Если имеется долг по делу -->
-                  <ul class="text-sm text-dark-gray mt-2 px-2" v-if="deal.totalDealValue - deal.dealPaid > 0">
-                    <li class="flex place-content-between items-center">
-                      <span>Оплачено (RUB)</span>
-                      <span>{{ dealPaidValuePattern(deal.dealPaid) }}<span class="text-xs"> из</span> <span class="text-lg text-dark">{{ deal.totalDealValue }}</span></span>
-                    </li>
-                    <li class="flex place-content-between mt-2">
-                      <div class="flex items-center">
-                        <span>Долг (RUB)</span>
-                        <span 
-                          class="text-xs text-blue ml-2 border-b border-blue border-dashed"
-                          @click.prevent.stop="makePaymMenuToggle(deal.id, deal.dealPaid, deal.totalDealValue)"
-                          >
-                            Внести оплату
-                          </span>
+                    <!-- Оплата -->
+                    <!-- Если имеется долг по делу -->
+                    <ul class="text-sm text-dark-gray mt-2 px-2" v-if="deal.totalDealValue - deal.dealPaid > 0">
+                      <li class="flex place-content-between items-center">
+                        <span>Оплачено (RUB)</span>
+                        <span>{{ dealPaidValuePattern(deal.dealPaid) }}<span class="text-xs"> из</span> <span class="text-lg text-dark">{{ deal.totalDealValue }}</span></span>
+                      </li>
+                      <li class="flex place-content-between mt-2">
+                        <div class="flex items-center">
+                          <span>Долг (RUB)</span>
+                          <span 
+                            class="text-xs text-blue ml-2 border-b border-blue border-dashed"
+                            @click.prevent.stop="makePaymMenuToggle(deal.id, deal.dealPaid, deal.totalDealValue)"
+                            >
+                              Внести оплату
+                            </span>
+                        </div>
+                        <span>{{ debt(deal.totalDealValue, deal.dealPaid) }} </span>
+                        
+                      </li>
+                      <li class="flex items-center place-content-between justify-end">
+                        <!-- Причина отмены -->
+                        <div @click.prevent.stop="openCancelledReasonMenu(deal.id, deal.cancelledReason)" v-if="deal.dealStatus === 'deal-cancelled'" class="border-b border-dashed border-blue text-blue text-xs mt-2">
+                          Причина отмены
+                        </div>
+                      </li>  
+                    </ul>
+                    <!-- Если долг отсутствует -->
+                    <ul class="text-sm text-dark-gray mt-2 px-2" v-if="deal.totalDealValue - deal.dealPaid === 0">
+                      <li class="flex place-content-between items-center">
+                        <span>Оплачено (RUB)</span>
+                        <span class="text-lg text-dark">{{ deal.totalDealValue }}</span>
+                      </li>
+                      <li class="flex items-center place-content-between">
+                        <!-- Оплата -->
+                        <div class="flex items-center mt-2">
+                          <div class="checkmark"></div>
+                          <span class="text-green ml-1">Оплата 100%</span>
+                        </div>
+                        <!-- Причина отмены -->
+                        <div @click.prevent.stop="openCancelledReasonMenu(deal.id, deal.cancelledReason)" v-if="deal.dealStatus === 'deal-cancelled'" class="border-b border-dashed border-blue text-blue text-xs mt-2">
+                          Причина отмены
+                        </div>
+                      </li>  
+                    </ul>
+
+                  </div>  
+
+                  <!-- Свернуть / развернуть -->
+                  <div class="flex place-content-between mt-2 items-center">
+                    <div class="text-dark-gray text-xs px-2">
+                      Кол-во позиций: {{deal.dealsList.length}} 
+                    </div>
+                    <!-- btn to open expend deal card -->
+                    <div @click.prevent.stop="expendDeal(index)">
+                      <div class="flex items-center mr-2">
+                        <div v-if="!deal.isExpend" class="text-sm text-blue mr-2">Развернуть</div>
+                        <div v-if="deal.isExpend" class="text-sm text-blue mr-2">Свернуть</div>
+                        <div class="totalMenu-more_arrow">
+                          <img 
+                            class="more-arrow_icon" 
+                            src="../assets/images/common/arrow-right.svg"
+                            :class="[{ more_arrow_icon_opened_menu: !deal.isExpend }, {more_arrow_icon_closed_menu: deal.isExpend}]" 
+                            alt="">
+                        </div>
                       </div>
-                      <span>{{ debt(deal.totalDealValue, deal.dealPaid) }} </span>
-                      
-                    </li>
-                    <li class="flex items-center place-content-between justify-end">
-                      <!-- Причина отмены -->
-                      <div @click.prevent.stop="openCancelledReasonMenu(deal.id, deal.cancelledReason)" v-if="deal.dealStatus === 'deal-cancelled'" class="border-b border-dashed border-blue text-blue text-xs mt-2">
-                        Причина отмены
-                      </div>
-                    </li>  
-                  </ul>
-                  <!-- Если долг отсутствует -->
-                  <ul class="text-sm text-dark-gray mt-2 px-2" v-if="deal.totalDealValue - deal.dealPaid === 0">
-                    <li class="flex place-content-between items-center">
-                      <span>Оплачено (RUB)</span>
-                      <span class="text-lg text-dark">{{ deal.totalDealValue }}</span>
-                    </li>
-                    <li class="flex items-center place-content-between">
-                      <!-- Оплата -->
-                      <div class="flex items-center mt-2">
-                        <div class="checkmark"></div>
-                        <span class="text-green ml-1">Оплата 100%</span>
-                      </div>
-                      <!-- Причина отмены -->
-                      <div @click.prevent.stop="openCancelledReasonMenu(deal.id, deal.cancelledReason)" v-if="deal.dealStatus === 'deal-cancelled'" class="border-b border-dashed border-blue text-blue text-xs mt-2">
-                        Причина отмены
-                      </div>
-                    </li>  
-                  </ul>
+                    </div>
+  
+                  </div>
 
                 </div>
               </router-link>
@@ -322,7 +349,6 @@ export default {
     const makePayment = ref('');
     // deal status menu
     const dealStatusMenu = ref(false);
-
     // Помещаем сюда current статус выбранного дела
     const statusDeal = ref('')
       
@@ -777,8 +803,14 @@ export default {
       // console.log(dealCancelledReason.value)
     }
 
+    // Разворачиваем / сворачиваем конкретное дело
+    const isExpend = ref(false);
+    const expendDeal = (index) => {
+      !list.value[index].isExpend ? list.value[index].isExpend = !isExpend.value : list.value[index].isExpend = isExpend.value;
+    }
+
     return {
-      list, setDealStatus, dataLoaded, title, executionDatesArray, translateDealType, translateDealStatus, showEventDate, daysArray, contactInfo, getNameId, checkChangeStatus, dealStatusArray, getDealStatus, getStatusArrLength, dealStatusList, spinner, dealStatusMenu, dealStatusMenuToggle, closeDealStatusMenu, statusDeal, updateStatus, statusMsg, errorMsg, dealPaid, makePaymMenuToggle, updateDealPaid, dealPaidMenu, closeDealPaidMenu, debt, debtValue, makePayment, copyDebtValue, dealPaidValuePattern, dealWithDebt, closeDealWithDebtMenu, dealStatusClassObject, dealCancelledReason, dealCancelledReasonMenu, closeDealCancelledReasonMenu, openCancelledReasonMenu, editCancelledReason, updateCancelledReason, сancelledDeal, id
+      list, setDealStatus, dataLoaded, title, executionDatesArray, translateDealType, translateDealStatus, showEventDate, daysArray, contactInfo, getNameId, checkChangeStatus, dealStatusArray, getDealStatus, getStatusArrLength, dealStatusList, spinner, dealStatusMenu, dealStatusMenuToggle, closeDealStatusMenu, statusDeal, updateStatus, statusMsg, errorMsg, dealPaid, makePaymMenuToggle, updateDealPaid, dealPaidMenu, closeDealPaidMenu, debt, debtValue, makePayment, copyDebtValue, dealPaidValuePattern, dealWithDebt, closeDealWithDebtMenu, dealStatusClassObject, dealCancelledReason, dealCancelledReasonMenu, closeDealCancelledReasonMenu, openCancelledReasonMenu, editCancelledReason, updateCancelledReason, сancelledDeal, id, expendDeal, isExpend
     };
   },
 };
@@ -1027,6 +1059,26 @@ export default {
   .item_fixed {
     posiition: fixed;
     width: 100%;
+  }
+
+  .totalMenu-more_arrow {
+    width: 17px;
+    height: 17px;
+    padding: 2px;
+    border-radius: 100%;
+  }
+
+  .more-arrow_icon {
+    width: 100%;
+    height: 100%;
+  }
+
+  .more_arrow_icon_closed_menu {
+    transform: rotate(270deg);
+  }
+
+  .more_arrow_icon_opened_menu {
+    transform: rotate(90deg);
   }
 
 </style>
