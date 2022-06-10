@@ -9,7 +9,7 @@
           <img class="w-5" src="@/assets/images/common/icon-plus.svg" alt="">
       </router-link>
     </div>
-
+    <Spinner v-if="spinner && !dataLoaded"></Spinner>
     <!-- Когда Data загружена -->
     <div v-if="dataLoaded" class="container pt-20">
 
@@ -32,7 +32,8 @@
 
       <!-- No Data -->
       <div v-if="list.length === 0">
-        <div class="text-center px-4 mt-12">
+        <!-- Сообщение, когда ни одного дела еще не было создано -->
+        <div class="text-center px-4 mt-12" :class="{ item_fixed: spinner }">
           <!-- Предполагаемая картинка -->
           <div class="icon-wrapper flex items-center justify-center">
             <!-- Картинка предполагает ссылку на авторство, заменить на свою -->
@@ -292,7 +293,7 @@
 import Navigation from '../components/Navigation.vue';
 import Spinner from '../components/Spinner.vue';
 
-import { ref } from 'vue';
+import { ref, onMounted} from 'vue';
 import { supabase } from '../supabase/init';
 import { useRouter } from 'vue-router';
 
@@ -324,6 +325,11 @@ export default {
 
     // Помещаем сюда current статус выбранного дела
     const statusDeal = ref('')
+      
+    onMounted(() => {
+      spinner.value = true;
+      getDeals(list, dataLoaded, errorMsg);
+    })
 
     // deal status menu toggle
     // Забираем у текущего дела id и значение статуса 
@@ -452,8 +458,7 @@ export default {
     // Забирает value из выбранно чекбокса (по умолчанию ставим "В процессе")
     const setDealStatus = ref('deal-in-process');
 
-    // Run getDeals function
-    getDeals(list, dataLoaded, errorMsg);
+
 
     const router = useRouter();
     const title = router.currentRoute._value.meta.translation;
