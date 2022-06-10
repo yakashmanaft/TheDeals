@@ -713,13 +713,19 @@ export default {
       if(dealStatus === 'deal-cancelled') {
         return {
           'deal-cancelled': true,
-          'text-danger' : dealStatus === 'deal-cancelled',
+          'text-cancel' : dealStatus === 'deal-cancelled',
         }
       }
       if(dealStatus === 'deal-complete') {
         return {
           'deal-completed': true,
           'text-green' : dealStatus === 'deal-complete'
+        }
+      }
+      if(dealStatus === 'deal-in-debt') {
+        return {
+          'deal-in-debt': true,
+          'text-danger' : dealStatus === 'deal-in-debt'
         }
       }
     }
@@ -879,6 +885,10 @@ export default {
   }
 
   input[type="radio"]:checked + label.deal-cancelled {
+    background:#E7B102;
+  }
+
+  input[type="radio"]:checked + label.deal-in-debt {
     background:#FF8B8B;
   }
 
@@ -891,6 +901,11 @@ export default {
     width: 20px;
     height: 20px;
     border-radius: 50%;
+  }
+
+  input[type="radio"] + label.deal-in-debt .deal-filter-item_count{
+    background: #FF8B8B;
+    color: #fff;
   }
 
   input[type="radio"] + label .deal-filter-item_count{
@@ -906,46 +921,10 @@ export default {
     background: #fff;
     color: #4785E7;
   }
-  .ellipsis-btn {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
+
+  input[type="radio"]:checked + label.deal-in-debt  .deal-filter-item_count {
     background: #fff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .ellipsis-btn_item {
-    position: relative;
-  }
-  .ellipsis-btn_item,
-  .ellipsis-btn_item:after,
-  .ellipsis-btn_item:before {
-    width: 5px;
-    height: 5px;
-    background: #4785E7;
-    border-radius: 100%;
-  }
-
-  .ellipsis-btn_item:after {
-    content: '';
-    position: absolute;
-    left: -8px;
-  }
-
-  .ellipsis-btn_item:before {
-    content: '';
-    position: absolute;
-    right: -8px;
-  }
-
-  .deal-menu {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    background: #fff;
+    color: #3D3D3D;
   }
 
   .date-line_date {
@@ -958,15 +937,8 @@ export default {
     height: 1px;
     background-color: #f1f1f1;
     margin: 0 10px;
-  }
-
-  .date-line_calendar {
-    width: 32px;
-    height: 32px;
-    background: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
+    white-space: nowrap;
+    color: #838383;
   }
 
   .zero-status_wrapper {
@@ -1057,7 +1029,7 @@ export default {
   }
 
   .item_fixed {
-    posiition: fixed;
+    position: fixed;
     width: 100%;
   }
 

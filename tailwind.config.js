@@ -13,7 +13,8 @@ module.exports = {
         "blue": "#4785E7",
         "light-blue": "#D8E7FF",
         "danger": "#FF8B8B",
-        "sand": "#FFEB99"
+        "sand": "#FFEB99",
+        "cancel": "#E7B102"
       }
     },
     fontFamily: {
