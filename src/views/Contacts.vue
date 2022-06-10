@@ -39,6 +39,9 @@
       <!-- Data -->
       <div v-else>
 
+        <!-- Loading spinner -->
+        <Spinner v-if="spinner" ></Spinner>
+
         <!-- Поиск по контактам -->
         <!-- Может отдельным компонентом сделать -->
         <div class="search-input px-2 mx-4 h-10 flex items-center">
@@ -60,7 +63,7 @@
             v-for="contact in searchedContacts"
             :key="contact.id"
             :to="{ name: 'View-Contact', params: { contactId: contact.id } }"
-            class="contact-item flex justify-between border-b-2 items-center px-4 py-2 mt-2"
+            class="contact-item flex justify-between border-b items-center px-4 py-2 mt-2"
           >
             <div>
               <p class="text-blue text-xl">{{ contact.contactInfo.surname }}</p>
@@ -85,6 +88,7 @@
 
 <script>
   import Navigation from '../components/Navigation.vue';
+  import Spinner from '../components/Spinner.vue';
 
   import store from '../store/index';
   import { ref, computed, onMounted } from 'vue';
@@ -96,13 +100,15 @@
 
   export default {
     components: {
-      Navigation
+      Navigation, Spinner
     },
     setup () {
       const user = computed(() => store.state.user);
 
       const data = ref([]);
       const dataLoaded = ref(null);
+
+      const spinner = ref(null);
 
       const search = ref('');
 
@@ -112,13 +118,16 @@
       const router = useRouter();
       const title = router.currentRoute._value.meta.translation;
 
+    // Ждем когда загрузится вся data
+
+
       onMounted(async () => {
         try {
           const { data: myContacts, error } = await supabase.from('myContacts').select('*');
           if (error) throw error;
           data.value = myContacts;
           dataLoaded.value = true;
-
+          
         } catch (error) {
           errorMsg.value = error.message;
           setTimeout(() => {
@@ -138,7 +147,7 @@
       });
       
       return {
-        user, title, data, dataLoaded, search, sortedContacts, searchedContacts, errorMsg
+        user, title, data, dataLoaded, search, sortedContacts, searchedContacts, errorMsg, spinner
       }
     }
   }

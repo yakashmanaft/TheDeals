@@ -22,7 +22,7 @@
     </nav>
 
     <!-- View Current Contact -->
-    <main class="max-w-screen-sm mx-auto px-4 pt-20">
+    <main class="max-w-screen-sm mx-auto pt-20">
 
       <!-- App Msg -->
       <!-- разобраться со стилями ерроров и меседжей системных -->
@@ -44,14 +44,24 @@
         </div>
       </div>
 
+      <!-- Чисто фон для имитации загрузки -->
+      <div :class="{shading_background_white: spinner}">
+        <!-- Loading spinner -->
+        <Spinner v-if="spinner"></Spinner>
+      </div>
+
       <!--  -->
-      <div v-if="dataLoaded">
+      <div v-if="dataLoaded" :class="{ fixed: spinner }" class="px-4">
         <!-- General Contact Info -->
         
           <!-- Main info about contact -->
           <!-- Если нет имени, но есть логин в инсте или другой сети... может быть ставить вместо фамилии? -->
-          <div v-if="user" class="flex flex-col items-center p-4 py-10">
-            <div class="w-4/5 flex flex-col items-center">
+
+
+          <div v-if="user" class="flex flex-col items-center py-10">
+
+            <div class=" flex flex-col items-center">
+
               <!-- Avatar -->
               <div>
                 <!-- На будущее: -->
@@ -574,6 +584,8 @@
 </template>
 
 <script>
+import Spinner from '../components/Spinner.vue'
+
 import { ref, computed } from 'vue';
 import { supabase } from '../supabase/init';
 import { useRoute, useRouter } from 'vue-router';
@@ -582,6 +594,9 @@ import { uid } from 'uid';
 
 export default {
   name: "view-contact",
+  components: {
+    Spinner
+  },
   setup() {
     // Create data / vars
     const data = ref(null);
@@ -591,6 +606,8 @@ export default {
     const route = useRoute();
     const router = useRouter();
     const user = computed(() => store.state.user)
+    // Spiner data
+    const spinner = ref(false);
 
     // Get current Id of route
     const currentId = route.params.contactId;
@@ -828,6 +845,7 @@ export default {
     // Update Workout
     const update = async () => {
       try {
+        spinner.value = !spinner.value
         const { error } = await supabase.from('myContacts').update({
           contactInfo: data.value.contactInfo,
           contactEvents: data.value.contactEvents,
@@ -847,10 +865,11 @@ export default {
           errorMsg.value = false;
         }, 5000);
       }
+      spinner.value = !spinner.value
     }
 
     return {
-      statusMsg, data, dataLoaded, errorMsg, edit, editMode, user, deleteContact, addContactEvent, deleteContactEvent, update, cancelEdit, deletePhoneNumber, addPhoneNumber, cutPhoneNumber, checkMobile, addEmail, addSocial, deleteEmail, deleteSocial, addNote, note, deleteNote, showEventDate, calcDaysUntilDate
+      statusMsg, data, dataLoaded, errorMsg, edit, editMode, user, deleteContact, addContactEvent, deleteContactEvent, update, cancelEdit, deletePhoneNumber, addPhoneNumber, cutPhoneNumber, checkMobile, addEmail, addSocial, deleteEmail, deleteSocial, addNote, note, deleteNote, showEventDate, calcDaysUntilDate, spinner
     };
   },
 };
@@ -938,6 +957,21 @@ export default {
     border-color: #4785E7;
     background-color: #4785E7;
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23fff' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z'/%3e%3c/svg%3e");
+  }
+
+  .shading_background_white {
+    backdrop-filter: blur(2px);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 10
+  }
+
+  .fixed {
+    posiition: fixed;
+    width: 100%;
   }
 
 </style>

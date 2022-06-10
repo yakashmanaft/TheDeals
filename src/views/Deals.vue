@@ -1,6 +1,4 @@
 <template>
-<!-- Пока View называется Orders... по логике больше подходит Deals (дела... сделки...), а внутри разделяется на 1. order, 2. supply, 3. personal -->
-
   <div class="orders">
     <Navigation :title="title" class="fixed z-10 bg-white"/>  
 
@@ -13,7 +11,7 @@
     </router-link>
 
     <!-- Когда Data загружена -->
-    <div v-if="dataLoaded" class="container pt-20 px-4">
+    <div v-if="dataLoaded" class="container pt-20">
 
       <!-- App Msg -->
       <!-- разобраться со стилями ерроров и меседжей системных -->
@@ -56,10 +54,10 @@
       <div 
         v-else 
         class="grid grid-cols-1 gap-4"
-        :class="{ blurred_content: dealStatusMenu || dealPaidMenu || dealWithDebt || dealCancelledReasonMenu }"
+        :class="{ blurred_content: dealStatusMenu || dealPaidMenu || dealWithDebt || dealCancelledReasonMenu || spinner }"
       >
         <!-- Deal filter -->
-        <div class="flex deal-filter-wrapper">
+        <div class="flex deal-filter-wrapper mx-4">
             <!--  -->
             <div class="deal-filter-item" v-for="(dealStatus, index) in dealStatusList" :key="index">
               <input type="radio" name="deal-filter" :id="dealStatus.name" :value="dealStatus.name" v-model="setDealStatus" @change="checkChangeStatus"> 
@@ -79,10 +77,10 @@
         </div>
 
         <!-- Loading spinner -->
-        <div v-if="spinner" class="spinner z-20"></div>
+        <Spinner v-if="spinner" ></Spinner>
 
         <!-- Deals, dates -->
-        <div v-else class="mb-12">
+        <div v-else class="mb-12 mx-4">
 
           <div v-for="(day, idx) in daysArray" :key="idx">
 
@@ -199,7 +197,7 @@
       </div>
       
       <!-- Change Deal status menu wrapper -->
-      <div v-if="dealStatusMenu" class="w-full fixed bottom-0 left-0 flex items-center justify-center flex-col pb-0 z-20" :class="{ dealStatusMenu_wrapper: dealStatusMenu}" @click="closeDealStatusMenu">
+      <div v-if="dealStatusMenu" class="w-full fixed bottom-0 left-0 flex items-center justify-center flex-col pb-0 z-20" :class="{ shading_background: dealStatusMenu}" @click="closeDealStatusMenu">
         <!-- menu -->
         <div class="bg-light-grey bottom-0 border-t w-full fixed  rounded-t-3xl">
           <!-- menu header -->
@@ -222,7 +220,7 @@
       </div>
 
       <!-- Make Payment menu wrapper -->
-      <div v-if="dealPaidMenu" class="w-full fixed bottom-0 left-0 flex items-center justify-center flex-col pb-0 z-20" :class="{ dealStatusMenu_wrapper: dealPaidMenu}" @click="closeDealPaidMenu">
+      <div v-if="dealPaidMenu" class="w-full fixed bottom-0 left-0 flex items-center justify-center flex-col pb-0 z-20" :class="{ shading_background: dealPaidMenu}" @click="closeDealPaidMenu">
         <!-- menu -->
         <div class="bg-light-grey bottom-0 border-t w-full fixed  rounded-t-3xl">
           <!-- menu header -->
@@ -251,7 +249,7 @@
       </div>
 
       <!-- Deal With Debt notify wrapper -->
-      <div v-if="dealWithDebt" class="w-full fixed bottom-0 left-0 flex items-center justify-center flex-col pb-0 z-20" :class="{ dealStatusMenu_wrapper: dealWithDebt}" @click="closeDealWithDebtMenu">
+      <div v-if="dealWithDebt" class="w-full fixed bottom-0 left-0 flex items-center justify-center flex-col pb-0 z-20" :class="{ shading_background: dealWithDebt}" @click="closeDealWithDebtMenu">
         <!-- content -->
         <div class="mx-6 text-dark bg-light-grey inset-x-2/4 border-t rounded-2xl p-4">
           <div class="text-center border-b pb-4"> 
@@ -264,7 +262,7 @@
       </div>
 
       <!-- Deal Cancelled Reason Menu wrapper -->
-      <div v-if="dealCancelledReasonMenu" class="w-full fixed bottom-0 left-0 flex items-center justify-center flex-col pb-0 z-20" :class="{ dealStatusMenu_wrapper: dealCancelledReasonMenu}" @click="closeDealCancelledReasonMenu">
+      <div v-if="dealCancelledReasonMenu" class="w-full fixed bottom-0 left-0 flex items-center justify-center flex-col pb-0 z-20" :class="{ shading_background: dealCancelledReasonMenu}" @click="closeDealCancelledReasonMenu">
         <!-- content -->
         <div class="w-11/12 mx-6 text-dark bg-light-grey inset-x-2/4 border-t rounded-2xl p-4">
           <div class="text-center border-b pb-4"> 
@@ -291,7 +289,8 @@
 </template>
 
 <script>
-import Navigation from '../components/Navigation.vue'
+import Navigation from '../components/Navigation.vue';
+import Spinner from '../components/Spinner.vue';
 
 import { ref } from 'vue';
 import { supabase } from '../supabase/init';
@@ -306,7 +305,7 @@ import { translateDealType, translateDealStatus } from '../helpers/translators';
 export default {
   name: "Deals",
   components: {
-    Navigation
+    Navigation, Spinner
   },
   setup() {
     // Create data / vars
@@ -380,7 +379,7 @@ export default {
 
     // Закрываем DealStatusMenu, нажимая по фону
     const closeDealStatusMenu = (e) => {
-      if (e.target.classList.contains('dealStatusMenu_wrapper') || e.target.classList.contains('dealStatusMenu-btn_close')) {
+      if (e.target.classList.contains('shading_background') || e.target.classList.contains('dealStatusMenu-btn_close')) {
           dealStatusMenu.value = !dealStatusMenu.value;
           debtValue.value = '';
       }
@@ -388,7 +387,7 @@ export default {
 
     // Закрываем DealPaidMenu, нажимая по фону
     const closeDealPaidMenu = (e) => {
-      if (e.target.classList.contains('dealStatusMenu_wrapper') || e.target.classList.contains('dealStatusMenu-btn_close')) {
+      if (e.target.classList.contains('shading_background') || e.target.classList.contains('dealStatusMenu-btn_close')) {
           dealPaidMenu.value = !dealPaidMenu.value;
           makePayment.value = '';
           debtValue.value = '';
@@ -397,12 +396,12 @@ export default {
 
     // Закрываем DealPaidMenu, нажимая по фону
     const closeDealWithDebtMenu = (e) => {
-      if (e.target.classList.contains('dealStatusMenu_wrapper') || e.target.classList.contains('dealStatusMenu-btn_close')) {
+      if (e.target.classList.contains('shading_background') || e.target.classList.contains('dealStatusMenu-btn_close')) {
           dealWithDebt.value = !dealWithDebt.value;
       }
     }
 
-    //
+    // Ждем когда загрузится вся data
     const wait = () => {
       if (!dataLoaded.value && list.value.length === 0) {
         spinner.value = !spinner.value
@@ -703,7 +702,7 @@ export default {
 
     // Закрываем dealCancelledReasonMenu, нажимая по фону
     const closeDealCancelledReasonMenu = (e) => {
-      if (editCancelledReason.value === false && (e.target.classList.contains('dealStatusMenu_wrapper') || e.target.classList.contains('dealStatusMenu-btn_close'))) {
+      if (editCancelledReason.value === false && (e.target.classList.contains('shading_background') || e.target.classList.contains('dealStatusMenu-btn_close'))) {
           dealCancelledReasonMenu.value = !dealCancelledReasonMenu.value;
       }
       // Если режим редактирования причины true, то по фону закрыть не получится
@@ -941,50 +940,7 @@ export default {
     width: 100%;
   }
 
-  .spinner {
-    position: absolute;
-    height: 60px;
-    width: 60px;
-    border: 3px solid transparent;
-    border-top-color: #3D3D3D;
-    top: 60%;
-    left: 50%;
-    margin: -30px;
-    border-radius: 50%;
-    animation: spin 2s linear infinite;
-  }
-
-  .spinner:before, .spinner:after{
-    content:'';
-    position: absolute;
-    border: 3px solid transparent;
-    border-radius: 50%;
-  }
-
-  .spinner:before{
-    border-top-color: #78D86F;
-    top: -12px;
-    left: -12px;
-    right: -12px;
-    bottom: -12px;
-    animation: spin 3s linear infinite;
-  }
-
-  .spinner:after{
-    border-top-color: #4785E7;
-    top: 6px;
-    left: 6px;
-    right: 6px;
-    bottom: 6px;  
-    animation: spin 4s linear infinite;
-  }
-
-  @keyframes spin{
-    0% {transform: rotate(0deg);}
-    100% {transform: rotate(360deg);}
-  }
-
-  .dealStatusMenu_wrapper {
+  .shading_background {
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(2px);
@@ -1065,7 +1021,6 @@ export default {
 
   .blurred_content {
     position: fixed;
-    padding: 0 1rem 0 0;
     overflow-y: hidden;
   }
 

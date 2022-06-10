@@ -8,7 +8,7 @@
     </nav>
 
     <!-- Create New Deal -->
-    <main v-if="dataLoaded" class="max-w-screen-md mx-auto px-4 pt-20">
+    <main v-if="dataLoaded" class="max-w-screen-md mx-auto pt-20">
 
       <!-- App Msg -->
       <!-- разобраться со стилями ерроров и меседжей системных -->
@@ -29,11 +29,17 @@
 
       <div>
         <!-- Loading spinner -->
-        <div v-if="spinner" class="spinner z-20"></div>
+        <Spinner v-if="spinner"></Spinner>
+        <!-- Чисто фон для имитации загрузки -->
+        <div :class="{shading_background_white: spinner}" class="w-full"></div>
         <!-- Create -->
-        <form id="create-deal" v-if="user" @submit.prevent="createDeal" class="flex flex-col items-center pt-0">
-  
-
+        <form 
+          id="create-deal" 
+          v-if="user" 
+          @submit.prevent="createDeal" 
+          class="flex flex-col items-center pt-0 mx-4"
+          :class="{ fixed: spinner}"
+        >
 
           <!-- set deal information inputs -->
           <div class="w-full mb-32" :class="{deal_information_inputs:totalDealMenu}">
@@ -104,6 +110,22 @@
                   v-model="executionDate"
                 >
               </div>
+            </div>
+
+            <!-- set deal Status -->
+            <div class="w-full flex flex-col mt-4">
+              <label for="deal-status" class="mb-1 ml-2 text-sm text-blue">Статус дела</label>
+              <select 
+                id="deal-status" 
+                class="border webkit p-2 w-full text-gray-500 bg-light-grey rounded-md focus:outline-none" 
+                required
+                v-model="dealStatus"
+              >
+                <option 
+                  v-for="(item, index) in dealStatusList" 
+                  :key="index" 
+                  :value="item.name">{{ item.title }}</option>
+              </select>
             </div>
             
             <!-- Тип дела -->
@@ -288,20 +310,6 @@
               </div>
             </div>
 
-            <!-- set deal Status -->
-            <div class="w-full flex flex-col mt-4">
-              <label for="deal-status" class="mb-1 ml-2 text-sm text-blue">Статус дела</label>
-              <select 
-                id="deal-status" 
-                class="border webkit p-2 w-full text-gray-500 bg-light-grey rounded-md focus:outline-none" 
-                required
-                v-model="dealStatus"
-              >
-                <option v-for="(item, index) in dealStatusList" :key="index" :value="item.name">{{ item.title }}</option>
-
-              </select>
-            </div>
-
             <!-- Внести оплату | предоплату (dealPaid) -->
             <div class="w-full flex flex-col mt-4">
               <p class="mb-1 ml-2 text-sm text-blue">Предоплата (RUB)</p>
@@ -326,14 +334,13 @@
             <!-- pattern="[0-9]+([\.,][0-9]+)?" step="0.01" -->
 
           </div>
-          
 
           <!-- total menu wrapper -->
           <!-- Может имеет смысл сделать компонентом? -->
           <div
             v-if="dealsList.length !== 0"
             class="w-full fixed bottom-0 left-0 flex items-center  justify-center flex-col pb-0 z-20"
-            :class="{ totalMenu_wrapper:totalDealMenu }"
+            :class="{ shading_background:totalDealMenu}"
             @click="totalDealMenuClose"
           >
             <!-- Total Menu -->
@@ -448,6 +455,8 @@
 </template>
 
 <script>
+import Spinner from '../components/Spinner.vue';
+
 import { ref, computed } from 'vue';
 import store from '../store/index';
 import { uid } from 'uid';
@@ -461,12 +470,18 @@ import { searchFilter } from '../helpers/filter';
 
 export default {
   name: "createDeal",
+  components: {
+    Spinner
+  },
   setup() {
     // Create data
     const router = useRouter();
     const statusMsg = ref(null);
     const errorMsg = ref(null);
     const user = computed(() => store.state.user);
+
+    // Spiner
+    const spinner = ref(false);
 
     const typeOfDeal = ref('select-deal-type');
     const contactOfDeal = ref('select-deal-contact');
@@ -533,7 +548,7 @@ export default {
     const totalDealMenu = ref(false);
 
     const totalDealMenuClose = (e) => {
-      if (e.target.classList.contains('totalMenu_wrapper')) {
+      if (e.target.classList.contains('shading_background')) {
         showTotalDealMenu()
       }
     }
@@ -774,9 +789,6 @@ export default {
       }
     }
 
-    // Spiner data
-    const spinner = ref(false);
-
     // Create deal
     const createDeal = async () => {
       try {
@@ -847,48 +859,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .spinner {
-    position: absolute;
-    height: 60px;
-    width: 60px;
-    border: 3px solid transparent;
-    border-top-color: #3D3D3D;
-    top: 60%;
-    left: 50%;
-    margin: -30px;
-    border-radius: 50%;
-    animation: spin 2s linear infinite;
-  }
-
-  .spinner:before, .spinner:after{
-    content:'';
-    position: absolute;
-    border: 3px solid transparent;
-    border-radius: 50%;
-  }
-
-  .spinner:before{
-    border-top-color: #78D86F;
-    top: -12px;
-    left: -12px;
-    right: -12px;
-    bottom: -12px;
-    animation: spin 3s linear infinite;
-  }
-
-  .spinner:after{
-    border-top-color: #4785E7;
-    top: 6px;
-    left: 6px;
-    right: 6px;
-    bottom: 6px;  
-    animation: spin 4s linear infinite;
-  }
-
-  @keyframes spin{
-    0% {transform: rotate(0deg);}
-    100% {transform: rotate(360deg);}
-  }
 
   .container {
     height: 100vh;
@@ -1044,10 +1014,25 @@ export default {
     justify-content: space-between;
   }
 
-  .totalMenu_wrapper {
+  .shading_background {
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(2px);
+  }
+
+  .shading_background_white {
+    backdrop-filter: blur(2px);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 10
+  }
+
+  .fixed {
+    posiition: fixed;
+    width: 100%;
   }
 
   .deal-details {
@@ -1144,6 +1129,5 @@ export default {
   //  outline: 3px solid #053a5f;
   //  outline-offset: 0.125rem;     
   //}
-
 
 </style>

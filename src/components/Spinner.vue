@@ -1,0 +1,57 @@
+<template>
+<div class="wrapper">
+
+    <div class="spinner z-20"></div>
+</div>
+</template>
+
+<script>
+    export default {
+        name: 'Spinner'
+    }
+</script>
+
+<style scoped>
+.spinner {
+    position: fixed;
+    height: 60px;
+    width: 60px;
+    border: 3px solid transparent;
+    border-top-color: #3D3D3D;
+    top: 50%;
+    left: 50%;
+    margin: -30px;
+    border-radius: 50%;
+    animation: spin 2s linear infinite;
+  }
+
+  .spinner:before, .spinner:after{
+    content:'';
+    position: absolute;
+    border: 3px solid transparent;
+    border-radius: 50%;
+  }
+
+  .spinner:before{
+    border-top-color: #78D86F;
+    top: -12px;
+    left: -12px;
+    right: -12px;
+    bottom: -12px;
+    animation: spin 3s linear infinite;
+  }
+
+  .spinner:after{
+    border-top-color: #4785E7;
+    top: 6px;
+    left: 6px;
+    right: 6px;
+    bottom: 6px;  
+    animation: spin 4s linear infinite;
+  }
+
+  @keyframes spin{
+    0% {transform: rotate(0deg);}
+    100% {transform: rotate(360deg);}
+  }
+</style>
