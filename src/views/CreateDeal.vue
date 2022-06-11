@@ -188,7 +188,7 @@
                       <!-- header -->
                       <div class="flex place-content-between">
                         <!-- title -->
-                        <p class="ml-2 align-text-middle text-sm text-dark-gray">Предмет заказа</p>
+                        <p class="ml-2 align-text-middle text-sm text-dark-gray">Предмет #{{ idx + 1 }}</p>
                         <!-- Delete current order subject -->
                         <div class="icon-wrapper">
                           <img 
@@ -300,8 +300,27 @@
                       </div>
 
                       <!-- Set additional attributes -->
+                      <div class="mt-2">
+                        <p class="mb-1 ml-2 text-sm text-blue">Дополнительные атрибуты к предмету #{{ idx + 1}}</p>
+                        <!-- Атрибуты из массива атрибутов из экрана настроек аккаунта -->
+                        <ul>
+                          <li v-for="(item, index) in additionalAttributesList" :key="index" class="flex items-center place-content-between my-4">
+                            <div class="flex">
+                              <input 
+                                v-model="subject.additionalAttributes" type="checkbox" 
+                                class="custom-checkbox" 
+                                :id="item.name"
+                                :value="item"
+                              >
+                              <label :for="item.name" class="w-full text-sm text-dark-gray mr-2">{{item.title}}</label>
+                            </div>
+                            <input class="focus:outline-none pt-1 w-14 h-6 text-right text-dark-gray" :placeholder="item.price" type="number" v-model="item.price" inputmode="decimal" />
+                          </li>
+                        </ul>
+                      </div>
+
                       <div>
-                        123
+                        Итого по предмету #{{idx + 1}}
                       </div>
                     </div>
     
@@ -314,7 +333,7 @@
                   v-if="dealsList.length"
                   @click="addOrderSubject"
                   type="button"
-                  class="border border-blue w-full p-2 rounded-md text-blue cursor-pointer"
+                  class=" w-full p-2 mt-2 mb-2 rounded-md text-blue cursor-pointer"
                 >
                   Добавить предмет
                 </button>
@@ -667,29 +686,30 @@ export default {
     // Дополнительные услуги к основным товарам /услугам
     const additionalAttributesList = [
       {
-        name: 'rent-rack',
+        name: 'cake-stand',
         title: 'Аренда подставки',
-        price: ''
+        price: '0.00',
+        isRent: true,
+        isReturned: false
       },
       {
-        name: 'rent-tableware',
+        name: 'tableware',
         title: 'Аренда комплекта столовых приборов',
-        price: ''
+        price: '0.00',
+        isRent: true,
+        isReturned: false
       },
       {
         name: 'packing-box',
         title: 'Упаковочная коробка',
-        price: ''
+        price: '0.00',
+        isRent: false
       }, 
-      {
-        name: 'rent-tableware',
-        title: 'Аренда столовых приборов',
-        price: ''
-      },
       {
         name: 'drink',
         title: 'Напиток',
-        price: ''
+        price: '150.00',
+        isRent: false
       }
     ]
 
@@ -727,9 +747,14 @@ export default {
         productQuantity: 1,
         discountSubjectPriceValue: setDiscountRange('min'),
         totalSubjectPrice: 0,
-        productNote: ''
+        productNote: '',
+        additionalAttributes: []
       })
     }
+
+    // const additionalAttributesArray = () => {
+    //   return 'ret'
+    // }
 
     // Total order price
     const sum = () => {
@@ -943,10 +968,6 @@ export default {
     border-bottom: 1px dashed #f1f1f1;
   }
 
-  .subject-wrapper:last-child {
-    border-bottom: none;
-  }
-
   .totalMenu {
     height: 70vh;
     background: #f1f1f1;
@@ -1060,5 +1081,37 @@ export default {
   //  outline: 3px solid #053a5f;
   //  outline-offset: 0.125rem;     
   //}
+
+  .custom-checkbox {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+  }
+
+  .custom-checkbox+label {
+    display: inline-flex;
+    align-items: center;
+    user-select: none;
+  }
+  .custom-checkbox+label::before {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    flex-grow: 0;
+    border: 1px solid #838383;
+    border-radius: 0.25em;
+    margin-right: 0.5em;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 50% 50%;
+  }
+
+  .custom-checkbox:checked+label::before {
+    border-color: #4785E7;
+    background-color: #4785E7;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23fff' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z'/%3e%3c/svg%3e");
+  }
 
 </style>
