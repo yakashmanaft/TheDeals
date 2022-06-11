@@ -672,14 +672,23 @@ export default {
         price: ''
       },
       {
+        name: 'rent-tableware',
+        title: 'Аренда комплекта столовых приборов',
+        price: ''
+      },
+      {
         name: 'packing-box',
         title: 'Упаковочная коробка',
         price: ''
       }, 
-      // Продумать вариант коробки с напитком (для капкейков, кейкпопсов, эскимошек?)
       {
         name: 'rent-tableware',
         title: 'Аренда столовых приборов',
+        price: ''
+      },
+      {
+        name: 'drink',
+        title: 'Напиток',
         price: ''
       }
     ]

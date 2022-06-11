@@ -1,15 +1,12 @@
 <template>
   <div class="orders">
+    <!-- Компонент Navigation -->
     <Navigation :title="title" class="fixed z-10 bg-white"/>  
-
-    <!-- Добавление нового заказа -->
-    <!-- Возможно меню быстрого доступа -->
-    <div class="fixed w-full bg-transparent h-1 z-20 bottom-0 flex items-end justify-end overflow-visible">
-      <router-link :to="{ name: 'CreateDeal' }" class="h-14 w-14 mr-5 mb-5 bg-dark flex items-center justify-center shadow-md rounded-full">
-          <img class="w-5" src="@/assets/images/common/icon-plus.svg" alt="">
-      </router-link>
-    </div>
+    <!-- Компонент QuickAccessMenu -->
+    <QuickAccessMenu :to="{ name: 'CreateDeal' }"></QuickAccessMenu>
+    <!-- Компонент Spinner -->
     <Spinner v-if="spinner && !dataLoaded"></Spinner>
+    
     <!-- Когда Data загружена -->
     <div v-if="dataLoaded" class="container pt-20">
 
@@ -318,6 +315,7 @@
 
 <script>
 import Navigation from '../components/Navigation.vue';
+import QuickAccessMenu from '../components/QuickAccessMenu.vue'
 import Spinner from '../components/Spinner.vue';
 
 import { ref, onMounted} from 'vue';
@@ -333,7 +331,7 @@ import { translateDealType, translateDealStatus } from '../helpers/translators';
 export default {
   name: "Deals",
   components: {
-    Navigation, Spinner
+    Navigation, QuickAccessMenu, Spinner
   },
   setup() {
     // Create data / vars

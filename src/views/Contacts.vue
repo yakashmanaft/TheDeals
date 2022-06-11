@@ -3,14 +3,7 @@
     <Navigation :title="title" class="fixed z-10 bg-white"/>
 
     <!-- Кнопка добавления нового контакта -->
-    <!-- Может имеет смысл сделать компонентом? -->
-    <router-link 
-      v-if="data.length !== 0"
-      class="fixed bottom-5 right-5 w-14 h-14 bg-blue rounded-full flex items-center justify-center"
-      :to="{ name: 'CreateContact' }"
-    >
-      <img src="@/assets/images/common/icon-plus.svg" alt="">
-    </router-link>
+    <QuickAccessMenu :to="{ name: 'CreateContact' }"></QuickAccessMenu>
 
     <div v-if="dataLoaded" class="pt-20">
 
@@ -88,6 +81,7 @@
 
 <script>
   import Navigation from '../components/Navigation.vue';
+  import QuickAccessMenu from '../components/QuickAccessMenu.vue'
   import Spinner from '../components/Spinner.vue';
 
   import store from '../store/index';
@@ -100,7 +94,7 @@
 
   export default {
     components: {
-      Navigation, Spinner
+      Navigation, QuickAccessMenu, Spinner
     },
     setup () {
       const user = computed(() => store.state.user);
