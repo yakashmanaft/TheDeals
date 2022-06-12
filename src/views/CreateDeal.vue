@@ -22,7 +22,7 @@
             {{ errorMsg }}
           </p>
         </div>
-        <div class="text-dark-gray" @click="statusMsg = !statusMsg">
+        <div class="text-dark-gray" @click="closeMsgNotify">
           Ok
         </div>
       </div>
@@ -36,12 +36,12 @@
           id="create-deal" 
           v-if="user" 
           @submit.prevent="createDeal" 
-          class="flex flex-col items-center pt-0 px-4"
-          :class="{ item_fixed: spinner}"
+          class="flex flex-col items-center pt-0"
+          :class="{ item_fixed: dealSubjectMenu || spinner}"
         >
 
           <!-- set deal information inputs -->
-          <div class="w-full mb-32" :class="{deal_information_inputs:totalDealMenu}">
+          <div class="w-full mb-32 px-4" :class="{deal_information_inputs:totalDealMenu}">
 
             <!-- С кем заключается дело (Укажите контакт) -->
             <div class="w-full">
@@ -127,6 +127,98 @@
               </select>
             </div>
 
+            <!-- Тип дела -->
+            <div class="w-full flex flex-col mt-4">
+              <!-- Выбор типа дела -->
+              <label for="deal-type" class="mb-1 ml-2 text-sm text-blue">Тип дела</label>
+              <select 
+                id="deal-type" 
+                class="border webkit p-2 w-full text-gray-500 bg-light-grey rounded-md focus:outline-none"
+                :class="{ 'rounded-b-none': typeOfDeal === 'order'}" 
+                required
+                v-model="typeOfDeal"
+                @change="dealTypeChanged"
+              >
+              <!-- Возможно , в дальнейшем динамическое, исходя из настроек аккаунта -->
+                <option disabled value="select-deal-type">Выберите тип дела</option>
+                <option value="order">Заказ</option>
+                <option value="supply">Поставка</option>
+                <option value="personal">Личное</option>
+              </select>
+
+              <!-- Выбираем тип дела -->
+              <div v-if="user" class="deal-subject_wrapper">
+                <!-- Не выбран тип дела -->
+                <div class="text-dark-gray text-sm px-2 pt-4" v-if="typeOfDeal === 'select-deal-type'">
+                  Не выбран тип дела
+                </div>
+                <!-- Выбран тип: Заказ -->
+                <div  v-if="typeOfDeal === 'order'" class="rounded-b-md border-b border-l border-r pt-2">
+                  <!-- если 0 предметов в заказе -->
+                  <div class="text-center" v-if="dealsList.length === 0">
+                    <p class="my-4">У вас не добавлены предметы к заказу</p>
+                    
+                  </div>
+                  <!-- если > 0 предметов в заказе -->
+                  <div v-for="(item, index) in dealsList" :key="index">
+                    <div  class="flex place-content-between items-center">
+                      <div class="img-wrapper bg-light-grey rounded-full p-2">
+                        <img :src="require(`../assets/images/deals/orders/cake.png`)" alt=""> 
+                      </div>
+                      <div class="flex-1">
+                        <p>{{ item.selectedProduct }}</p>
+                        <p>{{ item.productQuantity }}</p>
+                      </div>
+                      <p @click="deleteOrderSubject(item.id)">Удалить</p>
+                    </div>
+                    <!-- 
+        id: uid(),
+        selectedProduct: '',
+        pricePerUnit: '',
+        productQuantity: 1,
+        discountSubjectPriceValue: setDiscountRange('min'),
+        totalSubjectPrice: 0,
+        productNote: '',
+        additionalAttributes: []
+                     -->
+                  </div>
+                  <div class="w-full flex items-center place-content-between px-2 py-1 border-t">
+                    <p class="text-dark-gray text-sm">Предметов в заказе: {{ dealsList.length }} </p>
+                    <p class="text-blue" @click="doubleClick">Добавить</p>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+            <!-- Настройки нового дела по выбранному типу-->
+            <div class="w-full">
+    
+              <!-- Если новое дело - это заказ -->
+              <div v-if="typeOfDeal === 'order'" class="radio-toolbar mt-4">
+                <!-- Выбор предмета заказа -->
+    
+                <!-- Button to add new social to current contact -->
+                <!-- <button 
+                  v-if="dealsList.length"
+                  @click="addOrderSubject"
+                  type="button"
+                  class=" w-full p-2 mt-2 rounded-md text-blue cursor-pointer"
+                >
+                  Добавить предмет
+                </button> -->
+              </div>
+    
+              <!-- Если новое дело - это поставка -->
+              <div v-if="typeOfDeal === 'supply'">
+                Новое дело - поставка. В разработке...
+              </div>
+    
+              <!-- Если новое дело - это личное -->
+              <div v-if="typeOfDeal === 'personal'">
+                Новое дело - личная задача. В разработке..
+              </div>
+            </div>
+
             <!-- Внести оплату | предоплату (dealPaid) -->
             <div class="w-full flex flex-col mt-4">
               <p class="mb-1 ml-2 text-sm text-blue">Предоплата (RUB)</p>
@@ -146,206 +238,6 @@
                 </div>
               </div>
               
-            </div>
-            
-            <!-- Тип дела -->
-            <div class="w-full flex flex-col mt-4">
-              <label for="deal-type" class="mb-1 ml-2 text-sm text-blue">Тип дела</label>
-              <select 
-                id="deal-type" 
-                class="border webkit p-2 w-full text-gray-500 bg-light-grey rounded-md focus:outline-none" 
-                required
-                v-model="typeOfDeal"
-                @change="dealTypeChanged"
-              >
-              <!-- Возможно , в дальнейшем динамическое, исходя из настроек аккаунта -->
-                <option disabled value="select-deal-type">Выберите тип дела</option>
-                <option value="order">Заказ</option>
-                <option value="supply">Поставка</option>
-                <option value="personal">Личное</option>
-              </select>
-            </div>
-            <!-- Настройки нового дела по выбранному типу-->
-            <div class="w-full">
-    
-              <!-- Если новое дело - это заказ -->
-              <div v-if="typeOfDeal === 'order'" class="radio-toolbar mt-4">
-                <!-- Выбор предмета заказа -->
-                
-                <!-- Если ни одного предмета нет в заказе -->
-                <div v-if="user && !dealsList.length" class="w-full flex place-content-between px-2">
-                  <p class="text-dark-gray text-sm">0 предметов в заказе</p>
-                  <p class="text-blue" @click="addOrderSubject">Добавить</p>
-                </div>
-
-                <!-- Предметы заказа -->
-                <div>
-                  <div v-for="(subject, idx) in dealsList" :key="idx" class="flex subject-wrapper">
-                    <!-- Add subject to dealList -->
-                    <div class="flex flex-col w-full mb-2">
-                      <!-- header -->
-                      <div class="flex place-content-between">
-                        <!-- title -->
-                        <p class="ml-2 align-text-middle text-sm text-dark-gray">Предмет #{{ idx + 1 }}</p>
-                        <!-- Delete current order subject -->
-                        <div class="icon-wrapper">
-                          <img 
-                            @click="deleteOrderSubject(subject.id)"
-                            class="cursor-pointer" 
-                            src="@/assets/images/common/icon-trash.svg" 
-                            alt="">
-                        </div>
-                      </div>
-    
-                      <!-- list of order subjects -->
-                      <div class="flex radio-toolbar-wrapper mt-2">
-                        <div class="radio-toolbar_item" v-for="(item, index) in assortmentList" :key="index">
-                          <input 
-                            type="radio"
-                            :value="item.name"
-                            :name="idx"
-                            v-model="subject.selectedProduct"
-                            :id="idx+' '+index"
-                          >
-                          <label :for="idx+' '+index">
-                            <div class="radio-toolbar_item-img">
-                              <img :src="require(`../assets/images/deals/orders/${item.img}`)" alt=""> 
-                            </div>
-                            <div class="radio-toolbar_item-title text-center text-xs text-dark-gray mt-2">{{ item.title }}</div>
-                          </label>
-    
-                        </div>
-                      </div>
-    
-                      <!-- Price per unit -->
-                      <div class="flex place-content-between mx-2 mb-4 mt-2 items-center">
-                        <label for="pricePerUnit" class="text-sm leading-none align-text-middle text-dark-gray">
-                          Цена за 1 шт. (RUB)
-                        </label>
-                        <div class="subject-price_value">
-                          <input 
-                            id="pricePerUnit"
-                            type="number" 
-                            inputmode="decimal"
-                            class="focus:outline-none text-dark text-right mx-1 pt-1 w-16" 
-                            placeholder="0,00"
-                            v-model="subject.pricePerUnit" 
-                          >
-                        </div>
-                      </div>
-    
-                      <!-- Change subject (product) quantity  -->
-                      <div class="flex place-content-between ml-2 mb-4 mt-2 items-center">
-                        <span class="text-sm leading-none align-text-middle text-dark-gray">
-                          Количество, шт.
-                        </span>
-                        <div class="subject-quantity flex justify-items-center">
-                          <button 
-                            @click.prevent="if(subject.productQuantity > 1) subject.productQuantity--;"
-                            class="subject-quantity_btn"
-                            :class="{ btn_disabled: subject.productQuantity < 2 }"
-                          >
-                            -
-                          </button>
-
-                          <input type="number" class="subject-quantity leading-none w-8 text-center focus:outline-none" v-model="subject.productQuantity">
-                          <button 
-                            class="subject-quantity_btn"
-                            @click.prevent="subject.productQuantity++"
-                          >
-                            +
-                          </button>
-                        </div>
-    
-                      </div>
-    
-                      <!-- discount for subject price -->
-                      <div class="flex place-content-between ml-2 mb-4 mt-4 items-center">
-                        <span class="text-sm leading-none align-text-middle text-dark-gray">
-                          Скидка, {{subject.discountSubjectPriceValue}}%
-                        </span>
-                          <input 
-                            type="range" 
-                            class="focus:outline-none w-36" 
-                            placeholder="0"
-                            v-model="subject.discountSubjectPriceValue"
-                            :min="setDiscountRange('min')"
-                            :max="setDiscountRange('max')"
-                            step="1"
-                          >
-                      </div>  
-    
-                      <!-- Total subject price -->
-                      <div class="flex place-content-between mx-2 mb-4 mt-4 items-center">
-                        <span class="text-sm leading-2 align-text-middle text-dark-gray">
-                          За {{subject.productQuantity}} шт. 
-                          <span v-if="subject.discountSubjectPriceValue > 0">с учетом скидки</span>
-                          (RUB)
-                        </span>
-                        <div>
-                          <span 
-                            class="py-2"
-                          >
-                            {{(subject.totalSubjectPrice = (subject.pricePerUnit * subject.productQuantity * (1 - subject.discountSubjectPriceValue/100))).toFixed(2)}}
-                          </span>
-                          
-                        </div>
-                      </div>
-    
-                      <!-- Subjet notes -->
-                      <div class="w-full mt-2">
-                        <textarea placeholder="Заметки к предмету заказа" v-model="subject.productNote" class="text-sm h-20 p-2 bg-light-grey text-gray-500 rounded-md w-full focus:outline-none"></textarea>
-                      </div>
-
-                      <!-- Set additional attributes -->
-                      <div class="mt-2">
-                        <p class="mb-1 ml-2 text-sm text-blue">Дополнительные атрибуты к предмету #{{ idx + 1}}</p>
-                        <!-- Атрибуты из массива атрибутов из экрана настроек аккаунта -->
-                        <ul>
-                          <li v-for="(item, index) in additionalAttributesList" :key="index" class="flex items-center place-content-between my-4">
-                            <div class="flex">
-                              <input 
-                                v-model="subject.additionalAttributes" type="checkbox" 
-                                class="custom-checkbox" 
-                                :id="item.name"
-                                :value="item"
-                              >
-                              <label :for="item.name" class="w-full text-sm text-dark-gray mr-2">{{item.title}}</label>
-                            </div>
-                            <input class="focus:outline-none pt-1 w-14 h-6 text-right text-dark-gray" :placeholder="item.price" type="number" v-model="item.price" inputmode="decimal" />
-                          </li>
-                        </ul>
-                      </div>
-
-                      <div>
-                        Итого по предмету #{{idx + 1}}
-                      </div>
-                    </div>
-    
-    
-                  </div>
-                </div>
-    
-                <!-- Button to add new social to current contact -->
-                <button 
-                  v-if="dealsList.length"
-                  @click="addOrderSubject"
-                  type="button"
-                  class=" w-full p-2 mt-2 rounded-md text-blue cursor-pointer"
-                >
-                  Добавить предмет
-                </button>
-              </div>
-    
-              <!-- Если новое дело - это поставка -->
-              <div v-if="typeOfDeal === 'supply'">
-                Новое дело - поставка. В разработке...
-              </div>
-    
-              <!-- Если новое дело - это личное -->
-              <div v-if="typeOfDeal === 'personal'">
-                Новое дело - личная задача. В разработке..
-              </div>
             </div>
 
             <!-- Тип доставки -->
@@ -383,27 +275,28 @@
 
           </div>
 
+
           <!-- total menu wrapper -->
           <!-- Может имеет смысл сделать компонентом? -->
           <div
-            v-if="dealsList.length !== 0"
             class="w-full fixed bottom-0 left-0 flex items-center  justify-center flex-col pb-0 z-20"
             :class="{ shading_background:totalDealMenu}"
             @click="totalDealMenuClose"
           >
             <!-- Total Menu -->
-            <div class="bg-light-grey bottom-0 border-t w-full fixed  rounded-t-3xl" :class="{ totalMenu:totalDealMenu }">
+            <div class="bg-light-grey bottom-0 border-t w-full fixed  rounded-t-3xl">
 
               <!-- Header -->
               <div class="flex items-center place-content-between px-4 mt-2">
                 <!-- Sum Deal Value -->
                 <div class="ml-2">
                   <div class="text-xs text-dark-gray">
-                  Общая сумма дела: 
+                  {{dealsList.length}} предметов на сумму:
                   </div>
                   <div class="text-xl">
-                    {{sum()}} руб.
+                    <!-- {{sum()}} руб. -->
                   </div>
+                  
                 </div>
       
                 <!-- btn to open total Deal Menu -->
@@ -423,12 +316,12 @@
               </div>
       
               <!-- Deal Sum Details -->
-              <div v-if="totalDealMenu && typeOfDeal === 'order'" class="deal-details px-4 border-t mt-2">
+              <div v-if="totalDealMenu" class="deal-details px-4 border-t mt-2 overflow-y-auto h-48">
                 {{dealsList}}
 
 
                 <p>Статус дела: {{dealStatus ? dealStatus : 'не выбран'}}</p>
-                <p>Остаток к уплате: {{sum() - dealPaid}}</p>
+                <!-- <p>Остаток к уплате: {{sum() - dealPaid}}</p> -->
                 <p>Информация по доставке: {{shippingData}}</p>
                 <div v-if="shippingData.typeOfShipping === 'не указан'">
                   Указать
@@ -442,45 +335,7 @@
                           <p>Оплачено: 1000,00 руб.</p>
                 <p>Задолженность: 1579,00 руб.</p>  
                           <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                          <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                          <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                          <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                          <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                          <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                          <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                          <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                          <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                          <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                          <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                          <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                                <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                          <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                          <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                          <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                          <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                          <p>Оплачено: 1000,00 руб.</p>
-                <p>Конец строки: 1579,00 руб.</p>  
+
               </div>
 
               <!-- Btn submit -->
@@ -497,6 +352,171 @@
 
           </div>
 
+          <!-- Меню выбора предмета заказа -->
+          <div v-if="dealSubjectMenu" class="w-full h-full fixed pt-16 bottom-0 left-0 flex items-center justify-center flex-col z-20" :class="{ shading_background: dealSubjectMenu}" @click="closeDealSubjectMenu"> 
+            <!-- menu -->
+            <div class="bg-light-grey border-t w-full rounded-t-2xl mx-auto h-full overflow-y-auto">
+              <!-- menu header -->
+              <div class="bg-white rounded-t-2xl text-blue text-sm flex items-center place-content-between p-4 deal-status-menu inset-x-2/4 fixed w-full left-0">
+                <span class="text-dark-gray">Предмет #{{dealsList.length}}</span>
+                <span class="dealStatusMenu-btn_close">Отменить</span>
+              </div>
+              <!-- Предмет заказа -->
+              <div class="w-full mt-12">
+                <div v-for="(subject, idx) in dealsList" :key="idx" class="flex subject-wrapper">
+                  <!-- Add subject to dealList -->
+                  <div class="flex flex-col w-full mb-2">
+                    <!-- header -->
+                    <div class="flex place-content-between">
+                      <!-- title -->
+                      <p class="ml-2 align-text-middle text-sm text-dark-gray">Предмет #{{ idx + 1 }}</p>
+                      <!-- Delete current order subject -->
+                      <div class="icon-wrapper">
+                        <img 
+                          @click="deleteOrderSubject(subject.id)"
+                          class="cursor-pointer" 
+                          src="@/assets/images/common/icon-trash.svg" 
+                          alt="">
+                      </div>
+                    </div>
+
+                    <!-- list of order subjects -->
+                    <div class="flex radio-toolbar-wrapper mt-2">
+                      <div class="radio-toolbar_item" v-for="(item, index) in assortmentList" :key="index">
+                        <input 
+                          type="radio"
+                          :value="item.name"
+                          :name="idx"
+                          v-model="subject.selectedProduct"
+                          :id="idx+' '+index"
+                        >
+                        <label :for="idx+' '+index">
+                          <div class="radio-toolbar_item-img">
+                            <img :src="require(`../assets/images/deals/orders/${item.img}`)" alt=""> 
+                          </div>
+                          <div class="radio-toolbar_item-title text-center text-xs text-dark-gray mt-2">{{ item.title }}</div>
+                        </label>
+
+                      </div>
+                    </div>
+
+                    <!-- Price per unit -->
+                    <div class="flex place-content-between mx-2 mb-4 mt-2 items-center">
+                      <label for="pricePerUnit" class="text-sm leading-none align-text-middle text-dark-gray">
+                        Цена за 1 шт. (RUB)
+                      </label>
+                      <div class="subject-price_value">
+                        <input 
+                          id="pricePerUnit"
+                          type="number" 
+                          inputmode="decimal"
+                          class="focus:outline-none text-dark text-right mx-1 pt-1 w-16" 
+                          placeholder="0,00"
+                          v-model="subject.pricePerUnit" 
+                        >
+                      </div>
+                    </div>
+
+                    <!-- Change subject (product) quantity  -->
+                    <div class="flex place-content-between ml-2 mb-4 mt-2 items-center">
+                      <span class="text-sm leading-none align-text-middle text-dark-gray">
+                        Количество, шт.
+                      </span>
+                      <div class="subject-quantity flex justify-items-center">
+                        <button 
+                          @click.prevent="if(subject.productQuantity > 1) subject.productQuantity--;"
+                          class="subject-quantity_btn"
+                          :class="{ btn_disabled: subject.productQuantity < 2 }"
+                        >
+                          -
+                        </button>
+
+                        <input type="number" class="subject-quantity leading-none w-8 text-center focus:outline-none" v-model="subject.productQuantity">
+                        <button 
+                          class="subject-quantity_btn"
+                          @click.prevent="subject.productQuantity++"
+                        >
+                          +
+                        </button>
+                      </div>
+
+                    </div>
+
+                    <!-- discount for subject price -->
+                    <div class="flex place-content-between ml-2 mb-4 mt-4 items-center">
+                      <span class="text-sm leading-none align-text-middle text-dark-gray">
+                        Скидка, {{subject.discountSubjectPriceValue}}%
+                      </span>
+                        <input 
+                          type="range" 
+                          class="focus:outline-none w-36" 
+                          placeholder="0"
+                          v-model="subject.discountSubjectPriceValue"
+                          :min="setDiscountRange('min')"
+                          :max="setDiscountRange('max')"
+                          step="1"
+                        >
+                    </div>  
+
+                    <!-- Total subject price -->
+                    <div class="flex place-content-between mx-2 mb-4 mt-4 items-center">
+                      <span class="text-sm leading-2 align-text-middle text-dark-gray">
+                        За {{subject.productQuantity}} шт. 
+                        <span v-if="subject.discountSubjectPriceValue > 0">с учетом скидки</span>
+                        (RUB)
+                      </span>
+                      <div>
+                        <span 
+                          class="py-2"
+                        >
+                          {{(subject.totalSubjectPrice = (subject.pricePerUnit * subject.productQuantity * (1 - subject.discountSubjectPriceValue/100))).toFixed(2)}}
+                        </span>
+                        
+                      </div>
+                    </div>
+
+                    <!-- Subjet notes -->
+                    <div class="w-full mt-2">
+                      <textarea placeholder="Заметки к предмету заказа" v-model="subject.productNote" class="text-sm h-20 p-2 bg-light-grey text-gray-500 rounded-md w-full focus:outline-none"></textarea>
+                    </div>
+
+                    <!-- Set additional attributes -->
+                    <div class="mt-2">
+                      <p class="mb-1 ml-2 text-sm text-blue">Дополнительные атрибуты к предмету #{{ idx + 1}}</p>
+                      <!-- Атрибуты из массива атрибутов из экрана настроек аккаунта -->
+                      <ul>
+                        <li v-for="(item, index) in additionalAttributesList" :key="index" class="flex items-center place-content-between my-4">
+                          <div class="flex">
+                            <input 
+                              v-model="subject.additionalAttributes" type="checkbox" 
+                              class="custom-checkbox" 
+                              :id="item.name"
+                              :value="item"
+                            >
+                            <label :for="item.name" class="w-full text-sm text-dark-gray mr-2">{{item.title}}</label>
+                          </div>
+                          <input class="focus:outline-none pt-1 w-14 h-6 text-right text-dark-gray" :placeholder="item.price" type="number" v-model="item.price" inputmode="decimal" />
+                        </li>
+                      </ul>
+                    </div>
+
+                    <div>
+                      Итого по предмету #{{idx + 1}}
+                    </div>
+                  </div>
+
+
+                </div>
+              </div>
+              <!-- menu footer -->
+              <div class="text-blue text-sm flex items-center justify-center p-4 deal-status-menu border-b inset-x-2/4">
+                <span class="dealStatusMenu-btn_create">Готово</span>
+              </div>
+            </div>
+
+
+          </div>
+          
         </form>
 
       </div>
@@ -599,6 +619,29 @@ export default {
 
     // show sum menu
     const totalDealMenu = ref(false);
+
+    // subject make menu
+    const dealSubjectMenu = ref(false);
+
+    // open crate subject menu
+    const openDealSubjectMenu = () => {
+      dealSubjectMenu.value = !dealSubjectMenu.value;
+    }
+
+    const closeDealSubjectMenu = (e) => {
+      if (e.target.classList.contains('dealStatusMenu-btn_create')) {
+        openDealSubjectMenu();
+      }
+      if (e.target.classList.contains('dealStatusMenu-btn_close')) {
+        openDealSubjectMenu();
+        dealsList.value.pop();
+      }
+    }
+
+    const doubleClick = () => {
+      openDealSubjectMenu();
+      addOrderSubject();
+    }
 
     const totalDealMenuClose = (e) => {
       if (e.target.classList.contains('shading_background')) {
@@ -805,7 +848,7 @@ export default {
     // Listens for changing of deal type input
     const dealTypeChanged = () => {
       dealsList.value = [];
-      addOrderSubject();
+      // addOrderSubject();
     }
 
     const shippingData = ref({
@@ -833,9 +876,25 @@ export default {
 
     // Delete current order subject'
     const deleteOrderSubject = (id) => {
-      if(dealsList.value.length > 0) {
+      if(dealsList.value.length > 1) {
         dealsList.value = dealsList.value.filter(subject => subject.id != id);
         return;
+      }
+      if (dealsList.value.length === 1) {
+        errorMsg.value = 'Error. Cannot remove, need to at least have one exercise';
+        setTimeout(() => {
+          errorMsg.value = false;
+        }, 5000);
+      }
+
+    }
+
+    const closeMsgNotify = () => {
+      if(statusMsg.value) {
+        statusMsg.value = !statusMsg.value
+      }
+      if(errorMsg.value) {
+        errorMsg.value = !errorMsg.value
       }
     }
 
@@ -875,7 +934,7 @@ export default {
     }
 
     return {
-      typeOfDeal, dealStatus, contactOfDeal, contactInfo, dataLoaded, sortedContacts,filteredOptions, search, statusMsg, errorMsg, user, createDeal , editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortmentList, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributesList, userDiscountRangeValue, sum, totalDealValue, executionDate, totalDealMenuClose, setDiscountRange, dealStatusList, dealPaid, spinner, typeOfShipping, shippingTypeChanged, shippingData
+      typeOfDeal, dealStatus, contactOfDeal, contactInfo, dataLoaded, sortedContacts,filteredOptions, search, statusMsg, errorMsg, user, createDeal , editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortmentList, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributesList, userDiscountRangeValue, sum, totalDealValue, executionDate, totalDealMenuClose, setDiscountRange, dealStatusList, dealPaid, spinner, typeOfShipping, shippingTypeChanged, shippingData, closeMsgNotify, dealSubjectMenu, openDealSubjectMenu, closeDealSubjectMenu, doubleClick
     };
   },
 };
@@ -930,15 +989,6 @@ export default {
     margin-left: .4em;
     background: url('../assets/images/common/icon-close.svg') center no-repeat;
     cursor: pointer;
-  }
-
-  .icon-wrapper img{
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto;
   }
 
   .dropdown-menu {
@@ -1044,10 +1094,10 @@ export default {
     width: 100%;
   }
 
-  .deal-details {
-    height: 100%;
-    overflow-y: scroll;
-  }
+  // .deal-details {
+  //   height: 100%;
+  //   overflow-y: scroll;
+  // }
 
   .deal_information_inputs {
     position: fixed;
@@ -1169,6 +1219,34 @@ export default {
     border-color: #4785E7;
     background-color: #4785E7;
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23fff' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z'/%3e%3c/svg%3e");
+  }
+
+  .deal-subject_wrapper {
+    margin-top: -10px;
+    border-top: none;
+  }
+
+  .img-wrapper {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+  }
+
+  .shading_background {
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(2px);
+  }
+
+  .item_fixed {
+    position: fixed;
+    width: 100%;
+    z-index: 20;
   }
 
 </style>
