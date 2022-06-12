@@ -99,7 +99,7 @@
     
             <!-- Укажите дату и время исполнения дела -->
             <div class="w-full mt-4">
-              <label for="executionDate" class="ml-2 text-sm text-blue">Бронь даты и времени</label>
+              <label for="executionDate" class="ml-2 text-sm text-blue">Дата и время исполнения</label>
               <div class="search-input mt-1 h-10 flex items-center border">
                 <input 
                   type="date" 
@@ -165,16 +165,14 @@
                 <option value="personal">Личное</option>
               </select>
             </div>
-
-            <!-- Тип дела -->
-            <!-- Настройки нового дела -->
+            <!-- Настройки нового дела по выбранному типу-->
             <div class="w-full">
     
               <!-- Если новое дело - это заказ -->
               <div v-if="typeOfDeal === 'order'" class="radio-toolbar mt-4">
                 <!-- Выбор предмета заказа -->
                 
-                <!-- Если ниодного предмета нет в заказе -->
+                <!-- Если ни одного предмета нет в заказе -->
                 <div v-if="user && !dealsList.length" class="w-full flex place-content-between px-2">
                   <p class="text-dark-gray text-sm">0 предметов в заказе</p>
                   <p class="text-blue" @click="addOrderSubject">Добавить</p>
@@ -333,7 +331,7 @@
                   v-if="dealsList.length"
                   @click="addOrderSubject"
                   type="button"
-                  class=" w-full p-2 mt-2 mb-2 rounded-md text-blue cursor-pointer"
+                  class=" w-full p-2 mt-2 rounded-md text-blue cursor-pointer"
                 >
                   Добавить предмет
                 </button>
@@ -347,6 +345,35 @@
               <!-- Если новое дело - это личное -->
               <div v-if="typeOfDeal === 'personal'">
                 Новое дело - личная задача. В разработке..
+              </div>
+            </div>
+
+            <!-- Тип доставки -->
+            <div class="w-full flex flex-col mt-4">
+              <label for="deal-type" class="mb-1 ml-2 text-sm text-blue">Доставка</label>
+              <select 
+                id="deal-type" 
+                class="border webkit p-2 w-full text-gray-500 bg-light-grey rounded-md focus:outline-none" 
+                required
+                v-model="typeOfShipping"
+                @change="shippingTypeChanged"
+              >
+              <!-- Возможно , в дальнейшем динамическое, исходя из настроек аккаунта -->
+                <option disabled value="select-shipping-type">Выберите вариант доставки</option>
+                <option value="shipping-pickup">Самовывоз</option>
+                <option value="shipping-delivery">Доставка</option>
+              </select>
+            </div>
+            <!-- Настройки доставки по выбранному типу доставки-->              
+            <div class="w-full">
+              <!-- Если Самовывоз -->
+              <div v-if="typeOfShipping === 'shipping-pickup' ">
+                Выбранный вариант доставки: Самовывоз
+              </div>
+
+              <!-- Если Доставка -->
+              <div v-if="typeOfShipping === 'shipping-delivery'">
+                Выбранный вариант доставки: Доставка
               </div>
             </div>
 
@@ -402,6 +429,10 @@
 
                 <p>Статус дела: {{dealStatus ? dealStatus : 'не выбран'}}</p>
                 <p>Остаток к уплате: {{sum() - dealPaid}}</p>
+                <p>Информация по доставке: {{shippingData}}</p>
+                <div v-if="shippingData.typeOfShipping === 'не указан'">
+                  Указать
+                </div>
                 <p>Оплачено: 1000,00 руб.</p>
                 <p>Задолженность: 1579,00 руб.</p>  
                           <p>Оплачено: 1000,00 руб.</p>
@@ -507,6 +538,7 @@ export default {
     const typeOfDeal = ref('select-deal-type');
     const contactOfDeal = ref('select-deal-contact');
     const dealStatus = ref('deal-in-booking');
+    const typeOfShipping = ref('select-shipping-type');
 
     const dealPaid = ref('');
 
@@ -776,6 +808,29 @@ export default {
       addOrderSubject();
     }
 
+    const shippingData = ref({
+      typeOfShipping: 'не указан'
+      // про цену = 0 написать
+    });
+
+    // Listens for changing of shipping type input
+    const shippingTypeChanged = () => {
+      if (typeOfShipping.value === 'shipping-pickup') {
+        shippingData.value = {
+          typeOfShipping: typeOfShipping.value
+          // про цену = 0 написать
+        }
+        console.log(shippingData.value)
+      }
+      if(typeOfShipping.value === 'shipping-delivery') {
+        shippingData.value = {
+          typeOfShipping: typeOfShipping.value,
+          shippingAddress: 'пока не указано'
+        }
+        console.log(shippingData.value)
+      }
+    }
+
     // Delete current order subject'
     const deleteOrderSubject = (id) => {
       if(dealsList.value.length > 0) {
@@ -795,13 +850,15 @@ export default {
             executionDate: executionDate.value,
             dealsList: dealsList.value,
             totalDealValue: totalDealValue.value,
-            dealPaid: dealPaid.value
+            dealPaid: dealPaid.value,
+            shipping: shippingData.value
           }
         ]);
         if (error) throw error;
         statusMsg.value = 'Дело успешно создано';
         typeOfDeal.value = 'select-deal-type';
         contactOfDeal.value = 'select-deal-contact';
+        typeOfShipping.value = 'select-shipping-type';
         dealsList.value = [];
         spinner.value = !spinner.value;
         setTimeout(() => {
@@ -818,7 +875,7 @@ export default {
     }
 
     return {
-      typeOfDeal, dealStatus, contactOfDeal, contactInfo, dataLoaded, sortedContacts,filteredOptions, search, statusMsg, errorMsg, user, createDeal , editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortmentList, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributesList, userDiscountRangeValue, sum, totalDealValue, executionDate, totalDealMenuClose, setDiscountRange, dealStatusList, dealPaid, spinner
+      typeOfDeal, dealStatus, contactOfDeal, contactInfo, dataLoaded, sortedContacts,filteredOptions, search, statusMsg, errorMsg, user, createDeal , editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortmentList, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributesList, userDiscountRangeValue, sum, totalDealValue, executionDate, totalDealMenuClose, setDiscountRange, dealStatusList, dealPaid, spinner, typeOfShipping, shippingTypeChanged, shippingData
     };
   },
 };
@@ -983,7 +1040,7 @@ export default {
   }
 
   .item_fixed {
-    posiition: fixed;
+    position: fixed;
     width: 100%;
   }
 
