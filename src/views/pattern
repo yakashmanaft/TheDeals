@@ -1,0 +1,146 @@
+              <div class="w-full mt-12">
+                <div v-for="(subject, idx) in dealsList" :key="idx" class="flex subject-wrapper">
+                  <!-- Add subject to dealList -->
+                  <div class="flex flex-col w-full mb-2">
+                    <!-- header -->
+                    <div class="flex place-content-between">
+                      <!-- title -->
+                      <p class="ml-2 align-text-middle text-sm text-dark-gray">Предмет #{{ idx + 1 }}</p>
+                      <!-- Delete current order subject -->
+                      <div class="icon-wrapper">
+                        <img 
+                          @click="deleteOrderSubject(subject.id)"
+                          class="cursor-pointer" 
+                          src="@/assets/images/common/icon-trash.svg" 
+                          alt="">
+                      </div>
+                    </div>
+
+                    <!-- list of order subjects -->
+                    <div class="flex radio-toolbar-wrapper mt-2">
+                      <div class="radio-toolbar_item" v-for="(item, index) in assortmentList" :key="index">
+                        <input 
+                          type="radio"
+                          :value="item.name"
+                          :name="idx"
+                          v-model="subject.selectedProduct"
+                          :id="idx+' '+index"
+                        >
+                        <label :for="idx+' '+index">
+                          <div class="radio-toolbar_item-img">
+                            <img :src="require(`../assets/images/deals/orders/${item.img}`)" alt=""> 
+                          </div>
+                          <div class="radio-toolbar_item-title text-center text-xs text-dark-gray mt-2">{{ item.title }}</div>
+                        </label>
+
+                      </div>
+                    </div>
+
+                    <!-- Price per unit -->
+                    <div class="flex place-content-between mx-2 mb-4 mt-2 items-center">
+                      <label for="pricePerUnit" class="text-sm leading-none align-text-middle text-dark-gray">
+                        Цена за 1 шт. (RUB)
+                      </label>
+                      <div class="subject-price_value">
+                        <input 
+                          id="pricePerUnit"
+                          type="number" 
+                          inputmode="decimal"
+                          class="focus:outline-none text-dark text-right mx-1 pt-1 w-16" 
+                          placeholder="0,00"
+                          v-model="subject.pricePerUnit" 
+                        >
+                      </div>
+                    </div>
+
+                    <!-- Change subject (product) quantity  -->
+                    <div class="flex place-content-between ml-2 mb-4 mt-2 items-center">
+                      <span class="text-sm leading-none align-text-middle text-dark-gray">
+                        Количество, шт.
+                      </span>
+                      <div class="subject-quantity flex justify-items-center">
+                        <button 
+                          @click.prevent="if(subject.productQuantity > 1) subject.productQuantity--;"
+                          class="subject-quantity_btn"
+                          :class="{ btn_disabled: subject.productQuantity < 2 }"
+                        >
+                          -
+                        </button>
+
+                        <input type="number" class="subject-quantity leading-none w-8 text-center focus:outline-none" v-model="subject.productQuantity">
+                        <button 
+                          class="subject-quantity_btn"
+                          @click.prevent="subject.productQuantity++"
+                        >
+                          +
+                        </button>
+                      </div>
+
+                    </div>
+
+                    <!-- discount for subject price -->
+                    <div class="flex place-content-between ml-2 mb-4 mt-4 items-center">
+                      <span class="text-sm leading-none align-text-middle text-dark-gray">
+                        Скидка, {{subject.discountSubjectPriceValue}}%
+                      </span>
+                        <input 
+                          type="range" 
+                          class="focus:outline-none w-36" 
+                          placeholder="0"
+                          v-model="subject.discountSubjectPriceValue"
+                          :min="setDiscountRange('min')"
+                          :max="setDiscountRange('max')"
+                          step="1"
+                        >
+                    </div>  
+
+                    <!-- Total subject price -->
+                    <div class="flex place-content-between mx-2 mb-4 mt-4 items-center">
+                      <span class="text-sm leading-2 align-text-middle text-dark-gray">
+                        За {{subject.productQuantity}} шт. 
+                        <span v-if="subject.discountSubjectPriceValue > 0">с учетом скидки</span>
+                        (RUB)
+                      </span>
+                      <div>
+                        <span 
+                          class="py-2"
+                        >
+                          {{(subject.totalSubjectPrice = (subject.pricePerUnit * subject.productQuantity * (1 - subject.discountSubjectPriceValue/100))).toFixed(2)}}
+                        </span>
+                        
+                      </div>
+                    </div>
+
+                    <!-- Subjet notes -->
+                    <div class="w-full mt-2">
+                      <textarea placeholder="Заметки к предмету заказа" v-model="subject.productNote" class="text-sm h-20 p-2 bg-light-grey text-gray-500 rounded-md w-full focus:outline-none"></textarea>
+                    </div>
+
+                    <!-- Set additional attributes -->
+                    <div class="mt-2">
+                      <p class="mb-1 ml-2 text-sm text-blue">Дополнительные атрибуты к предмету #{{ idx + 1}}</p>
+                      <!-- Атрибуты из массива атрибутов из экрана настроек аккаунта -->
+                      <ul>
+                        <li v-for="(item, index) in additionalAttributesList" :key="index" class="flex items-center place-content-between my-4">
+                          <div class="flex">
+                            <input 
+                              v-model="subject.additionalAttributes" type="checkbox" 
+                              class="custom-checkbox" 
+                              :id="item.name"
+                              :value="item"
+                            >
+                            <label :for="item.name" class="w-full text-sm text-dark-gray mr-2">{{item.title}}</label>
+                          </div>
+                          <input class="focus:outline-none pt-1 w-14 h-6 text-right text-dark-gray" :placeholder="item.price" type="number" v-model="item.price" inputmode="decimal" />
+                        </li>
+                      </ul>
+                    </div>
+
+                    <div>
+                      Итого по предмету #{{idx + 1}}
+                    </div>
+                  </div>
+
+
+                </div>
+              </div>
