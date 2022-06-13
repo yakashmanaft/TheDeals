@@ -157,20 +157,23 @@
                   <!-- если 0 предметов в заказе -->
                   <div class="text-center" v-if="dealsList.length === 0">
                     <p class="my-4">У вас не добавлены предметы к заказу</p>
-                    
                   </div>
                   <!-- если > 0 предметов в заказе -->
                   <div v-for="(item, index) in dealsList" :key="index">
-                    <div  @click="openDealSubjectMenu(index)" class="flex place-content-between items-center">
+                    <div id="currentSubject" @click="openCurrentSubject(index)" class="flex place-content-between items-center">
                       <div class="img-wrapper bg-light-grey rounded-full p-2">
                         <img :src="require(`../assets/images/deals/orders/${item.selectedProduct}.png`)" alt=""> 
                       </div>
                       <div class="flex-1">
-                        <p>{{ item.selectedProduct }}</p>
-                        <p>{{ item.productQuantity }}</p>
-                        <p>{{ item.pricePerUnit }}</p>
+                        <p>Предмет:{{ item.selectedProduct }}</p>
+                        <p>Кол-во:{{ item.productQuantity }}</p>
+                        <p>Цена 1 ед.:{{ item.pricePerUnit }}</p>
+                        <p>Скидка, %{{ item.discountSubjectPriceValue }}</p>
+                        <p>Сумма{{ item.totalSubjectPrice }}</p>
+                        <p>ЗАметки{{ item.productNote }}</p>
+                        <p>Атрибуты:{{ item.additionalAttributes }}</p>
                       </div>
-                      <p @click="deleteOrderSubject(item.id)">Удалить</p>
+                      <p id="deleteCurrentSubject" class="z-20" @click.stop="deleteOrderSubject(item.id)">Удалить</p>
                     </div>
                     <!-- 
         id: uid(),
@@ -185,7 +188,7 @@
                   </div>
                   <div class="w-full flex items-center place-content-between px-2 py-1 border-t">
                     <p class="text-dark-gray text-sm">Предметов в заказе: {{ dealsList.length }} </p>
-                    <p class="text-blue" @click="doubleClick">Добавить</p>
+                    <p class="text-blue" id="addSubject" @click="addNewSubject">Добавить</p>
                   </div>
                 </div>
 
@@ -359,12 +362,11 @@
             <div class="bg-light-grey border-t w-full rounded-t-2xl mx-auto h-full overflow-y-auto">
               <!-- menu header -->
               <div class="bg-white rounded-t-2xl text-blue text-sm flex items-center place-content-between p-4 deal-status-menu inset-x-2/4 fixed w-full left-0">
-                <span class="text-dark-gray">Предмет #{{dealsList.length}}</span>
-                <span class="dealStatusMenu-btn_close">Отменить</span>
+                <span class="text-dark-gray">Предмет #{{tempValue + 1}}</span>
+                <span class="dealStatusMenu-btn_close">Готово</span>
               </div>
 
               <!-- menu content -->
-
               <div class="mt-12">
                 <!-- list of order subjects -->
                 <div class="flex radio-toolbar-wrapper">
@@ -372,7 +374,7 @@
                     <input 
                       type="radio"
                       :value="item.name"
-                      v-model="dealsList[[dealsList.length - 1]].selectedProduct"
+                      v-model="dealsList[tempValue].selectedProduct"
                       :id="index"
                     >
                     <label :for="index">
@@ -396,18 +398,94 @@
                       inputmode="decimal"
                       class="focus:outline-none text-dark text-right mx-1 pt-1 w-16" 
                       placeholder="0,00"
-                      v-model="dealsList[dealsList.length - 1].pricePerUnit" 
+                      v-model="dealsList[tempValue].pricePerUnit" 
                     >
                   </div>
                 </div>
+                <!-- Change subject (product) quantity  -->
+                <div class="flex place-content-between ml-2 mb-4 mt-2 items-center">
+                  <span class="text-sm leading-none align-text-middle text-dark-gray">
+                    Количество, шт.
+                  </span>
+                  <div class="subject-quantity flex justify-items-center">
+                    <button 
+                      @click.prevent="if(dealsList[tempValue].productQuantity > 1) dealsList[tempValue].productQuantity--;"
+                      class="subject-quantity_btn"
+                      :class="{ btn_disabled: dealsList[tempValue].productQuantity < 2 }"
+                    >
+                      -
+                    </button>
+
+                    <input type="number" class="subject-quantity leading-none w-8 text-center focus:outline-none" v-model="dealsList[tempValue].productQuantity">
+                    <button 
+                      class="subject-quantity_btn"
+                      @click.prevent="dealsList[tempValue].productQuantity++"
+                    >
+                      +
+                    </button>
+                  </div>
+
+                </div>
+                <!-- discount for subject price -->
+                <div class="flex place-content-between ml-2 mb-4 mt-4 items-center">
+                  <span class="text-sm leading-none align-text-middle text-dark-gray">
+                    Скидка, {{dealsList[tempValue].discountSubjectPriceValue}}%
+                  </span>
+                    <input 
+                      type="range" 
+                      class="focus:outline-none w-36" 
+                      placeholder="0"
+                      v-model="dealsList[tempValue].discountSubjectPriceValue"
+                      :min="setDiscountRange('min')"
+                      :max="setDiscountRange('max')"
+                      step="1"
+                    >
+                </div>  
+                <!-- Total subject price -->
+                <div class="flex place-content-between mx-2 mb-4 mt-4 items-center">
+                  <span class="text-sm leading-2 align-text-middle text-dark-gray">
+                    За {{dealsList[tempValue].productQuantity}} шт. 
+                    <span v-if="dealsList[tempValue].discountSubjectPriceValue > 0">с учетом скидки</span>
+                    (RUB)
+                  </span>
+                  <div>
+                    <span 
+                      class="py-2"
+                    >
+                      {{(dealsList[tempValue].totalSubjectPrice = (dealsList[tempValue].pricePerUnit * dealsList[tempValue].productQuantity * (1 - dealsList[tempValue].discountSubjectPriceValue/100))).toFixed(2)}}
+                    </span>
+                    
+                  </div>
+                </div>
+                <!-- Subjet notes -->
+                <div class="w-full mt-2">
+                  <textarea placeholder="Заметки к предмету заказа" v-model="dealsList[tempValue].productNote" class="text-sm h-20 p-2 bg-light-grey text-gray-500 rounded-md w-full focus:outline-none"></textarea>
+                </div>
+                <!-- Set additional attributes -->
+                <div class="mt-2">
+                  <p class="mb-1 ml-2 text-sm text-blue">Дополнительные атрибуты к предмету #{{tempValue + 1}}</p>
+                  <!-- Атрибуты из массива атрибутов из экрана настроек аккаунта -->
+                  <ul>
+                    <li v-for="(item, index) in additionalAttributesList" :key="index" class="flex items-center place-content-between my-4">
+                      <div class="flex">
+                        <input 
+                          v-model="dealsList[tempValue].additionalAttributes" type="checkbox" 
+                          class="custom-checkbox" 
+                          :id="item.name"
+                          :value="item"
+                        >
+                        <label :for="item.name" class="w-full text-sm text-dark-gray mr-2">{{item.title}}</label>
+                      </div>
+                      <input class="focus:outline-none pt-1 w-14 h-6 text-right text-dark-gray" :placeholder="item.price" type="number" v-model="item.price" inputmode="decimal" />
+                    </li>
+                  </ul>
+                </div>
+                <!-- Summary -->
+                <div>
+                  Итого по предмету #{{tempValue + 1}}
+                </div>
               </div>
 
-
-
-              <!-- menu footer -->
-              <div class="text-blue text-sm flex items-center justify-center p-4 deal-status-menu border-b inset-x-2/4">
-                <span class="dealStatusMenu-btn_create">Готово</span>
-              </div>
             </div>
 
 
@@ -525,18 +603,17 @@ export default {
     }
 
     const closeDealSubjectMenu = (e) => {
-      if (e.target.classList.contains('dealStatusMenu-btn_create') || e.target.classList.contains('shading_background')) {
-        openDealSubjectMenu();
+      if (e.target.classList.contains('dealStatusMenu-btn_close') || e.target.classList.contains('shading_background')) {
+        // Сюда пишем функцию проверки на заполненность данными в предмете заказа, иначе не пускать дальше!
+        // Также надо сделать всплывашки
+        if(dealsList.value[tempValue.value].pricePerUnit === '') {
+          errorMsg.value = 'Не получится'
+        } else {
+          openDealSubjectMenu();
+        }
+        // dealsList.value.pop();
+        console.log(dealsList.value[0].pricePerUnit === '')
       }
-      if (e.target.classList.contains('dealStatusMenu-btn_close')) {
-        openDealSubjectMenu();
-        dealsList.value.pop();
-      }
-    }
-
-    const doubleClick = () => {
-      openDealSubjectMenu();
-      addOrderSubject();
     }
 
     const totalDealMenuClose = (e) => {
@@ -826,15 +903,22 @@ export default {
       }
     }
 
-    const setImgPath = async (item) => {
-      await item
-      return item.selectedProduct
+    const tempValue = ref();
+
+    const addNewSubject = () => {
+        openDealSubjectMenu();
+        addOrderSubject();
+        tempValue.value = +(dealsList.value.length - 1);
+        console.log(dealsList.value[0].pricePerUnit === '')
     }
 
-    console.log(setImgPath)
+    const openCurrentSubject = (index) => {
+      tempValue.value = +index;
+      openDealSubjectMenu();
+    }
 
     return {
-      setImgPath, typeOfDeal, dealStatus, contactOfDeal, contactInfo, dataLoaded, sortedContacts,filteredOptions, search, statusMsg, errorMsg, user, createDeal , editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortmentList, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributesList, userDiscountRangeValue, sum, totalDealValue, executionDate, totalDealMenuClose, setDiscountRange, dealStatusList, dealPaid, spinner, typeOfShipping, shippingTypeChanged, shippingData, closeMsgNotify, dealSubjectMenu, openDealSubjectMenu, closeDealSubjectMenu, doubleClick
+      typeOfDeal, dealStatus, contactOfDeal, contactInfo, dataLoaded, sortedContacts,filteredOptions, search, statusMsg, errorMsg, user, createDeal , editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortmentList, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributesList, userDiscountRangeValue, sum, totalDealValue, executionDate, totalDealMenuClose, setDiscountRange, dealStatusList, dealPaid, spinner, typeOfShipping, shippingTypeChanged, shippingData, closeMsgNotify, dealSubjectMenu, openDealSubjectMenu, closeDealSubjectMenu, addNewSubject, tempValue, openCurrentSubject
     };
   },
 };
