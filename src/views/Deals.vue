@@ -231,7 +231,7 @@
             <span @click="updateStatus">Готово</span>
           </div>
           <!-- menu content -->
-          <div class="mb-4 border-t text-sm pt-2">
+          <div class="mb-4 border-t text-md pt-2">
             <!-- status item -->
             <div v-for="(status, index) in dealStatusList" :key="index" class="flex flex-col">
               <!--  -->

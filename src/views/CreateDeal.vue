@@ -13,7 +13,7 @@
       <!-- App Msg -->
       <!-- разобраться со стилями ерроров и меседжей системных -->
       <!-- Status Message -->
-      <div v-if="statusMsg || errorMsg" class="fixed z-20 flex left-0 top-0 w-full h-16 mb-10 px-8 py-4 rounded-b-md shadow-md bg-white items-center place-content-between">
+      <div v-if="statusMsg || errorMsg" class="fixed z-30 flex left-0 top-0 w-full h-16 mb-10 px-8 py-4 rounded-b-md shadow-md bg-white items-center place-content-between">
         <div>
           <p class="text-green">
             {{ statusMsg }}
@@ -175,17 +175,8 @@
                       </div>
                       <p id="deleteCurrentSubject" class="z-20" @click.stop="deleteOrderSubject(item.id)">Удалить</p>
                     </div>
-                    <!-- 
-        id: uid(),
-        selectedProduct: '',
-        pricePerUnit: '',
-        productQuantity: 1,
-        discountSubjectPriceValue: setDiscountRange('min'),
-        totalSubjectPrice: 0,
-        productNote: '',
-        additionalAttributes: []
-                     -->
                   </div>
+                  <!-- Footer типа дела Заказ -->
                   <div class="w-full flex items-center place-content-between px-2 py-1 border-t">
                     <p class="text-dark-gray text-sm">Предметов в заказе: {{ dealsList.length }} </p>
                     <p class="text-blue" id="addSubject" @click="addNewSubject">Добавить</p>
@@ -230,16 +221,14 @@
                 <label for="dealPaid" class="text-sm leading-none align-text-middle text-dark-gray">
                   Впишите сумму
                 </label>
-                <div class="subject-price_value">
                   <input 
                     type="number" 
                     id="dealPaid"
                     inputmode="decimal"
-                    class="focus:outline-none text-dark text-right mx-1 pt-1 w-16" 
+                    class="border-b border-dashed focus:outline-none text-dark text-right mx-1 pt-1 w-16" 
                     placeholder="0.00"
                     v-model="dealPaid" 
                   >
-                </div>
               </div>
               
             </div>
@@ -298,7 +287,7 @@
                   {{dealsList.length}} предметов на сумму:
                   </div>
                   <div class="text-xl">
-                    <!-- {{sum()}} руб. -->
+                    {{sum()}} руб.
                   </div>
                   
                 </div>
@@ -306,8 +295,8 @@
                 <!-- btn to open total Deal Menu -->
                 <div @click="showTotalDealMenu">
                   <div class="flex items-center mr-2">
-                    <div v-if="totalDealMenu === false" class="text-sm text-blue mr-2">Подробнее</div>
-                    <div v-if="totalDealMenu === true" class="text-sm text-blue mr-2">Скрыть</div>
+                    <div v-if="totalDealMenu === false" class="text-blue mr-2">Подробнее</div>
+                    <div v-if="totalDealMenu === true" class="text-blue mr-2">Скрыть</div>
                     <div class="totalMenu-more_arrow">
                       <img 
                         class="more-arrow_icon" 
@@ -325,11 +314,12 @@
 
 
                 <p>Статус дела: {{dealStatus ? dealStatus : 'не выбран'}}</p>
-                <!-- <p>Остаток к уплате: {{sum() - dealPaid}}</p> -->
+                <p>Остаток к уплате: {{sum() - dealPaid}}</p>
                 <p>Информация по доставке: {{shippingData}}</p>
                 <div v-if="shippingData.typeOfShipping === 'не указан'">
                   Указать
                 </div>
+                <p>Оплачено: {{dealPaid}}</p>
                 <p>Оплачено: 1000,00 руб.</p>
                 <p>Задолженность: 1579,00 руб.</p>  
                           <p>Оплачено: 1000,00 руб.</p>
@@ -359,17 +349,19 @@
           <!-- Меню выбора предмета заказа -->
           <div v-if="dealSubjectMenu" class="w-full h-full fixed pt-16 bottom-0 left-0 flex items-center justify-center flex-col z-20" :class="{ shading_background: dealSubjectMenu}" @click="closeDealSubjectMenu"> 
             <!-- menu -->
-            <div class="bg-light-grey border-t w-full rounded-t-2xl mx-auto h-full overflow-y-auto">
+            <div class="bg-light-grey border-t w-full rounded-t-2xl mx-auto h-full overflow-y-auto overflow-y">
               <!-- menu header -->
-              <div class="bg-white rounded-t-2xl text-blue text-sm flex items-center place-content-between p-4 deal-status-menu inset-x-2/4 fixed w-full left-0">
-                <span class="text-dark-gray">Предмет #{{tempValue + 1}}</span>
-                <span class="dealStatusMenu-btn_close">Готово</span>
+              <div class="bg-white border-b rounded-t-2xl text-blue flex items-center place-content-between deal-status-menu inset-x-2/4 fixed w-full left-0">
+                <div class="flex flex-col justify-center item-center p-4">
+                  <span class="text-dark-gray text-xs">Предмет #{{tempValue + 1}}</span>
+                  <span class="text-xl text-dark">{{(dealsList[tempValue].totalSubjectPrice).toFixed(2)}} RUB</span>
+                </div>
+                  <span class="dealStatusMenu-btn_close p-4">Готово</span>
               </div>
-
               <!-- menu content -->
-              <div class="mt-12">
+              <div class="mt-16 bg-white pt-6">
                 <!-- list of order subjects -->
-                <div class="flex radio-toolbar-wrapper">
+                <div class="flex radio-toolbar-wrapper mr-2">
                   <div class="radio-toolbar_item" v-for="(item, index) in assortmentList" :key="index">
                     <input 
                       type="radio"
@@ -381,30 +373,33 @@
                       <div class="radio-toolbar_item-img">
                         <img :src="require(`../assets/images/deals/orders/${item.img}`)" alt=""> 
                       </div>
-                      <div class="radio-toolbar_item-title text-center text-xs text-dark-gray mt-2">{{ item.title }}</div>
+                      <div class="radio-toolbar_item-title text-center text-sm text-dark-gray mt-2">{{ item.title }}</div>
                     </label>
 
                   </div>
                 </div>
+                <!-- Choose recipe -->
+                <div class="mx-4 mt-4 flex place-content-between">
+                  <span class="text-dark-gray">Рецепт</span>
+                  <span class="text-blue border-b border-dashed border-blue">Молочная девочка</span>
+                </div>
                 <!-- Price per unit -->
-                <div class="flex place-content-between mx-2 mb-4 mt-2 items-center">
-                  <label for="pricePerUnit" class="text-sm leading-none align-text-middle text-dark-gray">
+                <div class="flex place-content-between mx-4 mt-6 items-center">
+                  <label for="pricePerUnit" class="leading-none align-text-middle text-dark-gray">
                     Цена за 1 шт. (RUB)
                   </label>
-                  <div class="subject-price_value">
                     <input 
                       id="pricePerUnit"
                       type="number" 
                       inputmode="decimal"
-                      class="focus:outline-none text-dark text-right mx-1 pt-1 w-16" 
+                      class="border-b border-dashed border-blue focus:outline-none text-blue text-xl text-right w-16  rounded-none" 
                       placeholder="0,00"
                       v-model="dealsList[tempValue].pricePerUnit" 
                     >
-                  </div>
                 </div>
                 <!-- Change subject (product) quantity  -->
-                <div class="flex place-content-between ml-2 mb-4 mt-2 items-center">
-                  <span class="text-sm leading-none align-text-middle text-dark-gray">
+                <div class="flex place-content-between mx-4 mt-6 items-center">
+                  <span class="leading-none align-text-middle text-dark-gray">
                     Количество, шт.
                   </span>
                   <div class="subject-quantity flex justify-items-center">
@@ -416,7 +411,7 @@
                       -
                     </button>
 
-                    <input type="number" class="subject-quantity leading-none w-8 text-center focus:outline-none" v-model="dealsList[tempValue].productQuantity">
+                    <input type="number" readonly class="text-xl subject-quantity leading-none w-8 text-center focus:outline-none" v-model="dealsList[tempValue].productQuantity">
                     <button 
                       class="subject-quantity_btn"
                       @click.prevent="dealsList[tempValue].productQuantity++"
@@ -427,8 +422,8 @@
 
                 </div>
                 <!-- discount for subject price -->
-                <div class="flex place-content-between ml-2 mb-4 mt-4 items-center">
-                  <span class="text-sm leading-none align-text-middle text-dark-gray">
+                <div class="flex place-content-between mx-4 mt-8 items-center">
+                  <span class="leading-none align-text-middle text-dark-gray">
                     Скидка, {{dealsList[tempValue].discountSubjectPriceValue}}%
                   </span>
                     <input 
@@ -442,30 +437,30 @@
                     >
                 </div>  
                 <!-- Total subject price -->
-                <div class="flex place-content-between mx-2 mb-4 mt-4 items-center">
-                  <span class="text-sm leading-2 align-text-middle text-dark-gray">
+                <div class="flex place-content-between mx-4 mt-10 items-center">
+                  <span class="leading-2 align-text-middle text-dark-gray">
                     За {{dealsList[tempValue].productQuantity}} шт. 
                     <span v-if="dealsList[tempValue].discountSubjectPriceValue > 0">с учетом скидки</span>
                     (RUB)
                   </span>
                   <div>
                     <span 
-                      class="py-2"
+                      class="py-2 text-xl"
                     >
+                      <!-- Общая цена конкретного предмета -->
                       {{(dealsList[tempValue].totalSubjectPrice = (dealsList[tempValue].pricePerUnit * dealsList[tempValue].productQuantity * (1 - dealsList[tempValue].discountSubjectPriceValue/100))).toFixed(2)}}
                     </span>
-                    
                   </div>
                 </div>
                 <!-- Subjet notes -->
-                <div class="w-full mt-2">
-                  <textarea placeholder="Заметки к предмету заказа" v-model="dealsList[tempValue].productNote" class="text-sm h-20 p-2 bg-light-grey text-gray-500 rounded-md w-full focus:outline-none"></textarea>
+                <div class="mt-8 mx-4">
+                  <textarea placeholder="Заметки к предмету заказа" v-model="dealsList[tempValue].productNote" class="h-40 p-2 bg-light-grey text-gray-500 rounded-md w-full focus:outline-none"></textarea>
                 </div>
                 <!-- Set additional attributes -->
-                <div class="mt-2">
-                  <p class="mb-1 ml-2 text-sm text-blue">Дополнительные атрибуты к предмету #{{tempValue + 1}}</p>
+                <div class="mt-6 mx-4">
+                  <p class="text-blue">Дополнительные атрибуты к предмету #{{tempValue + 1}}</p>
                   <!-- Атрибуты из массива атрибутов из экрана настроек аккаунта -->
-                  <ul>
+                  <ul class="mt-6">
                     <li v-for="(item, index) in additionalAttributesList" :key="index" class="flex items-center place-content-between my-4">
                       <div class="flex">
                         <input 
@@ -474,15 +469,19 @@
                           :id="item.name"
                           :value="item"
                         >
-                        <label :for="item.name" class="w-full text-sm text-dark-gray mr-2">{{item.title}}</label>
+                        <label :for="item.name" class="w-full text-dark-gray mr-2">{{item.title}}</label>
                       </div>
-                      <input class="focus:outline-none pt-1 w-14 h-6 text-right text-dark-gray" :placeholder="item.price" type="number" v-model="item.price" inputmode="decimal" />
+                      <input class="focus:outline-none pt-1 w-14 text-right text-blue border-b border-blue border-dashed rounded-none" :placeholder="item.price" type="number" v-model="item.price" inputmode="decimal" />
                     </li>
                   </ul>
                 </div>
                 <!-- Summary -->
-                <div>
-                  Итого по предмету #{{tempValue + 1}}
+                <div class="mx-4 mt-6 border-t pt-6 pb-6">
+                    <span class="text-dark-gray">Итого по предмету #{{tempValue + 1}}</span> 
+                    <!-- Общая цена конкретного предмета -->
+                    <div class="text-xl text-dark">
+                      {{(dealsList[tempValue].totalSubjectPrice = (dealsList[tempValue].pricePerUnit * dealsList[tempValue].productQuantity * (1 - dealsList[tempValue].discountSubjectPriceValue/100)) + +sumPriceAdditionalAttributes()).toFixed(2)}}
+                    </div>
                 </div>
               </div>
 
@@ -607,7 +606,10 @@ export default {
         // Сюда пишем функцию проверки на заполненность данными в предмете заказа, иначе не пускать дальше!
         // Также надо сделать всплывашки
         if(dealsList.value[tempValue.value].pricePerUnit === '') {
-          errorMsg.value = 'Не получится'
+          errorMsg.value = 'Вы не указали стоимость цены за 1 шт.'
+          setTimeout(() => {
+            errorMsg.value = false;
+          }, 3000)
         } else {
           openDealSubjectMenu();
         }
@@ -622,7 +624,7 @@ export default {
       }
     }
 
-    const totalDealValue = ref('');
+    const totalDealValue = ref(0);
 
     const showTotalDealMenu = () => {
       totalDealMenu.value = !totalDealMenu.value;
@@ -682,12 +684,20 @@ export default {
 
 
 
-    // Временное решение
+    // Ассортимент по предметам заказа (устанавливается в настройках аккаунта)
     const assortmentList = [
       {
         name: 'cake',
         img: 'cake.png',
         title: 'Торт',
+        recipes: [
+          {
+            title: 'Молочная девочка'
+          },
+          {
+            title: 'Красный бархат'
+          }
+        ]
       },
       {
         name: 'wedding-cake',
@@ -731,18 +741,18 @@ export default {
       }
     ]  
 
-    // Дополнительные услуги к основным товарам /услугам
+    // Дополнительные услуги к основным товарам /услугам (устанавливается в настройках аккаунта)
     const additionalAttributesList = [
       {
         name: 'cake-stand',
         title: 'Аренда подставки',
-        price: '0.00',
+        price: '500.00',
         isRent: true,
         isReturned: false
       },
       {
         name: 'tableware',
-        title: 'Аренда комплекта столовых приборов',
+        title: 'Аренда столовых приборов',
         price: '0.00',
         isRent: true,
         isReturned: false
@@ -803,16 +813,34 @@ export default {
 
     // Total order price
     const sum = () => {
-      // Берем массив данных
-      let array = dealsList.value;
-      // Выбираем из массива данных нужные значения
-      let numbers = array.map(item => item.totalSubjectPrice)
-      // Суммируем значения
-      let sum = numbers.reduce( (accumulator, currentValue) => accumulator + currentValue).toFixed(2)
-      // задаем значение общей стоиомсти дела
-      totalDealValue.value = sum
+      if(dealsList.value.length >= 1) {
+        // Берем массив данных
+        let array = dealsList.value;
+        // Выбираем из массива данных нужные значения
+        let numbers = array.map(item => item.totalSubjectPrice)
+        // Суммируем значения
+        let sum = numbers.reduce( (accumulator, currentValue) => accumulator + currentValue).toFixed(2)
+        // задаем значение общей стоиомсти дела
+        totalDealValue.value = sum
+  
+        return sum, totalDealValue.value
+      }
+      return '0.00'
+    }
 
-      return sum, totalDealValue.value
+    // sum price of additional attributes in current subject
+    const sumPriceAdditionalAttributes = () => {
+      if(dealsList.value.length >= 1 && dealsList.value[tempValue.value].additionalAttributes.length >= 1 ) {
+        // Берем массив данных
+        let array = dealsList.value[tempValue.value].additionalAttributes
+        // Выбираем из массива данных нужные значения
+        let numbers = array.map(item => +item.price)
+        // Суммируем значения
+        let sum = numbers.reduce( (accumulator, currentValue) => accumulator + currentValue).toFixed(2)
+        // console.log(sum)
+        return sum
+      }
+      return 0
     }
 
     // Listens for changing of deal type input
@@ -918,7 +946,7 @@ export default {
     }
 
     return {
-      typeOfDeal, dealStatus, contactOfDeal, contactInfo, dataLoaded, sortedContacts,filteredOptions, search, statusMsg, errorMsg, user, createDeal , editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortmentList, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributesList, userDiscountRangeValue, sum, totalDealValue, executionDate, totalDealMenuClose, setDiscountRange, dealStatusList, dealPaid, spinner, typeOfShipping, shippingTypeChanged, shippingData, closeMsgNotify, dealSubjectMenu, openDealSubjectMenu, closeDealSubjectMenu, addNewSubject, tempValue, openCurrentSubject
+      typeOfDeal, dealStatus, contactOfDeal, contactInfo, dataLoaded, sortedContacts,filteredOptions, search, statusMsg, errorMsg, user, createDeal , editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortmentList, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributesList, userDiscountRangeValue, sum, totalDealValue, executionDate, totalDealMenuClose, setDiscountRange, dealStatusList, dealPaid, spinner, typeOfShipping, shippingTypeChanged, shippingData, closeMsgNotify, dealSubjectMenu, openDealSubjectMenu, closeDealSubjectMenu, addNewSubject, tempValue, openCurrentSubject, sumPriceAdditionalAttributes
     };
   },
 };
@@ -980,6 +1008,12 @@ export default {
     top: -3px;
   }
 
+  // Убираем ширину полос прокрутки
+  .overflow-y::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+  }
+
   .radio-toolbar-wrapper {
     overflow-x: scroll;
     padding: 10px 0;
@@ -987,6 +1021,7 @@ export default {
     // scrollbar-width: none;
   }
 
+  // Убираем ширину полос прокрутки
   .radio-toolbar-wrapper::-webkit-scrollbar {
       width: 0;
       height: 0;
@@ -1035,8 +1070,8 @@ export default {
   }
 
   .subject-quantity_btn {
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     background-color: #4785E7;
     color: white;
     border-radius: 100%;
@@ -1053,10 +1088,6 @@ export default {
   .subject-wrapper {
     border-bottom: 1px solid #f1f1f1;
     margin-top: 10px;
-  }
-
-  .subject-price_value {
-    border-bottom: 1px dashed #f1f1f1;
   }
 
   .totalMenu {
