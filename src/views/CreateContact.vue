@@ -1,11 +1,8 @@
 <template>
   <div class="container text-dark">
-    <!-- Navigation -->
-    <nav class="fixed z-10 bg-white nav container py-2 px-4 flex gap-4 items-center sm:flex-row place-content-between">
-      <h1 class="text-dark text-2xl font-bold">Новый контакт</h1>
-      <!-- По клику на Отменить надо бы сделать некий cancelCreate -->
-      <div @click="$router.go(-1)" class="text-blue">Отменить</div>
-    </nav>
+
+    <!-- Компонент Navigation -->
+    <Navigation :title="pageTitle"/>
 
     <!-- Create new contact -->
     <main class="max-w-screen-sm mx-auto pt-20">
@@ -383,6 +380,7 @@
 
 <script>
 import Spinner from '../components/Spinner.vue';
+import Navigation from '../components/Navigation.vue';
 
 import { ref, computed } from 'vue';
 import store from '../store/index';
@@ -393,7 +391,7 @@ import { useRouter } from 'vue-router';
   export default {
       name: "createContact",
       components: {
-        Spinner
+        Spinner, Navigation
       },
       setup() {
         // Create data
@@ -402,6 +400,9 @@ import { useRouter } from 'vue-router';
         const statusMsg = ref(null);
         const errorMsg = ref(null);
         const user = computed(() => store.state.user)
+
+        // Берем имя роута для заголовка
+        const pageTitle = router.currentRoute._value.meta.translation;
 
         // Spiner
         const spinner = ref(false);
@@ -564,7 +565,7 @@ import { useRouter } from 'vue-router';
         }
 
         return {
-          statusMsg, errorMsg, user, contactSurname, contactName, contactCompany, contactNotes, createContact, phoneNumbers, addPhoneNumber, addSocial, addContactEvent, deleteEmail, contactEvents, socialNetworks, Emails, deletePhoneNumber, deleteSocial, addEmail, deleteContactEvent, note, addNote, spinner 
+          statusMsg, errorMsg, user, pageTitle, contactSurname, contactName, contactCompany, contactNotes, createContact, phoneNumbers, addPhoneNumber, addSocial, addContactEvent, deleteEmail, contactEvents, socialNetworks, Emails, deletePhoneNumber, deleteSocial, addEmail, deleteContactEvent, note, addNote, spinner
         }
       }
     
@@ -642,7 +643,7 @@ import { useRouter } from 'vue-router';
   }
 
   .item_fixed {
-    posiition: fixed;
+    position: fixed;
     width: 100%;
   }
 </style>

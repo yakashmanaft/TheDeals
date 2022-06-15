@@ -1,11 +1,13 @@
 <template>
   <div class="container text-dark">
 
-    <!-- Navigation -->
-    <nav class="nav w-full bg-white fixed z-10 py-2 px-4 flex items-center justify-between">
+    <!-- Компонент Navigation -->
+    <!-- <nav class="nav w-full bg-white fixed z-10 py-2 px-4 flex items-center justify-between">
       <h1 class="text-dark text-2xl font-bold">Новое дело</h1>
       <div @click="$router.go(-1)" class="text-blue">Отменить</div>
-    </nav>
+    </nav> -->
+
+    <Navigation :title="pageTitle"/>
 
     <!-- Create New Deal -->
     <main v-if="dataLoaded" class="max-w-screen-md mx-auto pt-20">
@@ -613,6 +615,7 @@
 </template>
 
 <script>
+import Navigation from '../components/Navigation.vue';
 import Spinner from '../components/Spinner.vue';
 import Select from '../components/Select.vue'
 
@@ -630,7 +633,7 @@ import { searchFilter } from '../helpers/filter';
 export default {
   name: "createDeal",
   components: {
-    Spinner, Select
+    Spinner, Select, Navigation
   },
   setup() {
     // Create data
@@ -638,6 +641,9 @@ export default {
     const statusMsg = ref(null);
     const errorMsg = ref(null);
     const user = computed(() => store.state.user);
+
+    // Берем имя роута для заголовка
+    const pageTitle = router.currentRoute._value.meta.translation;
 
     // Spiner
     const spinner = ref(false);
@@ -739,7 +745,7 @@ export default {
         // если режим предмета perKilogram
         if(calcSubjectPriceType.value === 'perKilogram') {
           if (dealsList.value[tempValue.value].pricePerKilo === '') {
-            errorMsg.value = 'Вы не указали стоимость цены за 1 шт.'
+            errorMsg.value = 'Вы не указали стоимость цены за 1 кг.'
             setTimeout(() => {
               errorMsg.value = false;
             }, 3000)
@@ -1154,7 +1160,7 @@ export default {
     }
 
     return {
-      typeOfDeal, dealStatus, contactOfDeal, contactInfo, dataLoaded, sortedContacts,filteredOptions, search, statusMsg, errorMsg, user, createDeal , editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortmentList, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributesList, userDiscountRangeValue, sum, totalDealValue, executionDate, totalDealMenuClose, setDiscountRange, dealStatusList, dealPaid, spinner, typeOfShipping, shippingTypeChanged, shippingData, closeMsgNotify, dealSubjectMenu, openDealSubjectMenu, closeDealSubjectMenu, addNewSubject, tempValue, openCurrentSubject, sumPriceAdditionalAttributes, changeSubject, calcSubjectPriceType, calcTotalSubjectPrice, dealTypeArray, optionSelect
+      typeOfDeal, dealStatus, contactOfDeal, contactInfo, dataLoaded, sortedContacts,filteredOptions, search, statusMsg, errorMsg, user, createDeal , editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortmentList, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributesList, userDiscountRangeValue, sum, totalDealValue, executionDate, totalDealMenuClose, setDiscountRange, dealStatusList, dealPaid, spinner, typeOfShipping, shippingTypeChanged, shippingData, closeMsgNotify, dealSubjectMenu, openDealSubjectMenu, closeDealSubjectMenu, addNewSubject, tempValue, openCurrentSubject, sumPriceAdditionalAttributes, changeSubject, calcSubjectPriceType, calcTotalSubjectPrice, dealTypeArray, optionSelect, pageTitle
     };
   },
 };

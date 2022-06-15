@@ -83,6 +83,7 @@ const routes = [
     meta: {
       title: 'Create Contact',
       auth: true,
+      translation: 'Новый контакт'
     }
   },
   {
@@ -92,6 +93,7 @@ const routes = [
     meta: {
       title: 'Create Deal',
       auth: true,
+      translation: 'Новое дело'
     }
   },
   {

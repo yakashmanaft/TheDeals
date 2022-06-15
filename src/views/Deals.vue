@@ -1,14 +1,14 @@
 <template>
-  <div class="orders">
+  <div>
     <!-- Компонент Navigation -->
-    <Navigation :title="title" class="fixed z-10 bg-white"/>  
-    <!-- Компонент QuickAccessMenu -->
+    <Navigation :title="pageTitle"/>  
+    <!-- Компонент быстрого доступа (кнопка создания дела)-->
     <QuickAccessMenu :to="{ name: 'CreateDeal' }"></QuickAccessMenu>
     <!-- Компонент Spinner -->
     <Spinner v-if="spinner && !dataLoaded"></Spinner>
     
     <!-- Когда Data загружена -->
-    <div v-if="dataLoaded" class="container pt-20">
+    <div v-if="dataLoaded" class="pt-20 container">
 
       <!-- App Msg -->
       <!-- разобраться со стилями ерроров и меседжей системных -->
@@ -52,7 +52,6 @@
       <div 
         v-else 
         class="grid grid-cols-1 gap-4"
-        :class="{ blurred_content: dealStatusMenu || dealPaidMenu || dealWithDebt || dealCancelledReasonMenu || spinner }"
       >
         <!-- Deal filter -->
         <div class="flex deal-filter-wrapper mx-4">
@@ -97,12 +96,12 @@
                   <div class="flex place-content-between items-center border-b pb-2">
                     <div class="flex items-center">
                       <!-- Тип дела -->
-                      <span class="leading-5 px-2 py-1 mr-2 border border-green text-green rounded-md text-sm">{{translateDealType(deal.dealType)}}</span>
+                        <span class="px-2 py-1 mr-2 border border-green text-green rounded-md text-sm">{{translateDealType(deal.dealType)}}</span>
                       
                       <!-- Контакт по делу -->
                       <div class="flex flex-col item-center">
-                        <p v-if="deal.contactID === '000'" class="text-sm text-center text-dark-gray mr-2">Неизвестный</p>
-                        <router-link else :to="{ name: 'View-Contact', params: { contactId: deal.contactID } }" class="text-sm text-center text-blue mr-2">{{ getNameId(deal.contactID)}}</router-link> 
+                        <p v-if="deal.contactID === '000'" class="text-sm text-left text-dark-gray mr-2">Неизвестный</p>
+                        <router-link else :to="{ name: 'View-Contact', params: { contactId: deal.contactID } }" class="text-sm text-left text-blue mr-2">{{ getNameId(deal.contactID)}}</router-link> 
                       </div>
                     </div>
 
@@ -485,7 +484,7 @@ export default {
 
 
     const router = useRouter();
-    const title = router.currentRoute._value.meta.translation;
+    const pageTitle = router.currentRoute._value.meta.translation;
 
     // Преобразуем дату события для вывода в карточкн контакта
     const showEventDate = (eventdate) => {
@@ -814,14 +813,14 @@ export default {
     }
 
     return {
-      list, setDealStatus, dataLoaded, title, executionDatesArray, translateDealType, translateDealStatus, showEventDate, daysArray, contactInfo, getNameId, checkChangeStatus, dealStatusArray, getDealStatus, getStatusArrLength, dealStatusList, spinner, dealStatusMenu, dealStatusMenuToggle, closeDealStatusMenu, statusDeal, updateStatus, statusMsg, errorMsg, dealPaid, makePaymMenuToggle, updateDealPaid, dealPaidMenu, closeDealPaidMenu, debt, debtValue, makePayment, copyDebtValue, dealPaidValuePattern, dealWithDebt, closeDealWithDebtMenu, dealStatusClassObject, dealCancelledReason, dealCancelledReasonMenu, closeDealCancelledReasonMenu, openCancelledReasonMenu, editCancelledReason, updateCancelledReason, сancelledDeal, id, expendDeal, isExpend
+      list, setDealStatus, dataLoaded, pageTitle, executionDatesArray, translateDealType, translateDealStatus, showEventDate, daysArray, contactInfo, getNameId, checkChangeStatus, dealStatusArray, getDealStatus, getStatusArrLength, dealStatusList, spinner, dealStatusMenu, dealStatusMenuToggle, closeDealStatusMenu, statusDeal, updateStatus, statusMsg, errorMsg, dealPaid, makePaymMenuToggle, updateDealPaid, dealPaidMenu, closeDealPaidMenu, debt, debtValue, makePayment, copyDebtValue, dealPaidValuePattern, dealWithDebt, closeDealWithDebtMenu, dealStatusClassObject, dealCancelledReason, dealCancelledReasonMenu, closeDealCancelledReasonMenu, openCancelledReasonMenu, editCancelledReason, updateCancelledReason, сancelledDeal, id, expendDeal, isExpend
     };
   },
 };
 </script>
 
 <style scoped>
-  .orders {
+  .container {
     height: 100vh;
   }
 

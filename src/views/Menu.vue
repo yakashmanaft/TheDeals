@@ -1,31 +1,19 @@
 <template>
   <div  class="container text-dark">
-    <nav class="fixed z-10 nav container py-2 px-4 flex gap-4 bg-white items-center sm:flex-row place-content-between">
-      <router-link 
-        class="user-avatar cursor-pointer rounded-full" 
-        :to="{ name: 'Dashboard' }"
-      >
-        <!-- порешать с позиционированием картинки -->
-        <img src="@/assets/images/user-avatar.png" alt="">
-      </router-link>
-      <div class="flex-1">
-        <p>Аккаунт</p>
-        <p>{{ userEmail }}</p>
-      </div>
-      <!-- Типа кнопки Назад... -->
-      <div class="gamburger" @click="$router.go(-1)">
-        <img src="@/assets/images/common/icon-close.svg" class="w-4/5 h-4/5 pl-1 pt-1" alt="">
-      </div>
-      
-    </nav>
+
+    <!-- Компонент Navigation -->
+    <Navigation :title="pageTitle" :data="userEmail"/>  
+
     <!-- List Item -->
     <MenuList class="pt-20"/>
+
   </div>
 </template>
 
 
 <script>
   import MenuList from '../components/MenuList'
+  import Navigation from '../components/Navigation.vue'
 
   import { computed } from 'vue';
   import { supabase } from '../supabase/init';
@@ -34,7 +22,7 @@
 
   export default {
     components: {
-      MenuList
+      MenuList, Navigation
     },
     setup () {
       // Get user from store
@@ -44,6 +32,9 @@
       // Setup ref to router
       const router = useRouter();
 
+      // Берем имя роута для заголовка
+      const pageTitle = router.currentRoute._value.meta.translation;
+
       // Logout function
       const logout = async () => {
         await supabase.auth.signOut();
@@ -51,7 +42,7 @@
       }
 
       return {
-        user, router, logout, userEmail
+        user, router, logout, userEmail, pageTitle
       }
     }
   }

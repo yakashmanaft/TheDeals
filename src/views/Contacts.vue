@@ -1,8 +1,9 @@
 <template>
-  <div class="contacts container">
-    <Navigation :title="title" class="fixed z-10 bg-white"/>
+  <div class="container">
+    <!-- Компонент Navigation -->
+    <Navigation :title="pageTitle"/>
 
-    <!-- Кнопка добавления нового контакта -->
+    <!-- Кнопка создания нового контакта-->
     <QuickAccessMenu :to="{ name: 'CreateContact' }"></QuickAccessMenu>
 
     <div v-if="dataLoaded" class="pt-20">
@@ -110,7 +111,7 @@
 
       // Берем имя роута для заголовка
       const router = useRouter();
-      const title = router.currentRoute._value.meta.translation;
+      const pageTitle = router.currentRoute._value.meta.translation;
 
     // Ждем когда загрузится вся data
 
@@ -141,7 +142,7 @@
       });
       
       return {
-        user, title, data, dataLoaded, search, sortedContacts, searchedContacts, errorMsg, spinner
+        user, pageTitle, data, dataLoaded, search, sortedContacts, searchedContacts, errorMsg, spinner
       }
     }
   }
@@ -152,7 +153,7 @@
     -webkit-appearance:none;
   }
 
-  .contacts {
+  .container {
     height: 100vh;
   }
 

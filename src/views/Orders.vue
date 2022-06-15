@@ -2,7 +2,7 @@
 <!-- Пока View называется Orders... по логике больше подходит Deals (дела... сделки...), а внутри разделяется на 1. order, 2. supply, 3. personal -->
 
   <div class="orders">
-    <Navigation :title="title" class="fixed z-10 bg-white"/>  
+    <Navigation :title="title"/>  
 
     <!-- Добавление нового заказа -->
     <router-link 
