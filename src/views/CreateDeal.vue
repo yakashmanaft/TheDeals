@@ -130,13 +130,20 @@
             <!-- Тип дела -->
             <div class="w-full flex flex-col mt-4">
               <!-- Выбор типа дела -->
+              <Select
+                :options="dealTypeArray"
+                @select="optionSelect"
+                :selected="typeOfDeal.title"
+              ></Select>
+
+
               <label for="deal-type" class="mb-1 ml-2 text-sm text-blue">Тип дела</label>
               <select 
                 id="deal-type" 
                 class="border webkit p-2 w-full text-gray-500 bg-light-grey rounded-md focus:outline-none"
                 :class="{ 'rounded-b-none': typeOfDeal === 'order'}" 
                 required
-                v-model="typeOfDeal"
+                v-model="typeOfDeal.name"
                 @change="dealTypeChanged"
               >
               <!-- Возможно , в дальнейшем динамическое, исходя из настроек аккаунта -->
@@ -149,11 +156,11 @@
               <!-- Выбираем тип дела -->
               <div v-if="user" class="deal-subject_wrapper">
                 <!-- Не выбран тип дела -->
-                <div class="text-dark-gray text-sm px-2 pt-4" v-if="typeOfDeal === 'select-deal-type'">
+                <div class="text-dark-gray text-sm px-2 pt-4" v-if="typeOfDeal === 'Выберите типа дела'">
                   Не выбран тип дела
                 </div>
                 <!-- Выбран тип: Заказ -->
-                <div  v-if="typeOfDeal === 'order'" class="rounded-b-md border-b border-l border-r pt-2">
+                <div  v-if="typeOfDeal.name === 'order'" class="rounded-b-md border-b border-l border-r pt-2">
                   <!-- если 0 предметов в заказе -->
                   <div class="text-center" v-if="dealsList.length === 0">
                     <p class="my-4">У вас не добавлены предметы к заказу</p>
@@ -189,7 +196,7 @@
             <div class="w-full">
     
               <!-- Если новое дело - это заказ -->
-              <div v-if="typeOfDeal === 'order'" class="radio-toolbar mt-4">
+              <div v-if="typeOfDeal.name === 'order'" class="radio-toolbar mt-4">
                 <!-- Выбор предмета заказа -->
     
                 <!-- Button to add new social to current contact -->
@@ -204,12 +211,12 @@
               </div>
     
               <!-- Если новое дело - это поставка -->
-              <div v-if="typeOfDeal === 'supply'">
+              <div v-if="typeOfDeal.name === 'supply'">
                 Новое дело - поставка. В разработке...
               </div>
     
               <!-- Если новое дело - это личное -->
-              <div v-if="typeOfDeal === 'personal'">
+              <div v-if="typeOfDeal.name === 'personal'">
                 Новое дело - личная задача. В разработке..
               </div>
             </div>
@@ -332,8 +339,10 @@
 
               </div>
 
-              <!-- Btn submit -->
-              <div class="mx-4">
+              <!-- Btn submit "Создать дело"-->
+              <div 
+                class="mx-4"
+              >
                 <button 
                   type="submit" 
                   class="w-full my-4 cursor-pointer p-2 bg-dark text-white rounded-md font-normal"
@@ -347,7 +356,12 @@
           </div>
 
           <!-- Меню выбора предмета заказа -->
-          <div v-if="dealSubjectMenu" class="w-full h-full fixed pt-16 bottom-0 left-0 flex items-center justify-center flex-col z-20" :class="{ shading_background: dealSubjectMenu}" @click="closeDealSubjectMenu"> 
+          <div 
+            v-if="dealSubjectMenu" 
+            class="w-full h-full fixed pt-16 bottom-0 left-0 flex items-center justify-center flex-col z-20" 
+            :class="{ shading_background: dealSubjectMenu}" 
+            @click="closeDealSubjectMenu"
+          > 
             <!-- menu -->
             <div class="bg-light-grey border-t w-full rounded-t-2xl mx-auto h-full overflow-y-auto overflow-y">
               <!-- menu header -->
@@ -600,6 +614,7 @@
 
 <script>
 import Spinner from '../components/Spinner.vue';
+import Select from '../components/Select.vue'
 
 import { ref, computed } from 'vue';
 import store from '../store/index';
@@ -615,7 +630,7 @@ import { searchFilter } from '../helpers/filter';
 export default {
   name: "createDeal",
   components: {
-    Spinner
+    Spinner, Select
   },
   setup() {
     // Create data
@@ -627,7 +642,10 @@ export default {
     // Spiner
     const spinner = ref(false);
 
-    const typeOfDeal = ref('select-deal-type');
+    const typeOfDeal = ref({
+      name: 'select-deal-type',
+      title: 'Выберите тип дела'
+    });
     const contactOfDeal = ref('select-deal-contact');
     const dealStatus = ref('deal-in-booking');
     const typeOfShipping = ref('select-shipping-type');
@@ -1056,7 +1074,7 @@ export default {
       try {
         const { error } = await supabase.from('deals').insert([
           {
-            dealType: typeOfDeal.value,
+            dealType: typeOfDeal.value.name,
             dealStatus: dealStatus.value,
             contactID: contactId.value,
             executionDate: executionDate.value,
@@ -1068,7 +1086,7 @@ export default {
         ]);
         if (error) throw error;
         statusMsg.value = 'Дело успешно создано';
-        typeOfDeal.value = 'select-deal-type';
+        typeOfDeal.value.name = 'select-deal-type';
         contactOfDeal.value = 'select-deal-contact';
         typeOfShipping.value = 'select-shipping-type';
         dealsList.value = [];
@@ -1113,8 +1131,30 @@ export default {
       return calcSubjectPriceType.value = choosenSubjectByAssortment.costEstimation
     }
 
+    // Тип дела
+    const dealTypeArray = [
+      {
+        name: 'order',
+        title: 'Заказ'
+      },
+      {
+        name: 'supply',
+        title: 'Поставка'
+      },
+      {
+        name: 'personal',
+        title: 'Личное'
+      }
+    ]
+
+    // Метод по селекту type of deal
+    const optionSelect = (option) => {
+      console.log(option)
+      typeOfDeal.value = option
+    }
+
     return {
-      typeOfDeal, dealStatus, contactOfDeal, contactInfo, dataLoaded, sortedContacts,filteredOptions, search, statusMsg, errorMsg, user, createDeal , editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortmentList, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributesList, userDiscountRangeValue, sum, totalDealValue, executionDate, totalDealMenuClose, setDiscountRange, dealStatusList, dealPaid, spinner, typeOfShipping, shippingTypeChanged, shippingData, closeMsgNotify, dealSubjectMenu, openDealSubjectMenu, closeDealSubjectMenu, addNewSubject, tempValue, openCurrentSubject, sumPriceAdditionalAttributes, changeSubject, calcSubjectPriceType, calcTotalSubjectPrice
+      typeOfDeal, dealStatus, contactOfDeal, contactInfo, dataLoaded, sortedContacts,filteredOptions, search, statusMsg, errorMsg, user, createDeal , editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortmentList, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributesList, userDiscountRangeValue, sum, totalDealValue, executionDate, totalDealMenuClose, setDiscountRange, dealStatusList, dealPaid, spinner, typeOfShipping, shippingTypeChanged, shippingData, closeMsgNotify, dealSubjectMenu, openDealSubjectMenu, closeDealSubjectMenu, addNewSubject, tempValue, openCurrentSubject, sumPriceAdditionalAttributes, changeSubject, calcSubjectPriceType, calcTotalSubjectPrice, dealTypeArray, optionSelect
     };
   },
 };
