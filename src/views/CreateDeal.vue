@@ -13,7 +13,7 @@
       <!-- App Msg -->
       <!-- разобраться со стилями ерроров и меседжей системных -->
       <!-- Status Message -->
-      <div v-if="statusMsg || errorMsg" class="fixed z-30 flex left-0 top-0 w-full h-16 mb-10 px-8 py-4 rounded-b-md shadow-md bg-white items-center place-content-between">
+      <div v-if="statusMsg || errorMsg" class="fixed z-30 flex left-0 top-0 w-full h-16 mb-10 pl-8 py-4 rounded-b-md shadow-md bg-white items-center place-content-between">
         <div>
           <p class="text-green">
             {{ statusMsg }}
@@ -22,7 +22,7 @@
             {{ errorMsg }}
           </p>
         </div>
-        <div class="text-dark-gray" @click="closeMsgNotify">
+        <div class="text-dark-gray px-8 py-4" @click="closeMsgNotify">
           Ok
         </div>
       </div>
@@ -354,7 +354,8 @@
               <div class="bg-white border-b rounded-t-2xl text-blue flex items-center place-content-between deal-status-menu inset-x-2/4 fixed w-full left-0">
                 <div class="flex flex-col justify-center item-center p-4">
                   <span class="text-dark-gray text-xs">Предмет #{{tempValue + 1}}</span>
-                  <span class="text-xl text-dark">{{(dealsList[tempValue].totalSubjectPrice).toFixed(2)}} RUB</span>
+                  <span class="text-xl text-dark">                      <!-- Общая цена конкретного предмета -->
+                      {{calcTotalSubjectPrice()}} RUB</span>
                 </div>
                   <span class="dealStatusMenu-btn_close p-4">Готово</span>
               </div>
@@ -363,64 +364,163 @@
                 <!-- list of order subjects -->
                 <div class="flex radio-toolbar-wrapper mr-2">
                   <div class="radio-toolbar_item" v-for="(item, index) in assortmentList" :key="index">
-                    <input 
-                      type="radio"
-                      :value="item.name"
-                      v-model="dealsList[tempValue].selectedProduct"
-                      :id="index"
-                    >
-                    <label :for="index">
-                      <div class="radio-toolbar_item-img">
-                        <img :src="require(`../assets/images/deals/orders/${item.img}`)" alt=""> 
-                      </div>
-                      <div class="radio-toolbar_item-title text-center text-sm text-dark-gray mt-2">{{ item.title }}</div>
-                    </label>
-
+                      <input 
+                        type="radio"
+                        :value="item.name"
+                        v-model="dealsList[tempValue].selectedProduct"
+                        :id="index"
+                        @change="changeSubject"
+                      >
+                      <label :for="index">
+                        <div class="radio-toolbar_item-img">
+                          <img :src="require(`../assets/images/deals/orders/${item.img}`)" alt=""> 
+                        </div>
+                        <div class="radio-toolbar_item-title text-center text-sm text-dark-gray mt-2">{{ item.title }}</div>
+                      </label>
                   </div>
                 </div>
                 <!-- Choose recipe -->
-                <div class="mx-4 mt-4 flex place-content-between">
-                  <span class="text-dark-gray">Рецепт</span>
-                  <span class="text-blue border-b border-dashed border-blue">Молочная девочка</span>
-                </div>
-                <!-- Price per unit -->
+                <!-- Сделать с возможностью выбора из БД (настройки аккаунта или прям рецепты и сделать раздел?) -->
                 <div class="flex place-content-between mx-4 mt-6 items-center">
-                  <label for="pricePerUnit" class="leading-none align-text-middle text-dark-gray">
-                    Цена за 1 шт. (RUB)
+                  <label for="recipe" class="flex-1 leading-none align-text-middle text-dark-gray">
+                    Рецепт
                   </label>
                     <input 
-                      id="pricePerUnit"
-                      type="number" 
-                      inputmode="decimal"
-                      class="border-b border-dashed border-blue focus:outline-none text-blue text-xl text-right w-16  rounded-none" 
-                      placeholder="0,00"
-                      v-model="dealsList[tempValue].pricePerUnit" 
+                      id="recipe"
+                      type="text"
+                      class="border-b border-dashed border-blue focus:outline-none text-blue text-right rounded-none" 
+                      placeholder="Выберите рецепт"
+                      v-model="dealsList[tempValue].recipe" 
                     >
                 </div>
-                <!-- Change subject (product) quantity  -->
-                <div class="flex place-content-between mx-4 mt-6 items-center">
-                  <span class="leading-none align-text-middle text-dark-gray">
-                    Количество, шт.
-                  </span>
-                  <div class="subject-quantity flex justify-items-center">
-                    <button 
-                      @click.prevent="if(dealsList[tempValue].productQuantity > 1) dealsList[tempValue].productQuantity--;"
-                      class="subject-quantity_btn"
-                      :class="{ btn_disabled: dealsList[tempValue].productQuantity < 2 }"
-                    >
-                      -
-                    </button>
 
-                    <input type="number" readonly class="text-xl subject-quantity leading-none w-8 text-center focus:outline-none" v-model="dealsList[tempValue].productQuantity">
-                    <button 
-                      class="subject-quantity_btn"
-                      @click.prevent="dealsList[tempValue].productQuantity++"
-                    >
-                      +
-                    </button>
+                <!-- Calc Subject Price -->
+                <div>
+                  <!-- Если предмет заказа считается по кол-ву штук -->
+                  <div v-if="calcSubjectPriceType === 'perUnit'">
+                    <!-- Price per unit -->
+                    <div class="flex place-content-between mx-4 mt-6 items-center">
+                      <label for="pricePerUnit" class="leading-none align-text-middle text-dark-gray">
+                        Цена за 1 шт. (RUB)
+                      </label>
+                        <input 
+                          id="pricePerUnit"
+                          type="number" 
+                          inputmode="decimal"
+                          class="border-b border-dashed border-blue focus:outline-none text-blue text-xl text-right w-16  rounded-none" 
+                          placeholder="0,00"
+                          v-model="dealsList[tempValue].pricePerUnit" 
+                        >
+                    </div>
+                    <!-- Change subject (product) quantity  -->
+                    <div class="flex place-content-between mx-4 mt-6 items-center">
+                      <span class="leading-none align-text-middle text-dark-gray">
+                        Количество, шт.
+                      </span>
+                      <div class="subject-quantity flex justify-items-center">
+                        <button 
+                          @click.prevent="if(dealsList[tempValue].productQuantity > 1) dealsList[tempValue].productQuantity--;"
+                          class="subject-quantity_btn"
+                          :class="{ btn_disabled: dealsList[tempValue].productQuantity < 2 }"
+                        >
+                          -
+                        </button>
+
+                        <input type="number" readonly class="text-xl subject-quantity leading-none w-8 text-center focus:outline-none" v-model="dealsList[tempValue].productQuantity">
+                        <button 
+                          class="subject-quantity_btn"
+                          @click.prevent="dealsList[tempValue].productQuantity++"
+                        >
+                          +
+                        </button>
+                      </div>
+
+                    </div>
+                  </div>
+
+                  <!-- Если предмет заказа считается по весу -->
+                  <div v-if="calcSubjectPriceType === 'perKilogram'">
+                    <!-- Price per kilogramm -->
+                    <div class="flex place-content-between mx-4 mt-6 items-center">
+                      <label for="pricePerUnit" class="leading-none align-text-middle text-dark-gray">
+                        Цена за 1 кг. (RUB)
+                      </label>
+                        <input 
+                          id="pricePerUnit"
+                          type="number" 
+                          inputmode="decimal"
+                          class="border-b border-dashed border-blue focus:outline-none text-blue text-xl text-right w-16  rounded-none" 
+                          placeholder="0,00"
+                          v-model="dealsList[tempValue].pricePerKilo" 
+                        >
+                    </div>
+                    <!-- Portions per person -->
+                    <div class="flex place-content-between mx-4 mt-6 items-center">
+                      <label for="pricePerUnit" class="leading-none align-text-middle text-dark-gray">
+                        Вес порции в граммах
+                      </label>
+                        <input 
+                          id="pricePerUnit"
+                          type="number" 
+                          inputmode="decimal"
+                          class="border-b border-dashed border-blue focus:outline-none text-blue text-xl text-right w-16  rounded-none" 
+                          placeholder="150"
+                          v-model="dealsList[tempValue].gramPerPerson" 
+                        >
+                    </div>
+                    <!-- Person quantity  -->
+                    <div class="flex place-content-between mx-4 mt-6 items-center">
+
+                      <span class="leading-none align-text-middle text-dark-gray">
+                        Количество порций, чел.
+                      </span>
+                      <div class="subject-quantity flex justify-items-center">
+                        <button 
+                          @click.prevent="if(dealsList[tempValue].personQuantity > 1) dealsList[tempValue].personQuantity--;"
+                          class="subject-quantity_btn"
+                          :class="{ btn_disabled: dealsList[tempValue].personQuantity < 2 }"
+                        >
+                          -
+                        </button>
+
+                        <input type="number" readonly class="text-xl subject-quantity leading-none w-8 text-center focus:outline-none" v-model="dealsList[tempValue].personQuantity">
+                        <button 
+                          class="subject-quantity_btn"
+                          @click.prevent="dealsList[tempValue].personQuantity++"
+                        >
+                          +
+                        </button>
+                      </div>
+
+                    </div>
+                    <!-- Change subject (product) quantity  -->
+                    <div class="flex place-content-between mx-4 mt-6 items-center">
+                      <span class="leading-none align-text-middle text-dark-gray">
+                        Количество предметов, шт.
+                      </span>
+                      <div class="subject-quantity flex justify-items-center">
+                        <button 
+                          @click.prevent="if(dealsList[tempValue].productQuantity > 1) dealsList[tempValue].productQuantity--;"
+                          class="subject-quantity_btn"
+                          :class="{ btn_disabled: dealsList[tempValue].productQuantity < 2 }"
+                        >
+                          -
+                        </button>
+
+                        <input type="number" readonly class="text-xl subject-quantity leading-none w-8 text-center focus:outline-none" v-model="dealsList[tempValue].productQuantity">
+                        <button 
+                          class="subject-quantity_btn"
+                          @click.prevent="dealsList[tempValue].productQuantity++"
+                        >
+                          +
+                        </button>
+                      </div>
+
+                    </div>
                   </div>
 
                 </div>
+
                 <!-- discount for subject price -->
                 <div class="flex place-content-between mx-4 mt-8 items-center">
                   <span class="leading-none align-text-middle text-dark-gray">
@@ -448,11 +548,11 @@
                       class="py-2 text-xl"
                     >
                       <!-- Общая цена конкретного предмета -->
-                      {{(dealsList[tempValue].totalSubjectPrice = (dealsList[tempValue].pricePerUnit * dealsList[tempValue].productQuantity * (1 - dealsList[tempValue].discountSubjectPriceValue/100))).toFixed(2)}}
+                      {{(dealsList[tempValue].totalSubjectPrice).toFixed(2)}}
                     </span>
                   </div>
                 </div>
-                <!-- Subjet notes -->
+                <!-- Subjeсt notes -->
                 <div class="mt-8 mx-4">
                   <textarea placeholder="Заметки к предмету заказа" v-model="dealsList[tempValue].productNote" class="h-40 p-2 bg-light-grey text-gray-500 rounded-md w-full focus:outline-none"></textarea>
                 </div>
@@ -480,13 +580,12 @@
                     <span class="text-dark-gray">Итого по предмету #{{tempValue + 1}}</span> 
                     <!-- Общая цена конкретного предмета -->
                     <div class="text-xl text-dark">
-                      {{(dealsList[tempValue].totalSubjectPrice = (dealsList[tempValue].pricePerUnit * dealsList[tempValue].productQuantity * (1 - dealsList[tempValue].discountSubjectPriceValue/100)) + +sumPriceAdditionalAttributes()).toFixed(2)}}
+                      {{(dealsList[tempValue].totalSubjectPrice).toFixed(2)}} RUB
                     </div>
                 </div>
               </div>
 
             </div>
-
 
           </div>
           
@@ -603,18 +702,43 @@ export default {
 
     const closeDealSubjectMenu = (e) => {
       if (e.target.classList.contains('dealStatusMenu-btn_close') || e.target.classList.contains('shading_background')) {
-        // Сюда пишем функцию проверки на заполненность данными в предмете заказа, иначе не пускать дальше!
-        // Также надо сделать всплывашки
-        if(dealsList.value[tempValue.value].pricePerUnit === '') {
-          errorMsg.value = 'Вы не указали стоимость цены за 1 шт.'
-          setTimeout(() => {
-            errorMsg.value = false;
-          }, 3000)
-        } else {
-          openDealSubjectMenu();
+        // если режим предмета perUnit
+        if(calcSubjectPriceType.value === 'perUnit') {
+          if (dealsList.value[tempValue.value].pricePerUnit === '') {
+            errorMsg.value = 'Вы не указали стоимость цены за 1 шт.'
+            setTimeout(() => {
+              errorMsg.value = false;
+            }, 3000)
+          } else if (dealsList.value[tempValue.value].recipe === '') {
+            errorMsg.value = 'Вы не выбрали рецепт'
+            setTimeout(() => {
+              errorMsg.value = false;
+            }, 3000)
+          } else {
+            openDealSubjectMenu();
+          }
         }
-        // dealsList.value.pop();
-        console.log(dealsList.value[0].pricePerUnit === '')
+        // если режим предмета perKilogram
+        if(calcSubjectPriceType.value === 'perKilogram') {
+          if (dealsList.value[tempValue.value].pricePerKilo === '') {
+            errorMsg.value = 'Вы не указали стоимость цены за 1 шт.'
+            setTimeout(() => {
+              errorMsg.value = false;
+            }, 3000)
+          } else if (dealsList.value[tempValue.value].recipe === '') {
+            errorMsg.value = 'Вы не выбрали рецепт'
+            setTimeout(() => {
+              errorMsg.value = false;
+            }, 3000)
+          } else if (dealsList.value[tempValue.value].gramPerPerson === '') {
+            errorMsg.value = 'Вы не указали вес порции'
+            setTimeout(() => {
+              errorMsg.value = false;
+            }, 3000)
+          }else {
+            openDealSubjectMenu();
+          }
+        }
       }
     }
 
@@ -649,7 +773,6 @@ export default {
       closeOptions();
       if (option.value === option.text) {
         search.value = option.contactInfo.surname + ' ' + option.contactInfo.name;
-        // console.log(option.id)
         contactId.value = option.id;
       }
     }
@@ -682,62 +805,61 @@ export default {
       return searchFilter(sortedContacts.value, search.value)
     });
 
-
-
     // Ассортимент по предметам заказа (устанавливается в настройках аккаунта)
     const assortmentList = [
       {
         name: 'cake',
         img: 'cake.png',
         title: 'Торт',
-        recipes: [
-          {
-            title: 'Молочная девочка'
-          },
-          {
-            title: 'Красный бархат'
-          }
-        ]
+        costEstimation: 'perKilogram'
       },
       {
         name: 'wedding-cake',
         img: 'wedding-cake.png',
         title: 'Свадебный торт',
+        costEstimation: 'perKilogram'
       },
       {
         name: 'cupcake',
         img: 'cupcake.png',
         title: 'Капкейк',
+        costEstimation: 'perUnit'
       },
       {
         name: 'meringue-roll',
         img: 'meringue-roll.png',
         title: 'Меренговый рулет',
+        costEstimation: 'perUnit'
       },
       {
         name: 'brownies',
         img: 'brownies.png',
         title: 'Брауни',
+        costEstimation: 'perUnit'
       },
       {
         name: 'meringue',
         img: 'meringue.png',
         title: 'Меренге (Безе)',
+        costEstimation: 'perUnit'
       },
       {
         name: 'pavlova',
         img: 'pavlova.png',
         title: 'Павлова',
+        costEstimation: 'perUnit'
       },
       {
         name: 'cake-pop',
         img: 'cake-pop.png',
         title: 'Кейк-попсы',
+        costEstimation: 'perUnit'
       },
       {
         name: 'cake-eskimos',
         img: 'cake-eskimos.png',
-        title: 'Эскимошки'
+        title: 'Эскимошки',
+        costEstimation: 'perUnit'
       }
     ]  
 
@@ -796,19 +918,54 @@ export default {
       }
     }
 
+    // Хранится режим perUnit или perKilogram
+    const calcSubjectPriceType = ref('perKilogram');
 
     // Добавляем еще предмет заказа
     const addOrderSubject = () => {
-      dealsList.value.push({
-        id: uid(),
-        selectedProduct: 'cake',
-        pricePerUnit: '',
-        productQuantity: 1,
-        discountSubjectPriceValue: setDiscountRange('min'),
-        totalSubjectPrice: 0,
-        productNote: '',
-        additionalAttributes: []
-      })
+      // Если расчет по типу perUnit
+        dealsList.value.push({
+          id: uid(),
+          selectedProduct: 'cake',
+          recipe: '',
+          // пока указываем режим ценообразования
+          priceMode: calcSubjectPriceType.value,
+          // для режима price perUnit
+          pricePerUnit: '',
+          // для режима price perKilogram
+          pricePerKilo: '',
+          personQuantity: 1,
+          gramPerPerson: 150,
+          //
+          productQuantity: 1,
+          discountSubjectPriceValue: setDiscountRange('min'),
+          totalSubjectPrice: 0,
+          productNote: '',
+          additionalAttributes: []
+        })
+    }
+
+    const calcTotalSubjectPrice = () => {
+      // Конкретный предмет заказа
+      const subject = dealsList.value[tempValue.value];
+
+      if(calcSubjectPriceType.value === 'perUnit') {
+        subject.totalSubjectPrice = Math.floor(subject.pricePerUnit * subject.productQuantity * (1 - subject.discountSubjectPriceValue/100) + sumPriceAdditionalAttributes());
+        // Обнуляем значения режима perKilogram
+        subject.pricePerKilo = '';
+        subject.personQuantity = 1;
+        subject.gramPerPerson = '';
+
+        return (subject.totalSubjectPrice).toFixed(2);
+
+      }
+      if(calcSubjectPriceType.value === 'perKilogram') {
+        subject.totalSubjectPrice = Math.floor((subject.pricePerKilo * ((subject.personQuantity * subject.gramPerPerson)/1000) * (1 - subject.discountSubjectPriceValue/100)) * subject.productQuantity + sumPriceAdditionalAttributes());
+        // Обнуляем значения режима perUnit
+        subject.pricePerUnit = '';
+
+        return (subject.totalSubjectPrice).toFixed(2);
+      }
     }
 
     // Total order price
@@ -836,7 +993,7 @@ export default {
         // Выбираем из массива данных нужные значения
         let numbers = array.map(item => +item.price)
         // Суммируем значения
-        let sum = numbers.reduce( (accumulator, currentValue) => accumulator + currentValue).toFixed(2)
+        let sum = numbers.reduce( (accumulator, currentValue) => accumulator + currentValue)
         // console.log(sum)
         return sum
       }
@@ -861,14 +1018,12 @@ export default {
           typeOfShipping: typeOfShipping.value
           // про цену = 0 написать
         }
-        console.log(shippingData.value)
       }
       if(typeOfShipping.value === 'shipping-delivery') {
         shippingData.value = {
           typeOfShipping: typeOfShipping.value,
           shippingAddress: 'пока не указано'
         }
-        console.log(shippingData.value)
       }
     }
 
@@ -879,7 +1034,7 @@ export default {
         return;
       }
       if (dealsList.value.length === 1) {
-        errorMsg.value = 'Error. Cannot remove, need to at least have one exercise';
+        errorMsg.value = 'Не могу удалить. Должен быть хотя бы 1 (один) предмет';
         setTimeout(() => {
           errorMsg.value = false;
         }, 5000);
@@ -937,16 +1092,29 @@ export default {
         openDealSubjectMenu();
         addOrderSubject();
         tempValue.value = +(dealsList.value.length - 1);
-        console.log(dealsList.value[0].pricePerUnit === '')
+        changeSubject()
     }
 
     const openCurrentSubject = (index) => {
+      // вставляем полученный индекс конкретного предмета заказа
       tempValue.value = +index;
+      // проверяем состояния perUnit или perKilogram
+      changeSubject();
+      // Открываем меню
       openDealSubjectMenu();
     }
 
+    // Helper вывода расчета цены, в зависимости от способа расчета (по весу или по шт)
+    const changeSubject = () => {
+      const choosenSubject = (dealsList.value[tempValue.value].selectedProduct).toString()
+
+      const choosenSubjectByAssortment = assortmentList.find(item => item.name === choosenSubject)
+
+      return calcSubjectPriceType.value = choosenSubjectByAssortment.costEstimation
+    }
+
     return {
-      typeOfDeal, dealStatus, contactOfDeal, contactInfo, dataLoaded, sortedContacts,filteredOptions, search, statusMsg, errorMsg, user, createDeal , editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortmentList, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributesList, userDiscountRangeValue, sum, totalDealValue, executionDate, totalDealMenuClose, setDiscountRange, dealStatusList, dealPaid, spinner, typeOfShipping, shippingTypeChanged, shippingData, closeMsgNotify, dealSubjectMenu, openDealSubjectMenu, closeDealSubjectMenu, addNewSubject, tempValue, openCurrentSubject, sumPriceAdditionalAttributes
+      typeOfDeal, dealStatus, contactOfDeal, contactInfo, dataLoaded, sortedContacts,filteredOptions, search, statusMsg, errorMsg, user, createDeal , editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortmentList, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributesList, userDiscountRangeValue, sum, totalDealValue, executionDate, totalDealMenuClose, setDiscountRange, dealStatusList, dealPaid, spinner, typeOfShipping, shippingTypeChanged, shippingData, closeMsgNotify, dealSubjectMenu, openDealSubjectMenu, closeDealSubjectMenu, addNewSubject, tempValue, openCurrentSubject, sumPriceAdditionalAttributes, changeSubject, calcSubjectPriceType, calcTotalSubjectPrice
     };
   },
 };
