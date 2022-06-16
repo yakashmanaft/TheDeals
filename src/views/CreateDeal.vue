@@ -33,9 +33,8 @@
           v-if="user" 
           @submit.prevent="createDeal" 
           class="flex flex-col items-center pt-0"
-          :class="{ item_fixed: dealSubjectMenu || spinner}"
+          :class="{ item_fixed: dealSubjectMenu || spinner || isSelectMenuOpened}"
         >
-
           <!-- set deal information inputs -->
           <div class="w-full mb-32 px-4" :class="{deal_information_inputs:totalDealMenu}">
 
@@ -106,7 +105,9 @@
                 >
               </div>
             </div>
-
+            <p>
+              Lorem, ipsum dolor sit amet consectetur adipisicing elit. Repellendus earum quod iusto quasi harum? Commodi molestias dolorum modi sequi ut neque necessitatibus. Culpa ipsam amet ut est placeat aperiam dolorem, eum optio et tenetur asperiores error magni earum consequuntur quis illo ratione similique debitis, officia hic pariatur aspernatur? Iste corrupti odit architecto iusto labore pariatur sit dolorum, provident eos id numquam soluta similique. Recusandae quibusdam debitis sunt iure cumque sed illo alias quo natus dolore nisi, numquam, nemo impedit! Doloribus dolor, est nesciunt aspernatur possimus tenetur! Ipsum nobis harum tempore. Cum deserunt quidem est vitae numquam fugiat odit sunt dolorem veritatis perspiciatis beatae quod enim eligendi, magni excepturi rerum, nesciunt iure? Rem deleniti labore ipsa doloribus dicta cum ratione odio eius dolorum eum veniam, minima maxime optio culpa laboriosam laborum dolores mollitia rerum porro laudantium magnam obcaecati! Quos est eius sit, libero impedit facilis, nemo illum praesentium consequatur odio fugiat incidunt doloremque, et ipsum minima accusantium quisquam odit consectetur. Tenetur est quas voluptatum illum eaque quidem vel recusandae expedita mollitia, molestias ea similique. Corporis fuga, quasi laboriosam veniam harum sed, et itaque fugiat id cupiditate deserunt nemo, illo laudantium ea. Commodi, facere illo porro quibusdam incidunt ab sequi perspiciatis a!
+            </p>
             <!-- set deal Status -->
             <div class="w-full flex flex-col mt-4">
               <label for="deal-status" class="mb-1 ml-2 text-sm text-blue">Статус дела</label>
@@ -126,40 +127,27 @@
             <!-- Тип дела -->
             <div class="w-full flex flex-col mt-4">
               <!-- Выбор типа дела -->
-              <Select
-                :options="dealTypeArray"
-                @select="optionSelect"
-                :selected="typeOfDeal.title"
-              ></Select>
-
-
-              <label for="deal-type" class="mb-1 ml-2 text-sm text-blue">Тип дела</label>
-              <select 
-                id="deal-type" 
-                class="border webkit p-2 w-full text-gray-500 bg-light-grey rounded-md focus:outline-none"
-                :class="{ 'rounded-b-none': typeOfDeal === 'order'}" 
-                required
-                v-model="typeOfDeal.name"
-                @change="dealTypeChanged"
-              >
-              <!-- Возможно , в дальнейшем динамическое, исходя из настроек аккаунта -->
-                <option disabled value="select-deal-type">Выберите тип дела</option>
-                <option value="order">Заказ</option>
-                <option value="supply">Поставка</option>
-                <option value="personal">Личное</option>
-              </select>
+              <div class="flex items-center">
+                <p class="text-xl font-black flex-1 text-dark">Тип дела</p>
+                <Select
+                  :options="dealTypeArray"
+                  @select="optionSelect"
+                  :selected="typeOfDeal.title"
+                  @change="dealTypeChanged"
+                ></Select>
+              </div>
 
               <!-- Выбираем тип дела -->
-              <div v-if="user" class="deal-subject_wrapper">
-                <!-- Не выбран тип дела -->
-                <div class="text-dark-gray text-sm px-2 pt-4" v-if="typeOfDeal === 'Выберите типа дела'">
-                  Не выбран тип дела
+                <!-- НЕ выбран -->
+                <div class="text-dark-gray text-sm px-2 mt-2" v-if="typeOfDeal.name === 'select-deal-type'">
+                  Не выбран
                 </div>
+
                 <!-- Выбран тип: Заказ -->
-                <div  v-if="typeOfDeal.name === 'order'" class="rounded-b-md border-b border-l border-r pt-2">
+                <div  v-if="typeOfDeal.name === 'order'" class="text-dark-gray text-sm px-2 mt-2">
                   <!-- если 0 предметов в заказе -->
-                  <div class="text-center" v-if="dealsList.length === 0">
-                    <p class="my-4">У вас не добавлены предметы к заказу</p>
+                  <div v-if="dealsList.length === 0">
+                    <p >Теперь добавьте позиции к заказу</p>
                   </div>
                   <!-- если > 0 предметов в заказе -->
                   <div v-for="(item, index) in dealsList" :key="index">
@@ -181,44 +169,28 @@
                   </div>
                   <!-- Footer типа дела Заказ -->
                   <div class="w-full flex items-center place-content-between px-2 py-1 border-t">
-                    <p class="text-dark-gray text-sm">Предметов в заказе: {{ dealsList.length }} </p>
+                    <p class="text-dark-gray text-sm">Позиций в заказе: {{ dealsList.length }} </p>
                     <p class="text-blue" id="addSubject" @click="addNewSubject">Добавить</p>
                   </div>
                 </div>
-
-              </div>
-            </div>
-            <!-- Настройки нового дела по выбранному типу-->
-            <div class="w-full">
-    
-              <!-- Если новое дело - это заказ -->
-              <div v-if="typeOfDeal.name === 'order'" class="radio-toolbar mt-4">
-                <!-- Выбор предмета заказа -->
-    
-                <!-- Button to add new social to current contact -->
-                <!-- <button 
-                  v-if="dealsList.length"
-                  @click="addOrderSubject"
-                  type="button"
-                  class=" w-full p-2 mt-2 rounded-md text-blue cursor-pointer"
-                >
-                  Добавить предмет
-                </button> -->
-              </div>
-    
-              <!-- Если новое дело - это поставка -->
-              <div v-if="typeOfDeal.name === 'supply'">
-                Новое дело - поставка. В разработке...
-              </div>
-    
-              <!-- Если новое дело - это личное -->
-              <div v-if="typeOfDeal.name === 'personal'">
-                Новое дело - личная задача. В разработке..
-              </div>
+                <!-- Выбран тип: Поставка -->
+                <div  v-if="typeOfDeal.name === 'supply'" class="text-dark-gray text-sm px-2 mt-2">
+                    <!-- если 0 позиций в поставке -->
+                    <div v-if="dealsList.length === 0">
+                      <p >Теперь добавьте позиции поставки</p>
+                    </div>
+                </div>
+                <!-- Выбран тип: Личное -->
+                <div  v-if="typeOfDeal.name === 'personal'" class="text-dark-gray text-sm px-2 mt-2">
+                    <!-- если 0 задач в личном -->
+                    <div v-if="dealsList.length === 0">
+                      <p >Теперь добавьте личные задачи</p>
+                    </div>
+                </div>
             </div>
 
             <!-- Внести оплату | предоплату (dealPaid) -->
-            <div class="w-full flex flex-col mt-4">
+            <div v-if="typeOfDeal.name !== 'select-deal-type'" class="w-full flex flex-col mt-4">
               <p class="mb-1 ml-2 text-sm text-blue">Предоплата (RUB)</p>
               <div class="flex place-content-between border items-center p-2 rounded-md">
                 <label for="dealPaid" class="text-sm leading-none align-text-middle text-dark-gray">
@@ -287,7 +259,7 @@
                 <!-- Sum Deal Value -->
                 <div class="ml-2">
                   <div class="text-xs text-dark-gray">
-                  {{dealsList.length}} предметов на сумму:
+                  Общая сумма:
                   </div>
                   <div class="text-xl">
                     {{sum()}} руб.
@@ -648,7 +620,7 @@ export default {
 
     const typeOfDeal = ref({
       name: 'select-deal-type',
-      title: 'Выберите тип дела'
+      title: 'Изменить'
     });
     const contactOfDeal = ref('select-deal-contact');
     const dealStatus = ref('deal-in-booking');
@@ -1165,12 +1137,15 @@ export default {
 
     // Метод по селекту type of deal
     const optionSelect = (option) => {
-      console.log(option)
+      // console.log(option)
+      // console.log(areOptionsVisible)
       typeOfDeal.value = option
     }
 
+    const isSelectMenuOpened = ref(false);
+
     return {
-      typeOfDeal, dealStatus, contactOfDeal, contactInfo, dataLoaded, sortedContacts,filteredOptions, search, statusMsg, errorMsg, user, createDeal , editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortmentList, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributesList, userDiscountRangeValue, sum, totalDealValue, executionDate, totalDealMenuClose, setDiscountRange, dealStatusList, dealPaid, spinner, typeOfShipping, shippingTypeChanged, shippingData, closeMsgNotify, dealSubjectMenu, openDealSubjectMenu, closeDealSubjectMenu, addNewSubject, tempValue, openCurrentSubject, sumPriceAdditionalAttributes, changeSubject, calcSubjectPriceType, calcTotalSubjectPrice, dealTypeArray, optionSelect, pageTitle
+      typeOfDeal, dealStatus, contactOfDeal, contactInfo, dataLoaded, sortedContacts,filteredOptions, search, statusMsg, errorMsg, user, createDeal , editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortmentList, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributesList, userDiscountRangeValue, sum, totalDealValue, executionDate, totalDealMenuClose, setDiscountRange, dealStatusList, dealPaid, spinner, typeOfShipping, shippingTypeChanged, shippingData, closeMsgNotify, dealSubjectMenu, openDealSubjectMenu, closeDealSubjectMenu, addNewSubject, tempValue, openCurrentSubject, sumPriceAdditionalAttributes, changeSubject, calcSubjectPriceType, calcTotalSubjectPrice, dealTypeArray, optionSelect, pageTitle, isSelectMenuOpened
     };
   },
 };
@@ -1328,11 +1303,7 @@ export default {
     backdrop-filter: blur(2px);
   }
 
-  .item_fixed {
-    position: fixed;
-    width: 100%;
-  }
-
+// Если не пригодится - удалить
   // .deal-details {
   //   height: 100%;
   //   overflow-y: scroll;
@@ -1460,10 +1431,11 @@ export default {
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23fff' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z'/%3e%3c/svg%3e");
   }
 
-  .deal-subject_wrapper {
-    margin-top: -10px;
-    border-top: none;
-  }
+  // Если не пригодится - удалить
+  // .deal-subject_wrapper {
+  //   margin-top: -10px;
+  //   border-top: none;
+  // }
 
   .img-wrapper {
     width: 72px;
@@ -1487,5 +1459,18 @@ export default {
     width: 100%;
     z-index: 20;
   }
+
+  // Потом удали
+  // .item_fixed:after {
+  //   content: '';
+  //   position: fixed;
+  //   z-index: 25;
+  //   top: 0;
+  //   left: 0;
+  //   width: 100%;
+  //   height: 100vh;
+  //   background-color: rgba(0, 0, 0, 0.7);
+  //   backdrop-filter: blur(2px);
+  // }
 
 </style>

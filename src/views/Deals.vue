@@ -348,6 +348,17 @@ export default {
     const dealStatusMenu = ref(false);
     // Помещаем сюда current статус выбранного дела
     const statusDeal = ref('')
+    // Открытие Закрытие меню внесения оплаты
+    const dealPaidMenu = ref(false);
+    // Помещаем сюда current статус выбранного дела
+    const dealPaid = ref('')
+    // Забирает value из выбранно чекбокса (по умолчанию ставим "В процессе")
+    const setDealStatus = ref('deal-in-process');
+    // Дергаем названия из роута
+    const router = useRouter();
+    const pageTitle = router.currentRoute._value.meta.translation;
+    // Дело с долгом
+    const dealWithDebt = ref(false);
       
     onMounted(() => {
       spinner.value = true;
@@ -371,11 +382,6 @@ export default {
       // console.log(currentDeal.debtValue > 0)
       return statusDeal.value = currentDeal
     }
-
-    // Открытие Закрытие меню внесения оплаты
-    const dealPaidMenu = ref(false);
-    // Помещаем сюда current статус выбранного дела
-    const dealPaid = ref('')
 
     // make payment menu toggle
     // Забираем у текущего дела id, сколько уже оплачено и total заказа
@@ -478,14 +484,6 @@ export default {
       }
     ]
 
-    // Забирает value из выбранно чекбокса (по умолчанию ставим "В процессе")
-    const setDealStatus = ref('deal-in-process');
-
-
-
-    const router = useRouter();
-    const pageTitle = router.currentRoute._value.meta.translation;
-
     // Преобразуем дату события для вывода в карточкн контакта
     const showEventDate = (eventdate) => {
       // get data from DB or input type date
@@ -578,8 +576,6 @@ export default {
       // compare contactID form deals with contactInfo from MyContacts
       return showNameByID(contactInfo, contactID)
     }
-
-    const dealWithDebt = ref(false);
 
     // Обновляем в БД Статус дела
     const updateStatus = async () => {

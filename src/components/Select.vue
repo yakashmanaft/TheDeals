@@ -1,5 +1,5 @@
 <template>
-    <div class="v-select">
+    <div class="v-select text-right text-sm text-blue border-b border-dashed border-blue">
         <p 
             class="title"
             @click="areOptionsVisible = !areOptionsVisible"
@@ -7,13 +7,14 @@
             {{selected}}
         </p>
         <div 
-            class="options"
+            class="options flex flex-col items-center justify-center"
             v-if="areOptionsVisible"
         >
             <p
+                class=""
                 v-for="option in options"
                 :key="option.name"
-                @click="$emit('select', option), areOptionsVisible = false"
+                @click.stop="$emit('select', option), areOptionsVisible = false"
             >
                 {{option.title}}
             </p>
@@ -35,7 +36,7 @@
             },
             selected: {
                 type: String,
-                default: '123'
+                default: ''
             }
         },
         setup() {
@@ -67,18 +68,23 @@
 <style scoped>
     .v-select {
         position: relative;
-        width: 100%;
+        /* width: 100%; */
         cursor: pointer;
     }
+    /* Если не пригодится - удалить */
     .title {
-        border: 1px solid #838383;
+        /* border: 1px solid #838383; */
     }
     .options {
-        border: 1px solid #838383;
-        position: absolute;
-        top: 25px;
+        /* border: 1px solid #838383; */
+        position: fixed;
+        bottom: 0;
+        height: 100vh;
+        z-index: 30;
         right: 0;
         width: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(2px);
     }
     .options p:hover {
         background: #000;
