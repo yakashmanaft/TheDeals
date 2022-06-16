@@ -26,7 +26,8 @@ const routes = [
     meta: {
       title: 'Dashboard',
       auth: true,
-      translation: 'Доска'
+      translation: 'Доска',
+      type: 'View'
     }
   },
   {
@@ -46,7 +47,8 @@ const routes = [
     meta: {
       title: 'Deals',
       auth: true,
-      translation: 'Все дела'
+      translation: 'Все дела',
+      type: 'View'
     }
   },
   {
@@ -74,6 +76,7 @@ const routes = [
     meta: {
       title: 'Create',
       auth: true,
+      type: 'Create'
     }
   },
   {
@@ -83,7 +86,8 @@ const routes = [
     meta: {
       title: 'Create Contact',
       auth: true,
-      translation: 'Новый контакт'
+      translation: 'Новый контакт',
+      type: 'Create'
     }
   },
   {
@@ -93,7 +97,8 @@ const routes = [
     meta: {
       title: 'Create Deal',
       auth: true,
-      translation: 'Новое дело'
+      translation: 'Новое дело',
+      type: 'Create'
     }
   },
   {
@@ -103,6 +108,7 @@ const routes = [
     meta: {
       title: 'Menu',
       auth: true,
+      type: 'Menu'
     }
   },
   {
@@ -112,7 +118,8 @@ const routes = [
     meta: {
       title: 'Calendar',
       auth: true,
-      translation: 'Календарь'
+      translation: 'Календарь',
+      type: 'View'
     }
   },
   {
@@ -122,7 +129,8 @@ const routes = [
     meta: {
       title: 'Wallet',
       auth: true,
-      translation: 'Кошелек'
+      translation: 'Кошелек',
+      type: 'View'
     }
   },
   {
@@ -132,7 +140,8 @@ const routes = [
     meta: {
       title: 'Warehouse',
       auth: true,
-      translation: 'Склад'
+      translation: 'Склад',
+      type: 'View'
     }
   },
   {
@@ -142,7 +151,8 @@ const routes = [
     meta: {
       title: 'Contacts',
       auth: true,
-      translation: 'Мои контакты'
+      translation: 'Мои контакты',
+      type: 'View'
     }
   },
   {
@@ -152,7 +162,8 @@ const routes = [
     meta: {
       title: 'AccountSettings',
       auth: true,
-      translation: 'Настройки'
+      translation: 'Настройки',
+      type: 'View'
     }
   },
   {
@@ -162,6 +173,7 @@ const routes = [
     meta: {
       title: 'ViewWorkout',
       auth: true,
+      type: 'CurrentView'
     }
   },
   {
@@ -169,8 +181,9 @@ const routes = [
     name: "View-Contact",
     component: ViewContact,
     meta: {
-      title: 'ViewContact',
+      title: 'View Contact',
       auth: true,
+      type: 'CurrentView'
     }
   },
   {
@@ -178,8 +191,9 @@ const routes = [
     name: "View-Deal",
     component: ViewDeal,
     meta: {
-      title: 'ViewDeal',
+      title: 'View Deal',
       auth: true,
+      type: 'CurrentView'
     }
   },
 ];

@@ -1,12 +1,12 @@
 <template>
-  <div class="container">
+  <div>
     <!-- Компонент Navigation -->
     <Navigation :title="pageTitle"/>
 
     <!-- Кнопка создания нового контакта-->
     <QuickAccessMenu :to="{ name: 'CreateContact' }"></QuickAccessMenu>
 
-    <div v-if="dataLoaded" class="pt-20">
+    <div v-if="dataLoaded" class="container pt-20">
 
       <!-- No Data -->
       <!-- Стилизовать нормально? -->
@@ -75,9 +75,9 @@
 
       </div>
     </div>
+    <!-- Здесь планирую показывать диаграмы может какие -->
   </div>
 
-  <!-- Здесь планирую показывать диаграмы может какие -->
 </template>
 
 <script>

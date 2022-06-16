@@ -1,49 +1,29 @@
 <template>
-  <div class="container text-dark">
-    <!-- Navigation -->
-    <nav class="fixed z-10 bg-white nav container py-2 px-4 flex gap-4 items-center sm:flex-row place-content-between">
-      <div class="flex items-center">
-        <div class="text-blue" v-if="edit" @click="cancelEdit">
-          Отмена
-        </div>
-        <div v-else v-show="user" @click="$router.go(-1)" class="arrow-back">
-          <img src="@/assets/images/common/arrow-right.svg" class="arrow-back_icon" alt="">
-          <p class="text-dark text-2xl font-bold ml-2 arrow-back_text">Назад</p>
-        </div>
-      </div>
-      <!-- а как же if dataLoaded?? -->
-      <div v-if="edit" class="justify-self-end text-blue font-bold" @click="update">
-        Готово
-      </div>
-      <div v-else class="justify-self-end text-blue" @click="editMode">
-        <p>Править</p>
-      </div>
-    </nav>
+  <div>
+      <!-- Компонент Navigation -->
+      <Navigation :title="pageTitle" :edit="edit" :editMode="editMode" :update="update" :cancelEdit="cancelEdit"/>
 
-
-    <!-- View current deal -->
-    <div class="max-w-screen-sm mx-auto px-4 py-10">
-      <!-- App Msg -->
-      <div 
-        v-if="statusMsg || errorMsg" 
-        class="fixed z-20 flex left-0 top-0 w-full h-16 mb-10 px-8 py-4 rounded-b-md shadow-md bg-white items-center place-content-between"
-      >
-        <div>
-          <p v-if="statusMsg" class="text-green">
-            {{ statusMsg }}
-            <!-- Контакт успешно обновлен -->
-          </p>
-          <p class="text-red-500">
-            {{ errorMsg }}
-          </p>
+      <!-- Data -->
+      <div v-if="dataLoaded" class="pt-20 container">
+        <!-- App Msg -->
+        <div 
+          v-if="statusMsg || errorMsg" 
+          class="fixed z-20 flex left-0 top-0 w-full h-16 mb-10 px-8 py-4 rounded-b-md shadow-md bg-white items-center place-content-between"
+        >
+          <div>
+            <p v-if="statusMsg" class="text-green">
+              {{ statusMsg }}
+              <!-- Контакт успешно обновлен -->
+            </p>
+            <p class="text-red-500">
+              {{ errorMsg }}
+            </p>
+          </div>
+          <div class="text-dark-gray" @click="statusMsg = !statusMsg">
+            Оk
+          </div>
         </div>
-        <div class="text-dark-gray" @click="statusMsg = !statusMsg">
-          Оk
-        </div>
-      </div>
 
-      <!--  -->
-      <div v-if="dataLoaded" class="mt-10">
         <p>Дело № {{ data.id }}</p>
         <p>Тип дела: {{ translateDealType(data.dealType) }}</p>
         <p>Заказчик: {{ getNameId(data.contactID) }}</p>
@@ -66,11 +46,12 @@
         Update Workout
         </button>
       </div>
-    </div>
   </div>
 </template>
 
 <script>
+import Navigation from '../components/Navigation.vue';
+
 import { ref, computed } from 'vue';
 import { supabase } from '../supabase/init';
 import { useRoute, useRouter } from 'vue-router';
@@ -83,6 +64,9 @@ import { translateDealType } from '../helpers/translators';
 
 export default {
   name: "view-deal",
+  components: {
+    Navigation
+  },
   setup() {
     // Create data / vars
     const data = ref(null);
@@ -92,6 +76,9 @@ export default {
     const route = useRoute();
     const router = useRouter();
     const user = computed(() => store.state.user)
+
+    // Берем имя роута для заголовка
+    const pageTitle = router.currentRoute._value.meta.translation;
 
     // Get current Id of route
     const currentId = route.params.dealId;
@@ -207,30 +194,15 @@ export default {
     }
 
     return {
-      statusMsg, data, dataLoaded, errorMsg, edit, cancelEdit, editMode, user, deleteWorkout, addExercise, deleteExercise, update, getNameId, translateDealType
+      statusMsg, data, dataLoaded, errorMsg, edit, cancelEdit, editMode, user, deleteWorkout, addExercise, deleteExercise, update, getNameId, translateDealType, pageTitle
     };
   },
 };
 </script>
 <style lang="scss" scoped>
-  .arrow-back {
-    width: 30px;
-    height: 30px;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-  }
-
   .nav {
     height: 76px;
     padding: 0.5rem 1rem;
-    // background-color: #ccc;
-  }
-
-  .arrow-back_icon {
-    width: 60%;
-    height: 60%;
-    transform: rotate(180deg);
   }
 
   .event-item,
@@ -295,5 +267,9 @@ export default {
     border-color: #4785E7;
     background-color: #4785E7;
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23fff' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z'/%3e%3c/svg%3e");
+  }
+
+  .container {
+    height: 100vh;
   }
 </style>

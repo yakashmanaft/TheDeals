@@ -1,16 +1,10 @@
 <template>
-  <div class="container text-dark">
-
-    <!-- Компонент Navigation -->
-    <!-- <nav class="nav w-full bg-white fixed z-10 py-2 px-4 flex items-center justify-between">
-      <h1 class="text-dark text-2xl font-bold">Новое дело</h1>
-      <div @click="$router.go(-1)" class="text-blue">Отменить</div>
-    </nav> -->
-
+  <div>
     <Navigation :title="pageTitle"/>
 
+
     <!-- Create New Deal -->
-    <main v-if="dataLoaded" class="max-w-screen-md mx-auto pt-20">
+    <div v-if="dataLoaded" class="container pt-20">
 
       <!-- App Msg -->
       <!-- разобраться со стилями ерроров и меседжей системных -->
@@ -368,12 +362,16 @@
             <div class="bg-light-grey border-t w-full rounded-t-2xl mx-auto h-full overflow-y-auto overflow-y">
               <!-- menu header -->
               <div class="bg-white border-b rounded-t-2xl text-blue flex items-center place-content-between deal-status-menu inset-x-2/4 fixed w-full left-0">
-                <div class="flex flex-col justify-center item-center p-4">
-                  <span class="text-dark-gray text-xs">Предмет #{{tempValue + 1}}</span>
-                  <span class="text-xl text-dark">                      <!-- Общая цена конкретного предмета -->
+                <!-- Отменить -->
+                <span class="btn_cancel p-4 pr-0">Отменить</span>
+                <!-- Цена -->
+                <div class="flex flex-1 flex-col justify-center item-center p-4">
+                  <span class="text-dark-gray text-xs text-center">Предмет #{{tempValue + 1}}</span>
+                  <span class="text-xl text-dark text-center">                      <!-- Общая цена конкретного предмета -->
                       {{calcTotalSubjectPrice()}} RUB</span>
                 </div>
-                  <span class="dealStatusMenu-btn_close p-4">Готово</span>
+                <!-- Готово -->
+                <span class="btn_done p-4">Готово</span>
               </div>
               <!-- menu content -->
               <div class="mt-16 bg-white pt-6">
@@ -609,7 +607,7 @@
 
       </div>
       
-    </main>
+    </div>
   </div>
   
 </template>
@@ -725,7 +723,8 @@ export default {
     }
 
     const closeDealSubjectMenu = (e) => {
-      if (e.target.classList.contains('dealStatusMenu-btn_close') || e.target.classList.contains('shading_background')) {
+      // Если нажали на кнопку Готово
+      if (e.target.classList.contains('btn_done')) {
         // если режим предмета perUnit
         if(calcSubjectPriceType.value === 'perUnit') {
           if (dealsList.value[tempValue.value].pricePerUnit === '') {
@@ -763,6 +762,17 @@ export default {
             openDealSubjectMenu();
           }
         }
+      }
+      // Если нажали на кнопку Отменитьи или ткнули на фон
+      if (e.target.classList.contains('shading_background') || e.target.classList.contains('btn_cancel')) {
+        if (dealsList.value[tempValue.value].totalSubjectPrice === 0) {
+
+          dealsList.value = dealsList.value.filter(subject => subject.id != dealsList.value[tempValue.value].id);
+          openDealSubjectMenu();
+        } else {
+          openDealSubjectMenu();
+        }
+        
       }
     }
 

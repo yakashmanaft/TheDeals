@@ -1,13 +1,13 @@
 <template>
-  <div class="container text-dark">
-
+  <div>
     <!-- Компонент Navigation -->
     <Navigation :title="pageTitle"/>
 
+    <!-- Loading spinner -->
+    <Spinner v-if="spinner"></Spinner>
+
     <!-- Create new contact -->
-    <main class="max-w-screen-sm mx-auto pt-20">
-
-
+    <div class="container pt-20">
       <!-- App Msg -->
       <!-- разобраться со стилями ерроров и меседжей системных -->
       <!-- Status Message -->
@@ -24,9 +24,6 @@
           Ok
         </div>
       </div>
-
-      <!-- Loading spinner -->
-      <Spinner v-if="spinner"></Spinner>
 
       <!-- Create -->
       <form v-if="user" @submit.prevent="createContact" class="flex flex-col items-center p-4 py-10" :class="{ item_fixed: spinner}">
@@ -374,7 +371,7 @@
           Создать Контакт
         </button>
       </form>
-    </main>
+    </div>
   </div>
 </template>
 
@@ -645,5 +642,9 @@ import { useRouter } from 'vue-router';
   .item_fixed {
     position: fixed;
     width: 100%;
+  }
+
+  .container {
+    height: 100vh;
   }
 </style>

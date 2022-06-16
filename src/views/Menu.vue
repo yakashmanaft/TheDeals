@@ -1,5 +1,5 @@
 <template>
-  <div  class="container text-dark">
+  <div>
 
     <!-- Компонент Navigation -->
     <Navigation :title="pageTitle" :data="userEmail"/>  
