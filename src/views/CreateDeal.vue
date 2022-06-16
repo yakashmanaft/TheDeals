@@ -765,7 +765,7 @@ export default {
       }
       // Если нажали на кнопку Отменитьи или ткнули на фон
       if (e.target.classList.contains('shading_background') || e.target.classList.contains('btn_cancel')) {
-        if (dealsList.value[tempValue.value].totalSubjectPrice === 0) {
+        if (dealsList.value[tempValue.value].totalSubjectPrice === 0 || dealsList.value[tempValue.value].recipe === '') {
 
           dealsList.value = dealsList.value.filter(subject => subject.id != dealsList.value[tempValue.value].id);
           openDealSubjectMenu();
