@@ -12,7 +12,6 @@
             @click="hideOptionsMenu"
         >
             <p
-                class=""
                 v-for="option in options"
                 :key="option.name"
                 @click.stop="$emit('select', option), toggleSelect()"
@@ -25,7 +24,7 @@
 
 <script>
     import { ref } from 'vue';
-    // import store from '../store/index';
+    import store from '../store/index';
 
     export default {
         name: 'Select',
@@ -47,6 +46,7 @@
             // функция сокрытия селектов
             const toggleSelect = () => {
                 areOptionsVisible.value = !areOptionsVisible.value
+                store.methods.backgroundFixed()
             }
 
             // Закрываем options меню по клику вне

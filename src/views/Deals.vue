@@ -120,7 +120,7 @@
                         <div class="deal-subject_item-img">
                           <img :src="require(`../assets/images/deals/orders/${item.selectedProduct}.png`)" alt=""> 
                         </div>
-                        <div class="text-dark-gray text-xs text-center">х {{ item.productQuantity }}</div>
+                        <div class="text-dark-gray text-xs text-center">х{{ item.productQuantity }}</div>
                       </div>
                     </div>
 

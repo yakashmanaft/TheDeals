@@ -21,7 +21,7 @@
 
         <!-- Кнопка закрыть меню -->
         <div class="gamburger flex items-center justify-center" @click="$router.go(-1)">
-          <img src="@/assets/images/common/icon-close.svg" class="w-4/5 h-4/5" alt="">
+          <img src="@/assets/images/common/icon-close.svg" alt="" class="w-4/6 h-4/6">
         </div>
       </div>
 
@@ -125,8 +125,5 @@
     height: 60%;
   }
 
-  img {
-    width: 100%;
-    height: 100%;
-  }
+
 </style>

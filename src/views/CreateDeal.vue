@@ -109,13 +109,13 @@
             <div class="w-full flex flex-col mt-4">
               <!-- Выбор статуса дела -->
               <div class="flex items-center">
-                <p class="text-xl font-black flex-1 text-dark">Статус дела</p>
-                <Select
-                  :options="dealStatusList"
-                  @select="optionDealStatusSelect"
-                  :selected="dealStatus.title"
-                  @change="dealTypeChanged"
-                ></Select>
+                <p class="font-black flex-1 text-dark">Статус дела</p>
+                  <Select
+                    :options="dealStatusListForSelect()"
+                    @select="optionDealStatusSelect"
+                    :selected="dealStatus.title"
+                    @change="dealTypeChanged"
+                  ></Select>
               </div>
             </div>
 
@@ -123,7 +123,7 @@
             <div class="w-full flex flex-col mt-4">
               <!-- Выбор типа дела -->
               <div class="flex items-center">
-                <p class="text-xl font-black flex-1 text-dark">Тип дела</p>
+                <p class="font-black flex-1 text-dark">Тип дела</p>
                 <Select
                   :options="dealTypeArray"
                   @select="optionSelect"
@@ -133,39 +133,50 @@
               </div>
 
               <!-- Выбираем тип дела -->
-                <!-- НЕ выбран -->
-                <div class="text-dark-gray text-sm px-2 mt-2" v-if="typeOfDeal.name === 'select-deal-type'">
-                  Не выбран
-                </div>
 
-                <!-- Выбран тип: Заказ -->
-                <div  v-if="typeOfDeal.name === 'order'" class="text-dark-gray text-sm px-2 mt-2">
+                <!-- Заказ -->
+                <div  v-if="typeOfDeal.name === 'order'" class="text-dark-gray mt-4">
+
+                  <!-- Удалить если не потребуется -->
                   <!-- если 0 предметов в заказе -->
-                  <div v-if="dealsList.length === 0">
+                  <!-- <div v-if="dealsList.length === 0">
                     <p >Теперь добавьте позиции к заказу</p>
-                  </div>
+                  </div> -->
+
                   <!-- если > 0 предметов в заказе -->
-                  <div v-for="(item, index) in dealsList" :key="index">
-                    <div id="currentSubject" @click="openCurrentSubject(index)" class="flex place-content-between items-center">
-                      <div class="img-wrapper bg-light-grey rounded-full p-2">
-                        <img :src="require(`../assets/images/deals/orders/${item.selectedProduct}.png`)" alt=""> 
-                      </div>
-                      <div class="flex-1">
-                        <p>Предмет:{{ item.selectedProduct }}</p>
-                        <p>Кол-во:{{ item.productQuantity }}</p>
-                        <p>Цена 1 ед.:{{ item.pricePerUnit }}</p>
-                        <p>Скидка, %{{ item.discountSubjectPriceValue }}</p>
-                        <p>Сумма{{ item.totalSubjectPrice }}</p>
-                        <p>ЗАметки{{ item.productNote }}</p>
-                        <p>Атрибуты:{{ item.additionalAttributes }}</p>
-                      </div>
-                      <p id="deleteCurrentSubject" class="z-20" @click.stop="deleteOrderSubject(item.id)">Удалить</p>
+                  <div>
+                    <!-- header -->
+                    <div class="flex items-center place-content-between">
+                      <p class="text-md font-black text-dark">Позиции заказа</p>
+                      <p class="text-sm text-blue border-b border-dashed border-blue" @click="addNewSubject">Добавить</p>
                     </div>
-                  </div>
-                  <!-- Footer типа дела Заказ -->
-                  <div class="w-full flex items-center place-content-between px-2 py-1 border-t">
-                    <p class="text-dark-gray text-sm">Позиций в заказе: {{ dealsList.length }} </p>
-                    <p class="text-blue" id="addSubject" @click="addNewSubject">Добавить</p>
+                    <!-- subject cards -->
+                    <div class="mt-4" v-for="(item, index) in dealsList" :key="index">
+
+                      <!-- Current subject -->
+                      <div @click="openCurrentSubject(index)" class="flex place-content-between items-center border rounded-md mt-2 p-2">
+                        <div class="flex flex-col items-center">
+                          <div class="img-wrapper bg-light-grey rounded-full p-2">
+                            <img :src="require(`../assets/images/deals/orders/${item.selectedProduct}.png`)" alt=""> 
+                          </div>
+                          <span>x{{ item.productQuantity }}</span>
+                        </div>
+                        <div class="flex-1">
+                          <p>Предмет:{{ item.selectedProduct }}</p>
+                          <p>Цена 1 ед.:{{ item.pricePerUnit }}</p>
+                          <p>Скидка, %{{ item.discountSubjectPriceValue }}</p>
+                          <p>Сумма по изготовлению{{ item.subjectPrice }}</p>
+                          <p>ЗАметки{{ item.productNote }}</p>
+                          <p>Атрибуты:{{ item.additionalAttributes }}</p>
+                          <p>Сумма всей позиции по заказу{{ item.totalSubjectPrice }}</p>
+                        </div>
+                        <p @click.stop="deleteOrderSubject(item.id)">Удалить</p>
+                      </div>
+                    </div>
+                    <!-- Footer -->
+                    <div class="flex items-center justify-end mt-4" v-if="dealsList.length > 0">
+                      <p class=" text-sm text-blue border-b border-dashed border-blue" @click="addNewSubject">Добавить еще</p>
+                    </div>
                   </div>
                 </div>
                 <!-- Выбран тип: Поставка -->
@@ -229,6 +240,8 @@
               <!-- Если Доставка -->
               <div v-if="typeOfShipping === 'shipping-delivery'">
                 Выбранный вариант доставки: Доставка
+                <input type="number" inputmode="decimal" v-model="shippingData.shippingPrice">  
+                {{shippingData}}
               </div>
             </div>
 
@@ -242,6 +255,7 @@
           <!-- total menu wrapper -->
           <!-- Может имеет смысл сделать компонентом? -->
           <div
+            v-if="sum() > 0"
             class="w-full fixed bottom-0 left-0 flex items-center  justify-center flex-col pb-0 z-20"
             :class="{ shading_background:totalDealMenu}"
             @click="totalDealMenuClose"
@@ -262,7 +276,7 @@
                   
                 </div>
       
-                <!-- btn to open total Deal Menu -->
+                <!-- btns toggle total Deal Menu -->
                 <div @click="showTotalDealMenu">
                   <div class="flex items-center mr-2">
                     <div v-if="totalDealMenu === false" class="text-blue mr-2">Подробнее</div>
@@ -278,7 +292,7 @@
                 </div>
               </div>
       
-              <!-- Deal Sum Details -->
+              <!-- Deal Sum Details (Content)-->
               <div v-if="totalDealMenu" class="deal-details px-4 border-t mt-2 overflow-y-auto h-48">
                 {{dealsList}}
 
@@ -318,7 +332,7 @@
 
           </div>
 
-          <!-- Меню выбора предмета заказа -->
+          <!-- Меню выбора предмета заказа (всплывашка)-->
           <div 
             v-if="dealSubjectMenu" 
             class="w-full h-full fixed pt-16 bottom-0 left-0 flex items-center justify-center flex-col z-20" 
@@ -335,7 +349,7 @@
                 <div class="flex flex-1 flex-col justify-center item-center p-4">
                   <span class="text-dark-gray text-xs text-center">Предмет #{{tempValue + 1}}</span>
                   <span class="text-xl text-dark text-center">                      <!-- Общая цена конкретного предмета -->
-                      {{calcTotalSubjectPrice()}} RUB</span>
+                      {{(dealsList[tempValue].totalSubjectPrice).toFixed(2)}}RUB</span>
                 </div>
                 <!-- Готово -->
                 <span class="btn_done p-4">Готово</span>
@@ -374,7 +388,6 @@
                       v-model="dealsList[tempValue].recipe" 
                     >
                 </div>
-
                 <!-- Calc Subject Price -->
                 <div>
                   <!-- Если предмет заказа считается по кол-ву штук -->
@@ -501,7 +514,6 @@
                   </div>
 
                 </div>
-
                 <!-- discount for subject price -->
                 <div class="flex place-content-between mx-4 mt-8 items-center">
                   <span class="leading-none align-text-middle text-dark-gray">
@@ -528,8 +540,8 @@
                     <span 
                       class="py-2 text-xl"
                     >
-                      <!-- Общая цена конкретного предмета -->
-                      {{(dealsList[tempValue].totalSubjectPrice).toFixed(2)}}
+                      <!-- Общая цена конкретного предмета (без допов)-->
+                      {{calcSubjectPrice()}} 
                     </span>
                   </div>
                 </div>
@@ -561,7 +573,7 @@
                     <span class="text-dark-gray">Итого по предмету #{{tempValue + 1}}</span> 
                     <!-- Общая цена конкретного предмета -->
                     <div class="text-xl text-dark">
-                      {{(dealsList[tempValue].totalSubjectPrice).toFixed(2)}} RUB
+                      {{calcTotalSubjectPrice()}} RUB
                     </div>
                 </div>
               </div>
@@ -615,7 +627,7 @@ export default {
 
     const typeOfDeal = ref({
       name: 'select-deal-type',
-      title: 'Изменить'
+      title: 'Не выбран'
     });
     const contactOfDeal = ref('select-deal-contact');
     const dealStatus = ref({
@@ -735,7 +747,7 @@ export default {
       }
       // Если нажали на кнопку Отменитьи или ткнули на фон
       if (e.target.classList.contains('shading_background') || e.target.classList.contains('btn_cancel')) {
-        if (dealsList.value[tempValue.value].totalSubjectPrice === 0 || dealsList.value[tempValue.value].recipe === '') {
+        if (dealsList.value[tempValue.value].subjectPrice === 0 || dealsList.value[tempValue.value].recipe === '') {
 
           dealsList.value = dealsList.value.filter(subject => subject.id != dealsList.value[tempValue.value].id);
           openDealSubjectMenu();
@@ -925,6 +937,50 @@ export default {
     // Хранится режим perUnit или perKilogram
     const calcSubjectPriceType = ref('perKilogram');
 
+
+    const calcSubjectPrice = () => {
+      // Конкретный предмет заказа
+      const subject = dealsList.value[tempValue.value];
+
+      if(calcSubjectPriceType.value === 'perUnit') {
+        subject.subjectPrice = Math.floor(subject.pricePerUnit * subject.productQuantity * (1 - subject.discountSubjectPriceValue/100));
+        subject.priceMode = 'perUnit'
+        // Обнуляем значения режима perKilogram
+        subject.pricePerKilo = '';
+        subject.personQuantity = '';
+        subject.gramPerPerson = '';
+
+        return (subject.subjectPrice).toFixed(2);
+
+      }
+      if(calcSubjectPriceType.value === 'perKilogram') {
+        subject.subjectPrice = Math.floor((subject.pricePerKilo * ((subject.personQuantity * subject.gramPerPerson)/1000) * (1 - subject.discountSubjectPriceValue/100)) * subject.productQuantity);
+        subject.priceMode = 'perKilogram'
+        // Обнуляем значения режима perUnit
+        subject.pricePerUnit = '';
+
+        return (subject.subjectPrice).toFixed(2);
+      }
+    }
+
+    // Total order price
+    const sum = () => {
+      if(dealsList.value.length >= 1) {
+        // Берем массив данных
+        let array = dealsList.value;
+        // Выбираем из массива данных нужные значения
+        let numbers = array.map(item => item.totalSubjectPrice)
+        // Суммируем значения
+        let sum = numbers.reduce( (accumulator, currentValue) => accumulator + currentValue)
+        // задаем значение общей стоиомсти дела
+        totalDealValue.value = (sum + shippingData.value.shippingPrice).toFixed(2)
+        // console.log(sum)
+        // console.log(shippingData.value.shippingPrice)
+        return sum, totalDealValue.value
+      }
+      return '0.00'
+    }
+
     // Добавляем еще предмет заказа
     const addOrderSubject = () => {
       // Если расчет по типу perUnit
@@ -943,50 +999,14 @@ export default {
           //
           productQuantity: 1,
           discountSubjectPriceValue: setDiscountRange('min'),
-          totalSubjectPrice: 0,
+          //
+          subjectPrice: 0,
+          //
           productNote: '',
-          additionalAttributes: []
+          additionalAttributes: [],
+          //
+          totalSubjectPrice: 0,
         })
-    }
-
-    const calcTotalSubjectPrice = () => {
-      // Конкретный предмет заказа
-      const subject = dealsList.value[tempValue.value];
-
-      if(calcSubjectPriceType.value === 'perUnit') {
-        subject.totalSubjectPrice = Math.floor(subject.pricePerUnit * subject.productQuantity * (1 - subject.discountSubjectPriceValue/100) + sumPriceAdditionalAttributes());
-        // Обнуляем значения режима perKilogram
-        subject.pricePerKilo = '';
-        subject.personQuantity = 1;
-        subject.gramPerPerson = '';
-
-        return (subject.totalSubjectPrice).toFixed(2);
-
-      }
-      if(calcSubjectPriceType.value === 'perKilogram') {
-        subject.totalSubjectPrice = Math.floor((subject.pricePerKilo * ((subject.personQuantity * subject.gramPerPerson)/1000) * (1 - subject.discountSubjectPriceValue/100)) * subject.productQuantity + sumPriceAdditionalAttributes());
-        // Обнуляем значения режима perUnit
-        subject.pricePerUnit = '';
-
-        return (subject.totalSubjectPrice).toFixed(2);
-      }
-    }
-
-    // Total order price
-    const sum = () => {
-      if(dealsList.value.length >= 1) {
-        // Берем массив данных
-        let array = dealsList.value;
-        // Выбираем из массива данных нужные значения
-        let numbers = array.map(item => item.totalSubjectPrice)
-        // Суммируем значения
-        let sum = numbers.reduce( (accumulator, currentValue) => accumulator + currentValue).toFixed(2)
-        // задаем значение общей стоиомсти дела
-        totalDealValue.value = sum
-  
-        return sum, totalDealValue.value
-      }
-      return '0.00'
     }
 
     // sum price of additional attributes in current subject
@@ -1004,29 +1024,37 @@ export default {
       return 0
     }
 
+    //
+    const calcTotalSubjectPrice = () => {
+      const subject = dealsList.value[tempValue.value]
+      subject.totalSubjectPrice = subject.subjectPrice + sumPriceAdditionalAttributes()
+      return subject.totalSubjectPrice
+    }
+
     // Listens for changing of deal type input
     const dealTypeChanged = () => {
       dealsList.value = [];
       // addOrderSubject();
     }
 
+
     const shippingData = ref({
-      typeOfShipping: 'не указан'
-      // про цену = 0 написать
+      typeOfShipping: 'не указан',
+      shippingPrice: 0
     });
 
     // Listens for changing of shipping type input
     const shippingTypeChanged = () => {
       if (typeOfShipping.value === 'shipping-pickup') {
         shippingData.value = {
-          typeOfShipping: typeOfShipping.value
-          // про цену = 0 написать
+          typeOfShipping: typeOfShipping.value,
         }
       }
       if(typeOfShipping.value === 'shipping-delivery') {
         shippingData.value = {
           typeOfShipping: typeOfShipping.value,
-          shippingAddress: 'пока не указано'
+          shippingAddress: 'Не указано',
+          shippingPrice: 0
         }
       }
     }
@@ -1061,11 +1089,11 @@ export default {
         const { error } = await supabase.from('deals').insert([
           {
             dealType: typeOfDeal.value.name,
-            dealStatus: dealStatus.value,
+            dealStatus: dealStatus.value.name,
             contactID: contactId.value,
             executionDate: executionDate.value,
             dealsList: dealsList.value,
-            totalDealValue: totalDealValue.value,
+            totalDealValue: totalDealValue.value, 
             dealPaid: dealPaid.value,
             shipping: shippingData.value
           }
@@ -1110,6 +1138,7 @@ export default {
 
     // Helper вывода расчета цены, в зависимости от способа расчета (по весу или по шт)
     const changeSubject = () => {
+      // calcSubjectPriceType.value = 'perKilogram'
       const choosenSubject = (dealsList.value[tempValue.value].selectedProduct).toString()
 
       const choosenSubjectByAssortment = assortmentList.find(item => item.name === choosenSubject)
@@ -1133,6 +1162,12 @@ export default {
       }
     ]
 
+    // Передадим в компонент Select измененный массив
+    const dealStatusListForSelect = () => {
+      const newArray = dealStatusList.filter(item => (item.name !== 'deal-complete' && item.name !== 'deal-cancelled'))
+      return newArray
+    }
+
     // Метод по селекту deal status
     const optionDealStatusSelect = (option) => {
       dealStatus.value = option
@@ -1143,10 +1178,10 @@ export default {
       typeOfDeal.value = option
     }
 
-    const isSelectMenuOpened = computed(() => store.state.areOptionsVisible);
+    const isSelectMenuOpened = computed(() => store.state.isBackgroundFixed);
 
     return {
-      typeOfDeal, dealStatus, contactOfDeal, contactInfo, dataLoaded, sortedContacts,filteredOptions, search, statusMsg, errorMsg, user, createDeal , editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortmentList, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributesList, userDiscountRangeValue, sum, totalDealValue, executionDate, totalDealMenuClose, setDiscountRange, dealStatusList, dealPaid, spinner, typeOfShipping, shippingTypeChanged, shippingData, closeMsgNotify, dealSubjectMenu, openDealSubjectMenu, closeDealSubjectMenu, addNewSubject, tempValue, openCurrentSubject, sumPriceAdditionalAttributes, changeSubject, calcSubjectPriceType, calcTotalSubjectPrice, dealTypeArray, optionSelect, pageTitle, isSelectMenuOpened, optionDealStatusSelect
+      typeOfDeal, dealStatus, contactOfDeal, contactInfo, dataLoaded, sortedContacts,filteredOptions, search, statusMsg, errorMsg, user, createDeal , editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortmentList, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributesList, userDiscountRangeValue, sum, totalDealValue, executionDate, totalDealMenuClose, setDiscountRange, dealStatusList, dealPaid, spinner, typeOfShipping, shippingTypeChanged, shippingData, closeMsgNotify, dealSubjectMenu, openDealSubjectMenu, closeDealSubjectMenu, addNewSubject, tempValue, openCurrentSubject, sumPriceAdditionalAttributes, changeSubject, calcSubjectPriceType, calcSubjectPrice, dealTypeArray, optionSelect, pageTitle, isSelectMenuOpened, optionDealStatusSelect, calcTotalSubjectPrice, dealStatusListForSelect
     };
   },
 };
@@ -1439,8 +1474,8 @@ export default {
   // }
 
   .img-wrapper {
-    width: 72px;
-    height: 72px;
+    width: 60px;
+    height: 60px;
     margin: 0 auto
   }
 
