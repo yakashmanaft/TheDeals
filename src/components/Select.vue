@@ -1,20 +1,21 @@
 <template>
-    <div class="v-select text-right text-sm text-blue border-b border-dashed border-blue">
+    <div @click="click" class="v-select text-right text-sm text-blue border-b border-dashed border-blue">
         <p 
             class="title"
-            @click="areOptionsVisible = !areOptionsVisible"
+            @click="toggleSelect()"
         >
             {{selected}}
         </p>
         <div 
             class="options flex flex-col items-center justify-center"
             v-if="areOptionsVisible"
+            @click="hideOptionsMenu"
         >
             <p
                 class=""
                 v-for="option in options"
                 :key="option.name"
-                @click.stop="$emit('select', option), areOptionsVisible = false"
+                @click.stop="$emit('select', option), toggleSelect()"
             >
                 {{option.title}}
             </p>
@@ -23,7 +24,8 @@
 </template>
 
 <script>
-    import { ref } from 'vue'
+    import { ref } from 'vue';
+    // import store from '../store/index';
 
     export default {
         name: 'Select',
@@ -42,25 +44,22 @@
         setup() {
             const areOptionsVisible = ref(false)
 
-            //
-            const hideSelect = () => {
-                areOptionsVisible.value = false;
+            // функция сокрытия селектов
+            const toggleSelect = () => {
+                areOptionsVisible.value = !areOptionsVisible.value
             }
 
-
-            //
-            // onMounted(() => {
-            //     document.addEventListener('click', this.hideSelect.bind(this), true)
-            // })
-
-            // //
-            // onBeforeUnmount(() => {
-            //     document.removeEventListener('click', hideSelect())
-            // })
+            // Закрываем options меню по клику вне
+            const hideOptionsMenu = (e) => {
+                if(e.target.classList.contains('options')) {
+                    toggleSelect()
+                }
+            }
 
             return {
-                areOptionsVisible, hideSelect
+                areOptionsVisible, toggleSelect, hideOptionsMenu
             }
+
         }
     }
 </script>

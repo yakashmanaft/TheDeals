@@ -105,23 +105,18 @@
                 >
               </div>
             </div>
-            <p>
-              Lorem, ipsum dolor sit amet consectetur adipisicing elit. Repellendus earum quod iusto quasi harum? Commodi molestias dolorum modi sequi ut neque necessitatibus. Culpa ipsam amet ut est placeat aperiam dolorem, eum optio et tenetur asperiores error magni earum consequuntur quis illo ratione similique debitis, officia hic pariatur aspernatur? Iste corrupti odit architecto iusto labore pariatur sit dolorum, provident eos id numquam soluta similique. Recusandae quibusdam debitis sunt iure cumque sed illo alias quo natus dolore nisi, numquam, nemo impedit! Doloribus dolor, est nesciunt aspernatur possimus tenetur! Ipsum nobis harum tempore. Cum deserunt quidem est vitae numquam fugiat odit sunt dolorem veritatis perspiciatis beatae quod enim eligendi, magni excepturi rerum, nesciunt iure? Rem deleniti labore ipsa doloribus dicta cum ratione odio eius dolorum eum veniam, minima maxime optio culpa laboriosam laborum dolores mollitia rerum porro laudantium magnam obcaecati! Quos est eius sit, libero impedit facilis, nemo illum praesentium consequatur odio fugiat incidunt doloremque, et ipsum minima accusantium quisquam odit consectetur. Tenetur est quas voluptatum illum eaque quidem vel recusandae expedita mollitia, molestias ea similique. Corporis fuga, quasi laboriosam veniam harum sed, et itaque fugiat id cupiditate deserunt nemo, illo laudantium ea. Commodi, facere illo porro quibusdam incidunt ab sequi perspiciatis a!
-            </p>
-            <!-- set deal Status -->
+            <!-- Статус дела -->
             <div class="w-full flex flex-col mt-4">
-              <label for="deal-status" class="mb-1 ml-2 text-sm text-blue">Статус дела</label>
-              <select 
-                id="deal-status" 
-                class="border webkit p-2 w-full text-gray-500 bg-light-grey rounded-md focus:outline-none" 
-                required
-                v-model="dealStatus"
-              >
-                <option 
-                  v-for="(item, index) in dealStatusList" 
-                  :key="index" 
-                  :value="item.name">{{ item.title }}</option>
-              </select>
+              <!-- Выбор статуса дела -->
+              <div class="flex items-center">
+                <p class="text-xl font-black flex-1 text-dark">Статус дела</p>
+                <Select
+                  :options="dealStatusList"
+                  @select="optionDealStatusSelect"
+                  :selected="dealStatus.title"
+                  @change="dealTypeChanged"
+                ></Select>
+              </div>
             </div>
 
             <!-- Тип дела -->
@@ -623,7 +618,10 @@ export default {
       title: 'Изменить'
     });
     const contactOfDeal = ref('select-deal-contact');
-    const dealStatus = ref('deal-in-booking');
+    const dealStatus = ref({
+      name: 'deal-in-booking',
+      title: 'Бронь даты'
+    });
     const typeOfShipping = ref('select-shipping-type');
 
     const dealPaid = ref('');
@@ -1135,17 +1133,20 @@ export default {
       }
     ]
 
+    // Метод по селекту deal status
+    const optionDealStatusSelect = (option) => {
+      dealStatus.value = option
+    }
+
     // Метод по селекту type of deal
     const optionSelect = (option) => {
-      // console.log(option)
-      // console.log(areOptionsVisible)
       typeOfDeal.value = option
     }
 
-    const isSelectMenuOpened = ref(false);
+    const isSelectMenuOpened = computed(() => store.state.areOptionsVisible);
 
     return {
-      typeOfDeal, dealStatus, contactOfDeal, contactInfo, dataLoaded, sortedContacts,filteredOptions, search, statusMsg, errorMsg, user, createDeal , editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortmentList, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributesList, userDiscountRangeValue, sum, totalDealValue, executionDate, totalDealMenuClose, setDiscountRange, dealStatusList, dealPaid, spinner, typeOfShipping, shippingTypeChanged, shippingData, closeMsgNotify, dealSubjectMenu, openDealSubjectMenu, closeDealSubjectMenu, addNewSubject, tempValue, openCurrentSubject, sumPriceAdditionalAttributes, changeSubject, calcSubjectPriceType, calcTotalSubjectPrice, dealTypeArray, optionSelect, pageTitle, isSelectMenuOpened
+      typeOfDeal, dealStatus, contactOfDeal, contactInfo, dataLoaded, sortedContacts,filteredOptions, search, statusMsg, errorMsg, user, createDeal , editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortmentList, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributesList, userDiscountRangeValue, sum, totalDealValue, executionDate, totalDealMenuClose, setDiscountRange, dealStatusList, dealPaid, spinner, typeOfShipping, shippingTypeChanged, shippingData, closeMsgNotify, dealSubjectMenu, openDealSubjectMenu, closeDealSubjectMenu, addNewSubject, tempValue, openCurrentSubject, sumPriceAdditionalAttributes, changeSubject, calcSubjectPriceType, calcTotalSubjectPrice, dealTypeArray, optionSelect, pageTitle, isSelectMenuOpened, optionDealStatusSelect
     };
   },
 };
