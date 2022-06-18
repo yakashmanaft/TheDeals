@@ -1079,26 +1079,25 @@ export default {
     });
     // Listens for changing of shipping type input
     const shippingTypeChanged = () => {
-      // if (typeOfShipping.value.name === 'shipping-pickup') {
-      //   shippingData.value = {
-      //     typeOfShipping: {
-      //       name: typeOfShipping.value.name,
-      //       title: typeOfShipping.value.title
-      //     }
-      //   } 
-      // }
-      // if(typeOfShipping.value.name === 'shipping-delivery') {
-      //   shippingData.value = {
-      //     typeOfShipping: {
-      //       name: typeOfShipping.value.name,
-      //       title: typeOfShipping.value.title
-      //     },
-      //     shippingAddress: 'Не указано',
-      //     shippingPrice: 0
-      //   }
-      // }
-      // console.log(typeOfShipping.value)
-      shippingData.value = []
+      if (typeOfShipping.value.name === 'shipping-pickup') {
+        shippingData.value = {
+          typeOfShipping: {
+            name: typeOfShipping.value.name,
+            title: typeOfShipping.value.title
+          }
+        } 
+      }
+      if(typeOfShipping.value.name === 'shipping-delivery') {
+        shippingData.value = {
+          typeOfShipping: {
+            name: typeOfShipping.value.name,
+            title: typeOfShipping.value.title
+          },
+          shippingAddress: 'Не указано',
+          shippingPrice: 0
+        }
+      }
+      console.log(typeOfShipping.value)
     }
 
     // Delete current order subject'
