@@ -228,15 +228,21 @@
             <div class="w-full">
               <!-- Если Самовывоз -->
               <div v-if="typeOfShipping.name === 'shipping-pickup' ">
-                Выбранный вариант доставки: {{ typeOfShipping.name }}
-                {{shippingData}}
+                Выбранный вариант доставки: {{ typeOfShipping }}
+                <p>shippingData:</p>
+                <p>
+                  {{shippingData}}
+                </p>
               </div>
 
               <!-- Если Доставка -->
               <div v-if="typeOfShipping.name === 'shipping-delivery'">
-                Выбранный вариант доставки: {{typeOfShipping.name}}
+                Выбранный вариант доставки: {{typeOfShipping}}
+                <p>shippingData:</p>
+                <p>
+                  {{shippingData}}
+                </p>
                 <input type="number" inputmode="decimal" v-model="shippingData.shippingPrice">  
-                {{shippingData}}
               </div>
             </div>
 
@@ -1064,32 +1070,36 @@ export default {
     }
 
     const shippingData = ref({
-      typeOfShipping: typeOfShipping.value,
-
+      typeOfShipping: {
+        name: typeOfShipping.value.name,
+        title: typeOfShipping.value.title
+      },
+      shippingAddress: 'Не указано',
+      shippingPrice: 0
     });
     // Listens for changing of shipping type input
     const shippingTypeChanged = () => {
-      if (typeOfShipping.value.name === 'shipping-pickup') {
-        shippingData.value = {
-          typeOfShipping: {
-            name: typeOfShipping.value.name,
-            title: typeOfShipping.value.title
-          }
-        }
-        
-      }
-      if(typeOfShipping.value.name === 'shipping-delivery') {
-        shippingData.value = {
-          typeOfShipping: {
-            name: typeOfShipping.value.name,
-            title: typeOfShipping.value.title
-          },
-          shippingAddress: 'Не указано',
-          shippingPrice: 0
-        }
-      }
+      // if (typeOfShipping.value.name === 'shipping-pickup') {
+      //   shippingData.value = {
+      //     typeOfShipping: {
+      //       name: typeOfShipping.value.name,
+      //       title: typeOfShipping.value.title
+      //     }
+      //   } 
+      // }
+      // if(typeOfShipping.value.name === 'shipping-delivery') {
+      //   shippingData.value = {
+      //     typeOfShipping: {
+      //       name: typeOfShipping.value.name,
+      //       title: typeOfShipping.value.title
+      //     },
+      //     shippingAddress: 'Не указано',
+      //     shippingPrice: 0
+      //   }
+      // }
+      // console.log(typeOfShipping.value)
+      shippingData.value = []
     }
-    console.log(typeOfShipping.value)
 
     // Delete current order subject'
     const deleteOrderSubject = (id) => {
