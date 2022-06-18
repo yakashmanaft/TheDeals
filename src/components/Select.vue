@@ -1,5 +1,5 @@
 <template>
-    <div @click="click" class="v-select text-right text-sm text-blue border-b border-dashed border-blue">
+    <div @click="click" class="v-select text-sm text-right text-blue border-b border-dashed border-blue">
         <p 
             class="title"
             @click="toggleSelect()"
@@ -7,17 +7,22 @@
             {{selected}}
         </p>
         <div 
-            class="options flex flex-col items-center justify-center"
+            class="options flex flex-col items-center justify-center text-base"
             v-if="areOptionsVisible"
             @click="hideOptionsMenu"
         >
-            <p
-                v-for="option in options"
-                :key="option.name"
-                @click.stop="$emit('select', option), toggleSelect()"
-            >
-                {{option.title}}
-            </p>
+            <div class="bg-white rounded-md py-2 pt-4 w-4/5">
+                <p
+                    v-for="option in options"
+                    :key="option.name"
+                    @click.stop="$emit('select', option), toggleSelect()"
+                    class="hover:bg-light-grey text-center py-2"
+                    :class="{ 'selectedClass' : option.title === selected}"
+                >
+                    {{option.title}}
+                </p>
+                <p class="border-t border-light-grey text-center py-2 pt-4 mt-4" @click="toggleSelect()">Отменить</p>
+            </div>
         </div>
     </div>
 </template>
@@ -37,7 +42,7 @@
             },
             selected: {
                 type: String,
-                default: ''
+                default: '',
             }
         },
         setup() {
@@ -85,7 +90,11 @@
         background-color: rgba(0, 0, 0, 0.7);
         backdrop-filter: blur(2px);
     }
-    .options p:hover {
+    /* Удалисть если не пригодится */
+    /* .options p:hover {
         background: #000;
+    } */
+    .selectedClass {
+        background: #f1f1f1;
     }
 </style>

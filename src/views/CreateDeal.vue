@@ -114,7 +114,6 @@
                     :options="dealStatusListForSelect()"
                     @select="optionDealStatusSelect"
                     :selected="dealStatus.title"
-                    @change="dealTypeChanged"
                   ></Select>
               </div>
             </div>
@@ -126,15 +125,14 @@
                 <p class="font-black flex-1 text-dark">Тип дела</p>
                 <Select
                   :options="dealTypeArray"
-                  @select="optionSelect"
+                  @select="optionDealTypeSelect"
                   :selected="typeOfDeal.title"
                   @change="dealTypeChanged"
                 ></Select>
               </div>
 
               <!-- Выбираем тип дела -->
-
-                <!-- Заказ -->
+                <!-- Выбранный тип дела: Заказ -->
                 <div  v-if="typeOfDeal.name === 'order'" class="text-dark-gray mt-4">
 
                   <!-- Удалить если не потребуется -->
@@ -147,7 +145,9 @@
                   <div>
                     <!-- header -->
                     <div class="flex items-center place-content-between">
-                      <p class="text-md font-black text-dark">Позиции заказа</p>
+                      <p class="text-md text-dark">
+                        <span class="font-black">Позиций в заказе </span> 
+                        <span class="font-semibold">{{dealsList.length}}</span></p>
                       <p class="text-sm text-blue border-b border-dashed border-blue" @click="addNewSubject">Добавить</p>
                     </div>
                     <!-- subject cards -->
@@ -195,6 +195,51 @@
                 </div>
             </div>
 
+            <!-- Вариант доставки -->
+            <div class="w-full flex flex-col mt-4">
+              <!-- Выбор варианта доставки -->
+              <div class="flex items-center">
+                <p class="font-black flex-1 text-dark">Вариант доставки</p>
+                <Select
+                  :options="shippingTypeList"
+                  @select="optionShippingTypeSelect"
+                  :selected="typeOfShipping.title"
+                  @change="shippingTypeChanged"
+                ></Select>
+              </div>
+            </div>
+
+            <!-- Тип доставки -->
+            <!-- <div class="w-full flex flex-col mt-4">
+              <label for="deal-type" class="mb-1 ml-2 text-sm text-blue">Доставка</label>
+              <select 
+                id="deal-type" 
+                class="border webkit p-2 w-full text-gray-500 bg-light-grey rounded-md focus:outline-none" 
+                required
+                v-model="typeOfShipping.title"
+                @change="shippingTypeChanged"
+              >
+                <option disabled value="select-shipping-type">Выберите вариант доставки</option>
+                <option value="shipping-pickup">Самовывоз</option>
+                <option value="shipping-delivery">Доставка</option>
+              </select>
+            </div> -->
+            <!-- Настройки доставки по выбранному типу доставки-->              
+            <div class="w-full">
+              <!-- Если Самовывоз -->
+              <div v-if="typeOfShipping.name === 'shipping-pickup' ">
+                Выбранный вариант доставки: {{ typeOfShipping.name }}
+                {{shippingData}}
+              </div>
+
+              <!-- Если Доставка -->
+              <div v-if="typeOfShipping.name === 'shipping-delivery'">
+                Выбранный вариант доставки: {{typeOfShipping.name}}
+                <input type="number" inputmode="decimal" v-model="shippingData.shippingPrice">  
+                {{shippingData}}
+              </div>
+            </div>
+
             <!-- Внести оплату | предоплату (dealPaid) -->
             <div v-if="typeOfDeal.name !== 'select-deal-type'" class="w-full flex flex-col mt-4">
               <p class="mb-1 ml-2 text-sm text-blue">Предоплата (RUB)</p>
@@ -213,38 +258,6 @@
               </div>
               
             </div>
-
-            <!-- Тип доставки -->
-            <div class="w-full flex flex-col mt-4">
-              <label for="deal-type" class="mb-1 ml-2 text-sm text-blue">Доставка</label>
-              <select 
-                id="deal-type" 
-                class="border webkit p-2 w-full text-gray-500 bg-light-grey rounded-md focus:outline-none" 
-                required
-                v-model="typeOfShipping"
-                @change="shippingTypeChanged"
-              >
-              <!-- Возможно , в дальнейшем динамическое, исходя из настроек аккаунта -->
-                <option disabled value="select-shipping-type">Выберите вариант доставки</option>
-                <option value="shipping-pickup">Самовывоз</option>
-                <option value="shipping-delivery">Доставка</option>
-              </select>
-            </div>
-            <!-- Настройки доставки по выбранному типу доставки-->              
-            <div class="w-full">
-              <!-- Если Самовывоз -->
-              <div v-if="typeOfShipping === 'shipping-pickup' ">
-                Выбранный вариант доставки: Самовывоз
-              </div>
-
-              <!-- Если Доставка -->
-              <div v-if="typeOfShipping === 'shipping-delivery'">
-                Выбранный вариант доставки: Доставка
-                <input type="number" inputmode="decimal" v-model="shippingData.shippingPrice">  
-                {{shippingData}}
-              </div>
-            </div>
-
 
             <!-- Для input -->
             <!-- pattern="[0-9]+([\.,][0-9]+)?" step="0.01" -->
@@ -300,9 +313,6 @@
                 <p>Статус дела: {{dealStatus ? dealStatus : 'не выбран'}}</p>
                 <p>Остаток к уплате: {{sum() - dealPaid}}</p>
                 <p>Информация по доставке: {{shippingData}}</p>
-                <div v-if="shippingData.typeOfShipping === 'не указан'">
-                  Указать
-                </div>
                 <p>Оплачено: {{dealPaid}}</p>
                 <p>Оплачено: 1000,00 руб.</p>
                 <p>Задолженность: 1579,00 руб.</p>  
@@ -333,6 +343,7 @@
           </div>
 
           <!-- Меню выбора предмета заказа (всплывашка)-->
+          <!-- Будем делать компонентом? -->
           <div 
             v-if="dealSubjectMenu" 
             class="w-full h-full fixed pt-16 bottom-0 left-0 flex items-center justify-center flex-col z-20" 
@@ -634,9 +645,12 @@ export default {
       name: 'deal-in-booking',
       title: 'Бронь даты'
     });
-    const typeOfShipping = ref('select-shipping-type');
+    const typeOfShipping = ref({
+      name: 'shipping-pickup',
+      title: 'Самовывоз'
+    });
 
-    const dealPaid = ref('');
+    const dealPaid = ref(0);
 
     const contactInfo = ref([]);
     const dataLoaded = ref(null);
@@ -681,6 +695,18 @@ export default {
         title: 'Отменен',
         caption: 'Ни одного отмененного дела!',
         text: 'Вы супер! Так держать!'
+      }
+    ]
+
+    // shipping type list
+    const shippingTypeList = [
+      {
+        name: 'shipping-pickup',
+        title: 'Самовывоз'
+      },
+      {
+        name: 'shipping-delivery',
+        title: 'Доставка'
       }
     ]
 
@@ -1037,27 +1063,33 @@ export default {
       // addOrderSubject();
     }
 
-
     const shippingData = ref({
-      typeOfShipping: 'не указан',
-      shippingPrice: 0
-    });
+      typeOfShipping: typeOfShipping.value,
 
+    });
     // Listens for changing of shipping type input
     const shippingTypeChanged = () => {
-      if (typeOfShipping.value === 'shipping-pickup') {
+      if (typeOfShipping.value.name === 'shipping-pickup') {
         shippingData.value = {
-          typeOfShipping: typeOfShipping.value,
+          typeOfShipping: {
+            name: typeOfShipping.value.name,
+            title: typeOfShipping.value.title
+          }
         }
+        
       }
-      if(typeOfShipping.value === 'shipping-delivery') {
+      if(typeOfShipping.value.name === 'shipping-delivery') {
         shippingData.value = {
-          typeOfShipping: typeOfShipping.value,
+          typeOfShipping: {
+            name: typeOfShipping.value.name,
+            title: typeOfShipping.value.title
+          },
           shippingAddress: 'Не указано',
           shippingPrice: 0
         }
       }
     }
+    console.log(typeOfShipping.value)
 
     // Delete current order subject'
     const deleteOrderSubject = (id) => {
@@ -1102,7 +1134,10 @@ export default {
         statusMsg.value = 'Дело успешно создано';
         typeOfDeal.value.name = 'select-deal-type';
         contactOfDeal.value = 'select-deal-contact';
-        typeOfShipping.value = 'select-shipping-type';
+        typeOfShipping.value = {
+          name: 'shipping-pickup',
+          title: 'Самовывоз'
+        };
         dealsList.value = [];
         spinner.value = !spinner.value;
         setTimeout(() => {
@@ -1174,14 +1209,18 @@ export default {
     }
 
     // Метод по селекту type of deal
-    const optionSelect = (option) => {
+    const optionDealTypeSelect = (option) => {
       typeOfDeal.value = option
+    }
+
+    const optionShippingTypeSelect = (option) => {
+      typeOfShipping.value = option
     }
 
     const isSelectMenuOpened = computed(() => store.state.isBackgroundFixed);
 
     return {
-      typeOfDeal, dealStatus, contactOfDeal, contactInfo, dataLoaded, sortedContacts,filteredOptions, search, statusMsg, errorMsg, user, createDeal , editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortmentList, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributesList, userDiscountRangeValue, sum, totalDealValue, executionDate, totalDealMenuClose, setDiscountRange, dealStatusList, dealPaid, spinner, typeOfShipping, shippingTypeChanged, shippingData, closeMsgNotify, dealSubjectMenu, openDealSubjectMenu, closeDealSubjectMenu, addNewSubject, tempValue, openCurrentSubject, sumPriceAdditionalAttributes, changeSubject, calcSubjectPriceType, calcSubjectPrice, dealTypeArray, optionSelect, pageTitle, isSelectMenuOpened, optionDealStatusSelect, calcTotalSubjectPrice, dealStatusListForSelect
+      typeOfDeal, dealStatus, contactOfDeal, contactInfo, dataLoaded, sortedContacts,filteredOptions, search, statusMsg, errorMsg, user, createDeal , editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortmentList, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributesList, userDiscountRangeValue, sum, totalDealValue, executionDate, totalDealMenuClose, setDiscountRange, dealStatusList, dealPaid, spinner, typeOfShipping, shippingTypeChanged, shippingData, closeMsgNotify, dealSubjectMenu, openDealSubjectMenu, closeDealSubjectMenu, addNewSubject, tempValue, openCurrentSubject, sumPriceAdditionalAttributes, changeSubject, calcSubjectPriceType, calcSubjectPrice, dealTypeArray, optionDealTypeSelect, pageTitle, isSelectMenuOpened, optionDealStatusSelect, calcTotalSubjectPrice, dealStatusListForSelect, shippingTypeList, optionShippingTypeSelect
     };
   },
 };
