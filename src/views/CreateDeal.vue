@@ -458,7 +458,7 @@
                           type="number" 
                           inputmode="decimal"
                           class="border-b border-dashed border-blue focus:outline-none text-blue text-xl text-right w-16  rounded-none" 
-                          placeholder="150"
+                          placeholder="0,00"
                           v-model="dealsList[tempValue].gramPerPerson" 
                         >
                     </div>
@@ -466,7 +466,7 @@
                     <div class="flex place-content-between mx-4 mt-6 items-center">
 
                       <span class="leading-none align-text-middle text-dark-gray">
-                        Количество порций, чел.
+                        Количество порций, шт.
                       </span>
                       <div class="subject-quantity flex justify-items-center">
                         <button 
@@ -995,7 +995,7 @@ export default {
           // для режима price perKilogram
           pricePerKilo: '',
           personQuantity: 1,
-          gramPerPerson: 150,
+          gramPerPerson: '',
           //
           productQuantity: 1,
           discountSubjectPriceValue: setDiscountRange('min'),
@@ -1024,7 +1024,7 @@ export default {
       return 0
     }
 
-    //
+    // Считает общую цену конкретного предмета заказа (предмет + допы)
     const calcTotalSubjectPrice = () => {
       const subject = dealsList.value[tempValue.value]
       subject.totalSubjectPrice = subject.subjectPrice + sumPriceAdditionalAttributes()
