@@ -127,7 +127,6 @@
                   :options="dealTypeArray"
                   @select="optionDealTypeSelect"
                   :selected="typeOfDeal.title"
-                  @change="dealTypeChanged"
                 ></Select>
               </div>
 
@@ -204,26 +203,10 @@
                   :options="shippingTypeList"
                   @select="optionShippingTypeSelect"
                   :selected="typeOfShipping.title"
-                  @change="shippingTypeChanged"
                 ></Select>
               </div>
             </div>
 
-            <!-- Тип доставки -->
-            <!-- <div class="w-full flex flex-col mt-4">
-              <label for="deal-type" class="mb-1 ml-2 text-sm text-blue">Доставка</label>
-              <select 
-                id="deal-type" 
-                class="border webkit p-2 w-full text-gray-500 bg-light-grey rounded-md focus:outline-none" 
-                required
-                v-model="typeOfShipping.title"
-                @change="shippingTypeChanged"
-              >
-                <option disabled value="select-shipping-type">Выберите вариант доставки</option>
-                <option value="shipping-pickup">Самовывоз</option>
-                <option value="shipping-delivery">Доставка</option>
-              </select>
-            </div> -->
             <!-- Настройки доставки по выбранному типу доставки-->              
             <div class="w-full">
               <!-- Если Самовывоз -->
@@ -1074,24 +1057,25 @@ export default {
         name: typeOfShipping.value.name,
         title: typeOfShipping.value.title
       },
-      shippingAddress: 'Не указано',
-      shippingPrice: 0
+      // Удалить если не пригодится
+      // shippingAddress: 'Не указано',
+      // shippingPrice: 0
     });
     // Listens for changing of shipping type input
     const shippingTypeChanged = () => {
       if (typeOfShipping.value.name === 'shipping-pickup') {
         shippingData.value = {
           typeOfShipping: {
-            name: typeOfShipping.value.name,
-            title: typeOfShipping.value.title
+            name: 'shipping-pickup',
+            title: 'Самовывоз'
           }
         } 
       }
       if(typeOfShipping.value.name === 'shipping-delivery') {
         shippingData.value = {
           typeOfShipping: {
-            name: typeOfShipping.value.name,
-            title: typeOfShipping.value.title
+            name: 'shipping-delivery',
+            title: 'Доставка'
           },
           shippingAddress: 'Не указано',
           shippingPrice: 0
@@ -1220,10 +1204,12 @@ export default {
     // Метод по селекту type of deal
     const optionDealTypeSelect = (option) => {
       typeOfDeal.value = option
+      dealTypeChanged()
     }
 
     const optionShippingTypeSelect = (option) => {
       typeOfShipping.value = option
+      shippingTypeChanged()
     }
 
     const isSelectMenuOpened = computed(() => store.state.isBackgroundFixed);
