@@ -56,7 +56,7 @@
                 >
               </div>
               <div class="relative">
-                <div v-if="showSearchMenu" class="dropdown-menu absolute top-0 left-0 h-40 bg-light-grey w-full py-2 rounded-b-md text-lg">
+                <div v-if="showSearchMenu" class="dropdown-menu absolute top-0 left-0 h-40 bg-light-grey w-full py-2 rounded-b-md text-lg z-20">
                   <!-- Список из справочника контактов -->
                   <div 
                     v-for="(option, index) in filteredOptions" 
@@ -127,7 +127,6 @@
                   :options="dealTypeArray"
                   @select="optionDealTypeSelect"
                   :selected="typeOfDeal.title"
-                  @change="dealTypeChanged"
                 ></Select>
               </div>
 
@@ -146,37 +145,50 @@
                     <!-- header -->
                     <div class="flex items-center place-content-between">
                       <p class="text-md text-dark">
-                        <span class="font-black">Позиций в заказе </span> 
-                        <span class="font-semibold">{{dealsList.length}}</span></p>
-                      <p class="text-sm text-blue border-b border-dashed border-blue" @click="addNewSubject">Добавить</p>
-                    </div>
+                        <span class="font-black text-md text-dark">Позиций в заказе </span> 
+                      </p>
+                      <p class="text-sm text-blue">{{ dealsList.length }}</p>
+                    </div>  
                     <!-- subject cards -->
-                    <div class="mt-4" v-for="(item, index) in dealsList" :key="index">
+                    <div class="mt-2" v-for="(item, index) in dealsList" :key="index">
 
                       <!-- Current subject -->
-                      <div @click="openCurrentSubject(index)" class="flex place-content-between items-center border rounded-md mt-2 p-2">
-                        <div class="flex flex-col items-center">
-                          <div class="img-wrapper bg-light-grey rounded-full p-2">
+                      <div @click="openCurrentSubject(index)" class="flex place-content-between items-center border rounded-md p-2 relative">
+                        <div class="flex flex-col items-center mr-2">
+                          <div class="img-wrapper bg-light-grey rounded-full p-2 ">
                             <img :src="require(`../assets/images/deals/orders/${item.selectedProduct}.png`)" alt=""> 
                           </div>
                           <span>x{{ item.productQuantity }}</span>
                         </div>
-                        <div class="flex-1">
-                          <p>Предмет:{{ item.selectedProduct }}</p>
-                          <p>Цена 1 ед.:{{ item.pricePerUnit }}</p>
-                          <p>Скидка, %{{ item.discountSubjectPriceValue }}</p>
-                          <p>Сумма по изготовлению{{ item.subjectPrice }}</p>
-                          <p>ЗАметки{{ item.productNote }}</p>
-                          <p>Атрибуты:{{ item.additionalAttributes }}</p>
-                          <p>Сумма всей позиции по заказу{{ item.totalSubjectPrice }}</p>
+                        <div class="flex-1 text-sm">
+                          <!-- header -->
+                          <div>
+                            <!-- Что в предмете заказа -->
+                            <p class="font-bold">{{ translateSubjectName(item.selectedProduct) }}</p>
+                            <!-- Рецепт -->
+                            <p>{{ item.recipe }}</p>
+                          </div>
+                          <!-- Если атрибуты выбраны -->
+                          <div v-if="item.additionalAttributes.length > 0">
+                            <p>
+                              *есть атрибуты
+                            </p>
+                          </div>
+                          <!-- Общая сумму по предмету заказа -->
+                          <div class="flex items-center place-content-between mt-2">
+                            <p>Всего на сумму:</p>
+                            <p class="text-base">{{ (item.totalSubjectPrice).toFixed(2) }}</p>
+                          </div>
                         </div>
-                        <p @click.stop="deleteOrderSubject(item.id)">Удалить</p>
+                        <div @click.stop="deleteOrderSubject(item.id)" class="absolute right-4 top-4">
+                          <img src="../assets/images/common/icon-trash.svg" alt="">
+                        </div>
                       </div>
                     </div>
                     <!-- Footer -->
-                    <div class="flex items-center justify-end mt-4" v-if="dealsList.length > 0">
-                      <p class=" text-sm text-blue border-b border-dashed border-blue" @click="addNewSubject">Добавить еще</p>
-                    </div>
+                    <p @click="addNewSubject" class="text-center text-blue mt-4 mb-2 border rounded-md p-2" v-if="dealsList.length >= 0">
+                      Добавить предмет
+                    </p>
                   </div>
                 </div>
                 <!-- Выбран тип: Поставка -->
@@ -204,35 +216,15 @@
                   :options="shippingTypeList"
                   @select="optionShippingTypeSelect"
                   :selected="typeOfShipping.title"
-                  @change="shippingTypeChanged"
                 ></Select>
               </div>
             </div>
 
-            <!-- Тип доставки -->
-            <!-- <div class="w-full flex flex-col mt-4">
-              <label for="deal-type" class="mb-1 ml-2 text-sm text-blue">Доставка</label>
-              <select 
-                id="deal-type" 
-                class="border webkit p-2 w-full text-gray-500 bg-light-grey rounded-md focus:outline-none" 
-                required
-                v-model="typeOfShipping.title"
-                @change="shippingTypeChanged"
-              >
-                <option disabled value="select-shipping-type">Выберите вариант доставки</option>
-                <option value="shipping-pickup">Самовывоз</option>
-                <option value="shipping-delivery">Доставка</option>
-              </select>
-            </div> -->
-            <!-- Настройки доставки по выбранному типу доставки-->              
+            <!-- Настройки доставки по выбранному типу-->              
             <div class="w-full">
               <!-- Если Самовывоз -->
               <div v-if="typeOfShipping.name === 'shipping-pickup' ">
-                Выбранный вариант доставки: {{ typeOfShipping }}
-                <p>shippingData:</p>
-                <p>
-                  {{shippingData}}
-                </p>
+                <span class="text-sm text-dark-gray">Стоимость: 0,00 (RUB)</span>
               </div>
 
               <!-- Если Доставка -->
@@ -736,6 +728,7 @@ export default {
       dealSubjectMenu.value = !dealSubjectMenu.value;
     }
 
+    // Закрываем dealSubjectMenu меню
     const closeDealSubjectMenu = (e) => {
       // Если нажали на кнопку Готово
       if (e.target.classList.contains('btn_done')) {
@@ -1074,7 +1067,6 @@ export default {
         name: typeOfShipping.value.name,
         title: typeOfShipping.value.title
       },
-      shippingAddress: 'Не указано',
       shippingPrice: 0
     });
     // Listens for changing of shipping type input
@@ -1220,16 +1212,24 @@ export default {
     // Метод по селекту type of deal
     const optionDealTypeSelect = (option) => {
       typeOfDeal.value = option
+      dealTypeChanged();
     }
 
     const optionShippingTypeSelect = (option) => {
       typeOfShipping.value = option
+      shippingTypeChanged()
     }
 
     const isSelectMenuOpened = computed(() => store.state.isBackgroundFixed);
 
+    // смущает функция, по-возможности избавиться от неё
+    const translateSubjectName = (name) => {
+      const filterd = assortmentList.filter(item => item.name === name)
+      return filterd[0].title;
+    }
+
     return {
-      typeOfDeal, dealStatus, contactOfDeal, contactInfo, dataLoaded, sortedContacts,filteredOptions, search, statusMsg, errorMsg, user, createDeal , editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortmentList, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributesList, userDiscountRangeValue, sum, totalDealValue, executionDate, totalDealMenuClose, setDiscountRange, dealStatusList, dealPaid, spinner, typeOfShipping, shippingTypeChanged, shippingData, closeMsgNotify, dealSubjectMenu, openDealSubjectMenu, closeDealSubjectMenu, addNewSubject, tempValue, openCurrentSubject, sumPriceAdditionalAttributes, changeSubject, calcSubjectPriceType, calcSubjectPrice, dealTypeArray, optionDealTypeSelect, pageTitle, isSelectMenuOpened, optionDealStatusSelect, calcTotalSubjectPrice, dealStatusListForSelect, shippingTypeList, optionShippingTypeSelect
+      typeOfDeal, dealStatus, contactOfDeal, contactInfo, dataLoaded, sortedContacts,filteredOptions, search, statusMsg, errorMsg, user, createDeal , editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortmentList, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributesList, userDiscountRangeValue, sum, totalDealValue, executionDate, totalDealMenuClose, setDiscountRange, dealStatusList, dealPaid, spinner, typeOfShipping, shippingTypeChanged, shippingData, closeMsgNotify, dealSubjectMenu, openDealSubjectMenu, closeDealSubjectMenu, addNewSubject, tempValue, openCurrentSubject, sumPriceAdditionalAttributes, changeSubject, calcSubjectPriceType, calcSubjectPrice, dealTypeArray, optionDealTypeSelect, pageTitle, isSelectMenuOpened, optionDealStatusSelect, calcTotalSubjectPrice, dealStatusListForSelect, shippingTypeList, optionShippingTypeSelect, translateSubjectName
     };
   },
 };
