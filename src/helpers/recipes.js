@@ -1,16 +1,20 @@
       //Рецепты кондитерских изделий
       export const recipes = [
         {
-            title: 'Без рецепта'
+            title: 'Без рецепта',
+            name: 'no-prescription'
         },
         {
-          title: 'Красный бархат'
+          title: 'Красный бархат',
+          name: 'red-velvet'
         },
         {
-          title: 'Молочная девочка'
+          title: 'Молочная девочка',
+          name: 'milk-girl'
         },
         {
           title: 'Швейцарская меренга',
+          name: 'swiss-meringue',
           target: ['meringue'],
           steps: [
             'На 1 часть белком берем 2 части сахара',
@@ -24,6 +28,7 @@
         },
         {
           title: 'Банановый с гаудой',
+          name: 'banana-with-gouda',
           target: ['cake'],
           productSize: {
             concept: 'diameter',

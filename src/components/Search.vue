@@ -27,10 +27,6 @@
 <script>
     import { ref } from 'vue';
     // import { store } from '../store/index';
-<<<<<<< HEAD
-=======
-
->>>>>>> refs/remotes/origin/version_1.0.0
     export default {
         name: 'Search',
         props: {
@@ -47,29 +43,17 @@
         },
         setup() {
             const areOptionsVisible = ref(false);
-<<<<<<< HEAD
-=======
-
->>>>>>> refs/remotes/origin/version_1.0.0
             // функция сокрытия селектов
             const toggleSelect = () => {
                 areOptionsVisible.value = !areOptionsVisible.value
                 // store.methods.backgroundFixed()
             }
-<<<<<<< HEAD
-=======
-
->>>>>>> refs/remotes/origin/version_1.0.0
             // Закрываем options меню по клику вне
             const hideOptionsMenu = (e) => {
                 if(e.target.classList.contains('options')) {
                     toggleSelect()
                 }
             }
-<<<<<<< HEAD
-=======
-
->>>>>>> refs/remotes/origin/version_1.0.0
             return {
                 areOptionsVisible, toggleSelect, hideOptionsMenu
             }

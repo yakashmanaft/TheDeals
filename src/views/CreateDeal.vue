@@ -166,7 +166,7 @@
                             <!-- Что в предмете заказа -->
                             <p class="font-bold">{{ translateSubjectName(item.selectedProduct) }}</p>
                             <!-- Рецепт -->
-                            <p>{{ item.recipe }}</p>
+                            <p>{{ item.recipe.title }}</p>
                           </div>
                           <!-- Если атрибуты выбраны -->
                           <div v-if="item.additionalAttributes.length > 0">
@@ -304,7 +304,7 @@
               </div>
       
               <!-- Deal Sum Details (Content)-->
-              <div v-if="totalDealMenu" class="deal-details px-4 border-t mt-2 overflow-y-auto h-2/5">
+              <div v-if="totalDealMenu" class="deal-details px-4 border-t mt-2 overflow-y-auto h-80">
                 {{dealsList}}
 
 
@@ -322,7 +322,7 @@
                   </div>
                   <div class="flex items-center place-content-between">
                     <p>Рецепт</p>
-                    <p>{{ deal.recipe }}</p>
+                    <p>{{ deal.recipe.title }}</p>
                   </div>
                 </div>
 
@@ -724,7 +724,7 @@ export default {
             setTimeout(() => {
               errorMsg.value = false;
             }, 3000)
-          } else if (dealsList.value[tempValue.value].recipe === 'Не указан') {
+          } else if (dealsList.value[tempValue.value].recipe.title === 'Не указан') {
             errorMsg.value = 'Вы не выбрали рецепт'
             setTimeout(() => {
               errorMsg.value = false;
@@ -757,7 +757,7 @@ export default {
       }
       // Если нажали на кнопку Отменитьи или ткнули на фон
       if (e.target.classList.contains('shading_background') || e.target.classList.contains('btn_cancel')) {
-        if (dealsList.value[tempValue.value].subjectPrice === 0 || dealsList.value[tempValue.value].recipe === 'Не указан') {
+        if (dealsList.value[tempValue.value].subjectPrice === 0 || dealsList.value[tempValue.value].recipe === 'Не указан' || dealsList.value[tempValue.value].productQuantity === 1) {
           dealsList.value = dealsList.value.filter(subject => subject.id != dealsList.value[tempValue.value].id);
           openDealSubjectMenu();
         } else {
@@ -974,7 +974,10 @@ export default {
         dealsList.value.push({
           id: uid(),
           selectedProduct: 'cake',
-          recipe: 'Не указан',
+          recipe: {
+            name: 'select-recipe',
+            title: 'Не указан'
+          },
           // пока указываем режим ценообразования
           priceMode: calcSubjectPriceType.value,
           // для режима price perUnit
@@ -1018,6 +1021,7 @@ export default {
     // Listens for changing of deal type input
     const dealTypeChanged = () => {
       dealsList.value = [];
+      // удалить если не понадобится
       // addOrderSubject();
     }
     const shippingData = ref({
@@ -1047,11 +1051,15 @@ export default {
           shippingPrice: 0
         }
       }
-      console.log(typeOfShipping.value)
+      // console.log(typeOfShipping.value)
     }
     // Listen for changing recipe in subject
     const recipeChanged = () => {
-      dealsList.value[tempValue.value].recipe = recipe.value.title
+      // dealsList.value[tempValue.value].recipe = recipe.value.title
+      dealsList.value[tempValue.value].recipe = {
+        name: recipe.value.name,
+        title: recipe.value.title
+      }
     }
     // Delete current order subject'
     const deleteOrderSubject = (id) => {
@@ -1116,6 +1124,10 @@ export default {
         openDealSubjectMenu();
         addOrderSubject();
         tempValue.value = +(dealsList.value.length - 1);
+        recipe.value = {
+          name: 'select-recipe',
+          title: 'Не указано'
+        }
         changeSubject()
     }
     const openCurrentSubject = (index) => {
