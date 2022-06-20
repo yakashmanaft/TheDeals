@@ -1,5 +1,5 @@
 <template>
-    <div @click="click" class="v-select text-sm text-right text-blue border-b border-dashed border-blue">
+    <div class="v-select text-sm text-right text-blue border-b border-dashed border-blue">
         <p 
             class="title"
             @click="toggleSelect()"
@@ -30,7 +30,6 @@
 <script>
     import { ref } from 'vue';
     import store from '../store/index';
-
     export default {
         name: 'Select',
         props: {
@@ -47,24 +46,20 @@
         },
         setup() {
             const areOptionsVisible = ref(false)
-
             // функция сокрытия селектов
             const toggleSelect = () => {
                 areOptionsVisible.value = !areOptionsVisible.value
                 store.methods.backgroundFixed()
             }
-
             // Закрываем options меню по клику вне
             const hideOptionsMenu = (e) => {
                 if(e.target.classList.contains('options')) {
                     toggleSelect()
                 }
             }
-
             return {
                 areOptionsVisible, toggleSelect, hideOptionsMenu
             }
-
         }
     }
 </script>
