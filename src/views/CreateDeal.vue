@@ -613,7 +613,9 @@ import { useRouter } from 'vue-router';
 import { getContactInfo } from '../supabase/getContactInfoFromDB';
 import { sortAlphabetically } from '../helpers/sort';
 import { searchFilter } from '../helpers/filter';
+
 import { recipes } from '../helpers/recipes';
+
 export default {
   name: "createDeal",
   components: {
