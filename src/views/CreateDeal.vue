@@ -56,7 +56,7 @@
                 >
               </div>
               <div class="relative">
-                <div v-if="showSearchMenu" class="dropdown-menu absolute top-0 left-0 h-40 bg-light-grey w-full py-2 rounded-b-md text-lg">
+                <div v-if="showSearchMenu" class="dropdown-menu absolute top-0 left-0 h-40 bg-light-grey w-full py-2 rounded-b-md text-lg z-20">
                   <!-- Список из справочника контактов -->
                   <div 
                     v-for="(option, index) in filteredOptions" 
@@ -145,37 +145,50 @@
                     <!-- header -->
                     <div class="flex items-center place-content-between">
                       <p class="text-md text-dark">
-                        <span class="font-black">Позиций в заказе </span> 
-                        <span class="font-semibold">{{dealsList.length}}</span></p>
-                      <p class="text-sm text-blue border-b border-dashed border-blue" @click="addNewSubject">Добавить</p>
-                    </div>
+                        <span class="font-black text-md text-dark">Позиций в заказе </span> 
+                      </p>
+                      <p class="text-sm text-blue">{{ dealsList.length }}</p>
+                    </div>  
                     <!-- subject cards -->
-                    <div class="mt-4" v-for="(item, index) in dealsList" :key="index">
+                    <div class="mt-2" v-for="(item, index) in dealsList" :key="index">
 
                       <!-- Current subject -->
-                      <div @click="openCurrentSubject(index)" class="flex place-content-between items-center border rounded-md mt-2 p-2">
-                        <div class="flex flex-col items-center">
-                          <div class="img-wrapper bg-light-grey rounded-full p-2">
+                      <div @click="openCurrentSubject(index)" class="flex place-content-between items-center border rounded-md p-2 relative">
+                        <div class="flex flex-col items-center mr-2">
+                          <div class="img-wrapper bg-light-grey rounded-full p-2 ">
                             <img :src="require(`../assets/images/deals/orders/${item.selectedProduct}.png`)" alt=""> 
                           </div>
                           <span>x{{ item.productQuantity }}</span>
                         </div>
-                        <div class="flex-1">
-                          <p>Предмет:{{ item.selectedProduct }}</p>
-                          <p>Цена 1 ед.:{{ item.pricePerUnit }}</p>
-                          <p>Скидка, %{{ item.discountSubjectPriceValue }}</p>
-                          <p>Сумма по изготовлению{{ item.subjectPrice }}</p>
-                          <p>ЗАметки{{ item.productNote }}</p>
-                          <p>Атрибуты:{{ item.additionalAttributes }}</p>
-                          <p>Сумма всей позиции по заказу{{ item.totalSubjectPrice }}</p>
+                        <div class="flex-1 text-sm">
+                          <!-- header -->
+                          <div>
+                            <!-- Что в предмете заказа -->
+                            <p class="font-bold">{{ translateSubjectName(item.selectedProduct) }}</p>
+                            <!-- Рецепт -->
+                            <p>{{ item.recipe }}</p>
+                          </div>
+                          <!-- Если атрибуты выбраны -->
+                          <div v-if="item.additionalAttributes.length > 0">
+                            <p>
+                              *есть атрибуты
+                            </p>
+                          </div>
+                          <!-- Общая сумму по предмету заказа -->
+                          <div class="flex items-center place-content-between mt-2">
+                            <p>Всего на сумму:</p>
+                            <p class="text-base">{{ (item.totalSubjectPrice).toFixed(2) }}</p>
+                          </div>
                         </div>
-                        <p @click.stop="deleteOrderSubject(item.id)">Удалить</p>
+                        <div @click.stop="deleteOrderSubject(item.id)" class="absolute right-4 top-4">
+                          <img src="../assets/images/common/icon-trash.svg" alt="">
+                        </div>
                       </div>
                     </div>
                     <!-- Footer -->
-                    <div class="flex items-center justify-end mt-4" v-if="dealsList.length > 0">
-                      <p class=" text-sm text-blue border-b border-dashed border-blue" @click="addNewSubject">Добавить еще</p>
-                    </div>
+                    <p @click="addNewSubject" class="text-center text-blue mt-4 mb-2 border rounded-md p-2" v-if="dealsList.length >= 0">
+                      Добавить предмет
+                    </p>
                   </div>
                 </div>
                 <!-- Выбран тип: Поставка -->
@@ -207,15 +220,11 @@
               </div>
             </div>
 
-            <!-- Настройки доставки по выбранному типу доставки-->              
+            <!-- Настройки доставки по выбранному типу-->              
             <div class="w-full">
               <!-- Если Самовывоз -->
               <div v-if="typeOfShipping.name === 'shipping-pickup' ">
-                Выбранный вариант доставки: {{ typeOfShipping }}
-                <p>shippingData:</p>
-                <p>
-                  {{shippingData}}
-                </p>
+                <span class="text-sm text-dark-gray">Стоимость: 0,00 (RUB)</span>
               </div>
 
               <!-- Если Доставка -->
@@ -295,23 +304,27 @@
               </div>
       
               <!-- Deal Sum Details (Content)-->
-              <div v-if="totalDealMenu" class="deal-details px-4 border-t mt-2 overflow-y-auto h-48">
+              <div v-if="totalDealMenu" class="deal-details px-4 border-t mt-2 overflow-y-auto h-2/5">
                 {{dealsList}}
 
 
-                <p>Статус дела: {{dealStatus ? dealStatus : 'не выбран'}}</p>
+                <p>Статус дела: {{dealStatus}}</p>
                 <p>Остаток к уплате: {{sum() - dealPaid}}</p>
                 <p>Информация по доставке: {{shippingData}}</p>
                 <p>Оплачено: {{dealPaid}}</p>
-                <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                          <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                          <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                          <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                          <p>Оплачено: 1000,00 руб.</p>
+
+                <!-- subjects of deal -->
+                <div v-for="(deal, n) in dealsList" :key="n">
+                  <!-- Предмет заказа -->
+                  <div class="flex items-center place-content-between">
+                    <p>Предмет заказа</p>
+                    <p>{{ translateSubjectName(deal.selectedProduct) }}</p>
+                  </div>
+                  <div class="flex items-center place-content-between">
+                    <p>Рецепт</p>
+                    <p>{{ deal.recipe }}</p>
+                  </div>
+                </div>
 
               </div>
 
@@ -377,16 +390,12 @@
                 <!-- Choose recipe -->
                 <!-- Сделать с возможностью выбора из БД (настройки аккаунта или прям рецепты и сделать раздел?) -->
                 <div class="flex place-content-between mx-4 mt-6 items-center">
-                  <label for="recipe" class="flex-1 leading-none align-text-middle text-dark-gray">
-                    Рецепт
-                  </label>
-                    <input 
-                      id="recipe"
-                      type="text"
-                      class="border-b border-dashed border-blue focus:outline-none text-blue text-right rounded-none" 
-                      placeholder="Выберите рецепт"
-                      v-model="dealsList[tempValue].recipe" 
-                    >
+                  <p class="text-dark-gray">Рецепт</p>
+                  <Search
+                    :options="recipes"
+                    @select="optionRecipeSelect"
+                    :selected="recipe.title"
+                  ></Search>
                 </div>
                 <!-- Calc Subject Price -->
                 <div>
@@ -594,37 +603,32 @@
 <script>
 import Navigation from '../components/Navigation.vue';
 import Spinner from '../components/Spinner.vue';
-import Select from '../components/Select.vue'
-
+import Select from '../components/Select.vue';
+import Search from '../components/Search.vue';
 import { ref, computed } from 'vue';
 import store from '../store/index';
 import { uid } from 'uid';
 import { supabase } from '../supabase/init';
 import { useRouter } from 'vue-router';
-
 import { getContactInfo } from '../supabase/getContactInfoFromDB';
-
 import { sortAlphabetically } from '../helpers/sort';
 import { searchFilter } from '../helpers/filter';
-
+import { recipes } from '../helpers/recipes';
 export default {
   name: "createDeal",
   components: {
-    Spinner, Select, Navigation
+    Spinner, Select, Navigation, Search
   },
-  setup() {
+  setup() {    
     // Create data
     const router = useRouter();
     const statusMsg = ref(null);
     const errorMsg = ref(null);
     const user = computed(() => store.state.user);
-
     // Берем имя роута для заголовка
     const pageTitle = router.currentRoute._value.meta.translation;
-
     // Spiner
     const spinner = ref(false);
-
     const typeOfDeal = ref({
       name: 'select-deal-type',
       title: 'Не выбран'
@@ -638,15 +642,11 @@ export default {
       name: 'shipping-pickup',
       title: 'Самовывоз'
     });
-
     const dealPaid = ref(0);
-
     const contactInfo = ref([]);
     const dataLoaded = ref(null);
-
     const search = ref('');
     const executionDate = ref('');
-
     // deal status list
     const dealStatusList = [
       {
@@ -686,7 +686,6 @@ export default {
         text: 'Вы супер! Так держать!'
       }
     ]
-
     // shipping type list
     const shippingTypeList = [
       {
@@ -698,27 +697,21 @@ export default {
         title: 'Доставка'
       }
     ]
-
     // bind contact ID from DB myContacts
     const contactId = ref('');
-
     // Предметы заказа
     const dealsList= ref([]);
-
     // show search menu
     const showSearchMenu = ref(null);
-
     // show sum menu
     const totalDealMenu = ref(false);
-
     // subject make menu
     const dealSubjectMenu = ref(false);
-
     // open crate subject menu
     const openDealSubjectMenu = () => {
       dealSubjectMenu.value = !dealSubjectMenu.value;
     }
-
+    // Закрываем dealSubjectMenu меню
     const closeDealSubjectMenu = (e) => {
       // Если нажали на кнопку Готово
       if (e.target.classList.contains('btn_done')) {
@@ -729,7 +722,7 @@ export default {
             setTimeout(() => {
               errorMsg.value = false;
             }, 3000)
-          } else if (dealsList.value[tempValue.value].recipe === '') {
+          } else if (dealsList.value[tempValue.value].recipe === 'Не указан') {
             errorMsg.value = 'Вы не выбрали рецепт'
             setTimeout(() => {
               errorMsg.value = false;
@@ -745,7 +738,7 @@ export default {
             setTimeout(() => {
               errorMsg.value = false;
             }, 3000)
-          } else if (dealsList.value[tempValue.value].recipe === '') {
+          } else if (dealsList.value[tempValue.value].recipe === 'Не указан') {
             errorMsg.value = 'Вы не выбрали рецепт'
             setTimeout(() => {
               errorMsg.value = false;
@@ -762,8 +755,7 @@ export default {
       }
       // Если нажали на кнопку Отменитьи или ткнули на фон
       if (e.target.classList.contains('shading_background') || e.target.classList.contains('btn_cancel')) {
-        if (dealsList.value[tempValue.value].subjectPrice === 0 || dealsList.value[tempValue.value].recipe === '') {
-
+        if (dealsList.value[tempValue.value].subjectPrice === 0 || dealsList.value[tempValue.value].recipe === 'Не указан') {
           dealsList.value = dealsList.value.filter(subject => subject.id != dealsList.value[tempValue.value].id);
           openDealSubjectMenu();
         } else {
@@ -772,23 +764,18 @@ export default {
         
       }
     }
-
     const totalDealMenuClose = (e) => {
       if (e.target.classList.contains('shading_background')) {
         showTotalDealMenu()
       }
     }
-
     const totalDealValue = ref(0);
-
     const showTotalDealMenu = () => {
       totalDealMenu.value = !totalDealMenu.value;
     }
-
     const editModeSearchMenu = () => {
       showSearchMenu.value = !showSearchMenu.value;
     }
-
     // Select Anon
     const selectAnon = () => {
       search.value = '';
@@ -797,7 +784,6 @@ export default {
       // Если выбрали "Неизвестный" - ему проставляется id = 000
       contactId.value = '000'
     }
-
     // Select option
     const selectItem = (option) => {
       search.value = '';
@@ -807,35 +793,28 @@ export default {
         contactId.value = option.id;
       }
     }
-
     const closeOptions = () => {
       showSearchMenu.value = false;
     }
-
     const openOptions = () => {
       search.value = '';
       showSearchMenu.value = true;
     }
-
     const blurInput = () => {
       setTimeout(() => {
         closeOptions();
       }, 200)
     }
-
     // Получаем данные по контактам из БД
     getContactInfo(contactInfo, errorMsg, dataLoaded);
-
     //сортируем контакты по алфавиту
     const sortedContacts = computed(() => {       
       return sortAlphabetically(contactInfo.value)
     });
-
     // функция поиска контакта
     const filteredOptions = computed(() => {
       return searchFilter(sortedContacts.value, search.value)
     });
-
     // Ассортимент по предметам заказа (устанавливается в настройках аккаунта)
     const assortmentList = [
       {
@@ -893,7 +872,6 @@ export default {
         costEstimation: 'perUnit'
       }
     ]  
-
     // Дополнительные услуги к основным товарам /услугам (устанавливается в настройках аккаунта)
     const additionalAttributesList = [
       {
@@ -923,7 +901,6 @@ export default {
         isRent: false
       }
     ]
-
     // Максимально допустимую скидку (устанавливается в настройках аккаунта)
     const userDiscountRangeValue = [
       {
@@ -935,10 +912,8 @@ export default {
         value: 30
       }
     ]
-
     // Устанавливаем значение скидок
     const setDiscountRange = (name) => {
-
       if(name === 'min') {
         const value = userDiscountRangeValue[0].value
         return value
@@ -948,15 +923,11 @@ export default {
         return value
       }
     }
-
     // Хранится режим perUnit или perKilogram
     const calcSubjectPriceType = ref('perKilogram');
-
-
     const calcSubjectPrice = () => {
       // Конкретный предмет заказа
       const subject = dealsList.value[tempValue.value];
-
       if(calcSubjectPriceType.value === 'perUnit') {
         subject.subjectPrice = Math.floor(subject.pricePerUnit * subject.productQuantity * (1 - subject.discountSubjectPriceValue/100));
         subject.priceMode = 'perUnit'
@@ -964,20 +935,16 @@ export default {
         subject.pricePerKilo = '';
         subject.personQuantity = '';
         subject.gramPerPerson = '';
-
         return (subject.subjectPrice).toFixed(2);
-
       }
       if(calcSubjectPriceType.value === 'perKilogram') {
         subject.subjectPrice = Math.floor((subject.pricePerKilo * ((subject.personQuantity * subject.gramPerPerson)/1000) * (1 - subject.discountSubjectPriceValue/100)) * subject.productQuantity);
         subject.priceMode = 'perKilogram'
         // Обнуляем значения режима perUnit
         subject.pricePerUnit = '';
-
         return (subject.subjectPrice).toFixed(2);
       }
     }
-
     // Total order price
     const sum = () => {
       if(dealsList.value.length >= 1) {
@@ -995,14 +962,17 @@ export default {
       }
       return '0.00'
     }
-
+    const recipe = ref({
+      name: 'select-recipe',
+      title: 'Не указан'
+    })
     // Добавляем еще предмет заказа
     const addOrderSubject = () => {
       // Если расчет по типу perUnit
         dealsList.value.push({
           id: uid(),
           selectedProduct: 'cake',
-          recipe: '',
+          recipe: 'Не указан',
           // пока указываем режим ценообразования
           priceMode: calcSubjectPriceType.value,
           // для режима price perUnit
@@ -1023,7 +993,6 @@ export default {
           totalSubjectPrice: 0,
         })
     }
-
     // sum price of additional attributes in current subject
     const sumPriceAdditionalAttributes = () => {
       if(dealsList.value.length >= 1 && dealsList.value[tempValue.value].additionalAttributes.length >= 1 ) {
@@ -1038,44 +1007,39 @@ export default {
       }
       return 0
     }
-
     // Считает общую цену конкретного предмета заказа (предмет + допы)
     const calcTotalSubjectPrice = () => {
       const subject = dealsList.value[tempValue.value]
       subject.totalSubjectPrice = subject.subjectPrice + sumPriceAdditionalAttributes()
       return subject.totalSubjectPrice
     }
-
     // Listens for changing of deal type input
     const dealTypeChanged = () => {
       dealsList.value = [];
       // addOrderSubject();
     }
-
     const shippingData = ref({
       typeOfShipping: {
         name: typeOfShipping.value.name,
         title: typeOfShipping.value.title
       },
-      // Удалить если не пригодится
-      // shippingAddress: 'Не указано',
-      // shippingPrice: 0
+      shippingPrice: 0
     });
     // Listens for changing of shipping type input
     const shippingTypeChanged = () => {
       if (typeOfShipping.value.name === 'shipping-pickup') {
         shippingData.value = {
           typeOfShipping: {
-            name: 'shipping-pickup',
-            title: 'Самовывоз'
+            name: typeOfShipping.value.name,
+            title: typeOfShipping.value.title
           }
         } 
       }
       if(typeOfShipping.value.name === 'shipping-delivery') {
         shippingData.value = {
           typeOfShipping: {
-            name: 'shipping-delivery',
-            title: 'Доставка'
+            name: typeOfShipping.value.name,
+            title: typeOfShipping.value.title
           },
           shippingAddress: 'Не указано',
           shippingPrice: 0
@@ -1083,7 +1047,10 @@ export default {
       }
       console.log(typeOfShipping.value)
     }
-
+    // Listen for changing recipe in subject
+    const recipeChanged = () => {
+      dealsList.value[tempValue.value].recipe = recipe.value.title
+    }
     // Delete current order subject'
     const deleteOrderSubject = (id) => {
       if(dealsList.value.length > 1) {
@@ -1096,9 +1063,7 @@ export default {
           errorMsg.value = false;
         }, 5000);
       }
-
     }
-
     const closeMsgNotify = () => {
       if(statusMsg.value) {
         statusMsg.value = !statusMsg.value
@@ -1107,7 +1072,6 @@ export default {
         errorMsg.value = !errorMsg.value
       }
     }
-
     // Create deal
     const createDeal = async () => {
       try {
@@ -1145,16 +1109,13 @@ export default {
         }, 5000)
       }
     }
-
     const tempValue = ref();
-
     const addNewSubject = () => {
         openDealSubjectMenu();
         addOrderSubject();
         tempValue.value = +(dealsList.value.length - 1);
         changeSubject()
     }
-
     const openCurrentSubject = (index) => {
       // вставляем полученный индекс конкретного предмета заказа
       tempValue.value = +index;
@@ -1163,17 +1124,13 @@ export default {
       // Открываем меню
       openDealSubjectMenu();
     }
-
     // Helper вывода расчета цены, в зависимости от способа расчета (по весу или по шт)
     const changeSubject = () => {
       // calcSubjectPriceType.value = 'perKilogram'
       const choosenSubject = (dealsList.value[tempValue.value].selectedProduct).toString()
-
       const choosenSubjectByAssortment = assortmentList.find(item => item.name === choosenSubject)
-
       return calcSubjectPriceType.value = choosenSubjectByAssortment.costEstimation
     }
-
     // Тип дела
     const dealTypeArray = [
       {
@@ -1189,47 +1146,48 @@ export default {
         title: 'Личное'
       }
     ]
-
     // Передадим в компонент Select измененный массив
     const dealStatusListForSelect = () => {
       const newArray = dealStatusList.filter(item => (item.name !== 'deal-complete' && item.name !== 'deal-cancelled'))
       return newArray
     }
-
     // Метод по селекту deal status
     const optionDealStatusSelect = (option) => {
       dealStatus.value = option
     }
-
     // Метод по селекту type of deal
     const optionDealTypeSelect = (option) => {
       typeOfDeal.value = option
-      dealTypeChanged()
+      dealTypeChanged();
     }
-
     const optionShippingTypeSelect = (option) => {
-      typeOfShipping.value = option
-      shippingTypeChanged()
+      typeOfShipping.value = option;
+      shippingTypeChanged();
     }
-
+    const optionRecipeSelect = (option) => {
+      recipe.value = option;
+      recipeChanged();
+    }
     const isSelectMenuOpened = computed(() => store.state.isBackgroundFixed);
-
+    // смущает функция, по-возможности избавиться от неё
+    const translateSubjectName = (name) => {
+      const filterd = assortmentList.filter(item => item.name === name)
+      return filterd[0].title;
+    }
     return {
-      typeOfDeal, dealStatus, contactOfDeal, contactInfo, dataLoaded, sortedContacts,filteredOptions, search, statusMsg, errorMsg, user, createDeal , editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortmentList, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributesList, userDiscountRangeValue, sum, totalDealValue, executionDate, totalDealMenuClose, setDiscountRange, dealStatusList, dealPaid, spinner, typeOfShipping, shippingTypeChanged, shippingData, closeMsgNotify, dealSubjectMenu, openDealSubjectMenu, closeDealSubjectMenu, addNewSubject, tempValue, openCurrentSubject, sumPriceAdditionalAttributes, changeSubject, calcSubjectPriceType, calcSubjectPrice, dealTypeArray, optionDealTypeSelect, pageTitle, isSelectMenuOpened, optionDealStatusSelect, calcTotalSubjectPrice, dealStatusListForSelect, shippingTypeList, optionShippingTypeSelect
+      typeOfDeal, dealStatus, contactOfDeal, contactInfo, dataLoaded, sortedContacts,filteredOptions, search, statusMsg, errorMsg, user, createDeal , editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortmentList, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributesList, userDiscountRangeValue, sum, totalDealValue, executionDate, totalDealMenuClose, setDiscountRange, dealStatusList, dealPaid, spinner, typeOfShipping, shippingTypeChanged, shippingData, closeMsgNotify, dealSubjectMenu, openDealSubjectMenu, closeDealSubjectMenu, addNewSubject, tempValue, openCurrentSubject, sumPriceAdditionalAttributes, changeSubject, calcSubjectPriceType, calcSubjectPrice, dealTypeArray, optionDealTypeSelect, pageTitle, isSelectMenuOpened, optionDealStatusSelect, calcTotalSubjectPrice, dealStatusListForSelect, shippingTypeList, optionShippingTypeSelect, translateSubjectName, recipe, recipes, optionRecipeSelect, recipeChanged
     };
   },
 };
 </script>
 
 <style lang="scss" scoped>
-
   .container {
     height: 100vh;
   }
   .webkit {
     -webkit-appearance:none;
   }
-
   .nav {
     height: 76px;
     padding: 0.5rem 1rem;
@@ -1238,7 +1196,6 @@ export default {
     border-radius: 5px;
     background-color: #f1f1f1;
   }
-
   .search-input_icon {
     width: 40px;
     height: 30px;
@@ -1246,23 +1203,18 @@ export default {
     align-items: center;
     justify-content: center;
   }
-
   input[type="search"] {
     background-color: #f1f1f1;
     -webkit-appearance:none;
   }
-
   input[type="search"]::-webkit-search-decoration {
     background-color: red;
   }
-
   input[type="search"]::-webkit-search-decoration,
   input[type="search"]::-webkit-search-results-button,
   input[type="search"]::-webkit-search-results-decoration {
     -webkit-appearance:none;
   }
-
-
   input[type="search"]::-webkit-search-cancel-button {
     -webkit-appearance: none;
     height: 30px;
@@ -1271,44 +1223,36 @@ export default {
     background: url('../assets/images/common/icon-close.svg') center no-repeat;
     cursor: pointer;
   }
-
   .dropdown-menu {
     overflow: scroll;
     top: -3px;
   }
-
   // Убираем ширину полос прокрутки
   .overflow-y::-webkit-scrollbar {
       width: 0;
       height: 0;
   }
-
   .radio-toolbar-wrapper {
     overflow-x: scroll;
     padding: 10px 0;
     -ms-overflow-style: none;
     // scrollbar-width: none;
   }
-
   // Убираем ширину полос прокрутки
   .radio-toolbar-wrapper::-webkit-scrollbar {
       width: 0;
       height: 0;
   }
-
   .radio-toolbar_item {
     margin-left: 15px;
   }
-
   .radio-toolbar_item:first-child {
     margin-left: 0;
   }
-
   .radio-toolbar_item label {
     background-color: #f1f1f1;
     border-radius: 100%;
   }
-
   .radio-toolbar_item-img {
     display: flex;
     align-items: center;
@@ -1319,25 +1263,20 @@ export default {
     background-color: #f1f1f1;
     border-radius: 100%;
   }
-
   .radio-toolbar_item-img img {
     width: 80%;
     height: 80%;
   }
-
   input[type="radio"] {
     display: none;
   }
-
   input[type="radio"]:checked + label .radio-toolbar_item-img {
     background: #4785E7;
     border-radius: 100%;
   }
-
   input[type="radio"]:checked + label .radio-toolbar_item-title {
     color: #4785E7;
   }
-
   .subject-quantity_btn {
     width: 36px;
     height: 36px;
@@ -1345,20 +1284,16 @@ export default {
     color: white;
     border-radius: 100%;
   }
-
   .subject-quantity {
     align-items: center;
   }
-
   .btn_disabled {
     background-color: #f1f1f1;
   }
-
   .subject-wrapper {
     border-bottom: 1px solid #f1f1f1;
     margin-top: 10px;
   }
-
   .totalMenu {
     height: 70vh;
     background: #f1f1f1;
@@ -1366,24 +1301,20 @@ export default {
     flex-direction: column;
     justify-content: space-between;
   }
-
   .shading_background {
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(2px);
   }
-
 // Если не пригодится - удалить
   // .deal-details {
   //   height: 100%;
   //   overflow-y: scroll;
   // }
-
   .deal_information_inputs {
     position: fixed;
     padding: 0 1rem;
   }
-
   .totalMenu-more_arrow {
     width: 17px;
     height: 17px;
@@ -1391,20 +1322,16 @@ export default {
     // background-color: white;
     border-radius: 100%;
   }
-
   .more-arrow_icon {
     width: 100%;
     height: 100%;
   }
-
   .more_arrow_icon_closed_menu {
     transform: rotate(270deg);
   }
-
   .more_arrow_icon_opened_menu {
     transform: rotate(90deg);
   }
-
   input[type="range"] {
     -webkit-appearance: none;
     appearance: none;
@@ -1412,21 +1339,18 @@ export default {
     cursor: pointer;
     width: 50%;
   }
-
   // Chrome, Safari, Opera, and Edge Chromium
   input[type="range"]::-webkit-slider-runnable-track {
     background: #D8E7FF;
     height: 0.5rem;
     border-radius: 10px;
   }
-
   // Firefox
   input[type="range"]::-moz-range-track {
     background: #D8E7FF;
     height: 0.5rem;
     border-radius: 10px;
   }
-
   // Thumb Styles
   // Chrome, Safari, Opera, and Edge Chromium
   input[type="range"]::-webkit-slider-thumb {
@@ -1439,7 +1363,6 @@ export default {
     width: 32px;  
     border-radius: 50%;  
   }
-
   // Firefox
   input[type="range"]::-moz-range-thumb {
     border: none; /*Removes extra border that FF applies*/
@@ -1449,32 +1372,26 @@ export default {
     width: 32px;  
     border-radius: 50%; 
   }
-
   input[type="range"]:focus {
     outline: none;
   }
-
-
   /***** Chrome, Safari, Opera, and Edge Chromium *****/
   //input[type="range"]:focus::-webkit-slider-thumb {
   //  border: 1px solid #053a5f;
   //  outline: 3px solid #053a5f;
   //  outline-offset: 0.125rem;
   //}
-
   /******** Firefox ********/
   //input[type="range"]:focus::-moz-range-thumb {
   //  border: 1px solid #053a5f;
   //  outline: 3px solid #053a5f;
   //  outline-offset: 0.125rem;     
   //}
-
   .custom-checkbox {
     position: absolute;
     z-index: -1;
     opacity: 0;
   }
-
   .custom-checkbox+label {
     display: inline-flex;
     align-items: center;
@@ -1494,42 +1411,35 @@ export default {
     background-position: center center;
     background-size: 50% 50%;
   }
-
   .custom-checkbox:checked+label::before {
     border-color: #4785E7;
     background-color: #4785E7;
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23fff' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z'/%3e%3c/svg%3e");
   }
-
   // Если не пригодится - удалить
   // .deal-subject_wrapper {
   //   margin-top: -10px;
   //   border-top: none;
   // }
-
   .img-wrapper {
     width: 60px;
     height: 60px;
     margin: 0 auto
   }
-
   img {
     width: 100%;
     height: 100%;
   }
-
   .shading_background {
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(2px);
   }
-
   .item_fixed {
     position: fixed;
     width: 100%;
     z-index: 20;
   }
-
   // Потом удали
   // .item_fixed:after {
   //   content: '';
@@ -1542,5 +1452,4 @@ export default {
   //   background-color: rgba(0, 0, 0, 0.7);
   //   backdrop-filter: blur(2px);
   // }
-
 </style>
