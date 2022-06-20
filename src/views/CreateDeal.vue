@@ -304,23 +304,27 @@
               </div>
       
               <!-- Deal Sum Details (Content)-->
-              <div v-if="totalDealMenu" class="deal-details px-4 border-t mt-2 overflow-y-auto h-48">
+              <div v-if="totalDealMenu" class="deal-details px-4 border-t mt-2 overflow-y-auto h-2/5">
                 {{dealsList}}
 
 
-                <p>Статус дела: {{dealStatus ? dealStatus : 'не выбран'}}</p>
+                <p>Статус дела: {{dealStatus}}</p>
                 <p>Остаток к уплате: {{sum() - dealPaid}}</p>
                 <p>Информация по доставке: {{shippingData}}</p>
                 <p>Оплачено: {{dealPaid}}</p>
-                <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                          <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                          <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                          <p>Оплачено: 1000,00 руб.</p>
-                <p>Задолженность: 1579,00 руб.</p>  
-                          <p>Оплачено: 1000,00 руб.</p>
+
+                <!-- subjects of deal -->
+                <div v-for="(deal, n) in dealsList" :key="n">
+                  <!-- Предмет заказа -->
+                  <div class="flex items-center place-content-between">
+                    <p>Предмет заказа</p>
+                    <p>{{ translateSubjectName(deal.selectedProduct) }}</p>
+                  </div>
+                  <div class="flex items-center place-content-between">
+                    <p>Рецепт</p>
+                    <p>{{ deal.recipe }}</p>
+                  </div>
+                </div>
 
               </div>
 
@@ -386,16 +390,12 @@
                 <!-- Choose recipe -->
                 <!-- Сделать с возможностью выбора из БД (настройки аккаунта или прям рецепты и сделать раздел?) -->
                 <div class="flex place-content-between mx-4 mt-6 items-center">
-                  <label for="recipe" class="flex-1 leading-none align-text-middle text-dark-gray">
-                    Рецепт
-                  </label>
-                    <input 
-                      id="recipe"
-                      type="text"
-                      class="border-b border-dashed border-blue focus:outline-none text-blue text-right rounded-none" 
-                      placeholder="Выберите рецепт"
-                      v-model="dealsList[tempValue].recipe" 
-                    >
+                  <p class="text-dark-gray">Рецепт</p>
+                  <Search
+                    :options="recipes"
+                    @select="optionRecipeSelect"
+                    :selected="recipe.title"
+                  ></Search>
                 </div>
                 <!-- Calc Subject Price -->
                 <div>
@@ -603,7 +603,8 @@
 <script>
 import Navigation from '../components/Navigation.vue';
 import Spinner from '../components/Spinner.vue';
-import Select from '../components/Select.vue'
+import Select from '../components/Select.vue';
+import Search from '../components/Search.vue';
 
 import { ref, computed } from 'vue';
 import store from '../store/index';
@@ -616,12 +617,14 @@ import { getContactInfo } from '../supabase/getContactInfoFromDB';
 import { sortAlphabetically } from '../helpers/sort';
 import { searchFilter } from '../helpers/filter';
 
+import { recipes } from '../helpers/recipes';
+
 export default {
   name: "createDeal",
   components: {
-    Spinner, Select, Navigation
+    Spinner, Select, Navigation, Search
   },
-  setup() {
+  setup() {    
     // Create data
     const router = useRouter();
     const statusMsg = ref(null);
@@ -630,7 +633,6 @@ export default {
 
     // Берем имя роута для заголовка
     const pageTitle = router.currentRoute._value.meta.translation;
-
     // Spiner
     const spinner = ref(false);
 
@@ -739,7 +741,7 @@ export default {
             setTimeout(() => {
               errorMsg.value = false;
             }, 3000)
-          } else if (dealsList.value[tempValue.value].recipe === '') {
+          } else if (dealsList.value[tempValue.value].recipe === 'Не указан') {
             errorMsg.value = 'Вы не выбрали рецепт'
             setTimeout(() => {
               errorMsg.value = false;
@@ -755,7 +757,7 @@ export default {
             setTimeout(() => {
               errorMsg.value = false;
             }, 3000)
-          } else if (dealsList.value[tempValue.value].recipe === '') {
+          } else if (dealsList.value[tempValue.value].recipe === 'Не указан') {
             errorMsg.value = 'Вы не выбрали рецепт'
             setTimeout(() => {
               errorMsg.value = false;
@@ -772,7 +774,7 @@ export default {
       }
       // Если нажали на кнопку Отменитьи или ткнули на фон
       if (e.target.classList.contains('shading_background') || e.target.classList.contains('btn_cancel')) {
-        if (dealsList.value[tempValue.value].subjectPrice === 0 || dealsList.value[tempValue.value].recipe === '') {
+        if (dealsList.value[tempValue.value].subjectPrice === 0 || dealsList.value[tempValue.value].recipe === 'Не указан') {
 
           dealsList.value = dealsList.value.filter(subject => subject.id != dealsList.value[tempValue.value].id);
           openDealSubjectMenu();
@@ -1006,13 +1008,18 @@ export default {
       return '0.00'
     }
 
+    const recipe = ref({
+      name: 'select-recipe',
+      title: 'Не указан'
+    })
+
     // Добавляем еще предмет заказа
     const addOrderSubject = () => {
       // Если расчет по типу perUnit
         dealsList.value.push({
           id: uid(),
           selectedProduct: 'cake',
-          recipe: '',
+          recipe: 'Не указан',
           // пока указываем режим ценообразования
           priceMode: calcSubjectPriceType.value,
           // для режима price perUnit
@@ -1090,6 +1097,11 @@ export default {
         }
       }
       console.log(typeOfShipping.value)
+    }
+
+    // Listen for changing recipe in subject
+    const recipeChanged = () => {
+      dealsList.value[tempValue.value].recipe = recipe.value.title
     }
 
     // Delete current order subject'
@@ -1216,8 +1228,13 @@ export default {
     }
 
     const optionShippingTypeSelect = (option) => {
-      typeOfShipping.value = option
-      shippingTypeChanged()
+      typeOfShipping.value = option;
+      shippingTypeChanged();
+    }
+
+    const optionRecipeSelect = (option) => {
+      recipe.value = option;
+      recipeChanged();
     }
 
     const isSelectMenuOpened = computed(() => store.state.isBackgroundFixed);
@@ -1229,7 +1246,7 @@ export default {
     }
 
     return {
-      typeOfDeal, dealStatus, contactOfDeal, contactInfo, dataLoaded, sortedContacts,filteredOptions, search, statusMsg, errorMsg, user, createDeal , editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortmentList, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributesList, userDiscountRangeValue, sum, totalDealValue, executionDate, totalDealMenuClose, setDiscountRange, dealStatusList, dealPaid, spinner, typeOfShipping, shippingTypeChanged, shippingData, closeMsgNotify, dealSubjectMenu, openDealSubjectMenu, closeDealSubjectMenu, addNewSubject, tempValue, openCurrentSubject, sumPriceAdditionalAttributes, changeSubject, calcSubjectPriceType, calcSubjectPrice, dealTypeArray, optionDealTypeSelect, pageTitle, isSelectMenuOpened, optionDealStatusSelect, calcTotalSubjectPrice, dealStatusListForSelect, shippingTypeList, optionShippingTypeSelect, translateSubjectName
+      typeOfDeal, dealStatus, contactOfDeal, contactInfo, dataLoaded, sortedContacts,filteredOptions, search, statusMsg, errorMsg, user, createDeal , editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortmentList, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributesList, userDiscountRangeValue, sum, totalDealValue, executionDate, totalDealMenuClose, setDiscountRange, dealStatusList, dealPaid, spinner, typeOfShipping, shippingTypeChanged, shippingData, closeMsgNotify, dealSubjectMenu, openDealSubjectMenu, closeDealSubjectMenu, addNewSubject, tempValue, openCurrentSubject, sumPriceAdditionalAttributes, changeSubject, calcSubjectPriceType, calcSubjectPrice, dealTypeArray, optionDealTypeSelect, pageTitle, isSelectMenuOpened, optionDealStatusSelect, calcTotalSubjectPrice, dealStatusListForSelect, shippingTypeList, optionShippingTypeSelect, translateSubjectName, recipe, recipes, optionRecipeSelect, recipeChanged
     };
   },
 };

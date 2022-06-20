@@ -70,7 +70,19 @@
         },
         {
           title: 'Банановый с гаудой',
-          
+          productSize: {
+            concept: 'diameter',
+            measure: 'centimeters',
+            quantity: 17
+          },
+          ingredient: [
+            {
+              name: 'Шоколадно-банановый бисквит'
+
+            }
+          ]
+
+        
         }
       ]
 

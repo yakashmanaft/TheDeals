@@ -1,27 +1,24 @@
 <template>
-    <div class="v-select text-sm text-right text-blue border-b border-dashed border-blue">
+    <div class="v-select text-blue border-b border-dashed border-blue">
         <p 
-            class="title"
+            class="title" 
             @click="toggleSelect()"
         >
-            {{selected}}
+            {{ selected }}
         </p>
         <div 
-            class="options flex flex-col items-center justify-center text-base"
-            v-if="areOptionsVisible"
+            class="options flex flex-col items-center justify-center text-base text-dark-gray" 
+            v-if="areOptionsVisible" 
             @click="hideOptionsMenu"
         >
             <div class="bg-white rounded-md py-2 pt-4 w-4/5">
-                <p
-                    v-for="option in options"
-                    :key="option.name"
-                    @click.stop="$emit('select', option), toggleSelect()"
-                    class="hover:bg-light-grey text-center py-2"
-                    :class="{ 'selectedClass' : option.title === selected}"
-                >
-                    {{option.title}}
+                <p 
+                    v-for="option in options" 
+                    :key="option.name" 
+                    @click.stop="$emit('select', option), toggleSelect()">
+                    {{ option.title }}
                 </p>
-                <p class="border-t border-light-grey text-center py-2 pt-4 mt-4" @click="toggleSelect()">Отменить</p>
+                <p @click="toggleSelect()">Отменить</p>
             </div>
         </div>
     </div>
@@ -29,10 +26,10 @@
 
 <script>
     import { ref } from 'vue';
-    import store from '../store/index';
+    // import { store } from '../store/index';
 
     export default {
-        name: 'Select',
+        name: 'Search',
         props: {
             options: {
                 type: Array,
@@ -46,12 +43,12 @@
             }
         },
         setup() {
-            const areOptionsVisible = ref(false)
+            const areOptionsVisible = ref(false);
 
             // функция сокрытия селектов
             const toggleSelect = () => {
                 areOptionsVisible.value = !areOptionsVisible.value
-                store.methods.backgroundFixed()
+                // store.methods.backgroundFixed()
             }
 
             // Закрываем options меню по клику вне
@@ -64,7 +61,6 @@
             return {
                 areOptionsVisible, toggleSelect, hideOptionsMenu
             }
-
         }
     }
 </script>
