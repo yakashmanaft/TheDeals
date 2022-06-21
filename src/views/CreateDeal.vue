@@ -757,11 +757,14 @@ export default {
       }
       // Если нажали на кнопку Отменитьи или ткнули на фон
       if (e.target.classList.contains('shading_background') || e.target.classList.contains('btn_cancel')) {
-        if (dealsList.value[tempValue.value].subjectPrice === 0 || dealsList.value[tempValue.value].recipe === 'Не указан' || dealsList.value[tempValue.value].productQuantity === 1) {
+        if (dealsList.value[tempValue.value].subjectPrice === 0 || dealsList.value[tempValue.value].recipe === 'Не указан' || dealsList.value[tempValue.value].productQuantity === 1 && curentSubjectOpened.value === false) {
           dealsList.value = dealsList.value.filter(subject => subject.id != dealsList.value[tempValue.value].id);
+          console.log(curentSubjectOpened.value)
           openDealSubjectMenu();
-        } else {
+        } else if(curentSubjectOpened.value === true) {
           openDealSubjectMenu();
+          curentSubjectOpened.value = false;
+          console.log(curentSubjectOpened.value)
         }
         
       }
@@ -1130,9 +1133,15 @@ export default {
         }
         changeSubject()
     }
+
+    const curentSubjectOpened = ref(false);
+    console.log(curentSubjectOpened.value)
+
     const openCurrentSubject = (index) => {
       // вставляем полученный индекс конкретного предмета заказа
       tempValue.value = +index;
+      curentSubjectOpened.value = true;
+      console.log(curentSubjectOpened.value)
       // проверяем состояния perUnit или perKilogram
       changeSubject();
       // Открываем меню
