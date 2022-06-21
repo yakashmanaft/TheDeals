@@ -18,7 +18,6 @@
                     @click.stop="$emit('select', option), toggleSelect()">
                     {{ option.title }}
                 </p>
-                <p @click="toggleSelect()">Отменить</p>
             </div>
         </div>
     </div>

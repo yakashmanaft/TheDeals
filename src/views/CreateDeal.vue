@@ -170,7 +170,7 @@
                           </div>
                           <!-- Если атрибуты выбраны -->
                           <div v-if="item.additionalAttributes.length > 0">
-                            <p>
+                            <p class="text-blue">
                               *есть атрибуты
                             </p>
                           </div>
@@ -357,7 +357,8 @@
               <!-- menu header -->
               <div class="bg-white border-b rounded-t-2xl text-blue flex items-center place-content-between deal-status-menu inset-x-2/4 fixed w-full left-0">
                 <!-- Отменить -->
-                <span class="btn_cancel p-4 pr-0">Отменить</span>
+                <span v-if="curentSubjectOpened === false" class="btn_cancel p-4 pr-0">Отменить</span>
+                <span v-else class="w-3/12"></span>
                 <!-- Цена -->
                 <div class="flex flex-1 flex-col justify-center item-center p-4">
                   <span class="text-dark-gray text-xs text-center">Предмет #{{tempValue + 1}}</span>
@@ -766,7 +767,10 @@ export default {
           curentSubjectOpened.value = false;
           console.log(curentSubjectOpened.value)
         }
-        
+      }
+      if(e.target.classList.contains('btn_done')) {
+        curentSubjectOpened.value = false;
+        console.log(curentSubjectOpened.value)
       }
     }
     const totalDealMenuClose = (e) => {
@@ -1141,6 +1145,11 @@ export default {
       // вставляем полученный индекс конкретного предмета заказа
       tempValue.value = +index;
       curentSubjectOpened.value = true;
+      recipe.value = {
+        name: dealsList.value[tempValue.value].recipe.name,
+        title: dealsList.value[tempValue.value].recipe.title,
+      }
+      // recipe.value.title = dealsList.value[tempValue.value].recipe.title
       console.log(curentSubjectOpened.value)
       // проверяем состояния perUnit или perKilogram
       changeSubject();
@@ -1198,7 +1207,7 @@ export default {
       return filterd[0].title;
     }
     return {
-      typeOfDeal, dealStatus, contactOfDeal, contactInfo, dataLoaded, sortedContacts,filteredOptions, search, statusMsg, errorMsg, user, createDeal , editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortmentList, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributesList, userDiscountRangeValue, sum, totalDealValue, executionDate, totalDealMenuClose, setDiscountRange, dealStatusList, dealPaid, spinner, typeOfShipping, shippingTypeChanged, shippingData, closeMsgNotify, dealSubjectMenu, openDealSubjectMenu, closeDealSubjectMenu, addNewSubject, tempValue, openCurrentSubject, sumPriceAdditionalAttributes, changeSubject, calcSubjectPriceType, calcSubjectPrice, dealTypeArray, optionDealTypeSelect, pageTitle, isSelectMenuOpened, optionDealStatusSelect, calcTotalSubjectPrice, dealStatusListForSelect, shippingTypeList, optionShippingTypeSelect, translateSubjectName, recipe, recipes, optionRecipeSelect, recipeChanged
+      typeOfDeal, dealStatus, contactOfDeal, contactInfo, dataLoaded, sortedContacts,filteredOptions, search, statusMsg, errorMsg, user, createDeal , editModeSearchMenu, selectItem, openOptions, showSearchMenu, blurInput, selectAnon, dealsList, addOrderSubject, assortmentList, deleteOrderSubject, dealTypeChanged, showTotalDealMenu, totalDealMenu, additionalAttributesList, userDiscountRangeValue, sum, totalDealValue, executionDate, totalDealMenuClose, setDiscountRange, dealStatusList, dealPaid, spinner, typeOfShipping, shippingTypeChanged, shippingData, closeMsgNotify, dealSubjectMenu, openDealSubjectMenu, closeDealSubjectMenu, addNewSubject, tempValue, openCurrentSubject, sumPriceAdditionalAttributes, changeSubject, calcSubjectPriceType, calcSubjectPrice, dealTypeArray, optionDealTypeSelect, pageTitle, isSelectMenuOpened, optionDealStatusSelect, calcTotalSubjectPrice, dealStatusListForSelect, shippingTypeList, optionShippingTypeSelect, translateSubjectName, recipe, recipes, optionRecipeSelect, recipeChanged, curentSubjectOpened
     };
   },
 };
