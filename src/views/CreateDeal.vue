@@ -36,7 +36,7 @@
           :class="{ item_fixed: dealSubjectMenu || spinner || isSelectMenuOpened}"
         >
           <!-- set deal information inputs -->
-          <div class="w-full mb-32 px-4" :class="{deal_information_inputs:totalDealMenu}">
+          <div class="w-full mb-36 px-4" :class="{deal_information_inputs:totalDealMenu}">
 
             <!-- С кем заключается дело (Укажите контакт) -->
             <div class="w-full">
@@ -297,10 +297,9 @@
                 <p>Информация по доставке: {{shippingData}}</p>
 
                 <!-- subjects of deal -->
-                <div v-for="(deal, n) in dealsList" :key="n">
+                <div v-for="(deal, n) in dealsList" :key="n" class="border border-dark rounded-md p-2 mt-2">
                   <!-- Предмет заказа -->
-                  <p>Предмет {{ n + 1 }}: {{ translateSubjectName(deal.selectedProduct) }}</p>
-                  <div class="border rounded-md p-2">
+                    <p>Предмет {{ n + 1 }}: {{ translateSubjectName(deal.selectedProduct) }}</p>
                     <!-- Рецепт -->
                     <div class="flex items-center place-content-between">
                       <p>Рецепт</p>
@@ -316,8 +315,11 @@
                       <p>Сумма</p>
                       <p>{{ (deal.subjectPrice).toFixed(2) }} (RUB)</p>
                     </div>
-                  </div>
                 </div>
+
+                <!-- <div v-if="typeOfShipping.name === 'shipping-delivery'">
+                  123
+                </div> -->
 
                 <!-- Внести оплату | предоплату (dealPaid) -->
                 <div v-if="typeOfDeal.name !== 'select-deal-type'" class="w-full flex flex-col mt-4">
@@ -1062,7 +1064,8 @@ export default {
           typeOfShipping: {
             name: typeOfShipping.value.name,
             title: typeOfShipping.value.title
-          }
+          },
+          shippingPrice: 0
         } 
       }
       if(typeOfShipping.value.name === 'shipping-delivery') {
