@@ -141,11 +141,11 @@
                   </div> -->
 
                   <!-- если > 0 предметов в заказе -->
-                  <div>
+                  <div class="border rounded-md p-2">
                     <!-- header -->
-                    <div class="flex items-center place-content-between">
-                      <p class="text-md text-dark">
-                        <span class="font-black text-md text-dark">Позиций в заказе </span> 
+                    <div class="flex items-center place-content-between mb-2 px-2">
+                      <p class="text-sm text-dark">
+                        <span class="text-dark-gray">Позиций в заказе </span> 
                       </p>
                       <p class="text-sm text-blue">{{ dealsList.length }}</p>
                     </div>  
@@ -153,7 +153,7 @@
                     <div class="mt-2" v-for="(item, index) in dealsList" :key="index">
 
                       <!-- Current subject -->
-                      <div @click="openCurrentSubject(index)" class="flex place-content-between items-center border rounded-md p-2 relative">
+                      <div @click="openCurrentSubject(index)" class="flex place-content-between items-center border-t p-2 relative">
                         <div class="flex flex-col items-center mr-2">
                           <div class="img-wrapper bg-light-grey rounded-full p-2 ">
                             <img :src="require(`../assets/images/deals/orders/${item.selectedProduct}.png`)" alt=""> 
@@ -186,7 +186,7 @@
                       </div>
                     </div>
                     <!-- Footer -->
-                    <p @click="addNewSubject" class="text-center text-blue mt-4 mb-2 border rounded-md p-2" v-if="dealsList.length >= 0">
+                    <p @click="addNewSubject" class="text-center text-blue text-sm border-t px-2 pt-2" v-if="dealsList.length >= 0">
                       Добавить предмет
                     </p>
                   </div>
@@ -316,14 +316,24 @@
                 <!-- subjects of deal -->
                 <div v-for="(deal, n) in dealsList" :key="n">
                   <!-- Предмет заказа -->
-                  <div class="flex items-center place-content-between">
-                    <p>Предмет заказа</p>
-                    <p>{{ translateSubjectName(deal.selectedProduct) }}</p>
+                  <p>Предмет {{ n + 1 }}: {{ translateSubjectName(deal.selectedProduct) }}</p>
+                  <div class="border rounded-md p-2">
+                    <!-- Рецепт -->
+                    <div class="flex items-center place-content-between">
+                      <p>Рецепт</p>
+                      <p>{{ deal.recipe.title }}</p>
+                    </div>
+                    <!-- Количество -->
+                    <div class="flex items-center place-content-between">
+                      <p>Количество</p>
+                      <p>{{ deal.productQuantity }} шт.</p>
+                    </div>
                   </div>
-                  <div class="flex items-center place-content-between">
-                    <p>Рецепт</p>
-                    <p>{{ deal.recipe.title }}</p>
-                  </div>
+                </div>
+
+                <!-- Внесено предоплаты -->
+                <div>
+                  <p>{{ dealPaid }}</p>
                 </div>
 
               </div>
