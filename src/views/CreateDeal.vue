@@ -153,14 +153,16 @@
                     <div class="mt-2" v-for="(item, index) in dealsList" :key="index">
 
                       <!-- Current subject -->
-                      <div @click="openCurrentSubject(index)" class="flex place-content-between items-center border-t p-2 relative">
-                        <div class="flex flex-col items-center mr-2">
+                      <div @click="openCurrentSubject(index)" class="flex place-content-between items-center border-t p-2">
+                      <!-- subject icon & quantity -->
+                        <div class="flex flex-col items-center">
                           <div class="img-wrapper bg-light-grey rounded-full p-2 ">
                             <img :src="require(`../assets/images/deals/orders/${item.selectedProduct}.png`)" alt=""> 
                           </div>
                           <span>x{{ item.productQuantity }}</span>
                         </div>
-                        <div class="flex-1 text-sm">
+                        <!-- subject name & recipe & markup atributes -->
+                        <div class="flex-1 text-sm ml-4">
                           <!-- header -->
                           <div>
                             <!-- Что в предмете заказа -->
@@ -174,13 +176,14 @@
                               *есть атрибуты
                             </p>
                           </div>
+                          <!-- Удалить если не понадобится -->
                           <!-- Общая сумму по предмету заказа -->
-                          <div class="flex items-center place-content-between mt-2">
+                          <!-- <div class="flex items-center place-content-between mt-2">
                             <p>Всего на сумму:</p>
                             <p class="text-base">{{ (item.totalSubjectPrice).toFixed(2) }}</p>
-                          </div>
+                          </div> -->
                         </div>
-                        <div @click.stop="deleteOrderSubject(item.id)" class="absolute right-4 top-4">
+                        <div @click.stop="deleteOrderSubject(item.id)">
                           <img src="../assets/images/common/icon-trash.svg" alt="">
                         </div>
                       </div>
@@ -238,25 +241,6 @@
               </div>
             </div>
 
-            <!-- Внести оплату | предоплату (dealPaid) -->
-            <div v-if="typeOfDeal.name !== 'select-deal-type'" class="w-full flex flex-col mt-4">
-              <p class="mb-1 ml-2 text-sm text-blue">Предоплата (RUB)</p>
-              <div class="flex place-content-between border items-center p-2 rounded-md">
-                <label for="dealPaid" class="text-sm leading-none align-text-middle text-dark-gray">
-                  Впишите сумму
-                </label>
-                  <input 
-                    type="number" 
-                    id="dealPaid"
-                    inputmode="decimal"
-                    class="border-b border-dashed focus:outline-none text-dark text-right mx-1 pt-1 w-16" 
-                    placeholder="0.00"
-                    v-model="dealPaid" 
-                  >
-              </div>
-              
-            </div>
-
             <!-- Для input -->
             <!-- pattern="[0-9]+([\.,][0-9]+)?" step="0.01" -->
 
@@ -267,7 +251,7 @@
           <!-- Может имеет смысл сделать компонентом? -->
           <div
             v-if="sum() > 0"
-            class="w-full fixed bottom-0 left-0 flex items-center  justify-center flex-col pb-0 z-20"
+            class="w-full fixed bottom-0 left-0 flex items-center justify-center flex-col pb-0 z-20"
             :class="{ shading_background:totalDealMenu}"
             @click="totalDealMenuClose"
           >
@@ -304,14 +288,13 @@
               </div>
       
               <!-- Deal Sum Details (Content)-->
-              <div v-if="totalDealMenu" class="deal-details px-4 border-t mt-2 overflow-y-auto h-80">
+              <div v-if="totalDealMenu" class="deal-details px-4 border-t mt-2 overflow-y-auto h-96">
                 {{dealsList}}
 
 
                 <p>Статус дела: {{dealStatus}}</p>
-                <p>Остаток к уплате: {{sum() - dealPaid}}</p>
+                
                 <p>Информация по доставке: {{shippingData}}</p>
-                <p>Оплачено: {{dealPaid}}</p>
 
                 <!-- subjects of deal -->
                 <div v-for="(deal, n) in dealsList" :key="n">
@@ -328,12 +311,36 @@
                       <p>Количество</p>
                       <p>{{ deal.productQuantity }} шт.</p>
                     </div>
+                    <!-- Стоимость -->
+                    <div class="flex items-center place-content-between">
+                      <p>Сумма</p>
+                      <p>{{ (deal.subjectPrice).toFixed(2) }} (RUB)</p>
+                    </div>
                   </div>
                 </div>
 
-                <!-- Внесено предоплаты -->
+                <!-- Внести оплату | предоплату (dealPaid) -->
+                <div v-if="typeOfDeal.name !== 'select-deal-type'" class="w-full flex flex-col mt-4">
+                  <p class="mb-1 ml-2 text-sm text-blue">Предоплата (RUB)</p>
+                  <div class="flex place-content-between border items-center p-2 rounded-md">
+                    <label for="dealPaid" class="text-sm leading-none align-text-middle text-dark-gray">
+                      Впишите сумму
+                    </label>
+                      <input 
+                        type="number" 
+                        id="dealPaid"
+                        inputmode="decimal"
+                        class="border-b border-dashed focus:outline-none text-dark text-right mx-1 pt-1 w-16" 
+                        placeholder="0.00"
+                        v-model="dealPaid" 
+                      >
+                  </div>
+                  
+                </div>
+
+                <!-- К оплате -->
                 <div>
-                  <p>{{ dealPaid }}</p>
+                  <p>Остаток к уплате: {{sum() - dealPaid}}</p>
                 </div>
 
               </div>
@@ -365,7 +372,7 @@
             <!-- menu -->
             <div class="bg-light-grey border-t w-full rounded-t-2xl mx-auto h-full overflow-y-auto overflow-y">
               <!-- menu header -->
-              <div class="bg-white border-b rounded-t-2xl text-blue flex items-center place-content-between deal-status-menu inset-x-2/4 fixed w-full left-0">
+              <div class="z-20 bg-white border-b rounded-t-2xl text-blue flex items-center place-content-between deal-status-menu inset-x-2/4 fixed w-full left-0">
                 <!-- Отменить -->
                 <span v-if="curentSubjectOpened === false" class="btn_cancel p-4 pr-0">Отменить</span>
                 <span v-else class="w-3/12"></span>
