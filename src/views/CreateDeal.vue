@@ -289,60 +289,95 @@
       
               <!-- Deal Sum Details (Content)-->
               <div v-if="totalDealMenu" class="deal-details px-4 border-t mt-2 overflow-y-auto h-96">
-                {{dealsList}}
-
-
-                <p>Статус дела: {{dealStatus}}</p>
-                
-                <p>Информация по доставке: {{shippingData}}</p>
-
-                <!-- subjects of deal -->
-                <div v-for="(deal, n) in dealsList" :key="n" class="border border-dark rounded-md p-2 mt-2">
-                  <!-- Предмет заказа -->
-                    <p>Предмет {{ n + 1 }}: {{ translateSubjectName(deal.selectedProduct) }}</p>
-                    <!-- Рецепт -->
-                    <div class="flex items-center place-content-between">
-                      <p>Рецепт</p>
-                      <p>{{ deal.recipe.title }}</p>
-                    </div>
-                    <!-- Количество -->
-                    <div class="flex items-center place-content-between">
-                      <p>Количество</p>
-                      <p>{{ deal.productQuantity }} шт.</p>
-                    </div>
-                    <!-- Стоимость -->
-                    <div class="flex items-center place-content-between">
-                      <p>Сумма</p>
-                      <p>{{ (deal.subjectPrice).toFixed(2) }} (RUB)</p>
-                    </div>
+                <!-- Статус дела -->
+                <p class="px-2 mt-4 text-dark-gray text-sm">{{dealStatus.title}}</p>
+                <!-- Дата дедлайна -->
+                <div class="flex place-content-between px-2 text-sm mt-1 text-dark-gray">
+                  <p>Приготовить к:</p>
+                  <div class="text-blue">
+                    <p v-if="executionDate === ''">Не указано</p>
+                    <p v-else>{{ executionDate }}</p>
+                  </div>
                 </div>
 
+                <!-- subjects of deal -->
+                <div v-for="(deal, n) in dealsList" :key="n" class="border border-dark-gray rounded-md p-2 mt-2">
+                  <!-- Предмет заказа -->
+                    <p class="text-blue">{{ n + 1 }}. <span>{{ translateSubjectName(deal.selectedProduct) }}</span></p>
+                    <div class="text-sm">
+                      <!-- Рецепт -->
+                      <div class="flex items-center place-content-between text-dark-gray mt-2">
+                        <p>Рецепт</p>
+                        <p>{{ deal.recipe.title }}</p>
+                      </div>
+                      <!-- Количество -->
+                      <div class="flex items-center place-content-between text-dark-gray mt-1">
+                        <p>Количество</p>
+                        <p>{{ deal.productQuantity }} шт.</p>
+                      </div>
+                      <!-- Стоимость -->
+                      <div class="flex items-center place-content-between text-dark-gray mt-1">
+                        <p>Сумма</p>
+                        <p>{{ (deal.subjectPrice).toFixed(2) }} (RUB)</p>
+                      </div>
+                      <!-- Атрибуты -->
+                      <div v-if="deal.additionalAttributes.length !== 0" class="text-dark-gray mt-2">
+                        <p class="font-bold">Дополнительные атрибуты</p>
+                        <div v-for="(attribue, number) in deal.additionalAttributes" :key="number" class="flex place-content-between mt-1">
+                          <p>{{ attribue.title }}</p>
+                          <p>{{ attribue.price }}</p>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+                <!-- Доставка -->
+                <div class="mt-2 border border-dark-gray rounded-md p-2">
+                  <p class="text-blue">Доставка</p>
+                  <div class="text-dark-gray">
+                    <!-- Тип доставки -->
+                    <div class="flex place-content-between mt-2 text-sm">
+                      <p>Выбранный тип</p>
+                      <p>{{ typeOfShipping.title }}</p>
+                    </div>
+                    <!-- Стоимость -->
+                    <div class="flex place-content-between mt-2 text-sm">
+                      <p>Стоимость</p>
+                      <p>{{ (shippingData.shippingPrice).toFixed(2) }} (RUB)</p>
+                    </div>
+                    <!-- АДрес -->
+                    <div v-if="typeOfShipping.name === 'shipping-delivery'" class="text-dark-gray mt-2 text-sm">
+                      <p class="font-bold">Адрес</p>
+                      <p class="mt-1">г. Пермь, ул. Маршала Толбухина, 12а (хардкорно)</p>
+                    </div>
+                  </div>
+                </div>
                 <!-- <div v-if="typeOfShipping.name === 'shipping-delivery'">
                   123
                 </div> -->
 
                 <!-- Внести оплату | предоплату (dealPaid) -->
-                <div v-if="typeOfDeal.name !== 'select-deal-type'" class="w-full flex flex-col mt-4">
-                  <p class="mb-1 ml-2 text-sm text-blue">Предоплата (RUB)</p>
-                  <div class="flex place-content-between border items-center p-2 rounded-md">
-                    <label for="dealPaid" class="text-sm leading-none align-text-middle text-dark-gray">
+                <div v-if="typeOfDeal.name !== 'select-deal-type'" class="w-full flex flex-col mt-2 border rounded-md border-dark-gray p-2">
+                  <p class="mb-1 text-blue text-sm">Предоплата (RUB)</p>
+                  <div class="flex place-content-between items-center">
+                    <label for="dealPaid" class="text-sm leading-none align-text-middle text-dark-gray flex-1">
                       Впишите сумму
                     </label>
                       <input 
                         type="number" 
                         id="dealPaid"
                         inputmode="decimal"
-                        class="border-b border-dashed focus:outline-none text-dark text-right mx-1 pt-1 w-16" 
+                        class="text-sm border-b border-dashed border-blue focus:outline-none bg-light-grey text-blue text-right mx-1 pt-1 w-16" 
                         placeholder="0.00"
                         v-model="dealPaid" 
                       >
+                      <p class="text-blue text-sm">(RUB)</p>
                   </div>
                   
                 </div>
-
-                <!-- К оплате -->
-                <div>
-                  <p>Остаток к уплате: {{sum() - dealPaid}}</p>
+                <!-- Остаток к оплате -->
+                <div class="my-4 ml-2">
+                  <p class="text-blue">Остаток к оплате (RUB)</p>
+                  <p class="text-2xl text-dark">{{(sum() - dealPaid).toFixed(2)}}</p>
                 </div>
 
               </div>
