@@ -106,7 +106,7 @@
                     </div>
 
                     <!-- Статус дела -->
-                    <span @click.prevent.stop="dealStatusMenuToggle(deal.id, deal.dealStatus, deal.dealPaid, deal.totalDealValue, deal.cancelledReason)" class=" px-2 py-1 text-sm rounded-md text-blue whitespace-nowrap">{{ translateDealStatus(deal.dealStatus) }}</span>
+                    <span @click.prevent.stop="dealStatusMenuToggle(deal.id, deal.dealStatus, deal.dealPaid, deal.totalDealValue, deal.cancelledReason, deal.dealsList)" class=" px-2 py-1 text-sm rounded-md text-blue whitespace-nowrap">{{ translateDealStatus(deal.dealStatus) }}</span>
 
                   </div>
                   
@@ -117,10 +117,13 @@
                       <div v-for="(item, index) in deal.dealsList" :key="index" :class="`left-${index}0`" class="absolute top-0 left-0 flex flex-col justify-items-center">
                         
                         <!-- item -->
-                        <div class="deal-subject_item-img">
+                        <div class="deal-subject_item-img relative">
                           <img :src="require(`../assets/images/deals/orders/${item.selectedProduct}.png`)" alt=""> 
                         </div>
                         <div class="text-dark-gray text-xs text-center">х{{ item.productQuantity }}</div>
+                        <!-- mark where subject has attribute -->
+                        <div v-if="checkRentAttr(item)" class="absolute top-0 left-0 w-4 h-4 bg-cancel rounded-full">
+                        </div>
                       </div>
                     </div>
 
@@ -277,8 +280,15 @@
         <!-- content -->
         <div class="mx-6 text-dark bg-light-grey inset-x-2/4 border-t rounded-2xl p-4">
           <div class="text-center border-b pb-4"> 
-            <p>По данному делу имеется долг (RUB)</p>
-            <p class="text-2xl text-blue my-2">{{statusDeal.debtValue}}</p>
+            <p>По данному делу имеется долг</p>
+            <!-- Финансовый долг -->
+            <div>
+             <p class="text-2xl text-blue my-2">{{statusDeal.debtValue}} (RUB)</p>
+            </div>
+            <!-- Долг по возврату атрибутов -->
+            <div>
+
+            </div>
             <p class="text-sm text-dark-gray">Мы не можем завершить дело пока долг не будет погашен, поэтому помещаем в статус "Долг"</p>
           </div>
           <p class="w-full text-blue text-center mt-4 dealStatusMenu-btn_close">Ок</p>
@@ -367,7 +377,7 @@ export default {
 
     // deal status menu toggle
     // Забираем у текущего дела id и значение статуса 
-    const dealStatusMenuToggle = (currentDealID, currentDealStatus, currentDealPaid, totalDealValue, cancelledReason) => {
+    const dealStatusMenuToggle = (currentDealID, currentDealStatus, currentDealPaid, totalDealValue, cancelledReason, currentDealsList) => {
       dealStatusMenu.value = !dealStatusMenu.value;
       
       const currentDeal = {
@@ -376,7 +386,8 @@ export default {
         currentDealPaid: currentDealPaid,
         totalDealValue: totalDealValue,
         debtValue: (totalDealValue - currentDealPaid).toFixed(2),
-        cancelledReason: cancelledReason
+        cancelledReason: cancelledReason,
+        dealsList: currentDealsList
       }
       // console.log(currentDeal)
       // console.log(currentDeal.debtValue > 0)
@@ -594,7 +605,24 @@ export default {
         // console.log(dealWithDebt.value)
         dealStatusArray.value = []
         // list.value = []
+
+        const currentSubjectDealsList = deal.dealsList 
+        currentSubjectDealsList.forEach(item => {
+          if(item.additionalAttributes.length > 0) {
+            console.log(item.additionalAttributes)
+          } else {
+            console.log('Нет атрибутов')
+          }
+        })
       } 
+      // Если финансовых долгов нет, но есть не возврат атрибутов
+      // if () {
+      //   deal.currentDealStatus = 'deal-in-debt';
+      //   // Открываем notify
+      //   dealWithDebt.value = !dealWithDebt.value;
+      // "isRent": true,
+      // "isReturned": false
+      // }
       // Когда хотим сменить статус на "Отменен"
       if(deal.currentDealStatus === 'deal-cancelled') {
         //Открываем deal cancelled reason menu
@@ -808,8 +836,21 @@ export default {
       !list.value[index].isExpend ? list.value[index].isExpend = !isExpend.value : list.value[index].isExpend = isExpend.value;
     }
 
+    // Проверяем выбрани ли атрибуты у предмета заказа
+    const checkRentAttr = (item) => {
+      if(item.additionalAttributes.length > 0) {
+        // Если атрибут выбран
+          return true
+      } else  if (item.additionalAttributes.length === 0){
+        // Если атрибутов в принципе не выбрано
+        // console.log('без атрибутов')
+        return false;
+      }
+      
+    }
+
     return {
-      list, setDealStatus, dataLoaded, pageTitle, executionDatesArray, translateDealType, translateDealStatus, showEventDate, daysArray, contactInfo, getNameId, checkChangeStatus, dealStatusArray, getDealStatus, getStatusArrLength, dealStatusList, spinner, dealStatusMenu, dealStatusMenuToggle, closeDealStatusMenu, statusDeal, updateStatus, statusMsg, errorMsg, dealPaid, makePaymMenuToggle, updateDealPaid, dealPaidMenu, closeDealPaidMenu, debt, debtValue, makePayment, copyDebtValue, dealPaidValuePattern, dealWithDebt, closeDealWithDebtMenu, dealStatusClassObject, dealCancelledReason, dealCancelledReasonMenu, closeDealCancelledReasonMenu, openCancelledReasonMenu, editCancelledReason, updateCancelledReason, сancelledDeal, id, expendDeal, isExpend
+      list, setDealStatus, dataLoaded, pageTitle, executionDatesArray, translateDealType, translateDealStatus, showEventDate, daysArray, contactInfo, getNameId, checkChangeStatus, dealStatusArray, getDealStatus, getStatusArrLength, dealStatusList, spinner, dealStatusMenu, dealStatusMenuToggle, closeDealStatusMenu, statusDeal, updateStatus, statusMsg, errorMsg, dealPaid, makePaymMenuToggle, updateDealPaid, dealPaidMenu, closeDealPaidMenu, debt, debtValue, makePayment, copyDebtValue, dealPaidValuePattern, dealWithDebt, closeDealWithDebtMenu, dealStatusClassObject, dealCancelledReason, dealCancelledReasonMenu, closeDealCancelledReasonMenu, openCancelledReasonMenu, editCancelledReason, updateCancelledReason, сancelledDeal, id, expendDeal, isExpend, checkRentAttr
     };
   },
 };

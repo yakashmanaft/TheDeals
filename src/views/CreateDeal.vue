@@ -232,12 +232,34 @@
 
               <!-- Если Доставка -->
               <div v-if="typeOfShipping.name === 'shipping-delivery'">
-                Выбранный вариант доставки: {{typeOfShipping}}
-                <p>shippingData:</p>
-                <p>
-                  {{shippingData}}
-                </p>
-                <input type="number" inputmode="decimal" v-model="shippingData.shippingPrice">  
+                <!-- Адрес доставки -->
+                <div class="text-bluemt-2 border rounded-md p-2">
+                  <label for="shippingAddress" class="text-blue text-sm leading-none align-text-middl flex-1">
+                    Укажите адрес доставки
+                  </label>
+                  <input 
+                    id="shippingAddress" 
+                    type="text" 
+                    v-model="shippingData.shippingAddress"
+                    class="text-sm text-dark-gray focus:outline-none"
+                  >
+                </div>
+                <!-- Стоимость доставки -->
+                <div class="mt-2 border rounded-md flex flex-col p-2">
+                  <p class="mb-1 text-blue text-sm">Стоимость доставки (RUB)</p>
+                  <div class="flex place-content-between items-center">
+                    <label for="shippingPrice" class="text-sm leading-none align-text-middle text-dark-gray flex-1">Впишите сумму</label>
+                    <input 
+                      id="shippingPrice" 
+                      type="number" 
+                      inputmode="decimal" 
+                      v-model="shippingData.shippingPrice"
+                      class="text-sm border-b border-dashed border-blue focus:outline-none text-blue text-right mx-1 pt-1 w-16"
+                      placeholder="0.00" 
+                    > 
+                    <p class="text-blue text-sm">(RUB)</p> 
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -347,13 +369,10 @@
                     <!-- АДрес -->
                     <div v-if="typeOfShipping.name === 'shipping-delivery'" class="text-dark-gray mt-2 text-sm">
                       <p class="font-bold">Адрес</p>
-                      <p class="mt-1">г. Пермь, ул. Маршала Толбухина, 12а (хардкорно)</p>
+                      <p class="mt-1">{{ shippingData.shippingAddress }}</p>
                     </div>
                   </div>
                 </div>
-                <!-- <div v-if="typeOfShipping.name === 'shipping-delivery'">
-                  123
-                </div> -->
 
                 <!-- Внести оплату | предоплату (dealPaid) -->
                 <div v-if="typeOfDeal.name !== 'select-deal-type'" class="w-full flex flex-col mt-2 border rounded-md border-dark-gray p-2">
