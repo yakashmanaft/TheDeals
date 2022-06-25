@@ -52,6 +52,7 @@
       <div 
         v-else 
         class="grid grid-cols-1 gap-4"
+        :class="{ item_fixed: spinner || dealStatusMenu || dealPaidMenu || dealCancelledReasonMenu}"
       >
         <!-- Deal filter -->
         <div class="flex deal-filter-wrapper mx-4">
