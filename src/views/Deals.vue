@@ -284,11 +284,13 @@
             <p>По данному делу имеется долг</p>
             <!-- Финансовый долг -->
             <div>
-             <p class="text-2xl text-blue my-2">{{statusDeal.debtValue}} (RUB)</p>
+             <p v-if="statusDeal.debtValue > 0" class="text-2xl text-blue my-2">{{statusDeal.debtValue}} (RUB)</p>
             </div>
             <!-- Долг по возврату атрибутов -->
-            <div>
-
+            <div v-if="!isAttrReturned()">
+              <div v-for="(item, x) in rentDealAttr" :key="x">
+                  <p class="my-2"><span class="text-blue">{{ x + 1 }}</span>. <span class="text-2xl text-blue">{{ item.title }}</span></p>
+              </div>
             </div>
             <p class="text-sm text-dark-gray">Мы не можем завершить дело пока долг не будет погашен, поэтому помещаем в статус "Долг"</p>
           </div>
@@ -589,6 +591,20 @@ export default {
       return showNameByID(contactInfo, contactID)
     }
 
+    // Фиксирует в себе инфу по долговым атрибутам
+    const rentDealAttr = ref([])
+
+    // Костыль по вытаскиванию значений возврата
+    const isAttrReturned = () => {
+      if(rentDealAttr.value.find(n => n.isReturned === false)) {
+        // console.log(rentDealAttr.value)
+        return false
+      } else {
+        return true
+      }
+
+    }
+
     // Обновляем в БД Статус дела
     const updateStatus = async () => {
       // Закрываем меню изменения статуса
@@ -597,7 +613,7 @@ export default {
       // Преобразования и вычисления
       const deal = statusDeal.value
       // Когда хотим сменить статус на "Завершен" делу с долгом...
-      if(deal.debtValue > 0 && deal.currentDealStatus === 'deal-complete') {
+      if((deal.debtValue > 0 && deal.currentDealStatus === 'deal-complete') || (isAttrReturned() === false && deal.currentDealStatus === 'deal-complete')) {
         deal.currentDealStatus = 'deal-in-debt';
         // Открываем notify
         dealWithDebt.value = !dealWithDebt.value;
@@ -605,25 +621,35 @@ export default {
         // setDealStatus.value = "deal-in-debt"
         // console.log(dealWithDebt.value)
         dealStatusArray.value = []
+        rentDealAttr.value = []
+        // rentDealAttr.value = []
         // list.value = []
-
-        const currentSubjectDealsList = deal.dealsList 
-        currentSubjectDealsList.forEach(item => {
-          if(item.additionalAttributes.length > 0) {
-            console.log(item.additionalAttributes)
-          } else {
-            console.log('Нет атрибутов')
-          }
-        })
       } 
-      // Если финансовых долгов нет, но есть не возврат атрибутов
-      // if () {
-      //   deal.currentDealStatus = 'deal-in-debt';
-      //   // Открываем notify
-      //   dealWithDebt.value = !dealWithDebt.value;
-      // "isRent": true,
-      // "isReturned": false
-      // }
+
+      // вытаскивает из атрибутов данные по долговым атрибутам
+      const currentSubjectDealsList = deal.dealsList 
+      
+      currentSubjectDealsList.forEach(item => {
+        if(item.additionalAttributes.length > 0) {
+          const attrArray = item.additionalAttributes
+          // console.log(attrArray.find(n => n.isReturned === false))
+          attrArray.forEach(item => {
+            if(item.isReturned === false) {
+              // console.log(item.title)
+              // console.log(item.isReturned)
+              rentDealAttr.value.push({
+                title: item.title,
+                isReturned: item.isReturned
+              })
+            } else {
+              // console.log('Этот атрибут возвращать не надо')
+            }
+          })
+        } else {
+          // console.log('Нет атрибутов')
+        }
+      })
+
       // Когда хотим сменить статус на "Отменен"
       if(deal.currentDealStatus === 'deal-cancelled') {
         //Открываем deal cancelled reason menu
@@ -851,7 +877,7 @@ export default {
     }
 
     return {
-      list, setDealStatus, dataLoaded, pageTitle, executionDatesArray, translateDealType, translateDealStatus, showEventDate, daysArray, contactInfo, getNameId, checkChangeStatus, dealStatusArray, getDealStatus, getStatusArrLength, dealStatusList, spinner, dealStatusMenu, dealStatusMenuToggle, closeDealStatusMenu, statusDeal, updateStatus, statusMsg, errorMsg, dealPaid, makePaymMenuToggle, updateDealPaid, dealPaidMenu, closeDealPaidMenu, debt, debtValue, makePayment, copyDebtValue, dealPaidValuePattern, dealWithDebt, closeDealWithDebtMenu, dealStatusClassObject, dealCancelledReason, dealCancelledReasonMenu, closeDealCancelledReasonMenu, openCancelledReasonMenu, editCancelledReason, updateCancelledReason, сancelledDeal, id, expendDeal, isExpend, checkRentAttr
+      list, setDealStatus, dataLoaded, pageTitle, executionDatesArray, translateDealType, translateDealStatus, showEventDate, daysArray, contactInfo, getNameId, checkChangeStatus, dealStatusArray, getDealStatus, getStatusArrLength, dealStatusList, spinner, dealStatusMenu, dealStatusMenuToggle, closeDealStatusMenu, statusDeal, updateStatus, statusMsg, errorMsg, dealPaid, makePaymMenuToggle, updateDealPaid, dealPaidMenu, closeDealPaidMenu, debt, debtValue, makePayment, copyDebtValue, dealPaidValuePattern, dealWithDebt, closeDealWithDebtMenu, dealStatusClassObject, dealCancelledReason, dealCancelledReasonMenu, closeDealCancelledReasonMenu, openCancelledReasonMenu, editCancelledReason, updateCancelledReason, сancelledDeal, id, expendDeal, isExpend, checkRentAttr, rentDealAttr, isAttrReturned
     };
   },
 };
