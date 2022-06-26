@@ -11,26 +11,46 @@
             v-if="areOptionsVisible" 
             @click="hideOptionsMenu"
         >
-            <input 
-                type="text"
-                placeholder="Поиск..."
-                v-model="search"
-            >
-            <div class="bg-white rounded-md py-2 pt-4 w-4/5">
-                <!-- <p 
-                    v-for="option in options" 
-                    :key="option.name" 
-                    @click.stop="$emit('select', option), toggleSelect()">
-                    {{ option.title }}
-                </p> -->
-                <p 
-                    v-for="option in filteredOptions(options)" 
-                    :key="option.name" 
-                    @click.stop="$emit('select', option), toggleSelect()">
-                    {{ option.title }}
-                    
-                </p>
-                <!-- <p v-if="!arrayToFilter">Ничего не найдено</p> -->
+                <!-- Header -->
+                <div class="w-11/12 px-4 py-4 flex place-content-between items-center bg-white rounded-t-md border-b">
+                    <div class="flex items-center">
+                        <label for="search-input" class="flex items-center justify-center w-4 h-4">
+                            <img class="w-full" src="@/assets/images/common/icon-search.svg" alt="">
+                        </label>
+                        <input 
+                            id="search-input"
+                            type="text"
+                            placeholder="Поиск..."
+                            v-model="search"
+                            class="outline-none focus:outline-none ml-2"
+                        >
+                        
+                    </div>
+                    <div class="flex items-center justify-center w-4 h-4" @click="toggleSelect()">
+                        <img src="@/assets/images/common/icon-close.svg" alt="" class="w-full">
+                    </div>
+                </div>
+            <div class="w-11/12 h-4/5 bg-white rounded-b-md overflow-y-auto">
+                <!-- Список -->
+                <div class="px-4 pb-4 pt-2 w-11/12">
+                    <!-- <p 
+                        v-for="option in options" 
+                        :key="option.name" 
+                        @click.stop="$emit('select', option), toggleSelect()">
+                        {{ option.title }}
+                    </p> -->
+                    <p 
+                        v-for="option in filteredOptions(options)" 
+                        :key="option.name" 
+                        @click.stop="$emit('select', option), toggleSelect()"
+                        class="mt-1"    
+                    >
+                        {{ option.title }}
+                        
+                    </p>
+                    <!-- <p>Ничего не найдено</p> -->
+                </div>
+
             </div>
         </div>
     </div>
@@ -72,15 +92,9 @@
                 }
             }
 
-            //сортируем контакты по алфавиту
-            // const sortedList = computed(() => {       
-            // return sortAlphabetically(options)
-            // });
-
-            // функция поиска
-            // const result = ref();
+            // функция поиска сортировки по алфавиту
             const filteredOptions = (options) => {
-
+                // Сортируем по алфавиту
                 options.sort((a, b) => {
                     let fa = a.title.toLowerCase(), fb = b.title.toLowerCase();
                     if (fa < fb) {
@@ -94,13 +108,11 @@
 
                 return searchFilter(options, search.value)
             };
-            // const searchFilter = (arrayToFilter, search) => {
             const searchFilter = (arrayToFilter, search) => {
+                // console.log(arrayToFilter)
                 // console.log(search)
-                console.log(arrayToFilter)
-                console.log(search)
-                // return arrayToFilter
                 return arrayToFilter.filter((option) => {
+                    // Удалить если не понадобится
                     // return result.value = option.title.match(search) 
                     if(search !== undefined){
                         return option.title.toLowerCase().indexOf(search.toLowerCase()) != -1
