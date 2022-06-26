@@ -11,13 +11,26 @@
             v-if="areOptionsVisible" 
             @click="hideOptionsMenu"
         >
+            <input 
+                type="text"
+                placeholder="Поиск..."
+                v-model="search"
+            >
             <div class="bg-white rounded-md py-2 pt-4 w-4/5">
-                <p 
+                <!-- <p 
                     v-for="option in options" 
                     :key="option.name" 
                     @click.stop="$emit('select', option), toggleSelect()">
                     {{ option.title }}
+                </p> -->
+                <p 
+                    v-for="option in filteredOptions(options)" 
+                    :key="option.name" 
+                    @click.stop="$emit('select', option), toggleSelect()">
+                    {{ option.title }}
+                    
                 </p>
+                <!-- <p v-if="!arrayToFilter">Ничего не найдено</p> -->
             </div>
         </div>
     </div>
@@ -25,6 +38,8 @@
 
 <script>
     import { ref } from 'vue';
+    // import { sortAlphabetically } from '../helpers/sort';
+    // import { searchFilter } from '../helpers/filter';
     // import { store } from '../store/index';
     export default {
         name: 'Search',
@@ -41,6 +56,9 @@
             }
         },
         setup() {
+            // 
+            const search = ref();
+
             const areOptionsVisible = ref(false);
             // функция сокрытия селектов
             const toggleSelect = () => {
@@ -53,8 +71,48 @@
                     toggleSelect()
                 }
             }
+
+            //сортируем контакты по алфавиту
+            // const sortedList = computed(() => {       
+            // return sortAlphabetically(options)
+            // });
+
+            // функция поиска
+            // const result = ref();
+            const filteredOptions = (options) => {
+
+                options.sort((a, b) => {
+                    let fa = a.title.toLowerCase(), fb = b.title.toLowerCase();
+                    if (fa < fb) {
+                    return -1;
+                    } 
+                    if (fa > fb) {
+                    return 1;
+                    }
+                    return 0;
+                })
+
+                return searchFilter(options, search.value)
+            };
+            // const searchFilter = (arrayToFilter, search) => {
+            const searchFilter = (arrayToFilter, search) => {
+                // console.log(search)
+                console.log(arrayToFilter)
+                console.log(search)
+                // return arrayToFilter
+                return arrayToFilter.filter((option) => {
+                    // return result.value = option.title.match(search) 
+                    if(search !== undefined){
+                        return option.title.toLowerCase().indexOf(search.toLowerCase()) != -1
+                    } else {
+                        return arrayToFilter
+                    }
+                    
+                })
+            }
+
             return {
-                areOptionsVisible, toggleSelect, hideOptionsMenu
+                search, areOptionsVisible, toggleSelect, hideOptionsMenu, filteredOptions
             }
         }
     }

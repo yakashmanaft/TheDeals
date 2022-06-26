@@ -11,5 +11,5 @@ export const searchFilter = (arrayToFilter, search) => {
       // Из каких col еще стреубется поиск? по номеру телефона? по наличию вайбера? думайте...
     );
   });
-  
 };
+

@@ -105,6 +105,7 @@
                 >
               </div>
             </div>
+            
             <!-- Статус дела -->
             <div class="w-full flex flex-col mt-4">
               <!-- Выбор статуса дела -->
