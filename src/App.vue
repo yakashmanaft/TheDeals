@@ -2,7 +2,7 @@
   <div>
     <ion-menu side="end" menu-id="first" content-id="main">
       <ion-header>
-        <ion-toolbar color="success">
+        <ion-toolbar color="primary">
           <ion-title>Example Menu</ion-title>
         </ion-toolbar>
       </ion-header>
