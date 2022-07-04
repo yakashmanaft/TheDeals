@@ -19,7 +19,7 @@
     <div class="ion-page" id="main" type="push">
       <ion-content>
         <ion-menu-toggle>
-          <ion-button>Toggle Menu</ion-button>
+          <ion-button>Menu</ion-button>
         </ion-menu-toggle>
         <router-view/>
       </ion-content>
