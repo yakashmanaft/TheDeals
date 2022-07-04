@@ -2,7 +2,7 @@
   <div>
     <ion-menu side="end" menu-id="first" content-id="main">
       <ion-header>
-        <ion-toolbar color="primary">
+        <ion-toolbar color="success">
           <ion-title>Example Menu</ion-title>
         </ion-toolbar>
       </ion-header>
@@ -70,9 +70,8 @@ export default defineComponent ({
 </script>
 
 <style>
-ion-content {
-  
-}
+/* На случай кастомных цветов */
+/* @import './theme/variables.scss'; */
 
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
