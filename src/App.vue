@@ -26,6 +26,7 @@
         <router-view/>
       </ion-content>
     </div>
+
   </div>
 </template>
 
@@ -50,15 +51,15 @@ import { grid } from 'ionicons/icons';
 export default defineComponent ({
     components: {
       PWAPrompt,
-    IonContent, 
-    IonHeader, 
-    IonItem, 
-    IonList, 
-    IonMenu, 
-    IonMenuToggle,
-    IonButton,
-    IonTitle, 
-    IonToolbar
+      IonContent, 
+      IonHeader, 
+      IonItem, 
+      IonList, 
+      IonMenu, 
+      IonMenuToggle,
+      IonButton,
+      IonTitle, 
+      IonToolbar
     },
     setup() {
       return {
@@ -69,6 +70,10 @@ export default defineComponent ({
 </script>
 
 <style>
+ion-content {
+  
+}
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
