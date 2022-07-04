@@ -19,7 +19,9 @@
     <div class="ion-page" id="main" type="push">
       <ion-content>
         <ion-menu-toggle>
-          <ion-button>Menu</ion-button>
+          <ion-button>Burger Menu
+            <ion-icon :icon="grid" />
+          </ion-button>
         </ion-menu-toggle>
         <router-view/>
       </ion-content>
@@ -40,8 +42,10 @@ import {
   IonMenuToggle,
   IonButton,
   IonTitle, 
-  IonToolbar
+  IonToolbar,
+  IonIcon
 } from '@ionic/vue';
+import { grid } from 'ionicons/icons';
 
 export default defineComponent ({
     components: {
@@ -58,7 +62,7 @@ export default defineComponent ({
     },
     setup() {
       return {
-        
+        grid
       }
     }
 })
