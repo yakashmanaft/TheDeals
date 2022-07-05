@@ -4,6 +4,7 @@ import './registerServiceWorker';
 import router from './router';
 import store from './store';
 import { IonicVue } from '@ionic/vue';
+
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/vue/css/core.css';
 
@@ -20,10 +21,10 @@ import '@ionic/vue/css/text-transformation.css';
 import '@ionic/vue/css/flex-utils.css';
 import '@ionic/vue/css/display.css';
 
-// createApp(App).use(store).use(router).mount('#app')
+createApp(App).use(store).use(router).use(IonicVue).mount('#app');
 
-const app = createApp(App).use(IonicVue).use(router);
+// const app = createApp(App).use(store).use(router).use(IonicVue);
 
-router.isReady().then(() => {
-  app.mount('#app');
-});
+// router.isReady().then(() => {
+//   app.mount('#app');
+// });
