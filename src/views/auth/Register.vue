@@ -23,7 +23,7 @@
             </div>
             
             <!-- Форма ввода логина и пароля -->
-            <form @submit.prevent='login()'>
+            <form @submit.prevent='register()'>
                 <!-- Email -->
                 <ion-input 
                     placeholder="Enter Email / Введите имейл"
@@ -39,22 +39,30 @@
                     v-model="password"   
                     class="ion-text-start ion-padding-vertical ion-margin-horizontal" 
                 ></ion-input>
+
+                <!-- Confirm Password -->
+                <ion-input 
+                    placeholder="Confirm password / Повторите пароль"
+                    type="password" 
+                    v-model="confirmPassword"   
+                    class="ion-text-start ion-padding-vertical ion-margin-horizontal" 
+                ></ion-input>
     
                 <!-- Button -->
                 <ion-button 
                     class="ion-margin-vertical"
                     type="submit" 
-                    color="success" 
+                    color="warning" 
                     expand="block"
                 >
                     <ion-text color="light" >
-                        Войти
+                        Зарегистрироваться
                     </ion-text>
                     
                 </ion-button>
                 <!-- Ссылка на экран регистрации -->
                 <ion-text color="primary">
-                    <router-link :to="{ name: 'Register' }">Еще нет аккаунта?</router-link>
+                    <router-link :to="{ name: 'Login' }">Уже есть аккаунт?</router-link>
                 </ion-text>
             </form>
 
@@ -70,38 +78,46 @@
     import { IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert } from '@ionic/vue';
 
     export default defineComponent ({
-        name: 'login',
+        name: 'register',
         components: { IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert },
         setup() {
             // Create data / vars
             const router = useRouter();
             const email = ref(null);
             const password = ref(null);
+            const confirmPassword = ref(null);
             const errorMsg = ref(null);
             const isOpenRef = ref(false);
 
-            // Login function
-            const login = async () => {
+            // Register function
+            const register = async () => {
+            if (password.value === confirmPassword.value) {
                 try {
-                    const { error } = await supabase.auth.signIn({
-                        email: email.value,
-                        password: password.value
-                    });
-                    if (error) throw error;
-                    router.push({ name: 'Calendar' })
+                const { error } = await supabase.auth.signUp({
+                    email: email.value,
+                    password: password.value
+                });
+                if (error) throw error;
+                router.push({ name: 'Login' })
                 } catch (error) {
-                    errorMsg.value = `Error: ${error.message}`;
-                    setTimeout(() => {
-                        errorMsg.value = null
-                    }, 5000)
+                errorMsg.value = error.message;
+                setTimeout(() => {
+                    errorMsg.value = null;
+                }, 5000)
                 }
+                return;
             }
+            errorMsg.value = 'Error: Passwords do not match'
+            setTimeout(() => {
+                errorMsg.value = null;
+            }, 5000)
+            };
 
             // show alert of errorMsg
             const setOpen = () => isOpenRef.value = !isOpenRef.value; 
 
             return {
-                email, password, errorMsg, login, isOpenRef, setOpen
+                email, password, errorMsg, register, isOpenRef, isOpenRef, setOpen
             }
         }
     })

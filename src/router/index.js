@@ -5,7 +5,9 @@ import { supabase } from '../supabase/init';
 // import HomeView from '../views/HomeView.vue';
 // import Calendar from '../views/Calendar.vue';
 
+// Экраны логина и регистрации
 import Login from '../views/auth/Login.vue';
+import Register from '../views/auth/Register.vue';
 
 const routes = [
   {
@@ -25,6 +27,15 @@ const routes = [
     component: Login,
     meta: {
       title: 'Login',
+      auth: false
+    }
+  },
+  {
+    path: '/register',
+    name: 'Register',
+    component: Register,
+    meta: {
+      title: 'Register',
       auth: false
     }
   },
