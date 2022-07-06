@@ -18,8 +18,21 @@ const routes = [
       title: 'Calendar',
       auth: true,
       translation: 'Календарь',
+      // Удалить если не понадобится
       type: 'View'
     },
+  },
+  {
+    path: '/contacts',
+    name: 'Contacts',
+    component: () => import('../views/Contacts.vue'),
+    meta: {
+      title: 'Contacts',
+      auth: true,
+      translation: 'Мои контакты',
+      // Удалить если не понадобится
+      type: 'View'
+    } 
   },
   {
     path: '/login',

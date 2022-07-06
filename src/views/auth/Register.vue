@@ -11,15 +11,29 @@
             @didDismiss="setClose()"
         ></ion-alert>
 
+        <!-- Confirm email alert-->
+        <ion-alert
+            v-if="confirmRequire"
+            :is-open="confirmRequire ? isOpenRef = true : isOpenRef = false"
+            header="Потдвердите почту"
+            sub-header="На указанный адрес был отправлен запрос подтверждение"
+            :buttons="['ВОЙТИ']"
+            @didDismiss="confirmRequireFunc()"
+        ></ion-alert>
+        
+        <!-- Spinner -->
+        <Spinner v-if="spinner"/>
+
+        <!-- Content -->
         <div class="wrapper">
-            <!-- Content -->
+            
             <div>
                 <h1 class="ion-text-start ion-no-margin header">
                     <ion-text color="primary">Deals</ion-text><ion-text color="success">.</ion-text>
                 </h1>
-                <h2 class="ion-text-start ion-no-margin">
-                    <ion-text color="medium">...в ваших руках</ion-text>
-                </h2>
+                <h3 class="ion-text-start ion-no-margin">
+                    <ion-text color="medium">...бизнес в ваших руках</ion-text>
+                </h3>
             </div>
             
             <!-- Форма ввода логина и пароля -->
@@ -29,7 +43,7 @@
                     placeholder="Enter Email / Введите имейл"
                     type="email" 
                     v-model="email"    
-                    class="ion-text-start ion-padding-vertical ion-margin-horizontal"
+                    class="ion-text-start ion-padding-vertical ion-padding-horizontal"
                 ></ion-input>
     
                 <!-- Password -->
@@ -37,7 +51,7 @@
                     placeholder="Enter password / Введите пароль"
                     type="password" 
                     v-model="password"   
-                    class="ion-text-start ion-padding-vertical ion-margin-horizontal" 
+                    class="ion-text-start ion-padding-vertical ion-padding-horizontal" 
                 ></ion-input>
 
                 <!-- Confirm Password -->
@@ -45,7 +59,7 @@
                     placeholder="Confirm password / Повторите пароль"
                     type="password" 
                     v-model="confirmPassword"   
-                    class="ion-text-start ion-padding-vertical ion-margin-horizontal" 
+                    class="ion-text-start ion-padding-vertical ion-padding-horizontal" 
                 ></ion-input>
     
                 <!-- Button -->
@@ -76,10 +90,11 @@
     import { supabase } from '../../supabase/init';
     import { useRouter } from 'vue-router';
     import { IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert } from '@ionic/vue';
+    import Spinner from '../../components/Spinner.vue';
 
     export default defineComponent ({
         name: 'register',
-        components: { IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert },
+        components: { IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert, Spinner },
         setup() {
             // Create data / vars
             const router = useRouter();
@@ -88,6 +103,8 @@
             const confirmPassword = ref(null);
             const errorMsg = ref(null);
             const isOpenRef = ref(false);
+            const spinner = ref(null);
+            const confirmRequire = ref(null);
 
             // Register function
             const register = async () => {
@@ -98,7 +115,11 @@
                     password: password.value
                 });
                 if (error) throw error;
-                router.push({ name: 'Login' })
+                spinner.value = true;
+                setTimeout(() => {
+                    confirmRequire.value = true
+                    // router.push({ name: 'Login' })
+                }, 3000)
                 } catch (error) {
                 errorMsg.value = error.message;
                 setTimeout(() => {
@@ -113,11 +134,17 @@
             }, 5000)
             };
 
+            // confirm alert
+            const confirmRequireFunc = () => {
+                isOpenRef.value = !isOpenRef.value;
+                router.push({ name: 'Login' });
+            }
+
             // show alert of errorMsg
             const setOpen = () => isOpenRef.value = !isOpenRef.value; 
 
             return {
-                email, password, errorMsg, register, isOpenRef, isOpenRef, setOpen
+                email, password, confirmPassword, spinner, confirmRequire, confirmRequireFunc, errorMsg, register, isOpenRef, isOpenRef, setOpen
             }
         }
     })
