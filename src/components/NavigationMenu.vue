@@ -1,27 +1,49 @@
 <template>
     <ion-menu side="end" menu-id="first" content-id="main">
-        <ion-list-header class="ion-padding-vertical" lines="full" color="light">
-            <ion-avatar class="ion-margin-end ion-margin-bottom account-avatar">
-                <!-- Аватар, поидее должен подгружать из настроек аккаунта -->
-                <img src="img/common/user-avatar.png">
-            </ion-avatar>
-            <ion-text class="account">Аккаунт</ion-text>
-            <ion-text class="account-name">{{ userEmail }}</ion-text>
+        <!-- menu header -->
+        <ion-list-header class="ion-padding-top" lines="full">
+            <ion-grid class="ion-no-margin ion-no-padding">
+                <ion-row class="ion-align-items-center">
+                    <ion-col>
+                        <!-- Аватар, поидее должен подгружать из настроек аккаунта -->
+                        <ion-avatar class="account-avatar">
+                            <img src="img/common/user-avatar.png">
+                        </ion-avatar>
+                    </ion-col>
+                </ion-row>
+            </ion-grid>
+            <!-- Инфа по аккаунту -->
+            <ion-grid class="ion-margin-vertical ion-no-padding">
+                <ion-row>
+                    <ion-col>
+                        <ion-row>
+                            <ion-text class="account">Аккаунт</ion-text>
+                        </ion-row>
+                        <ion-row>
+                            <ion-text class="account-name">{{ userEmail }}</ion-text>
+                        </ion-row>
+                    </ion-col>
+                    <ion-col class="ion-align-self-end ion-margin-end" size="2">
+                        <!-- Кнопка выхода из аккаунта -->
+                        <ion-icon :icon="exitOutline" color="primary" @click="logout()"/>
+                    </ion-col>
+                </ion-row>
+            </ion-grid>
         </ion-list-header>
-        <ion-content>
+        <!-- menu content -->
+        <ion-content class="ion-padding-vertical">
             <ion-list>
                 <ion-item v-for="(item, index) in menuList" :key="index" lines="none" >
-                    <ion-icon :icon="`${item.icon}-outline`" color="primary" :alt="`${item.icon}`" class="ion-margin-end"/>
+                    <ion-icon :icon="`${item.icon}`" color="primary" :alt="`${item.icon}`" class="ion-margin-end"/>
                     <router-link :to="{ name: `${item.name}` }"> {{ item.title }}</router-link>
                 </ion-item> 
-                <!-- Кнопка выхода из аккаунта -->
-                <ion-item @click="logout()" lines="none" class="ion-margin-vertical">
-                    <ion-text color="danger">Выйти из аккаунта</ion-text>
-                </ion-item>
-                <!-- Предложение установить сервис в виде приложения -->
-                <PWAPrompt/>
             </ion-list>
         </ion-content>
+        <!-- menu footer -->
+        <ion-list-footer>
+            <!-- Предложение установить сервис в виде приложения -->
+            <PWAPrompt/>
+        </ion-list-footer>
     </ion-menu>
 </template>
 
@@ -33,6 +55,7 @@
     import { 
         IonContent, 
         IonListHeader, 
+        IonListFooter,
         IonItem, 
         IonList, 
         IonMenu, 
@@ -44,14 +67,12 @@
     } from '@ionic/vue';
     import PWAPrompt from '../components/PWAPrompt.vue';
     import { defineComponent } from 'vue';
-    import { calendarOutline, peopleOutline } from 'ionicons/icons';
-
-    // import { menu } from 'ionicons/icons';
+    import { exitOutline, calendarOutline, peopleOutline } from 'ionicons/icons';
 
     export default defineComponent({
         name: 'NavigationMenu',
         components: {
-            IonIcon, IonMenu, IonListHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonText, PWAPrompt, IonAvatar
+            IonIcon, IonMenu, IonListHeader, IonListFooter, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonText, PWAPrompt, IonAvatar
         },
         props: [],
         setup() {
@@ -77,17 +98,61 @@
                     name: 'Contacts',
                     title: 'Мои контакты',
                     icon: peopleOutline
+                },
+                {
+                    name: 'Calendar',
+                    title: 'Календарь',
+                    icon: calendarOutline
+                },
+                {
+                    name: 'Contacts',
+                    title: 'Мои контакты',
+                    icon: peopleOutline
+                },
+                {
+                    name: 'Calendar',
+                    title: 'Календарь',
+                    icon: calendarOutline
+                },
+                {
+                    name: 'Contacts',
+                    title: 'Мои контакты',
+                    icon: peopleOutline
+                },
+                {
+                    name: 'Calendar',
+                    title: 'Календарь',
+                    icon: calendarOutline
+                },
+                {
+                    name: 'Contacts',
+                    title: 'Мои контакты',
+                    icon: peopleOutline
+                },
+                {
+                    name: 'Calendar',
+                    title: 'Календарь',
+                    icon: calendarOutline
+                },
+                {
+                    name: 'Contacts',
+                    title: 'Мои контакты',
+                    icon: peopleOutline
                 }
             ]
 
             return {
-                user, router, userEmail, logout, menuList, calendarOutline, peopleOutline
+                user, router, userEmail, logout, menuList, exitOutline, calendarOutline, peopleOutline
             }
         }
     })
 </script>
 
 <style scoped>
+    ion-grid {
+        width: 100%;
+    }
+
     ion-list-header {
         display: flex;
         flex-direction: column;

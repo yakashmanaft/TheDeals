@@ -1,16 +1,18 @@
 <!-- PWAPrompt.vue -->
 <!-- https://webdevblog.ru/sozdanie-pwa-s-pomoshhju-vue-js/ -->
 <template>
-  <div v-if="shown">
-    Add app to home screen?
+  <div v-if="shown" class="container">
+    <p>Добавить иконку на рабочий стол?</p>
 
-    <button @click="installPWA">
-      Install!
-    </button>
-
-    <button @click="dismissPrompt">
-      No, thanks
-    </button>
+    <div class="button-wrapper">
+      <button class="button-success" @click="installPWA">
+        Да, хочу
+      </button>
+  
+      <button class="button-danger" @click="dismissPrompt">
+        Нет, спасибо
+      </button>
+    </div>
   </div>
 </template>
 
@@ -47,3 +49,27 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+  .container {
+    background: var(--ion-color-light);
+    padding: 1rem 0;
+  }
+  .button-wrapper {
+    display: flex;
+    justify-content: space-around;
+  }
+ button {
+  padding: 0.7rem;
+  border-radius: 0.5rem;
+  color: var(	--ion-color-light);
+ }
+
+ button.button-success {
+  background-color: var(--ion-color-success);
+ }
+
+ button.button-danger {
+  background-color: var(--ion-color-danger);
+ }
+</style>
