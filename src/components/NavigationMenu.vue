@@ -98,18 +98,18 @@
         color: var(--ion-color-step-850)!important;
     }
     .account {
-        font-size: 0.6em; 
+        font-size: 0.8rem; 
         font-weight: 400;
         color: var(--ion-color-medium)
     }
 
     .account-name {
-        font-size: 0.8em; 
+        font-size: 1rem; 
         font-weight: 500;
     }
 
     .account-avatar {
-        width: 3em;
-        height: 3em;
+        width: 4rem;
+        height: 4rem;
     }
 </style>
