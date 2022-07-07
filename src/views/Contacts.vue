@@ -51,7 +51,7 @@
 
 
     export default defineComponent({
-        name: 'contacts',
+        name: 'Contacts',
         components: {
             PWAPrompt,
             Header,

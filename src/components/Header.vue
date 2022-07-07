@@ -1,6 +1,6 @@
 <template v-show="user">
     <ion-header translucent="true">
-        <ion-toolbar>
+        <ion-toolbar >
             <ion-grid>
                 <ion-row class="ion-justify-content-between ion-align-items-center">
                     <h1 class="ion-no-margin">{{ title }}</h1>
@@ -17,9 +17,7 @@
     import store from '../store/index';
     import { computed } from 'vue';
     import { useRouter } from 'vue-router';
-    import { 
-    IonHeader, IonMenuToggle, IonToolbar, IonIcon, IonGrid, IonRow
-    } from '@ionic/vue';
+    import { IonHeader, IonMenuToggle, IonToolbar, IonIcon, IonGrid, IonRow } from '@ionic/vue';
     import { menu } from 'ionicons/icons';
 
     export default {
@@ -40,5 +38,7 @@
 </script>
 
 <style scoped>
-
+    ion-icon {
+        font-size: 30px;
+    }
 </style>
