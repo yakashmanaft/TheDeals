@@ -14,7 +14,7 @@
             </ion-grid>
             <!-- Инфа по аккаунту -->
             <ion-grid class="ion-margin-vertical ion-no-padding">
-                <ion-row>
+                <ion-row class="ion-align-items-center">
                     <ion-col>
                         <ion-row>
                             <ion-text class="account">Аккаунт</ion-text>
@@ -23,9 +23,9 @@
                             <ion-text class="account-name">{{ userEmail }}</ion-text>
                         </ion-row>
                     </ion-col>
-                    <ion-col class="ion-align-self-end ion-margin-end" size="2">
-                        <!-- Кнопка выхода из аккаунта -->
-                        <ion-icon :icon="exitOutline" color="primary" @click="logout()"/>
+                    <ion-col class="ion-margin-end" size="2">
+                            <!-- Кнопка выхода из аккаунта -->
+                            <ion-icon :icon="exitOutline" color="primary" @click="logout()"/>
                     </ion-col>
                 </ion-row>
             </ion-grid>
@@ -40,10 +40,20 @@
             </ion-list>
         </ion-content>
         <!-- menu footer -->
-        <ion-list-footer>
+        <div>
+            <ion-list lines="none">
+                <ion-item>
+                    <ion-icon :icon="settingsOutline" color="primary" class="ion-margin-end"></ion-icon>
+                    <router-link :to="{ name: 'Settings' }">Настройки</router-link>
+                </ion-item>
+                <ion-item>
+                    <ion-icon :icon="helpCircleOutline" color="primary" class="ion-margin-end"></ion-icon>
+                    <router-link :to="{ name: 'FAQ' }">Помощь</router-link>
+                </ion-item>
+            </ion-list>
             <!-- Предложение установить сервис в виде приложения -->
             <PWAPrompt/>
-        </ion-list-footer>
+        </div>
     </ion-menu>
 </template>
 
@@ -54,8 +64,7 @@
     import { useRouter } from 'vue-router';
     import { 
         IonContent, 
-        IonListHeader, 
-        IonListFooter,
+        IonListHeader,
         IonItem, 
         IonList, 
         IonMenu, 
@@ -63,16 +72,19 @@
         IonToolbar,
         IonIcon,
         IonText,
-        IonAvatar
+        IonAvatar,
+        IonGrid,
+        IonRow,
+        IonCol
     } from '@ionic/vue';
     import PWAPrompt from '../components/PWAPrompt.vue';
     import { defineComponent } from 'vue';
-    import { exitOutline, calendarOutline, peopleOutline } from 'ionicons/icons';
+    import { exitOutline, clipboardOutline, calendarOutline, peopleOutline, settingsOutline, helpCircleOutline } from 'ionicons/icons';
 
     export default defineComponent({
         name: 'NavigationMenu',
         components: {
-            IonIcon, IonMenu, IonListHeader, IonListFooter, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonText, PWAPrompt, IonAvatar
+            IonIcon, IonMenu, IonListHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonText, PWAPrompt, IonAvatar, IonGrid, IonRow, IonCol
         },
         props: [],
         setup() {
@@ -90,14 +102,9 @@
             // menu items array
             const menuList = [
                 {
-                    name: 'Calendar',
-                    title: 'Календарь',
-                    icon: calendarOutline
-                },
-                {
-                    name: 'Contacts',
-                    title: 'Мои контакты',
-                    icon: peopleOutline
+                    name: 'Deals',
+                    title: 'Все мои дела',
+                    icon: clipboardOutline
                 },
                 {
                     name: 'Calendar',
@@ -109,40 +116,10 @@
                     title: 'Мои контакты',
                     icon: peopleOutline
                 },
-                {
-                    name: 'Calendar',
-                    title: 'Календарь',
-                    icon: calendarOutline
-                },
-                {
-                    name: 'Contacts',
-                    title: 'Мои контакты',
-                    icon: peopleOutline
-                },
-                {
-                    name: 'Calendar',
-                    title: 'Календарь',
-                    icon: calendarOutline
-                },
-                {
-                    name: 'Contacts',
-                    title: 'Мои контакты',
-                    icon: peopleOutline
-                },
-                {
-                    name: 'Calendar',
-                    title: 'Календарь',
-                    icon: calendarOutline
-                },
-                {
-                    name: 'Contacts',
-                    title: 'Мои контакты',
-                    icon: peopleOutline
-                }
             ]
 
             return {
-                user, router, userEmail, logout, menuList, exitOutline, calendarOutline, peopleOutline
+                user, router, userEmail, logout, menuList, exitOutline, clipboardOutline, calendarOutline, peopleOutline, settingsOutline, helpCircleOutline
             }
         }
     })

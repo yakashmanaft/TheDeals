@@ -2,9 +2,6 @@
 import { createRouter, createWebHistory } from '@ionic/vue-router';
 import { supabase } from '../supabase/init';
 
-// import HomeView from '../views/HomeView.vue';
-// import Calendar from '../views/Calendar.vue';
-
 // Экраны логина и регистрации
 import Login from '../views/auth/Login.vue';
 import Register from '../views/auth/Register.vue';
@@ -21,6 +18,18 @@ const routes = [
       // Удалить если не понадобится
       type: 'View'
     },
+  },
+  {
+    path: '/deals',
+    name: 'Deals',
+    component: () => import('../views/Deals.vue'),
+    meta: {
+      title: 'Deals',
+      auth: true,
+      translation: 'Все дела',
+      // Удалить если не понадобится
+      type: 'View'
+    }
   },
   {
     path: '/contacts',
@@ -53,12 +62,28 @@ const routes = [
     }
   },
   {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
+    path: '/settings',
+    name: 'Settings',
+    component: () => import('../views/AccountSettings.vue'),
+    meta: {
+      title: 'Settings',
+      auth: true,
+      translation: 'Настройки',
+      // Удалить если не понадобится
+      type: 'View'
+    }
+  },
+  {
+    path: '/faq',
+    name: 'FAQ',
+    component: () => import('../views/FAQ.vue'),
+    meta: {
+      title: 'FAQ',
+      auth: true,
+      translation: 'Помощь',
+      // Удалить если не понадобится
+      type: 'View'
+    }
   }
 ];
 
