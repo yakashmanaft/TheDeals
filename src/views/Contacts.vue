@@ -1,76 +1,77 @@
 <template>
-    <!-- page header -->
-    <Header :title="pageTitle" />
+    <div>
+        <!-- page header -->
+        <Header :title="pageTitle" />
 
-    <!-- page navigation menu -->
-    <navigation-menu/>
+        <!-- page navigation menu -->
+        <navigation-menu/>
 
-    <!-- Кнопка перехода к созданию нового контакта -->
-    <create-button @click="setOpen(true)"/>
+        <!-- Кнопка перехода к созданию нового контакта -->
+        <create-button @click="setOpen(true)"/>
 
-    <!-- popup создания нового контакта -->
-    <!-- <new-contact-modal :isOpen="isOpen"/> -->
-    
-    <!-- Спиннер как имитация загрузки -->
-    <Spinner v-if="spinner"/>
+        <!-- popup создания нового контакта -->
+        <!-- <new-contact-modal :isOpen="isOpen"/> -->
+        
+        <!-- Спиннер как имитация загрузки -->
+        <Spinner v-if="spinner"/>
 
-    <!-- page content -->
-    <ion-content 
-        :scroll-events="true"
-        class="ion-page ion-margin-top" 
-        id="main"
-        type="push" 
-    >
-
-        <br>
-        <br>
-        <br>
         <!-- page content -->
-        <!-- No data -->
-        <div v-if="(!dataLoaded || myContacts.length === 0) && !spinner">
-            123
-        </div>
-
-        <!-- Data -->
-        <ion-searchbar class="ion-text-left" placeholder="Поиск..." v-model="search"></ion-searchbar>
-
-        <router-link
-            v-for="contact in searchedContacts"
-            :key="contact.id"
-            :to="{ name: 'View-Contact', params: { contactId: contact.id } }"
+        <ion-content 
+            :scroll-events="true"
+            class="ion-page ion-margin-top" 
+            id="main"
+            type="push" 
         >
-            {{contact.contactInfo.surname}}
 
-        </router-link>
-        <ion-button @click="openModal">open modal</ion-button>
-        {{contactInfo}}
+            <br>
+            <br>
+            <br>
+            <!-- page content -->
+            <!-- No data -->
+            <div v-if="(!dataLoaded || myContacts.length === 0) && !spinner">
+                123
+            </div>
+
+            <!-- Data -->
+            <ion-searchbar class="ion-text-left" placeholder="Поиск..." v-model="search"></ion-searchbar>
+
+            <router-link
+                v-for="contact in searchedContacts"
+                :key="contact.id"
+                :to="{ name: 'View-Contact', params: { contactId: contact.id } }"
+            >
+                {{contact.contactInfo.surname}}
+
+            </router-link>
+            {{contactInfo}}
 
             <ion-modal :is-open="isOpen">
-            <ion-header>
-                <ion-toolbar>
-                    <ion-buttons slot="start">
-                        <ion-button @click="setOpen(false)">Отменить</ion-button>
-                    </ion-buttons>
-                    <ion-title>Контакт</ion-title>
-                    <ion-buttons slot="end">
-                        <ion-button @click="willDismiss()">Создать</ion-button>
-                    </ion-buttons>
-                </ion-toolbar>
-            </ion-header>
-            <ion-content class="ion-padding">
-                <ion-item>
-                    <ion-label position="stacked">Enter your name</ion-label>
-                    <ion-input v-model="contactName" type="text" placeholder="Your name"></ion-input>
-                </ion-item>
-                <p>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Magni illum quidem recusandae ducimus quos
-                reprehenderit. Veniam, molestias quos, dolorum consequuntur nisi deserunt omnis id illo sit cum qui. Eaque,
-                dicta.
-                </p>
-            </ion-content>
+                <ion-header>
+                    <ion-toolbar>
+                        <ion-buttons slot="start">
+                            <ion-button @click="setOpen(false)">Отменить</ion-button>
+                        </ion-buttons>
+                        <ion-title>Контакт</ion-title>
+                        <ion-buttons slot="end">
+                            <ion-button @click="willDismiss()">Создать</ion-button>
+                        </ion-buttons>
+                    </ion-toolbar>
+                </ion-header>
+                <ion-content class="ion-padding">
+                    <ion-item>
+                        <ion-label position="stacked">Enter your name</ion-label>
+                        <ion-input v-model="contactName" type="text" placeholder="Your name"></ion-input>
+                    </ion-item>
+                    <p>
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Magni illum quidem recusandae ducimus quos
+                    reprehenderit. Veniam, molestias quos, dolorum consequuntur nisi deserunt omnis id illo sit cum qui. Eaque,
+                    dicta.
+                    </p>
+                </ion-content>
             </ion-modal>
 
-    </ion-content>
+        </ion-content>
+    </div>
 </template>
 
 <script>
@@ -83,21 +84,14 @@
         IonContent, 
         IonHeader, 
         IonItem, 
-        IonList, 
-        IonMenu, 
-        IonMenuToggle,
         IonButton,
+        IonButtons,
         IonTitle, 
         IonToolbar,
-        IonIcon,
-        IonText,
         IonSearchbar,
         IonModal,
-        IonAvatar,
         IonLabel,
-        IonImg,
-        IonInput,
-        modalController 
+        IonInput 
     } from '@ionic/vue';
     // import {  } from 'ionicons/icons';
     import store from '../store/index';
@@ -113,26 +107,21 @@
         components: {
             Header,
             IonContent, 
-            IonHeader, 
-            IonItem, 
-            IonList, 
-            IonMenu, 
-            IonMenuToggle,
             IonButton,
-            IonTitle, 
-            IonToolbar,
-            IonIcon,
-            IonText,
             NavigationMenu,
             CreateButton,
             Spinner,
             IonSearchbar,
-            IonModal,
-            IonAvatar,
-            IonLabel,
-            IonImg,
             IonInput,
-            NewContactModal
+            NewContactModal,
+            //
+            IonModal,
+            IonItem,
+            IonButtons,
+            IonTitle,
+            IonToolbar,
+            IonLabel,
+            IonHeader
         },
         setup() {
             // Get user from store
@@ -169,14 +158,18 @@
             })
 
             //
+            const isOpen = ref(false);
+
+
             const contactInfo = ref({})
             const contactName = ref()
 
-            const isOpen = ref(false);
 
             const setOpen = (boolean) => {
                 isOpen.value = boolean;
                 contactInfo.value = {};
+                // Не может быть пустым или null
+                contactName.value = null
             };
 
             const willDismiss = () => {
@@ -186,16 +179,9 @@
                 }
             }
 
-            const openModal = async () => {
-                const modal = await modalController.create({
-                    component: NewContactModal,
-                })
-                modal.present();
-            }
-
 
             return {
-                user, router, logout, pageTitle, myContacts, spinner, dataLoaded, search, searchedContacts, contactInfo, setOpen, isOpen, willDismiss, contactName, openModal
+                user, router, logout, pageTitle, myContacts, spinner, dataLoaded, search, searchedContacts, contactInfo, contactName, isOpen, setOpen, willDismiss
             }
         }
     })
