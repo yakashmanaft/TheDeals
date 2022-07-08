@@ -6,6 +6,9 @@
         <!-- page header -->
         <Header :title="title" />
 
+        <!-- Кнопка перехода к созданию нового контакта -->
+        <create-button :route="'ContactCreate'"/>
+
         <!-- page content -->
         <ion-content 
             :scroll-events="true"
@@ -27,23 +30,23 @@
 
 <script>
     import { defineComponent } from 'vue';
-    import PWAPrompt from "../components/PWAPrompt.vue";
-    import Header from '../components/Header.vue'
+    import Header from '@/components/Header.vue'
     import NavigationMenu from '@/components/NavigationMenu.vue';
+    import CreateButton from '@/components/CreateButton.vue';
     import { 
-    IonContent, 
-    IonHeader, 
-    IonItem, 
-    IonList, 
-    IonMenu, 
-    IonMenuToggle,
-    IonButton,
-    IonTitle, 
-    IonToolbar,
-    IonIcon,
-    IonText
+        IonContent, 
+        IonHeader, 
+        IonItem, 
+        IonList, 
+        IonMenu, 
+        IonMenuToggle,
+        IonButton,
+        IonTitle, 
+        IonToolbar,
+        IonIcon,
+        IonText
     } from '@ionic/vue';
-    import { menu } from 'ionicons/icons';
+    // import {  } from 'ionicons/icons';
     import store from '../store/index';
     import { computed } from 'vue';
     import { supabase } from '../supabase/init';
@@ -53,7 +56,6 @@
     export default defineComponent({
         name: 'Contacts',
         components: {
-            PWAPrompt,
             Header,
             IonContent, 
             IonHeader, 
@@ -66,7 +68,8 @@
             IonToolbar,
             IonIcon,
             IonText,
-            NavigationMenu
+            NavigationMenu,
+            CreateButton
         },
         setup() {
             // Get user from store
@@ -82,7 +85,7 @@
             }
 
             return {
-                menu, user, router, logout, title
+                user, router, logout, title
             }
         }
     })

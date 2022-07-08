@@ -23,9 +23,11 @@
                             <ion-text class="account-name">{{ userEmail }}</ion-text>
                         </ion-row>
                     </ion-col>
-                    <ion-col class="ion-margin-end" size="2">
+                    <ion-col size="2">
+                        <ion-row>
                             <!-- Кнопка выхода из аккаунта -->
                             <ion-icon :icon="exitOutline" color="primary" @click="logout()"/>
+                        </ion-row>
                     </ion-col>
                 </ion-row>
             </ion-grid>

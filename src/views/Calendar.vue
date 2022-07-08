@@ -24,7 +24,6 @@
 
 <script>
     import { defineComponent } from 'vue';
-    import PWAPrompt from "../components/PWAPrompt.vue";
     import Header from '../components/Header.vue'
     import { 
     IonContent, 
@@ -50,7 +49,6 @@
     export default defineComponent({
         name: 'calendar',
         components: {
-            PWAPrompt,
             Header,
             IonContent, 
             IonHeader, 

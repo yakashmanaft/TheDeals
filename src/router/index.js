@@ -15,7 +15,6 @@ const routes = [
       title: 'Calendar',
       auth: true,
       translation: 'Календарь',
-      // Удалить если не понадобится
       type: 'View'
     },
   },
@@ -27,7 +26,6 @@ const routes = [
       title: 'Deals',
       auth: true,
       translation: 'Все дела',
-      // Удалить если не понадобится
       type: 'View'
     }
   },
@@ -39,9 +37,19 @@ const routes = [
       title: 'Contacts',
       auth: true,
       translation: 'Мои контакты',
-      // Удалить если не понадобится
       type: 'View'
     } 
+  },
+  {
+    path: '/create-contact',
+    name: 'ContactCreate',
+    component: () => import('../views/create/ContactCreate.vue'),
+    meta: {
+      title: 'CreateContact',
+      auth: true,
+      translation: 'Новый контакт',
+      type: 'Create'
+    }
   },
   {
     path: '/login',
@@ -69,7 +77,6 @@ const routes = [
       title: 'Settings',
       auth: true,
       translation: 'Настройки',
-      // Удалить если не понадобится
       type: 'View'
     }
   },
@@ -81,7 +88,6 @@ const routes = [
       title: 'FAQ',
       auth: true,
       translation: 'Помощь',
-      // Удалить если не понадобится
       type: 'View'
     }
   }
