@@ -3,7 +3,7 @@
         <navigation-menu/>
 
         <!-- page header -->
-        <Header :title="title" />
+        <Header :title="pageTitle" />
 
         <ion-content 
             :scroll-events="true"
@@ -69,10 +69,10 @@
             // Setup ref to router
             const router = useRouter();
             // Page title
-            const title = router.currentRoute._value.meta.translation;
+            const pageTitle = router.currentRoute._value.meta.translation;
 
             return {
-                menu, user, router, title
+                menu, user, router, pageTitle
             }
         }
     })

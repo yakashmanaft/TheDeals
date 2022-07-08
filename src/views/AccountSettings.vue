@@ -3,7 +3,7 @@
         <navigation-menu/>
 
         <!-- page header -->
-        <Header :title="title" />
+        <Header :title="pageTitle" />
 
         <ion-content 
             :scroll-events="true"
@@ -24,7 +24,6 @@
 
 <script>
     import { defineComponent } from 'vue';
-    import PWAPrompt from "../components/PWAPrompt.vue";
     import Header from '../components/Header.vue'
     import { 
     IonContent, 
@@ -50,7 +49,6 @@
     export default defineComponent({
         name: 'Settings',
         components: {
-            PWAPrompt,
             Header,
             IonContent, 
             IonHeader, 
@@ -71,10 +69,10 @@
             // Setup ref to router
             const router = useRouter();
             // Page title
-            const title = router.currentRoute._value.meta.translation;
+            const pageTitle = router.currentRoute._value.meta.translation;
 
             return {
-                menu, user, router, title
+                menu, user, router, pageTitle
             }
         }
     })

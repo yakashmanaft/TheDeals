@@ -41,14 +41,13 @@ const routes = [
     } 
   },
   {
-    path: '/create-contact',
-    name: 'ContactCreate',
-    component: () => import('../views/create/ContactCreate.vue'),
+    path: '/view-contact/:contactId',
+    name: 'View-Contact',
+    component: () => import('../views/currentView/ViewContact.vue'),
     meta: {
-      title: 'CreateContact',
+      title: 'View Contact',
       auth: true,
-      translation: 'Новый контакт',
-      type: 'Create'
+      type: 'CurrentView'
     }
   },
   {

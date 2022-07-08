@@ -14,14 +14,18 @@
 // })
 
 import { reactive } from "vue";
+import { supabase } from '../supabase/init';
+import { sortAlphabetically  } from '../helpers/sortMyContacts.js';
 
 const state = reactive({
   user: null,
   // Было для фона, чтобы не прокурчивался при открытом попапе
   // isBackgroundFixed: false
+  myContactsArray: [],
 });
 
 const methods = {
+  // Устанавилваем пользователя
   setUser(payload) {
     state.user = payload ? payload.user : null;
   },
@@ -29,6 +33,20 @@ const methods = {
   // backgroundFixed() {
   //   state.isBackgroundFixed = !state.isBackgroundFixed;
   // }
+  
+  // Забираем из БД списки контактов
+  getMyContactsFromDB : async () => {
+    try {
+      const { data: myContacts, error } = await supabase.from('myContacts').select('*');
+      if (error) throw error;
+      // Сортируем по алфавиту
+      sortAlphabetically(myContacts);
+      // Устанавливаем значение переменной myContactsArray в state
+      state.myContactsArray = myContacts;
+    } catch (error) {
+      console.log(error);
+    }
+  }
 };
 
 export default {
