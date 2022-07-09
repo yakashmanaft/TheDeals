@@ -18,14 +18,18 @@ import { supabase } from '../supabase/init';
 import { sortAlphabetically  } from '../helpers/sortMyContacts.js';
 
 const state = reactive({
+  // user
   user: null,
   // Было для фона, чтобы не прокурчивался при открытом попапе
   // isBackgroundFixed: false
+
+  // contact array
   myContactsArray: [],
+
 });
 
 const methods = {
-  // Устанавилваем пользователя
+  // Устанавливаем пользователя
   setUser(payload) {
     state.user = payload ? payload.user : null;
   },

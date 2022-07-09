@@ -29,20 +29,43 @@
             <!-- page content -->
             <!-- No data -->
             <div v-if="(!dataLoaded || myContacts.length === 0) && !spinner">
-                123
+                    <!-- настроить responsive под разные экраны -->
+                    <ion-img src="img/common/contact-sticker.webp"></ion-img>
+                    <ion-text color="primary"><h2>У вас еще нет контактов...</h2></ion-text>
+                    <ion-text>Самое время начать заполнение справочника заказчиками, коллегами. <br>И не забывайте про близких!</ion-text>
             </div>
 
             <!-- Data -->
-            <ion-searchbar class="ion-text-left" placeholder="Поиск..." v-model="search"></ion-searchbar>
+            <div v-if="dataLoaded" >
+                <!-- Search -->
+                <ion-searchbar class="ion-text-left" placeholder="Поиск..." v-model="search"></ion-searchbar>
+    
+                <!-- Список контактов -->
+                <ion-list>
+                    <router-link
+                        v-for="contact in searchedContacts"
+                        :key="contact.id"
+                        :to="{ name: 'View-Contact', params: { contactId: contact.id } }"
+                    >
+                        <ion-item>
+                            <ion-grid>
+                                <ion-row>
+                                    <ion-text>{{contact.contactInfo.surname}} {{contact.contactInfo.name}}</ion-text>
+                                </ion-row>
+                                <ion-row>
+                                    <ion-text style="font-size: 1rem;" color="medium">{{ contact.contactInfo.company }}</ion-text>
+                                </ion-row>
+                            </ion-grid>
 
-            <router-link
-                v-for="contact in searchedContacts"
-                :key="contact.id"
-                :to="{ name: 'View-Contact', params: { contactId: contact.id } }"
-            >
-                {{contact.contactInfo.surname}}
+                        </ion-item>
+                    </router-link>
+                    <!-- Если поиском в списке контактов ничего не найдено -->
+                    <ion-item lines="none" v-if="searchedContacts.length <= 0">
+                        <ion-text color="medium">Ничего не найдено</ion-text>
+                    </ion-item>
+                </ion-list>
 
-            </router-link>
+            </div>
             {{contactInfo}}
 
             <ion-modal :is-open="isOpen">
@@ -82,8 +105,14 @@
     import Spinner from '@/components/Spinner.vue';
     import { 
         IonContent, 
-        IonHeader, 
+        IonHeader,
+        //
+        IonGrid,
+        //
+        IonList,
         IonItem, 
+        IonText,
+        IonImg,
         IonButton,
         IonButtons,
         IonTitle, 
@@ -99,7 +128,7 @@
     import { supabase } from '../supabase/init';
     import { useRouter } from 'vue-router';
     import { searchFilter } from '../helpers/filterMyContacts.js'; 
-    import NewContactModal from '@/components/Create/NewContactModal.vue';
+    import CreateNewContact from '@/components/modal/CreateNewContact.vue';
 
 
     export default defineComponent({
@@ -107,13 +136,17 @@
         components: {
             Header,
             IonContent, 
+            IonList,
+            IonGrid,
+            IonImg,
+            IonText,
             IonButton,
             NavigationMenu,
             CreateButton,
             Spinner,
             IonSearchbar,
             IonInput,
-            NewContactModal,
+            CreateNewContact,
             //
             IonModal,
             IonItem,

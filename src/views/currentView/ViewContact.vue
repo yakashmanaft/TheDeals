@@ -1,40 +1,48 @@
 <template>
-    <!-- page header -->
-    <Header :title="pageTitle" />
-
-    <!-- page content -->
-    <ion-content 
-        :scroll-events="true"
-        class="ion-page ion-margin-top" 
-        id="main"
-        type="push" 
-    >
-
-        <br>
-        <br>
-        <br>
+    <div>
+        <!-- page header -->
+        <ion-header>
+            <ion-toolbar>
+                <ion-buttons slot="start">
+                    <ion-back-button default-href="home" text="Назад"></ion-back-button>
+                </ion-buttons>
+                <ion-buttons slot="end">
+                    <ion-button fill="clear">Править</ion-button>
+                </ion-buttons>
+            </ion-toolbar>
+        </ion-header>
         <!-- page content -->
-        <!-- No data -->
-
-        <!-- Data -->
-        {{currentId}}
-    </ion-content>
+        <ion-content 
+            :scroll-events="true"
+            class="ion-page ion-margin-top" 
+            id="main"
+            type="push" 
+        >
+    
+            <br>
+            <br>
+            <br>
+            <!-- page content -->
+            <!-- No data -->
+    
+            <!-- Data -->
+            {{currentId}}
+        </ion-content>
+    </div>
 </template>
 
 <script>
-    import Header from '../../components/Header.vue'
-
     import { defineComponent, ref } from 'vue';
     import { supabase } from '../../supabase/init';
     import { useRoute, useRouter } from 'vue-router';
     import store from '../../store/index';
     import { uid } from 'uid';
-    import { IonContent } from '@ionic/vue';
+    import { IonContent, IonBackButton } from '@ionic/vue';
 
     export default defineComponent({
         name: 'view-contact',
         components: {
-            Header, IonContent
+            IonContent, IonBackButton
         },
         setup() {
             const route = useRoute();
