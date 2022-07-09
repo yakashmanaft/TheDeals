@@ -191,6 +191,8 @@
                 contactInfo.value = {
                     name: contactName.value
                 }
+                // Типа имитиция 
+                router.go('Contacts')
             }
 
 
