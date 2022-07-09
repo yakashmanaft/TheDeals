@@ -10,7 +10,11 @@
         <create-button @click="setOpen(true)"/>
 
         <!-- popup создания нового контакта -->
-        <!-- <new-contact-modal :isOpen="isOpen"/> -->
+        <CreateNewContact 
+            :is-open="isOpen"
+            @closeModal="setOpen(false)"
+            @createContact="willDismiss"
+        />
         
         <!-- Спиннер как имитация загрузки -->
         <Spinner v-if="spinner"/>
@@ -45,7 +49,10 @@
                     <router-link
                         v-for="contact in searchedContacts"
                         :key="contact.id"
-                        :to="{ name: 'View-Contact', params: { contactId: contact.id } }"
+                        :to="{ name: 'View-Contact', params: { 
+                                contactId: contact.id,
+                                contact: JSON.stringify(contact)
+                            }}"
                     >
                         <ion-item>
                             <ion-grid>
@@ -67,31 +74,6 @@
 
             </div>
             {{contactInfo}}
-
-            <ion-modal :is-open="isOpen">
-                <ion-header>
-                    <ion-toolbar>
-                        <ion-buttons slot="start">
-                            <ion-button @click="setOpen(false)">Отменить</ion-button>
-                        </ion-buttons>
-                        <ion-title>Контакт</ion-title>
-                        <ion-buttons slot="end">
-                            <ion-button @click="willDismiss()">Создать</ion-button>
-                        </ion-buttons>
-                    </ion-toolbar>
-                </ion-header>
-                <ion-content class="ion-padding">
-                    <ion-item>
-                        <ion-label position="stacked">Enter your name</ion-label>
-                        <ion-input v-model="contactName" type="text" placeholder="Your name"></ion-input>
-                    </ion-item>
-                    <p>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Magni illum quidem recusandae ducimus quos
-                    reprehenderit. Veniam, molestias quos, dolorum consequuntur nisi deserunt omnis id illo sit cum qui. Eaque,
-                    dicta.
-                    </p>
-                </ion-content>
-            </ion-modal>
 
         </ion-content>
     </div>
@@ -193,11 +175,6 @@
             //
             const isOpen = ref(false);
 
-
-            const contactInfo = ref({})
-            const contactName = ref()
-
-
             const setOpen = (boolean) => {
                 isOpen.value = boolean;
                 contactInfo.value = {};
@@ -205,12 +182,17 @@
                 contactName.value = null
             };
 
-            const willDismiss = () => {
+            const contactInfo = ref({});
+            const contactName = ref();
+
+            const willDismiss = (namecontact) => {
                 isOpen.value = false
+                contactName.value = namecontact
                 contactInfo.value = {
                     name: contactName.value
                 }
             }
+
 
 
             return {

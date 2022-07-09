@@ -26,7 +26,10 @@
             <!-- No data -->
     
             <!-- Data -->
-            {{currentId}}
+            
+            ID {{ currentId }}
+            <br>
+            {{ contact }}
         </ion-content>
     </div>
 </template>
@@ -50,11 +53,12 @@
             // Берем имя роута для заголовка
             const pageTitle = router.currentRoute._value.meta.translation;  
 
-            // Get current Id of route
+            // Get current info of route
             const currentId = route.params.contactId;
+            const contact = route.params.contact;
 
             return {
-                pageTitle, currentId
+                pageTitle, currentId, contact, 
             }
         }
     })
