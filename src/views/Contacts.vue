@@ -7,12 +7,12 @@
         <navigation-menu/>
 
         <!-- Кнопка перехода к созданию нового контакта -->
-        <create-button @click="setOpen(true)"/>
+        <create-button @click="setOpen"/>
 
         <!-- popup создания нового контакта -->
         <CreateNewContact 
             :is-open="isOpen"
-            @closeModal="setOpen(false)"
+            @closeModal="setOpen"
             @createContact="willDismiss"
         />
         
@@ -175,30 +175,40 @@
             //
             const isOpen = ref(false);
 
-            const setOpen = (boolean) => {
-                isOpen.value = boolean;
-                contactInfo.value = {};
+            // Шаблон нового контакта
+            const contactInfo = ref({
+                name: '',
+                surname: ''
+            });
+
+            const setOpen = () => {
+                isOpen.value = !isOpen.value;
+                contactInfo.value
                 // Не может быть пустым или null
-                contactName.value = null
+                // contactName.value = null
             };
 
-            const contactInfo = ref({});
-            const contactName = ref();
 
-            const willDismiss = (namecontact) => {
+            // const contactName = ref();
+
+            const willDismiss = (info) => {
                 isOpen.value = false
-                contactName.value = namecontact
-                contactInfo.value = {
-                    name: contactName.value
-                }
+                contactInfo.value = info
+                // contactInfo.value = {
+                //     name: contactName.value
+                // }
                 // Типа имитиция 
-                router.go('Contacts')
+                // router.go('Contacts')
+                // после отправки на скервер - обновляем к пустым стркоам
+                if(contactInfo.value.name === '') {
+                    alert('Не может быть пустой строкой')
+                }
             }
 
 
 
             return {
-                user, router, logout, pageTitle, myContacts, spinner, dataLoaded, search, searchedContacts, contactInfo, contactName, isOpen, setOpen, willDismiss
+                user, router, logout, pageTitle, myContacts, spinner, dataLoaded, search, searchedContacts, contactInfo, isOpen, setOpen, willDismiss
             }
         }
     })
