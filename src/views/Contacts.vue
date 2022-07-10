@@ -40,7 +40,7 @@
             </div>
 
             <!-- Data -->
-            <div v-if="dataLoaded" >
+            <div v-if="dataLoaded && myContacts.length !== 0" >
                 <!-- Search -->
                 <ion-searchbar class="ion-text-left" placeholder="Поиск..." v-model="search"></ion-searchbar>
     
@@ -51,6 +51,7 @@
                         :key="contact.id"
                         :to="{ name: 'View-Contact', params: { 
                                 contactId: contact.id,
+                                contactUid: contact.uid,
                                 contact: JSON.stringify(contact)
                             }}"
                     >
@@ -73,7 +74,7 @@
                 </ion-list>
 
             </div>
-            {{contactInfo}}
+            {{contactData}}
 
         </ion-content>
     </div>
@@ -90,6 +91,7 @@
         IonHeader,
         //
         IonGrid,
+        IonRow,
         //
         IonList,
         IonItem, 
@@ -110,6 +112,7 @@
     import { supabase } from '../supabase/init';
     import { useRouter } from 'vue-router';
     import { searchFilter } from '../helpers/filterMyContacts.js'; 
+    import { uid } from 'uid';
     import CreateNewContact from '@/components/modal/CreateNewContact.vue';
 
 
@@ -120,6 +123,7 @@
             IonContent, 
             IonList,
             IonGrid,
+            IonRow,
             IonImg,
             IonText,
             IonButton,
@@ -172,43 +176,59 @@
                 return searchFilter(myContacts.value, search.value)
             })
 
-            //
+            // =====================================
+            // Work with Modal Create New Contact
             const isOpen = ref(false);
 
             // Шаблон нового контакта
-            const contactInfo = ref({
-                name: '',
-                surname: ''
-            });
+            const contactData = ref({
+                uid: uid(),
+                contactInfo: {
+                    name: '',
+                    surname: ''
+                }
+            })
 
             const setOpen = () => {
                 isOpen.value = !isOpen.value;
-                contactInfo.value
-                // Не может быть пустым или null
-                // contactName.value = null
+                contactData.value = {
+                    uid: uid(),
+                    contactInfo: {
+                        name: '',
+                        surname: ''
+                    }
+                }
             };
 
-
-            // const contactName = ref();
-
-            const willDismiss = (info) => {
-                isOpen.value = false
-                contactInfo.value = info
-                // contactInfo.value = {
-                //     name: contactName.value
-                // }
+            const willDismiss = async (newContactData) => {
+                
+                contactData.value = newContactData
                 // Типа имитиция 
                 // router.go('Contacts')
                 // после отправки на скервер - обновляем к пустым стркоам
-                if(contactInfo.value.name === '') {
-                    alert('Не может быть пустой строкой')
+                if(contactData.value.contactInfo.name === '') {
+                    alert('Имя не может быть пустой строкой')
+                } else {
+                    isOpen.value = false
+                    try {
+                        const { error } = await supabase.from('myContacts').insert([
+                            contactData.value
+                        ])
+                        if (error) throw error;
+                        await store.methods.getMyContactsFromDB()
+                        myContacts.value = store.state.myContactsArray
+                        const newContact = myContacts.value.find(el => el.uid === contactData.value.uid)
+                        router.push({name: 'View-Contact', params: { contactId: newContact.id}})
+                    } catch ( error) {
+                        console.log(`Error: ${error.message}`)
+                    }
                 }
             }
 
 
 
             return {
-                user, router, logout, pageTitle, myContacts, spinner, dataLoaded, search, searchedContacts, contactInfo, isOpen, setOpen, willDismiss
+                user, router, logout, pageTitle, myContacts, spinner, dataLoaded, search, searchedContacts, isOpen, setOpen, willDismiss, contactData
             }
         }
     })

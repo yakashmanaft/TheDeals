@@ -28,8 +28,9 @@
             <!-- Data -->
             
             ID {{ currentId }}
+            UID {{ currentUid }}
             <br>
-            {{ contact }}
+            {{ info.contact }}
         </ion-content>
     </div>
 </template>
@@ -40,12 +41,12 @@
     import { useRoute, useRouter } from 'vue-router';
     import store from '../../store/index';
     import { uid } from 'uid';
-    import { IonContent, IonBackButton } from '@ionic/vue';
+    import { IonContent, IonHeader, IonButton, IonToolbar, IonButtons, IonBackButton, IonRow } from '@ionic/vue';
 
     export default defineComponent({
         name: 'view-contact',
         components: {
-            IonContent, IonBackButton
+            IonContent, IonHeader, IonButton, IonToolbar, IonButtons, IonBackButton, IonRow
         },
         setup() {
             const route = useRoute();
@@ -55,10 +56,11 @@
 
             // Get current info of route
             const currentId = route.params.contactId;
-            const contact = route.params.contact;
+            const currentUid = route.params.contactUid;
+            const info = route.params
 
             return {
-                pageTitle, currentId, contact, 
+                pageTitle, currentId, currentUid, info
             }
         }
     })
