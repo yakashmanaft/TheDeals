@@ -24,7 +24,7 @@
 
 <script>
     import { defineComponent } from 'vue';
-    import Header from '../components/Header.vue'
+    import Header from '../components/headers/Header.vue'
     import { 
     IonContent, 
     IonHeader, 

@@ -17,7 +17,7 @@
 </template>
 
 <script>
-    import store from '../store/index';
+    import store from '../../store/index';
     import { computed } from 'vue';
     import { useRouter } from 'vue-router';
     import { IonHeader, IonMenuToggle, IonToolbar, IonIcon, IonGrid, IonRow, IonText } from '@ionic/vue';

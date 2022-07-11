@@ -33,10 +33,10 @@
             <!-- page content -->
             <!-- No data -->
             <div v-if="(!dataLoaded || myContacts.length === 0) && !spinner">
-                    <!-- настроить responsive под разные экраны -->
-                    <ion-img src="img/common/contact-sticker.webp"></ion-img>
-                    <ion-text color="primary"><h2>У вас еще нет контактов...</h2></ion-text>
-                    <ion-text>Самое время начать заполнение справочника заказчиками, коллегами. <br>И не забывайте про близких!</ion-text>
+                <!-- настроить responsive под разные экраны -->
+                <ion-img src="img/common/contact-sticker.webp" alt="нет контактов"></ion-img>
+                <ion-text color="primary"><h2>У вас еще нет контактов...</h2></ion-text>
+                <ion-text>Самое время начать заполнение справочника заказчиками, коллегами. <br>И не забывайте про близких!</ion-text>
             </div>
 
             <!-- Data -->
@@ -74,7 +74,7 @@
                 </ion-list>
 
             </div>
-            {{contactData}}
+            <!-- {{contactData}} -->
 
         </ion-content>
     </div>
@@ -82,7 +82,7 @@
 
 <script>
 
-    import Header from '@/components/Header.vue'
+    import Header from '@/components/headers/Header.vue'
     import NavigationMenu from '@/components/NavigationMenu.vue';
     import CreateButton from '@/components/CreateButton.vue';
     import Spinner from '@/components/Spinner.vue';
@@ -180,7 +180,7 @@
             // Work with Modal Create New Contact
             const isOpen = ref(false);
 
-            // Шаблон нового контакта
+            // Изменяемый шаблон нового контакта
             const contactData = ref({
                 uid: uid(),
                 contactInfo: {
@@ -189,6 +189,7 @@
                 }
             })
 
+            // При закрытии или открытии modal очищаем шаблон контакта
             const setOpen = () => {
                 isOpen.value = !isOpen.value;
                 contactData.value = {
@@ -201,26 +202,32 @@
             };
 
             const willDismiss = async (newContactData) => {
-                
+                // принимаем инфу по контакту из modal
                 contactData.value = newContactData
-                // Типа имитиция 
-                // router.go('Contacts')
-                // после отправки на скервер - обновляем к пустым стркоам
+                // Если строки Имя Фамилия пустые или не пустые 
                 if(contactData.value.contactInfo.name === '') {
                     alert('Имя не может быть пустой строкой')
-                } else {
-                    isOpen.value = false
+                } else if (contactData.value.contactInfo.surname === '') {
+                    alert('Фамилия не может быть пустой строкой')
+                }else {
                     try {
+                        // Добавляем в БД инфу по новому контакту
+                        // Скорей всего надо будет вынести в store
                         const { error } = await supabase.from('myContacts').insert([
                             contactData.value
                         ])
                         if (error) throw error;
+                        // обновляем массив в store
                         await store.methods.getMyContactsFromDB()
                         myContacts.value = store.state.myContactsArray
+                        // ищем созданный новый контакт в массиве всех контактов в store (по uid)
                         const newContact = myContacts.value.find(el => el.uid === contactData.value.uid)
-                        router.push({name: 'View-Contact', params: { contactId: newContact.id}})
+                        // закрываем modal
+                        isOpen.value = false
+                        // переходим на страницу созданного нового контакта
+                        router.push({name: 'View-Contact', params: { contactId: newContact.id, contact: JSON.stringify(newContact)}})
                     } catch ( error) {
-                        console.log(`Error: ${error.message}`)
+                        alert(`Error: ${error.message}`)
                     }
                 }
             }
@@ -237,5 +244,7 @@
 </script>
 
 <style scoped>
-
+    ion-img {
+        height: 50vh;
+    }
 </style>
