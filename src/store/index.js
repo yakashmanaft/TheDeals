@@ -25,7 +25,6 @@ const state = reactive({
 
   // contact array
   myContactsArray: [],
-
 });
 
 const methods = {
@@ -39,7 +38,7 @@ const methods = {
   // }
   
   // Забираем из БД списки контактов
-  getMyContactsFromDB : async () => {
+  getMyContactsFromDB: async () => {
     try {
       const { data: myContacts, error } = await supabase.from('myContacts').select('*');
       if (error) throw error;
@@ -50,7 +49,7 @@ const methods = {
     } catch (error) {
       console.log(error);
     }
-  }
+  },
 };
 
 export default {

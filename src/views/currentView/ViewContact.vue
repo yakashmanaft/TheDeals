@@ -1,4 +1,4 @@
-<template>
+<template :key="componentKey">
     <div>
         <!-- Спиннер как имитация загрузки -->
         <Spinner v-if="spinner"/>
@@ -59,13 +59,14 @@
 
 <script>
     import ViewContactHeader from '../../components/headers/ViewContactHeader.vue';
-    import { defineComponent, ref } from 'vue';
+    import { onMounted, defineComponent, ref } from 'vue';
     import { supabase } from '../../supabase/init';
     import { useRoute, useRouter } from 'vue-router';
     import store from '../../store/index';
     import { uid } from 'uid';
     import Spinner from '../../components/Spinner.vue'
     import { IonContent, IonHeader, IonButton, IonToolbar, IonButtons, IonBackButton, IonRow, IonAvatar, IonText, IonItem, IonLabel, IonInput } from '@ionic/vue';
+    
 
     export default defineComponent({
         name: 'view-contact',
@@ -81,8 +82,9 @@
             // Get current info of route
             const currentId = route.params.contactId;
             const info = route.params;
-            const currentContact = JSON.parse(info.contact)
-
+            const currentContact = ref(JSON.parse(info.contact))
+            // Храним на случай нажатия Отмены при редактировании контакта
+            const tempData = JSON.parse(info.contact)
             //
             const spinner = ref(null);
 
@@ -92,22 +94,31 @@
                 edit.value = !edit.value;
             }
 
+
+
             // Cancel editMode & cancel all changes
             const cancelEdit = () => {
                 edit.value = !edit.value;
                 // note.value = !note.value;
-                //   getData();
+                // Если вариант без tempData и с обращением к БД
+                // вынести в store
+                // spinner.value = true;
+                // const { data: myContacts, error } = await supabase.from('myContacts').select('*').eq('id', currentId);
+                // spinner.value = false;
+                // currentContact.value = myContacts[0];
+                // СТранно, но работает один раз, на второе редактирвоание уже само tempData изменяется (баг)
+                currentContact.value = tempData
             }
             
 
 
             // update contact function
             const update = async () => {
-                
                 try { 
                     spinner.value = true;
+                    // Вынести в store?
                     const { error } = await supabase.from('myContacts').update({
-                        contactInfo: currentContact.contactInfo
+                        contactInfo: currentContact.value.contactInfo
     
                     }).eq('id', currentId)
                     if(error) throw error;

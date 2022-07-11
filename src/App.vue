@@ -9,6 +9,7 @@ import { ref } from 'vue';
 import { supabase } from './supabase/init';
 import store  from './store/index';
 
+
 import { defineComponent } from 'vue';
 
 
