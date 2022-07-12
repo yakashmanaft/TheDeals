@@ -1,5 +1,7 @@
 <template>
     <div>
+        <!-- Спиннер как имитация загрузки -->
+        <Spinner v-if="spinner"/>
         <!-- page header -->
         <Header :title="pageTitle" />
 
@@ -13,14 +15,12 @@
         <CreateNewContact 
             :is-open="isOpen"
             @closeModal="setOpen"
-            @createContact="willDismiss"
-            :userEmail="userEmail"
+            @createContact="createNew"
             :contactData="contactData"
+            @addPhoneNumber="addPhoneNumber"
+            @deletePhoneNumber="deletePhoneNumber"
         />
         
-        <!-- Спиннер как имитация загрузки -->
-        <Spinner v-if="spinner"/>
-
         <!-- page content -->
         <ion-content 
             :scroll-events="true"
@@ -45,7 +45,6 @@
             <div v-if="dataLoaded && myContacts.length !== 0" >
                 <!-- Search -->
                 <ion-searchbar class="ion-text-left" placeholder="Поиск..." v-model="search"></ion-searchbar>
-    
                 <!-- Список контактов -->
                 <ion-list>
                     <router-link
@@ -76,7 +75,7 @@
                 </ion-list>
 
             </div>
-            <!-- {{contactData}} -->
+
 
         </ion-content>
     </div>
@@ -192,8 +191,10 @@
                 email: userEmail.value,
                 contactInfo: {
                     name: '',
-                    surname: ''
-                }
+                    surname: '',
+                    company: ''
+                },
+                phoneNumbers: [],
             })
 
             // При закрытии или открытии modal очищаем шаблон контакта
@@ -204,27 +205,57 @@
                     email: userEmail.value,
                     contactInfo: {
                         name: '',
-                        surname: ''
-                    }
+                        surname: '',
+                        company: ''
+                    },
+                    phoneNumbers: [],
                 }
             };
-
+            // Добавляем телефоны к контакту
+            const addPhoneNumber = () => {
+                contactData.value.phoneNumbers.push({
+                    id: uid(),
+                    // Может быть должно пустой строкой или как там?
+                    type: '',
+                    phone: '',
+                    messengers: [
+                    {
+                        id: uid(),
+                        name: 'viber',
+                        status: false
+                    },
+                    {
+                        id: uid(),
+                        name: 'whatsup',
+                        status: false
+                    }
+                    ]
+                })
+            }
+            // Удаляем телефон у создаваемого контакта
+            const deletePhoneNumber = (id) => {
+                if(contactData.value.phoneNumbers.length > 1) {
+                    contactData.value.phoneNumbers = contactData.value.phoneNumbers.filter(number => number.id !== id);
+                    return
+                } 
+                alert('Должно быть указано не менее одного номера телефона')
+                
+            }
             // Создаем новый контакт
-            const willDismiss = async (newContactData) => {
+            const createNew = async (newContactData) => {
                 // принимаем инфу по контакту из modal
-                contactData.value = newContactData
+                contactData.value = newContactData;
+                spinner.value = true;
                 // Если строки Имя Фамилия пустые или не пустые 
                 if(contactData.value.contactInfo.name === '') {
                     alert('Имя не может быть пустой строкой')
                 } else if (contactData.value.contactInfo.surname === '') {
                     alert('Фамилия не может быть пустой строкой')
                 }else {
-                    try {
+                    try { 
                         // Добавляем в БД инфу по новому контакту
-                        // Скорей всего надо будет вынести в store
-                        const { error } = await supabase.from('myContacts').insert([
-                            contactData.value
-                        ])
+                        // Скорей всего надо будет вынести в store или нет
+                        const { error } = await supabase.from('myContacts').insert([contactData.value])
                         if (error) throw error;
                         // обновляем массив в store
                         await store.methods.getMyContactsFromDB()
@@ -244,7 +275,7 @@
 
 
             return {
-                user, router, logout, pageTitle, userEmail, myContacts, spinner, dataLoaded, search, searchedContacts, isOpen, setOpen, willDismiss, contactData
+                user, router, logout, pageTitle, userEmail, myContacts, spinner, dataLoaded, search, searchedContacts, isOpen, setOpen, createNew, contactData, addPhoneNumber, deletePhoneNumber
             }
         }
     })

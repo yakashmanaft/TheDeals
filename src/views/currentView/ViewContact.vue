@@ -27,30 +27,45 @@
             <div>
                 <!-- Avatar -->
                 <ion-avatar>
-                    <!-- Если фото не загружали -->
                     <ion-text color="light">
                         {{ currentContact.contactInfo.surname[0].toUpperCase() }}{{ currentContact.contactInfo.name[0].toUpperCase() }}
                     </ion-text>
                 </ion-avatar>
-    
-                <!-- Surname -->
-                <ion-item v-if="edit" class="ion-margin-top">
-                    <ion-label position="stacked">Изменить фамилию</ion-label>
-                    <ion-input v-model="currentContact.contactInfo.surname" type="text" placeholder="Фамилия"></ion-input>
-                </ion-item>
-                <ion-text v-else color="primary">
-                    <h1>{{ currentContact.contactInfo.surname }}</h1>
-                </ion-text>
-                <!-- Name -->
-                <ion-item v-if="edit">
-                    <ion-label position="stacked">Изменить имя</ion-label>
-                    <ion-input v-model="currentContact.contactInfo.name" type="text" placeholder="Имя"></ion-input>
-                </ion-item>
-                <ion-text v-else color="medium">
-                    <h3 class="ion-no-margin">{{ currentContact.contactInfo.name }}</h3>
-                </ion-text>
+                <ion-item-group>
+                    <!-- Surname -->
+                    <ion-item v-if="edit" class="ion-margin-top">
+                        <ion-label position="stacked">Изменить фамилию</ion-label>
+                        <ion-input color="medium" v-model="currentContact.contactInfo.surname" type="text" placeholder="Фамилия"></ion-input>
+                    </ion-item>
+                    <ion-text v-else color="primary">
+                        <h1 class="ion-no-margin ion-margin-top">{{ currentContact.contactInfo.surname }}</h1>
+                    </ion-text>
+                    <!-- Name -->
+                    <ion-item v-if="edit">
+                        <ion-label position="stacked">Изменить имя</ion-label>
+                        <ion-input color="medium" v-model="currentContact.contactInfo.name" type="text" placeholder="Имя"></ion-input>
+                    </ion-item>
+                    <ion-text v-else color="medium">
+                        <h3 class="ion-no-margin">{{ currentContact.contactInfo.name }}</h3>
+                    </ion-text>
+                    <!-- Company -->
+                    <ion-item v-if="edit">
+                        <ion-label position="stacked">Изменить наименование организации</ion-label>
+                        <ion-input color="medium" v-model="currentContact.contactInfo.company" type="text" placeholder="Организация"></ion-input>
+                    </ion-item>
+                    <ion-text v-else color="medium">
+                        <p class="ion-margin-top">{{ currentContact.contactInfo.company }}</p>
+                    </ion-text>
+                    <!-- Phones -->
+
+                </ion-item-group>
                 <br>
                 {{ currentContact }}
+                <br>
+                <br>
+                <ion-item v-for="(phone, index) in currentContact.phoneNumbers" :key="index">
+                    {{phone.type}}
+                </ion-item>
                 <ion-button @click="deleteContact">Delete contact</ion-button>
             </div>
         </ion-content>
@@ -58,20 +73,20 @@
 </template>
 
 <script>
-    import ViewContactHeader from '../../components/headers/ViewContactHeader.vue';
+    import ViewContactHeader from '../../components/headers/HeaderViewCurrent.vue';
     import { onMounted, defineComponent, ref } from 'vue';
     import { supabase } from '../../supabase/init';
     import { useRoute, useRouter } from 'vue-router';
     import store from '../../store/index';
     import { uid } from 'uid';
     import Spinner from '../../components/Spinner.vue'
-    import { IonContent, IonHeader, IonButton, IonToolbar, IonButtons, IonBackButton, IonRow, IonAvatar, IonText, IonItem, IonLabel, IonInput } from '@ionic/vue';
+    import { IonContent, IonHeader, IonButton, IonToolbar, IonButtons, IonBackButton, IonRow, IonAvatar, IonText, IonItem, IonLabel, IonInput, IonItemGroup } from '@ionic/vue';
     
 
     export default defineComponent({
         name: 'view-contact',
         components: {
-            ViewContactHeader, IonContent, IonHeader, IonButton, IonToolbar, IonButtons, IonBackButton, IonRow, IonAvatar, IonText, IonItem, IonLabel, IonInput, Spinner
+            ViewContactHeader, IonContent, IonHeader, IonButton, IonToolbar, IonButtons, IonBackButton, IonRow, IonAvatar, IonText, IonItem, IonLabel, IonInput, Spinner, IonItemGroup
         },
         setup() {
             const route = useRoute();
