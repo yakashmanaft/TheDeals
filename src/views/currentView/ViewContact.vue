@@ -51,7 +51,7 @@
                 </ion-text>
                 <br>
                 {{ currentContact }}
-
+                <ion-button @click="deleteContact">Delete contact</ion-button>
             </div>
         </ion-content>
     </div>
@@ -114,14 +114,14 @@
                 }
             }            
 
-            // update contact function
+            // update current contact function
             const update = async () => {
                 try { 
                     spinner.value = true;
                     // Вынести в store?
                     const { error } = await supabase.from('myContacts').update({
                         contactInfo: currentContact.value.contactInfo
-                        
+
                     }).eq('id', currentId)
                     if(error) throw error;
                     // Контакт успешно обновлен
@@ -132,8 +132,21 @@
                 spinner.value = false;
             }
 
+            // delete current contact function
+            // вынести в store
+            const deleteContact = async () => {
+                try {
+                    const { error } = await supabase.from('myContacts').delete().eq('id', currentId);
+                    if (error) throw error;
+                    router.push({ name: 'Contacts' })
+                } catch (error) {
+                    alert(`Error: ${error.message}`)
+                }
+            }
+
+
             return {
-                pageTitle, currentId, info, currentContact, edit, editMode, cancelEdit, update, spinner
+                pageTitle, currentId, info, currentContact, edit, editMode, cancelEdit, update, spinner, deleteContact
             }
         }
     })

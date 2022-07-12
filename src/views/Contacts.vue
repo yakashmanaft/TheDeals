@@ -14,6 +14,8 @@
             :is-open="isOpen"
             @closeModal="setOpen"
             @createContact="willDismiss"
+            :userEmail="userEmail"
+            :contactData="contactData"
         />
         
         <!-- Спиннер как имитация загрузки -->
@@ -147,7 +149,11 @@
             const user = computed(() => store.state.user);
             // Setup ref to router
             const router = useRouter();
-            // Page title
+            // Get user email
+            store.methods.setUserEmail()
+            const userEmail = ref(store.state.userEmail)
+            console.log(userEmail.value)
+            // Get page title
             const pageTitle = router.currentRoute._value.meta.translation;
             // Logout function
             const logout = async () => {
@@ -183,6 +189,7 @@
             // Изменяемый шаблон нового контакта
             const contactData = ref({
                 uid: uid(),
+                email: userEmail.value,
                 contactInfo: {
                     name: '',
                     surname: ''
@@ -194,6 +201,7 @@
                 isOpen.value = !isOpen.value;
                 contactData.value = {
                     uid: uid(),
+                    email: userEmail.value,
                     contactInfo: {
                         name: '',
                         surname: ''
@@ -201,6 +209,7 @@
                 }
             };
 
+            // Создаем новый контакт
             const willDismiss = async (newContactData) => {
                 // принимаем инфу по контакту из modal
                 contactData.value = newContactData
@@ -235,7 +244,7 @@
 
 
             return {
-                user, router, logout, pageTitle, myContacts, spinner, dataLoaded, search, searchedContacts, isOpen, setOpen, willDismiss, contactData
+                user, router, logout, pageTitle, userEmail, myContacts, spinner, dataLoaded, search, searchedContacts, isOpen, setOpen, willDismiss, contactData
             }
         }
     })

@@ -20,37 +20,35 @@
                 <ion-label position="stacked">Укажите имя</ion-label>
                 <ion-input v-model="contactData.contactInfo.name" type="text" placeholder="Имя"></ion-input>
             </ion-item>
-            {{contactData}}
+            {{ contactData }}
             <p>
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Magni illum quidem recusandae ducimus quos
             reprehenderit. Veniam, molestias quos, dolorum consequuntur nisi deserunt omnis id illo sit cum qui. Eaque,
             dicta.
             </p>
+            {{ userEmail }}
         </ion-content>
     </ion-modal>
 </template>
 
 <script>
-    import { defineComponent, ref } from 'vue'; 
+    import { defineComponent, ref, computed } from 'vue'; 
     import { IonModal, IonHeader, IonContent, IonToolbar, IonButtons, IonButton, IonTitle, IonItem, IonLabel, IonInput } from '@ionic/vue';
     import { uid } from 'uid';
 
     export default defineComponent({
         name: 'CreateNewContact',
+        props: {
+            userEmail: String,
+            contactData: Object
+        },
         components: {
             IonModal, IonHeader, IonContent, IonToolbar, IonButtons, IonButton, IonTitle, IonItem, IonLabel, IonInput
         },
         setup() {
-            const contactData = ref({
-                uid: uid() ,
-                contactInfo: {
-                    name: '',
-                    surname: ''
-                }
-            })
 
             return {
-                contactData
+                
             }
         }
     })

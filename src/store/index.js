@@ -20,6 +20,7 @@ import { sortAlphabetically  } from '../helpers/sortMyContacts.js';
 const state = reactive({
   // user
   user: null,
+  userEmail: null,
   // Было для фона, чтобы не прокурчивался при открытом попапе
   // isBackgroundFixed: false
 
@@ -50,6 +51,13 @@ const methods = {
       console.log(error);
     }
   },
+
+  //
+  setUserEmail: () => {
+    if(state.user) {
+      state.userEmail = state.user.email;
+    }
+  }
 };
 
 export default {
