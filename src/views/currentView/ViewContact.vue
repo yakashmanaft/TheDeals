@@ -94,23 +94,25 @@
                 edit.value = !edit.value;
             }
 
-
-
             // Cancel editMode & cancel all changes
             const cancelEdit = () => {
                 edit.value = !edit.value;
                 // note.value = !note.value;
-                // Если вариант без tempData и с обращением к БД
-                // вынести в store
-                // spinner.value = true;
-                // const { data: myContacts, error } = await supabase.from('myContacts').select('*').eq('id', currentId);
-                // spinner.value = false;
-                // currentContact.value = myContacts[0];
-                // СТранно, но работает один раз, на второе редактирвоание уже само tempData изменяется (баг)
                 currentContact.value = tempData
+                reloadData()
             }
             
-
+            // Обновляем данные из БД
+            const reloadData = async () => {
+                // вынести в store?
+                try {
+                    const { data: myContacts, error } = await supabase.from('myContacts').select('*').eq('id', currentId);
+                    currentContact.value = myContacts[0];
+                    if (error) throw error;
+                } catch (error) {
+                    alert(`Error: ${error.message}`)
+                }
+            }            
 
             // update contact function
             const update = async () => {
@@ -119,7 +121,7 @@
                     // Вынести в store?
                     const { error } = await supabase.from('myContacts').update({
                         contactInfo: currentContact.value.contactInfo
-    
+                        
                     }).eq('id', currentId)
                     if(error) throw error;
                     // Контакт успешно обновлен
