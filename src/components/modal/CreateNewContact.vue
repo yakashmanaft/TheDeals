@@ -45,7 +45,7 @@
                 <ion-item v-if="!contactData.phoneNumbers.length" lines="none">
                     <ion-grid class="ion-no-padding">
                         <ion-row class="ion-justify-content-between">
-                            <ion-text>Не указаны</ion-text>
+                            <ion-text color="medium">Не указаны</ion-text>
                             <ion-text color="primary" @click="$emit('addPhoneNumber')">Добавить</ion-text>
                         </ion-row>
                     </ion-grid>
