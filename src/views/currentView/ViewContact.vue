@@ -28,7 +28,7 @@
                 <!-- Avatar -->
                 <ion-avatar>
                     <ion-text color="light">
-                        {{ currentContact.contactInfo.surname[0].toUpperCase() }}{{ currentContact.contactInfo.name[0].toUpperCase() }}
+                        {{checkInitials()}}
                     </ion-text>
                 </ion-avatar>
                 <ion-item-group>
@@ -127,9 +127,19 @@
                 } catch (error) {
                     alert(`Error: ${error.message}`)
                 }
-            }            
+            }         
+            
+            // Проверка, если при редактировании делаем строку пустой
+            const checkInitials = () => {
+                if(currentContact.value.contactInfo.surname.length === 0 || currentContact.value.contactInfo.name.length === 0) {
+                    return;
+                } 
+                    const initials = `${currentContact.value.contactInfo.surname[0].toUpperCase()}${currentContact.value.contactInfo.name[0].toUpperCase()}` 
+                    return initials;
+            }
 
             // update current contact function
+            // вынести в store
             const update = async () => {
                 try { 
                     spinner.value = true;
@@ -161,7 +171,7 @@
 
 
             return {
-                pageTitle, currentId, info, currentContact, edit, editMode, cancelEdit, update, spinner, deleteContact
+                pageTitle, currentId, info, currentContact, checkInitials, edit, editMode, cancelEdit, update, spinner, deleteContact
             }
         }
     })

@@ -1,6 +1,6 @@
 <template>
     <ion-list>
-        <ion-item lines="none">
+        <ion-item lines="none" class="ion-no-padding">
             <ion-select interface="action-sheet" :placeholder="placeholder" v-model="selected" @select="$emit('date-updated', selected.value)">
                 <ion-select-option
                     v-for="(type, index) in data" 

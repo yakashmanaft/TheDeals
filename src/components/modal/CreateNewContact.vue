@@ -21,17 +21,17 @@
                 <!-- Surname -->
                 <ion-item>
                     <ion-label position="stacked">Укажите фамилию</ion-label>
-                    <ion-input v-model="contactData.contactInfo.surname" type="text" placeholder="Фамилия"></ion-input>
+                    <ion-input v-model="contactData.contactInfo.surname" inputmode="text" placeholder="Фамилия" autocapitalize="on"></ion-input>
                 </ion-item>
                 <!-- Name -->
                 <ion-item>
                     <ion-label position="stacked">Укажите имя</ion-label>
-                    <ion-input v-model="contactData.contactInfo.name" type="text" placeholder="Имя"></ion-input>
+                    <ion-input v-model="contactData.contactInfo.name" inputmode="text" placeholder="Имя"></ion-input>
                 </ion-item>
                 <!-- Company -->
                 <ion-item>
                     <ion-label position="stacked">Укажите наименование организации</ion-label>
-                    <ion-input v-model="contactData.contactInfo.company" type="text" placeholder="Компания"></ion-input>
+                    <ion-input v-model="contactData.contactInfo.company" inputmode="text" placeholder="Компания"></ion-input>
                 </ion-item>
             </ion-item-group>
 
@@ -39,7 +39,7 @@
             <ion-item-group>
                 <!-- Заголовок -->
                 <ion-text>
-                    <h4>Телефоны</h4>
+                    <h4 class="ion-no-margin ion-margin-top">Телефоны</h4>
                 </ion-text>
                 <!-- Если телефоны не указаны -->
                 <ion-item v-if="!contactData.phoneNumbers.length" lines="none">
@@ -50,15 +50,56 @@
                         </ion-row>
                     </ion-grid>
                 </ion-item>
-                <ion-item v-for="(number, index) in contactData.phoneNumbers" :key="index">
-                    <!-- Phone number -->
-                    {{number.id}}
-                    <!-- Type of numper -->
-                    <Select :data="phoneTypes" :placeholder="'Тип номера'" @date-updated="(selected) => number.type = selected"/>
+                <!-- Если телефоны указываем -->
+                <div class="current-phone-content" v-for="(number, index) in contactData.phoneNumbers" :key="index">
 
-                    <p @click="$emit('deletePhoneNumber', number.id)">Удалить</p>
-                </ion-item>
-                <p v-if="contactData.phoneNumbers.length" @click="$emit('addPhoneNumber')">Добавить еще</p>
+                    <!-- sequence number &  delete current phone btn-->
+                    <ion-grid class="ion-no-padding">
+
+                        <ion-row class="ion-padding-start ion-justify-content-between ion-align-items-center">
+                            <!-- sequence number -->
+                                <ion-text position="stacked">Телефон #{{index + 1}}</ion-text>
+                            <!-- delete current phone btn -->
+                            <ion-button fill="clear" class="btn-delete-phone" @click="$emit('deletePhoneNumber', number.id)">
+                                <ion-icon :icon="closeOutline" color="danger" slot="end"></ion-icon>
+                            </ion-button>
+                        </ion-row>
+                    </ion-grid>
+    
+
+                    
+                    <!-- Phone number -->
+                    <ion-item>
+                        <ion-input inputmode="tel" placeholder="Укажите номер телефона" v-model="number.phone"></ion-input>
+                    </ion-item>
+
+                    <!-- Type of numper -->
+                    <ion-item>
+                        <ion-label position="stacked">
+                            Тип номера телефона
+                        </ion-label>
+                        <Select :data="phoneTypes" :placeholder="'Тип номера'" @date-updated="(selected) => number.type = selected"/>
+                    </ion-item>
+
+                    <!-- link to messengers -->
+                    <ion-item lines="none">
+                            <ion-label position="stacked">
+                                Привязка к мессенджерам
+                            </ion-label>
+                            <ion-grid class="ion-no-margin ion-no-padding">
+                                <ion-row class="margin-top ion-justify-content-between ion-align-items-center" v-for="(messenger, index) in number.messengers" :key="index">
+                                    <ion-text class="ion-padding-end">
+                                        {{messenger.name}}
+                                    </ion-text>
+                                    <ion-toggle class="ion-padding-end" color="success" v-model="messenger.status"></ion-toggle>
+                                </ion-row>
+                            </ion-grid>
+                    </ion-item>
+                </div>
+                <!-- Кнопка добавить еще один телефон к контакту -->
+                <ion-row class="ion-justify-content-end">
+                    <ion-text color="primary" v-if="contactData.phoneNumbers.length" @click="$emit('addPhoneNumber')">Добавить еще</ion-text>
+                </ion-row>
             </ion-item-group>
 
             <!-- Emails -->
@@ -88,7 +129,8 @@
 
 <script>
     import { defineComponent, ref, computed } from 'vue'; 
-    import { IonModal, IonHeader, IonContent, IonToolbar, IonButtons, IonButton, IonTitle, IonText, IonItem, IonLabel, IonInput, IonItemGroup, IonGrid, IonRow, IonSelect, IonSelectOption  } from '@ionic/vue';
+    import { IonModal, IonHeader, IonContent, IonToolbar, IonButtons, IonButton, IonTitle, IonText, IonItem, IonLabel, IonInput, IonItemGroup, IonGrid, IonRow, IonCol, IonSelect, IonSelectOption, IonToggle, IonIcon  } from '@ionic/vue';
+    import { closeOutline } from 'ionicons/icons';
     import { uid } from 'uid';
     import store from '../../store/index';
     import Select from '../Select.vue';
@@ -99,14 +141,27 @@
             contactData: Object
         },
         components: {
-            IonModal, IonHeader, IonContent, IonToolbar, IonButtons, IonButton, IonTitle, IonText, IonItem, IonLabel, IonInput, IonItemGroup, IonGrid, IonRow, IonSelect, IonSelectOption, Select
+            IonModal, IonHeader, IonContent, IonToolbar, IonButtons, IonButton, IonTitle, IonText, IonItem, IonLabel, IonInput, IonItemGroup, IonGrid, IonRow, IonCol, IonSelect, IonSelectOption, Select, IonToggle, IonIcon
         },
         setup() {
             const phoneTypes = ref(store.state.myContactPhoneTypes)
 
             return {
-                phoneTypes
+                phoneTypes, closeOutline
             }
         }
     })
 </script>
+
+<style scoped>
+    .current-phone-content {
+        border-left: 1px solid var(--ion-color-medium);
+        margin: 10px 0;
+        padding-bottom: 10px;
+        border-radius: 10px;
+    }
+
+    .margin-top {
+        margin-top: 10px;
+    }
+</style>
