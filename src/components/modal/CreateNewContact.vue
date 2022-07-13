@@ -50,12 +50,10 @@
                         </ion-row>
                     </ion-grid>
                 </ion-item>
-                <!-- Если телефоны указываем -->
+                <!-- Если телефоны указаны -->
                 <div class="current-phone-content" v-for="(number, index) in contactData.phoneNumbers" :key="index">
-
                     <!-- sequence number &  delete current phone btn-->
                     <ion-grid class="ion-no-padding">
-
                         <ion-row class="ion-padding-start ion-justify-content-between ion-align-items-center">
                             <!-- sequence number -->
                                 <ion-text position="stacked">Телефон #{{index + 1}}</ion-text>
@@ -65,14 +63,10 @@
                             </ion-button>
                         </ion-row>
                     </ion-grid>
-    
-
-                    
                     <!-- Phone number -->
                     <ion-item>
                         <ion-input inputmode="tel" placeholder="Укажите номер телефона" v-model="number.phone"></ion-input>
                     </ion-item>
-
                     <!-- Type of numper -->
                     <ion-item>
                         <ion-label position="stacked">
@@ -80,7 +74,6 @@
                         </ion-label>
                         <Select :data="phoneTypes" :placeholder="'Тип номера'" @date-updated="(selected) => number.type = selected"/>
                     </ion-item>
-
                     <!-- link to messengers -->
                     <ion-item lines="none">
                             <ion-label position="stacked">

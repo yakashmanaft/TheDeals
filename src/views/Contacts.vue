@@ -215,7 +215,6 @@
             const addPhoneNumber = () => {
                 contactData.value.phoneNumbers.push({
                     id: uid(),
-                    // Может быть должно пустой строкой или как там?
                     type: '',
                     phone: '',
                     messengers: [

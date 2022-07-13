@@ -9,7 +9,6 @@
                     >
                         {{type.value}}
                     </ion-select-option>
-                    
             </ion-select>
         </ion-item>
     </ion-list>
