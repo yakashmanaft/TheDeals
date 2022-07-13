@@ -81,45 +81,43 @@
                     <!-- Если телефоны уже есть (добавлен шаблон или имелись в БД)  -->
                     <ion-item-group v-for="(number, index) in currentContact.phoneNumbers" :key="index" class="ion-padding-start ion-padding-end">
                         <!-- Показываем в режиме edit -->
-                        <div v-if="edit">
-                            <div class="current-phone-content">
-                                <!-- sequence number &  delete current phone btn-->
-                                <ion-grid class="ion-no-padding">
-                                    <ion-row class="ion-padding-start ion-justify-content-between ion-align-items-center">
-                                        <!-- sequence number -->
-                                        <ion-text position="stacked">Телефон #{{index + 1}}</ion-text>
-                                        <!-- delete current phone btn -->
-                                        <ion-button fill="clear" class="btn-delete-phone" @click="deletePhoneNumber(number.id)">
-                                            <ion-icon :icon="closeOutline" color="danger" slot="end"></ion-icon>
-                                        </ion-button>
-                                    </ion-row>
-                                </ion-grid>
-                                <!-- Phone number -->
-                                <ion-item >
-                                    <ion-input inputmode="tel" placeholder="Укажите номер телефона" v-model="number.phone"></ion-input>
-                                </ion-item>
-                                <!-- Type of number -->
-                                <ion-item>
+                        <div v-if="edit" class="current-phone-content">
+                            <!-- sequence number &  delete current phone btn-->
+                            <ion-grid class="ion-no-padding">
+                                <ion-row class="ion-padding-start ion-justify-content-between ion-align-items-center">
+                                    <!-- sequence number -->
+                                    <ion-text position="stacked">Телефон #{{index + 1}}</ion-text>
+                                    <!-- delete current phone btn -->
+                                    <ion-button fill="clear" class="btn-delete-phone" @click="deletePhoneNumber(number.id)">
+                                        <ion-icon :icon="closeOutline" color="danger" slot="end"></ion-icon>
+                                    </ion-button>
+                                </ion-row>
+                            </ion-grid>
+                            <!-- Phone number -->
+                            <ion-item >
+                                <ion-input inputmode="tel" placeholder="Укажите номер телефона" v-model="number.phone"></ion-input>
+                            </ion-item>
+                            <!-- Type of number -->
+                            <ion-item>
+                                <ion-label position="stacked">
+                                    Тип номера телефона
+                                </ion-label>
+                                <Select :data="phoneTypes" :placeholder="setTypePhonePlaceholder(number.type.currentValue)" @date-updated="(selected) => number.type = selected"/>
+                            </ion-item>
+                            <!-- link to messengers -->
+                            <ion-item lines="none">
                                     <ion-label position="stacked">
-                                        Тип номера телефона
+                                        Привязка к мессенджерам
                                     </ion-label>
-                                    <Select :data="phoneTypes" :placeholder="setTypePhonePlaceholder(number.type.currentValue)" @date-updated="(selected) => number.type = selected"/>
-                                </ion-item>
-                                <!-- link to messengers -->
-                                <ion-item lines="none">
-                                        <ion-label position="stacked">
-                                            Привязка к мессенджерам
-                                        </ion-label>
-                                        <ion-grid class="ion-no-margin ion-no-padding">
-                                            <ion-row class="margin-top ion-justify-content-between ion-align-items-center" v-for="(messenger, index) in number.messengers" :key="index">
-                                                <ion-text class="ion-padding-end">
-                                                    {{messenger.name}}
-                                                </ion-text>
-                                                <ion-toggle class="ion-padding-end" color="success" v-model="messenger.status"></ion-toggle>
-                                            </ion-row>
-                                        </ion-grid>
-                                </ion-item>
-                            </div>
+                                    <ion-grid class="ion-no-margin ion-no-padding">
+                                        <ion-row class="margin-top ion-justify-content-between ion-align-items-center" v-for="(messenger, index) in number.messengers" :key="index">
+                                            <ion-text class="ion-padding-end">
+                                                {{messenger.name}}
+                                            </ion-text>
+                                            <ion-toggle class="ion-padding-end" color="success" v-model="messenger.status"></ion-toggle>
+                                        </ion-row>
+                                    </ion-grid>
+                            </ion-item>
                         </div>
                         <!-- Показываем в режиме просмотра -->
                         <!-- Рассмотреть в дальнейшем возможность добавлять заготовленные тексты к "написать в мессенджер контакту" -->
@@ -128,7 +126,7 @@
                             <a :href="`tel:${number.phone}`">
                                 <ion-icon :icon="callOutline"></ion-icon>
                                 <div>
-                                    <ion-text color="medium">{{ number.type.currentValue }}</ion-text>
+                                    <ion-text color="medium">{{ checkEmptyPhoneType(number.type.currentValue) }}</ion-text>
                                     <ion-text>{{ number.phone }}</ion-text>
                                 </div>
                             </a>
@@ -240,6 +238,16 @@
                     return initials;
             }
 
+            // проверка, если  в типе телефона будет пустая строка
+            const checkEmptyPhoneType = (typeValue) => {
+                console.log(typeValue)
+                if(typeValue === undefined) {
+                    return 'Тип не указан'
+                } else {
+                    return typeValue
+                }
+            }
+
             // update current contact function
             // вынести в store
             const update = async () => {
@@ -312,11 +320,8 @@
 
             // Delete current Phone Number events
             const deletePhoneNumber = (id) => {
-                if(currentContact.value.phoneNumbers.length > 1) {
-                    currentContact.value.phoneNumbers = currentContact.value.phoneNumbers.filter(number => number.id !== id);
-                    return;
-                }
-                alert('Должно быть указано не менее одного номера телефона');
+                currentContact.value.phoneNumbers = currentContact.value.phoneNumbers.filter(number => number.id !== id);
+                return;
             }
 
             // delete current contact function
@@ -367,7 +372,7 @@
 
 
             return {
-                pageTitle, currentId, info, currentContact, checkInitials, edit, editMode, cancelEdit, update, spinner, deleteContact, addPhoneNumber, callOutline, checkMobile, logoWhatsapp, cutPhoneNumber, phoneTypes, deletePhoneNumber, closeOutline, setTypePhonePlaceholder, isOpenRef, setOpen, buttons
+                pageTitle, currentId, info, currentContact, checkInitials, edit, editMode, cancelEdit, update, spinner, deleteContact, addPhoneNumber, callOutline, checkMobile, logoWhatsapp, cutPhoneNumber, phoneTypes, deletePhoneNumber, closeOutline, setTypePhonePlaceholder, isOpenRef, setOpen, buttons, checkEmptyPhoneType
             }
         }
     })

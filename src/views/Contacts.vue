@@ -211,7 +211,7 @@
                     phoneNumbers: [],
                 }
             };
-            // Добавляем телефоны к контакту
+            // Добавляем телефоны к объекту контакта
             const addPhoneNumber = () => {
                 contactData.value.phoneNumbers.push({
                     id: uid(),
@@ -233,12 +233,8 @@
             }
             // Удаляем телефон у создаваемого контакта
             const deletePhoneNumber = (id) => {
-                if(contactData.value.phoneNumbers.length > 1) {
-                    contactData.value.phoneNumbers = contactData.value.phoneNumbers.filter(number => number.id !== id);
-                    return
-                } 
-                alert('Должно быть указано не менее одного номера телефона')
-                
+                contactData.value.phoneNumbers = contactData.value.phoneNumbers.filter(number => number.id !== id);
+                return
             }
             // Создаем новый контакт
             const createNew = async (newContactData) => {
