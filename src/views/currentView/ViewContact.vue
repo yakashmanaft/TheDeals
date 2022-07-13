@@ -155,7 +155,17 @@
                 {{ currentContact }}
                 <br>
                 <br>
-                <ion-button @click="deleteContact">Delete contact</ion-button>
+                <!-- Кнопка удалить контакта -->
+                <!-- Не показываем в режиме edit -->
+                <ion-button v-if="!edit" @click="setOpen(true)">Delete contact</ion-button>
+                <ion-action-sheet
+                    :is-open="isOpenRef"
+                    header="Точно удалить?"
+                    css-class="my-custom-class"
+                    :buttons="buttons"
+                    @didDismiss="setOpen(false)"
+                >
+                </ion-action-sheet>
             </div>
         </ion-content>
     </div>
@@ -170,14 +180,14 @@
     import { uid } from 'uid';
     import Spinner from '../../components/Spinner.vue';
     import Select from '../../components/Select.vue';
-    import { IonContent, IonHeader, IonButton, IonToolbar, IonButtons, IonBackButton, IonRow, IonAvatar, IonText, IonItem, IonLabel, IonInput, IonItemGroup, IonGrid, IonIcon, IonToggle } from '@ionic/vue';
+    import { IonContent, IonHeader, IonButton, IonToolbar, IonButtons, IonBackButton, IonRow, IonAvatar, IonText, IonItem, IonLabel, IonInput, IonItemGroup, IonGrid, IonIcon, IonToggle, IonActionSheet } from '@ionic/vue';
     import { callOutline, logoWhatsapp, closeOutline } from 'ionicons/icons';
     
 
     export default defineComponent({
         name: 'view-contact',
         components: {
-            ViewContactHeader, IonContent, IonHeader, IonButton, IonToolbar, IonButtons, IonBackButton, IonRow, IonAvatar, IonText, IonItem, IonLabel, IonInput, Spinner, IonItemGroup, IonGrid, IonIcon, IonToggle, Select
+            ViewContactHeader, IonContent, IonHeader, IonButton, IonToolbar, IonButtons, IonBackButton, IonRow, IonAvatar, IonText, IonItem, IonLabel, IonInput, Spinner, IonItemGroup, IonGrid, IonIcon, IonToggle, Select, IonActionSheet
         },
         setup() {
             const route = useRoute();
@@ -332,9 +342,33 @@
                 }
             }
 
+            // Всплывашка по удалению контакта
+            const isOpenRef = ref(false);
+            const setOpen = (boolean) => isOpenRef.value = boolean;
+            const buttons = [
+                {
+                    text: 'Удалить',
+                    role: 'destructive',
+                    data: {
+                        type: 'delete'
+                    },
+                    handler: () => {
+                        console.log('Delete clicked')
+                        deleteContact()
+                    },
+                },
+                {
+                    text: 'Отменить',
+                    role: 'cancel',
+                    handler: () => {
+                        console.log('Cancel clicked')
+                    },
+                }
+            ]
+
 
             return {
-                pageTitle, currentId, info, currentContact, checkInitials, edit, editMode, cancelEdit, update, spinner, deleteContact, addPhoneNumber, callOutline, checkMobile, logoWhatsapp, cutPhoneNumber, phoneTypes, deletePhoneNumber, closeOutline, setTypePhonePlaceholder
+                pageTitle, currentId, info, currentContact, checkInitials, edit, editMode, cancelEdit, update, spinner, deleteContact, addPhoneNumber, callOutline, checkMobile, logoWhatsapp, cutPhoneNumber, phoneTypes, deletePhoneNumber, closeOutline, setTypePhonePlaceholder, isOpenRef, setOpen, buttons
             }
         }
     })
