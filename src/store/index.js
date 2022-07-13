@@ -27,7 +27,7 @@ const state = reactive({
   // contact array
   myContactsArray: [],
   // phone types of my contact array
-  myContactPhoneTypes: [
+  myContactPhoneEmailTypes: [
     { value: 'Личный' }, { value: 'Рабочий' }
   ]
 

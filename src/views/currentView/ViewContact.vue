@@ -201,7 +201,7 @@
             //
             const spinner = ref(null);
             // храним массив со списком типов телефона (личный, рабочий и т.д.)
-            const phoneTypes = ref(store.state.myContactPhoneTypes)
+            const phoneTypes = ref(store.state.myContactPhoneEmailTypes)
 
             // Edit contact info
             const edit = ref(null)
@@ -240,7 +240,6 @@
 
             // проверка, если  в типе телефона будет пустая строка
             const checkEmptyPhoneType = (typeValue) => {
-                console.log(typeValue)
                 if(typeValue === undefined) {
                     return 'Тип не указан'
                 } else {

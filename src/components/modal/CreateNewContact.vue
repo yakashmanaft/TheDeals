@@ -99,17 +99,46 @@
             <ion-item-group>
                 <!-- Заголовок -->
                 <ion-text>
-                    <h4>Электронная почта</h4>
+                    <h4 class="ion-no-margin ion-margin-top">Электронная почта</h4>
                 </ion-text>
                 <!-- Если адреса почты не указаны -->
-                <ion-item lines="none">
+                <ion-item v-if="!contactData.emails.length" lines="none">
                     <ion-grid class="ion-no-padding">
                         <ion-row class="ion-justify-content-between">
                             <ion-text color="medium">Не указаны</ion-text>
-                            <ion-text color="primary">Добавить</ion-text>
+                            <ion-text color="primary" @click="$emit('addEmail')">Добавить</ion-text>
                         </ion-row>
                     </ion-grid>
                 </ion-item>
+                <!-- Если телефоны указаны -->
+                <div class="current-phone-content" v-for="(email, index) in contactData.emails" :key="index">
+                    <!-- sequence number &  delete current phone btn-->
+                    <ion-grid class="ion-no-padding">
+                        <ion-row class="ion-padding-start ion-justify-content-between ion-align-items-center">
+                            <!-- sequence number -->
+                                <ion-text position="stacked">Адрес почты #{{index + 1}}</ion-text>
+                            <!-- delete current email btn -->
+                            <ion-button fill="clear" class="btn-delete-phone" @click="$emit('deleteEmail', email.id)">
+                                <ion-icon :icon="closeOutline" color="danger" slot="end"></ion-icon>
+                            </ion-button>
+                        </ion-row>
+                    </ion-grid>
+                    <!-- Email address -->
+                    <ion-item>
+                        <ion-input inputmode="email" placeholder="Укажите адрес почты" v-model="email.email"></ion-input>
+                    </ion-item>
+                    <!-- Type of email -->
+                    <ion-item>
+                        <ion-label position="stacked">
+                            Тип электронной почты
+                        </ion-label>
+                        <Select :data="phoneTypes" :placeholder="'Тип номера'" @date-updated="(selected) => email.type = selected"/>
+                    </ion-item>
+                </div>
+                <!-- Кнопка добавить еще один email к контакту -->
+                <ion-row class="ion-justify-content-end">
+                    <ion-text color="primary" v-if="contactData.emails.length" @click="$emit('addEmail')">Добавить еще</ion-text>
+                </ion-row>
             </ion-item-group>
 
             <br>
@@ -137,7 +166,7 @@
             IonModal, IonHeader, IonContent, IonToolbar, IonButtons, IonButton, IonTitle, IonText, IonItem, IonLabel, IonInput, IonItemGroup, IonGrid, IonRow, IonCol, IonSelect, IonSelectOption, Select, IonToggle, IonIcon
         },
         setup() {
-            const phoneTypes = ref(store.state.myContactPhoneTypes)
+            const phoneTypes = ref(store.state.myContactPhoneEmailTypes)
 
             return {
                 phoneTypes, closeOutline

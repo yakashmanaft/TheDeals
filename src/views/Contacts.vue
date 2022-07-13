@@ -18,7 +18,9 @@
             @createContact="createNew"
             :contactData="contactData"
             @addPhoneNumber="addPhoneNumber"
+            @addEmail="addEmail"
             @deletePhoneNumber="deletePhoneNumber"
+            @deleteEmail="deleteEmail"
         />
         
         <!-- page content -->
@@ -195,6 +197,7 @@
                     company: ''
                 },
                 phoneNumbers: [],
+                emails: []
             })
 
             // При закрытии или открытии modal очищаем шаблон контакта
@@ -209,6 +212,7 @@
                         company: ''
                     },
                     phoneNumbers: [],
+                    emails: []
                 }
             };
             // Добавляем телефоны к объекту контакта
@@ -231,10 +235,23 @@
                     ]
                 })
             }
+            // Добавляем emails к объекту контакта
+            const addEmail = () => {
+                contactData.value.emails.push({
+                    id: uid(),
+                    type: '',
+                    email: ''
+                })
+            }
             // Удаляем телефон у создаваемого контакта
             const deletePhoneNumber = (id) => {
                 contactData.value.phoneNumbers = contactData.value.phoneNumbers.filter(number => number.id !== id);
-                return
+                return;
+            }
+            // Удаляем email у создаваемого контакта
+            const deleteEmail = (id) => {
+                contactData.value.emails = contactData.value.emails.filter(email => email.id !== id);
+                return;
             }
             // Создаем новый контакт
             const createNew = async (newContactData) => {
@@ -270,7 +287,7 @@
 
 
             return {
-                user, router, logout, pageTitle, userEmail, myContacts, spinner, dataLoaded, search, searchedContacts, isOpen, setOpen, createNew, contactData, addPhoneNumber, deletePhoneNumber
+                user, router, logout, pageTitle, userEmail, myContacts, spinner, dataLoaded, search, searchedContacts, isOpen, setOpen, createNew, contactData, addPhoneNumber, addEmail, deletePhoneNumber, deleteEmail
             }
         }
     })
