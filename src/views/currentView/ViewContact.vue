@@ -161,7 +161,6 @@
                 <ion-action-sheet
                     :is-open="isOpenRef"
                     header="Точно удалить?"
-                    css-class="my-custom-class"
                     :buttons="buttons"
                     @didDismiss="setOpen(false)"
                 >
