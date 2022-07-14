@@ -25,13 +25,14 @@
     
             <!-- Data -->
             <div>
-                <!-- Avatar -->
+                <!-- =================== Avatar ======================== -->
                 <ion-avatar>
                     <ion-text color="light">
                         {{checkInitials()}}
                     </ion-text>
                 </ion-avatar>
-                <!-- Surname & Name $ Company -->
+
+                <!-- ============ Surname & Name $ Company ============= -->
                 <ion-item-group>
                     <!-- Surname -->
                     <ion-item v-if="edit" class="ion-margin-top ion-padding-start">
@@ -57,10 +58,9 @@
                     <ion-text v-else color="medium">
                         <p class="ion-margin-top">{{ currentContact.contactInfo.company }}</p>
                     </ion-text>
-                    <!-- Phones -->
-
                 </ion-item-group>
-                <!-- Phone -->
+
+                <!-- ===================== Phones ====================== -->
                 <ion-item-group>
                     <!-- Заголовок -->
                     <ion-item v-if="edit" lines="none">
@@ -102,7 +102,7 @@
                                 <ion-label position="stacked">
                                     Тип номера телефона
                                 </ion-label>
-                                <Select :data="phoneTypes" :placeholder="setTypePhonePlaceholder(number.type.currentValue)" @date-updated="(selected) => number.type = selected"/>
+                                <Select :data="phoneEmailTypes" :placeholder="setTypePhoneEmailPlaceholder(number.type.currentValue)" @date-updated="(selected) => number.type = selected"/>
                             </ion-item>
                             <!-- link to messengers -->
                             <ion-item lines="none">
@@ -126,7 +126,7 @@
                             <a :href="`tel:${number.phone}`">
                                 <ion-icon :icon="callOutline"></ion-icon>
                                 <div>
-                                    <ion-text color="medium">{{ checkEmptyPhoneType(number.type.currentValue) }}</ion-text>
+                                    <ion-text color="medium">{{ checkEmptyPhoneEmailType(number.type.currentValue) }}</ion-text>
                                     <ion-text>{{ number.phone }}</ion-text>
                                 </div>
                             </a>
@@ -149,6 +149,69 @@
                         <ion-text color="primary" v-if="edit && currentContact.phoneNumbers.length" @click="addPhoneNumber">Добавить еще</ion-text>
                     </ion-row>
                 </ion-item-group>
+
+                <!-- ===================== Emails ====================== -->
+                <ion-item-group>
+                    <!-- Заголовок -->
+                    <ion-item v-if="edit" lines="none">
+                        <ion-text >
+                            <h4 class="ion-no-margin ion-margin-top">Электронная почта</h4>
+                        </ion-text>
+                    </ion-item>
+                    <!-- Если ни одного email не добавлено -->
+                    <ion-item v-if="!currentContact.emails.length" lines="none">
+                        <ion-grid class="ion-no-padding">
+                            <ion-row class="ion-justify-content-between">
+                                <ion-text>Нет электронной почты</ion-text>
+                                <!-- Если включен режим редактирования -->
+                                <ion-text v-if="edit" @click="addEmail" color="primary">Добавить</ion-text> 
+                            </ion-row>
+                        </ion-grid>
+                    </ion-item>
+                    <!-- Если emails уже есть (добавлен шаблон или имелись в БД)  -->
+                    <ion-item-group v-for="(email, index) in currentContact.emails" :key="index" class="ion-padding-start ion-padding-end">
+                        <!-- Показываем в режиме edit -->
+                        <div v-if="edit" class="current-phone-content">
+                            <!-- sequence number &  delete current email btn-->
+                            <ion-grid class="ion-no-padding">
+                                <ion-row class="ion-padding-start ion-justify-content-between ion-align-items-center">
+                                    <!-- sequence number -->
+                                    <ion-text position="stacked">Адрес почты #{{index + 1}}</ion-text>
+                                    <!-- delete current phone btn -->
+                                    <ion-button fill="clear" class="btn-delete-phone" @click="deleteEmail(email.id)">
+                                        <ion-icon :icon="closeOutline" color="danger" slot="end"></ion-icon>
+                                    </ion-button>
+                                </ion-row>
+                            </ion-grid>
+                            <!-- Email-->
+                            <ion-item >
+                                <ion-input inputmode="email" placeholder="Укажите адрес почты" v-model="email.email"></ion-input>
+                            </ion-item>
+                            <!-- Type of email -->
+                            <ion-item>
+                                <ion-label position="stacked">
+                                    Тип электронной почты
+                                </ion-label>
+                                <Select :data="phoneEmailTypes" :placeholder="setTypePhoneEmailPlaceholder(email.type.currentValue)" @date-updated="(selected) => email.type = selected"/>
+                            </ion-item>
+                        </div>
+                        <!-- Показываем в режиме просмотра -->
+                        <div v-else>
+                            <a :href="`mailto:${email.email}`" target="_blank">
+                                <ion-icon :icon="mailOutline"></ion-icon>
+                                <div>
+                                    <ion-text color="medium">{{ checkEmptyPhoneEmailType(email.type.currentValue) }}</ion-text>
+                                    <ion-text>{{ email.email }}</ion-text>
+                                </div>
+                            </a>
+                        </div>
+                    </ion-item-group>
+                    <!-- Button to add new email to current contact -->
+                    <ion-row class="ion-justify-content-end ion-padding-end">
+                        <ion-text color="primary" v-if="edit && currentContact.emails.length" @click="addEmail">Добавить еще</ion-text>
+                    </ion-row>
+                </ion-item-group>
+
                 <br>
                 {{ currentContact }}
                 <br>
@@ -178,7 +241,7 @@
     import Spinner from '../../components/Spinner.vue';
     import Select from '../../components/Select.vue';
     import { IonContent, IonHeader, IonButton, IonToolbar, IonButtons, IonBackButton, IonRow, IonAvatar, IonText, IonItem, IonLabel, IonInput, IonItemGroup, IonGrid, IonIcon, IonToggle, IonActionSheet } from '@ionic/vue';
-    import { callOutline, logoWhatsapp, closeOutline } from 'ionicons/icons';
+    import { callOutline, logoWhatsapp, closeOutline, mailOutline } from 'ionicons/icons';
     
 
     export default defineComponent({
@@ -201,7 +264,7 @@
             //
             const spinner = ref(null);
             // храним массив со списком типов телефона (личный, рабочий и т.д.)
-            const phoneTypes = ref(store.state.myContactPhoneEmailTypes)
+            const phoneEmailTypes = ref(store.state.myContactPhoneEmailTypes)
 
             // Edit contact info
             const edit = ref(null)
@@ -229,7 +292,7 @@
                 }
             }         
             
-            // Проверка, если при редактировании в имени и фамилии делаем строку пустой
+            // Если в режиме edit, имя || фамилия стали пустой строкой - обходим ошибку в отображении Avatar
             const checkInitials = () => {
                 if(currentContact.value.contactInfo.surname.length === 0 || currentContact.value.contactInfo.name.length === 0) {
                     return;
@@ -239,7 +302,7 @@
             }
 
             // проверка, если  в типе телефона будет пустая строка
-            const checkEmptyPhoneType = (typeValue) => {
+            const checkEmptyPhoneEmailType = (typeValue) => {
                 if(typeValue === undefined) {
                     return 'Тип не указан'
                 } else {
@@ -255,7 +318,8 @@
                     // Вынести в store?
                     const { error } = await supabase.from('myContacts').update({
                         contactInfo: currentContact.value.contactInfo,
-                        phoneNumbers: currentContact.value.phoneNumbers
+                        phoneNumbers: currentContact.value.phoneNumbers,
+                        emails: currentContact.value.emails,
 
                     }).eq('id', currentId)
                     if(error) throw error;
@@ -288,6 +352,15 @@
                 })
             }
 
+            // В режиме редактирования, добавляем email к конакту
+            const addEmail = () => {
+                currentContact.value.emails.push({
+                    id: uid(),
+                    type: '',
+                    email: ''
+                })
+            }
+
             //Check mobile or not (for viber)
             // вынести в отдельный файл
             const checkMobile = () => {
@@ -317,9 +390,17 @@
                 }
             }
 
-            // Delete current Phone Number events
+            // Delete current Phone Number
+            // вынести в store
             const deletePhoneNumber = (id) => {
                 currentContact.value.phoneNumbers = currentContact.value.phoneNumbers.filter(number => number.id !== id);
+                return;
+            }
+
+            // Delete current email
+            // вынести в store
+            const deleteEmail = (id) => {
+                currentContact.value.emails = currentContact.value.emails.filter(number => number.id !== id);
                 return;
             }
 
@@ -335,8 +416,8 @@
                 }
             }
 
-            // Если placeholder у select (выбор типа телефона) изначально пустая строка
-            const setTypePhonePlaceholder = (currentValue) => {
+            // Если placeholder у select (тип phone || email) изначально пустая строка
+            const setTypePhoneEmailPlaceholder = (currentValue) => {
                 if(currentValue === undefined) {
                     currentValue = 'Укажите тип';
                     return currentValue;
@@ -345,7 +426,7 @@
                 }
             }
 
-            // Всплывашка по удалению контакта
+            // меню подтверждения удаления current contact
             const isOpenRef = ref(false);
             const setOpen = (boolean) => isOpenRef.value = boolean;
             const buttons = [
@@ -371,7 +452,7 @@
 
 
             return {
-                pageTitle, currentId, info, currentContact, checkInitials, edit, editMode, cancelEdit, update, spinner, deleteContact, addPhoneNumber, callOutline, checkMobile, logoWhatsapp, cutPhoneNumber, phoneTypes, deletePhoneNumber, closeOutline, setTypePhonePlaceholder, isOpenRef, setOpen, buttons, checkEmptyPhoneType
+                pageTitle, currentId, info, currentContact, checkInitials, edit, editMode, cancelEdit, update, spinner, deleteContact, addPhoneNumber, callOutline, checkMobile, logoWhatsapp, cutPhoneNumber, phoneEmailTypes, deletePhoneNumber, closeOutline, setTypePhoneEmailPlaceholder, isOpenRef, setOpen, buttons, checkEmptyPhoneEmailType, addEmail, deleteEmail, mailOutline
             }
         }
     })
