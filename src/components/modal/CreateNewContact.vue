@@ -191,6 +191,52 @@
                 <ion-text>
                     <h4 class="ion-no-margin ion-margin-top">События</h4>
                 </ion-text>
+                <!-- Если социальные сети не указаны -->
+                <ion-item v-if="!contactData.contactEvents.length" lines="none">
+                    <ion-grid class="ion-no-padding">
+                        <ion-row class="ion-justify-content-between">
+                            <ion-text color="medium">Не указаны</ion-text>
+                            <ion-text color="primary" @click="$emit('addContactEvent')">Добавить</ion-text>
+                        </ion-row>
+                    </ion-grid>
+                </ion-item>
+                <!-- Если event указаны -->
+                <div class="current-phone-content" v-for="(event, index) in contactData.contactEvents" :key="index">
+                    <!-- sequence number &  delete current event btn-->
+                    <ion-grid class="ion-no-padding">
+                        <ion-row class="ion-padding-start ion-justify-content-between ion-align-items-center">
+                            <!-- sequence number -->
+                                <ion-text position="stacked">Событие #{{index + 1}}</ion-text>
+                            <!-- delete current event btn -->
+                            <ion-button fill="clear" class="btn-delete-phone" @click="$emit('deleteContactEvent', event.id)">
+                                <ion-icon :icon="closeOutline" color="danger" slot="end"></ion-icon>
+                            </ion-button>
+                        </ion-row>
+                    </ion-grid>
+                    <!-- event title -->
+                    <ion-item>
+                        <ion-input inputmode="text" placeholder="Название события" v-model="event.title"></ion-input>
+                    </ion-item>
+                    <!-- date of event -->
+                    <ion-item>
+                        <ion-label position="stacked">
+                            Укажите дату события
+                        </ion-label>
+                        <!-- <ion-datetime v-if="isCalendarOpen" presentation="date" @ionChange="closeCalendar" v-model="event.date"></ion-datetime> -->
+                        <ion-text @click="setCalendarOpened">Выбрать дату</ion-text>
+
+                        <ModalCalendar 
+                            :is-open="isCalendarOpen" 
+                            @closeModal="isCalendarOpen = false"
+                            :isCalendarOpen="isCalendarOpen"
+                            @selectedDate="selectedDateFunc"
+                        />
+                        {{event.date}}
+                    </ion-item>
+                    <div>
+                    </div>
+                    {{selectedDate}}
+                </div>
             </ion-item-group>
 
             <br>
@@ -203,11 +249,12 @@
 
 <script>
     import { defineComponent, ref, computed } from 'vue'; 
-    import { IonModal, IonHeader, IonContent, IonToolbar, IonButtons, IonButton, IonTitle, IonText, IonItem, IonLabel, IonInput, IonItemGroup, IonGrid, IonRow, IonCol, IonSelect, IonSelectOption, IonToggle, IonIcon  } from '@ionic/vue';
+    import { IonModal, IonHeader, IonContent, IonToolbar, IonButtons, IonButton, IonTitle, IonText, IonItem, IonLabel, IonInput, IonItemGroup, IonGrid, IonRow, IonCol, IonSelect, IonSelectOption, IonToggle, IonIcon } from '@ionic/vue';
     import { closeOutline } from 'ionicons/icons';
     import { uid } from 'uid';
     import store from '../../store/index';
     import Select from '../Select.vue';
+    import ModalCalendar from '../modal/ModalCalendar.vue'
 
     export default defineComponent({
         name: 'CreateNewContact',
@@ -215,14 +262,33 @@
             contactData: Object
         },
         components: {
-            IonModal, IonHeader, IonContent, IonToolbar, IonButtons, IonButton, IonTitle, IonText, IonItem, IonLabel, IonInput, IonItemGroup, IonGrid, IonRow, IonCol, IonSelect, IonSelectOption, Select, IonToggle, IonIcon
+            IonModal, IonHeader, IonContent, IonToolbar, IonButtons, IonButton, IonTitle, IonText, IonItem, IonLabel, IonInput, IonItemGroup, IonGrid, IonRow, IonCol, IonSelect, IonSelectOption, Select, IonToggle, IonIcon, ModalCalendar
         },
         setup() {
             const phoneTypes = ref(store.state.myContactPhoneEmailTypes)
             const myContactSocialNetworksType = ref(store.state.myContactSocialNetworksType)
 
+            // Управление модалкой календаря
+            const isCalendarOpen = ref(false);
+            const closeCalendar = () => {
+                console.log('clicked')
+                isCalendarOpen.value = !isCalendarOpen.value
+                return '123'
+            }
+
+            const setCalendarOpened = () => {
+                isCalendarOpen.value = true;
+            }
+
+            const selectedDate = ref();
+
+            const selectedDateFunc = (date) => {
+                isCalendarOpen.value = false;
+                console.log(date)
+            }
+
             return {
-                phoneTypes, myContactSocialNetworksType, closeOutline
+                phoneTypes, myContactSocialNetworksType, closeOutline, setCalendarOpened, closeCalendar, isCalendarOpen, selectedDateFunc, selectedDate
             }
         }
     })

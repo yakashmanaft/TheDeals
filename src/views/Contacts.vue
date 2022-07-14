@@ -23,6 +23,8 @@
             @deleteEmail="deleteEmail"
             @addSocial="addSocial"
             @deleteSocial="deleteSocial"
+            @addContactEvent="addContactEvent"
+            @deleteContactEvent="deleteContactEvent "
         />
         
         <!-- page content -->
@@ -200,7 +202,8 @@
                 },
                 phoneNumbers: [],
                 emails: [],
-                socialNetworks: []
+                socialNetworks: [],
+                contactEvents: []
             })
 
             // При закрытии или открытии modal очищаем шаблон контакта
@@ -216,7 +219,8 @@
                     },
                     phoneNumbers: [],
                     emails: [],
-                    socialNetworks: []
+                    socialNetworks: [],
+                    contactEvents: []
                 }
             };
             // Добавляем телефоны к объекту контакта
@@ -258,6 +262,15 @@
                     link: ''
                 })
             }
+            // Добавляем ContactEvents к объекту контакта
+            // Оптимизировать в одну функцию добавления
+            const addContactEvent = () => {
+                contactData.value.contactEvents.push({
+                    id: uid(),
+                    title: '',
+                    date: '',
+                })
+            }
             // Удаляем телефон у создаваемого контакта
             // Оптимизировать в одну функцию удаления
             const deletePhoneNumber = (id) => {
@@ -274,6 +287,12 @@
             // Оптимизировать в одну функцию удаления
             const deleteSocial = (id) => {
                 contactData.value.socialNetworks = contactData.value.socialNetworks.filter(social => social.id !== id);
+                return;
+            }
+            // Удаляем event у создаваемого контакта
+            // Оптимизировать в одну функцию удаления
+            const deleteContactEvent = (id) => {
+                contactData.value.contactEvents = contactData.value.contactEvents.filter(event => event.id !== id);
                 return;
             }
             // Создаем новый контакт
@@ -310,7 +329,7 @@
 
 
             return {
-                user, router, logout, pageTitle, userEmail, myContacts, spinner, dataLoaded, search, searchedContacts, isOpen, setOpen, createNew, contactData, addPhoneNumber, addEmail, deletePhoneNumber, deleteEmail, addSocial, deleteSocial
+                user, router, logout, pageTitle, userEmail, myContacts, spinner, dataLoaded, search, searchedContacts, isOpen, setOpen, createNew, contactData, addPhoneNumber, addEmail, deletePhoneNumber, deleteEmail, addSocial, deleteSocial, addContactEvent, deleteContactEvent 
             }
         }
     })
