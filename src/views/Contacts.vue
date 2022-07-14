@@ -21,6 +21,8 @@
             @addEmail="addEmail"
             @deletePhoneNumber="deletePhoneNumber"
             @deleteEmail="deleteEmail"
+            @addSocial="addSocial"
+            @deleteSocial="deleteSocial"
         />
         
         <!-- page content -->
@@ -197,7 +199,8 @@
                     company: ''
                 },
                 phoneNumbers: [],
-                emails: []
+                emails: [],
+                socialNetworks: []
             })
 
             // При закрытии или открытии modal очищаем шаблон контакта
@@ -212,10 +215,12 @@
                         company: ''
                     },
                     phoneNumbers: [],
-                    emails: []
+                    emails: [],
+                    socialNetworks: []
                 }
             };
             // Добавляем телефоны к объекту контакта
+            // Оптимизировать в одну функцию добавления
             const addPhoneNumber = () => {
                 contactData.value.phoneNumbers.push({
                     id: uid(),
@@ -236,6 +241,7 @@
                 })
             }
             // Добавляем emails к объекту контакта
+            // Оптимизировать в одну функцию добавления
             const addEmail = () => {
                 contactData.value.emails.push({
                     id: uid(),
@@ -243,14 +249,31 @@
                     email: ''
                 })
             }
+            // Добавляем social networks к объекту контакта
+            // Оптимизировать в одну функцию добавления
+            const addSocial = () => {
+                contactData.value.socialNetworks.push({
+                    id: uid(),
+                    name: '',
+                    link: ''
+                })
+            }
             // Удаляем телефон у создаваемого контакта
+            // Оптимизировать в одну функцию удаления
             const deletePhoneNumber = (id) => {
                 contactData.value.phoneNumbers = contactData.value.phoneNumbers.filter(number => number.id !== id);
                 return;
             }
             // Удаляем email у создаваемого контакта
+            // Оптимизировать в одну функцию удаления
             const deleteEmail = (id) => {
                 contactData.value.emails = contactData.value.emails.filter(email => email.id !== id);
+                return;
+            }
+            // Удаляем social у создаваемого контакта
+            // Оптимизировать в одну функцию удаления
+            const deleteSocial = (id) => {
+                contactData.value.socialNetworks = contactData.value.socialNetworks.filter(social => social.id !== id);
                 return;
             }
             // Создаем новый контакт
@@ -287,7 +310,7 @@
 
 
             return {
-                user, router, logout, pageTitle, userEmail, myContacts, spinner, dataLoaded, search, searchedContacts, isOpen, setOpen, createNew, contactData, addPhoneNumber, addEmail, deletePhoneNumber, deleteEmail
+                user, router, logout, pageTitle, userEmail, myContacts, spinner, dataLoaded, search, searchedContacts, isOpen, setOpen, createNew, contactData, addPhoneNumber, addEmail, deletePhoneNumber, deleteEmail, addSocial, deleteSocial
             }
         }
     })

@@ -12,7 +12,7 @@
             </ion-toolbar>
         </ion-header>
         <ion-content class="ion-padding">
-            <!-- Основные данные -->
+            <!-- ================== Основные данные ====================== -->
             <ion-item-group>
                 <!-- заголовок -->
                 <ion-text>
@@ -35,7 +35,7 @@
                 </ion-item>
             </ion-item-group>
 
-            <!-- Phones -->
+            <!-- ====================== Phones =========================== -->
             <ion-item-group>
                 <!-- Заголовок -->
                 <ion-text>
@@ -76,17 +76,15 @@
                     </ion-item>
                     <!-- link to messengers -->
                     <ion-item lines="none">
-                            <ion-label position="stacked">
-                                Привязка к мессенджерам
-                            </ion-label>
-                            <ion-grid class="ion-no-margin ion-no-padding">
-                                <ion-row class="margin-top ion-justify-content-between ion-align-items-center" v-for="(messenger, index) in number.messengers" :key="index">
-                                    <ion-text class="ion-padding-end">
-                                        {{messenger.name}}
-                                    </ion-text>
-                                    <ion-toggle class="ion-padding-end" color="success" v-model="messenger.status"></ion-toggle>
-                                </ion-row>
-                            </ion-grid>
+                        <ion-label position="stacked">Привязка к мессенджерам</ion-label>
+                        <ion-grid class="ion-no-margin ion-no-padding">
+                            <ion-row class="margin-top ion-justify-content-between ion-align-items-center" v-for="(messenger, index) in number.messengers" :key="index">
+                                <ion-text class="ion-padding-end">
+                                    {{messenger.name}}
+                                </ion-text>
+                                <ion-toggle class="ion-padding-end" color="success" v-model="messenger.status"></ion-toggle>
+                            </ion-row>
+                        </ion-grid>
                     </ion-item>
                 </div>
                 <!-- Кнопка добавить еще один телефон к контакту -->
@@ -95,7 +93,7 @@
                 </ion-row>
             </ion-item-group>
 
-            <!-- Emails -->
+            <!-- ====================== Emails =========================== -->
             <ion-item-group>
                 <!-- Заголовок -->
                 <ion-text>
@@ -141,6 +139,52 @@
                 </ion-row>
             </ion-item-group>
 
+            <!-- ====================== Socials ========================== -->
+            <ion-item-group>
+                <!-- Заголовок -->
+                <ion-text>
+                    <h4 class="ion-no-margin ion-margin-top">Социальные сети</h4>
+                </ion-text>
+                <!-- Если социальные сети не указаны -->
+                <ion-item v-if="!contactData.socialNetworks.length" lines="none">
+                    <ion-grid class="ion-no-padding">
+                        <ion-row class="ion-justify-content-between">
+                            <ion-text color="medium">Не указаны</ion-text>
+                            <ion-text color="primary" @click="$emit('addSocial')">Добавить</ion-text>
+                        </ion-row>
+                    </ion-grid>
+                </ion-item>
+                <!-- Если social указаны -->
+                <div class="current-phone-content" v-for="(social, index) in contactData.socialNetworks" :key="index">
+                    <!-- sequence number &  delete current phone btn-->
+                    <ion-grid class="ion-no-padding">
+                        <ion-row class="ion-padding-start ion-justify-content-between ion-align-items-center">
+                            <!-- sequence number -->
+                                <ion-text position="stacked">Соцсеть #{{index + 1}}</ion-text>
+                            <!-- delete current social btn -->
+                            <ion-button fill="clear" class="btn-delete-phone" @click="$emit('deleteSocial', social.id)">
+                                <ion-icon :icon="closeOutline" color="danger" slot="end"></ion-icon>
+                            </ion-button>
+                        </ion-row>
+                    </ion-grid>
+                    <!-- social link -->
+                    <ion-item>
+                        <ion-input inputmode="email" placeholder="Укажите ссылку на аккаунт" v-model="social.link"></ion-input>
+                    </ion-item>
+                    <!-- name of social network -->
+                    <ion-item>
+                        <ion-label position="stacked">
+                            Укажите название соц.сети
+                        </ion-label>
+                        <Select :data="myContactSocialNetworksType" :placeholder="'Выберите соцсеть'" @date-updated="(selected) => social.name = selected"/>
+                    </ion-item>
+                </div>
+                <!-- Кнопка добавить еще один social к контакту -->
+                <ion-row class="ion-justify-content-end">
+                    <ion-text color="primary" v-if="contactData.socialNetworks.length" @click="$emit('addSocial')">Добавить еще</ion-text>
+                </ion-row>
+            </ion-item-group>
+
             <br>
             <div style="margin-bottom: 100px;">
                 {{ contactData }}
@@ -167,9 +211,10 @@
         },
         setup() {
             const phoneTypes = ref(store.state.myContactPhoneEmailTypes)
+            const myContactSocialNetworksType = ref(store.state.myContactSocialNetworksType)
 
             return {
-                phoneTypes, closeOutline
+                phoneTypes, myContactSocialNetworksType, closeOutline
             }
         }
     })

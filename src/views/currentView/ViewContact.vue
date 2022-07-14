@@ -102,7 +102,7 @@
                                 <ion-label position="stacked">
                                     Тип номера телефона
                                 </ion-label>
-                                <Select :data="phoneEmailTypes" :placeholder="setTypePhoneEmailPlaceholder(number.type.currentValue)" @date-updated="(selected) => number.type = selected"/>
+                                <Select :data="phoneEmailTypes" :placeholder="setSelectPlaceholderValue(number.type.currentValue)" @date-updated="(selected) => number.type = selected"/>
                             </ion-item>
                             <!-- link to messengers -->
                             <ion-item lines="none">
@@ -192,7 +192,7 @@
                                 <ion-label position="stacked">
                                     Тип электронной почты
                                 </ion-label>
-                                <Select :data="phoneEmailTypes" :placeholder="setTypePhoneEmailPlaceholder(email.type.currentValue)" @date-updated="(selected) => email.type = selected"/>
+                                <Select :data="phoneEmailTypes" :placeholder="setSelectPlaceholderValue(email.type.currentValue)" @date-updated="(selected) => email.type = selected"/>
                             </ion-item>
                         </div>
                         <!-- Показываем в режиме просмотра -->
@@ -210,6 +210,76 @@
                     <ion-row class="ion-justify-content-end ion-padding-end">
                         <ion-text color="primary" v-if="edit && currentContact.emails.length" @click="addEmail">Добавить еще</ion-text>
                     </ion-row>
+                </ion-item-group>
+
+                <!-- ===================== Socials ===================== -->
+                <ion-item-group>
+                    <!-- Заголовок -->
+                    <ion-item v-if="edit" lines="none">
+                        <ion-text >
+                            <h4 class="ion-no-margin ion-margin-top">Социальные сети</h4>
+                        </ion-text>
+                    </ion-item>
+                    <!-- Если ни одной соц сети не добавлено -->
+                    <ion-item v-if="!currentContact.socialNetworks.length" lines="none">
+                        <ion-grid class="ion-no-padding">
+                            <ion-row class="ion-justify-content-between">
+                                <ion-text>Нет социальных сетей</ion-text>
+                                <!-- Если включен режим редактирования -->
+                                <ion-text v-if="edit" @click="addSocial" color="primary">Добавить</ion-text> 
+                            </ion-row>
+                        </ion-grid>
+                    </ion-item>
+                    <!-- Если Соцсети уже есть (добавлен шаблон или имелись в БД)  -->
+                    <ion-item-group v-for="(social, index) in currentContact.socialNetworks" :key="index" class="ion-padding-start ion-padding-end">
+                        <!-- Показываем в режиме edit -->
+                        <div v-if="edit" class="current-phone-content">
+                            <!-- sequence number &  delete current social btn-->
+                            <ion-grid class="ion-no-padding">
+                                <ion-row class="ion-padding-start ion-justify-content-between ion-align-items-center">
+                                    <!-- sequence number -->
+                                    <ion-text position="stacked">Соцсеть #{{index + 1}}</ion-text>
+                                    <!-- delete current phone btn -->
+                                    <ion-button fill="clear" class="btn-delete-phone" @click="deleteSocial(social.id)">
+                                        <ion-icon :icon="closeOutline" color="danger" slot="end"></ion-icon>
+                                    </ion-button>
+                                </ion-row>
+                            </ion-grid>
+                            <!-- Social link -->
+                            <ion-item >
+                                <ion-input inputmode="email" placeholder="Вставьте ссылку на аккаунт" v-model="social.link"></ion-input>
+                            </ion-item>
+                            <!-- Social name -->
+                            <ion-item>
+                                <ion-label position="stacked">
+                                    Название социальной сети
+                                </ion-label>
+                                <Select :data="myContactSocialNetworksType" :placeholder="setSelectPlaceholderValue(social.name.currentValue)" @date-updated="(selected) => social.name = selected"/>
+                            </ion-item>
+                        </div>
+                        <!-- Показываем в режиме просмотра -->
+                        <!-- Как можно динамики добавить? -->
+                        <div v-else>
+                            <a :href="`${social.link}`" target="_blank">
+                                <ion-icon v-if="social.name.currentValue === 'Telegram'" :icon="paperPlaneOutline"></ion-icon>
+                                <ion-icon v-if="social.name.currentValue === 'Instagram'" :icon="logoInstagram"></ion-icon>
+                                <ion-icon v-if="social.name.currentValue === 'Vkontakte'" :icon="logoVk"></ion-icon>
+                                <!-- <ion-icon v-if="social.name.currentValue === 'Odnoklassniki'" :icon="paperPlaneOutline"></ion-icon> -->
+                                <!-- <ion-icon v-if="social.name.currentValue === 'Twitter'" :icon="paperPlaneOutline"></ion-icon> -->
+                            </a>
+                        </div>
+                    </ion-item-group>
+                    <!-- Button to add new email to current contact -->
+                    <ion-row class="ion-justify-content-end ion-padding-end">
+                        <ion-text color="primary" v-if="edit && currentContact.socialNetworks.length" @click="addSocial">Добавить еще</ion-text>
+                    </ion-row>
+                    <!-- На заметку -->
+                    <!-- Если нет имени, но есть логин в инсте или другой сети... ставить вместо фамилии ) -->
+                    <!-- <a href="https://www.messenger.com/t/jack.malbon.3">Facebook Messenger</a> -->
+                    <!-- <a href="skype:LOGIN?chat">Отправить сообщение в Skype</a> -->
+                    <!-- <a href="skype:LOGIN?voicemail">Отправить голосовое сообщение в Skype</a> -->
+                    <!-- <a href="skype:LOGIN?call">Позвонить пользователю Skype</a> -->
+                    <!-- <a href="skype:LOGIN?add">Добавить в список контактов Skype</a> -->
                 </ion-item-group>
 
                 <br>
@@ -241,7 +311,7 @@
     import Spinner from '../../components/Spinner.vue';
     import Select from '../../components/Select.vue';
     import { IonContent, IonHeader, IonButton, IonToolbar, IonButtons, IonBackButton, IonRow, IonAvatar, IonText, IonItem, IonLabel, IonInput, IonItemGroup, IonGrid, IonIcon, IonToggle, IonActionSheet } from '@ionic/vue';
-    import { callOutline, logoWhatsapp, closeOutline, mailOutline } from 'ionicons/icons';
+    import { callOutline, logoWhatsapp, closeOutline, mailOutline, paperPlaneOutline, logoInstagram, logoVk } from 'ionicons/icons';
     
 
     export default defineComponent({
@@ -265,6 +335,7 @@
             const spinner = ref(null);
             // храним массив со списком типов телефона (личный, рабочий и т.д.)
             const phoneEmailTypes = ref(store.state.myContactPhoneEmailTypes)
+            const myContactSocialNetworksType = ref(store.state.myContactSocialNetworksType)
 
             // Edit contact info
             const edit = ref(null)
@@ -320,7 +391,7 @@
                         contactInfo: currentContact.value.contactInfo,
                         phoneNumbers: currentContact.value.phoneNumbers,
                         emails: currentContact.value.emails,
-
+                        socialNetworks: currentContact.value.socialNetworks,
                     }).eq('id', currentId)
                     if(error) throw error;
                     // Контакт успешно обновлен
@@ -331,7 +402,7 @@
                 spinner.value = false;
             }
 
-            // В режиме редактирования, добавляем телефону к конакту
+            // В режиме редактирования, добавляем телефону к контакту
             const addPhoneNumber = () => {
                 currentContact.value.phoneNumbers.push({
                     id: uid(),
@@ -351,13 +422,20 @@
                     ]
                 })
             }
-
-            // В режиме редактирования, добавляем email к конакту
+            // В режиме редактирования, добавляем email к контакту
             const addEmail = () => {
                 currentContact.value.emails.push({
                     id: uid(),
                     type: '',
                     email: ''
+                })
+            }
+            // В режиме редактирования, добавляем social к контакту
+            const addSocial = () => {
+                currentContact.value.socialNetworks.push({
+                    id: uid(),
+                    name: '',
+                    link: ''
                 })
             }
 
@@ -390,17 +468,22 @@
                 }
             }
 
-            // Delete current Phone Number
+            // Delete Phone Number of Current Contact
             // вынести в store
             const deletePhoneNumber = (id) => {
                 currentContact.value.phoneNumbers = currentContact.value.phoneNumbers.filter(number => number.id !== id);
                 return;
             }
-
-            // Delete current email
+            // Delete email of Current Contact
             // вынести в store
             const deleteEmail = (id) => {
                 currentContact.value.emails = currentContact.value.emails.filter(number => number.id !== id);
+                return;
+            }
+            // Delete social of Current Contact
+            // вынести в store
+            const deleteSocial = (id) => {
+                currentContact.value.socialNetworks = currentContact.value.socialNetworks.filter(social => social.id !== id);
                 return;
             }
 
@@ -417,9 +500,9 @@
             }
 
             // Если placeholder у select (тип phone || email) изначально пустая строка
-            const setTypePhoneEmailPlaceholder = (currentValue) => {
+            const setSelectPlaceholderValue = (currentValue) => {
                 if(currentValue === undefined) {
-                    currentValue = 'Укажите тип';
+                    currentValue = 'Не указано';
                     return currentValue;
                 } else {
                     return currentValue
@@ -452,7 +535,7 @@
 
 
             return {
-                pageTitle, currentId, info, currentContact, checkInitials, edit, editMode, cancelEdit, update, spinner, deleteContact, addPhoneNumber, callOutline, checkMobile, logoWhatsapp, cutPhoneNumber, phoneEmailTypes, deletePhoneNumber, closeOutline, setTypePhoneEmailPlaceholder, isOpenRef, setOpen, buttons, checkEmptyPhoneEmailType, addEmail, deleteEmail, mailOutline
+                pageTitle, currentId, info, currentContact, checkInitials, edit, editMode, cancelEdit, update, spinner, deleteContact, addPhoneNumber, callOutline, checkMobile, logoWhatsapp, cutPhoneNumber, phoneEmailTypes, deletePhoneNumber, closeOutline, setSelectPlaceholderValue, isOpenRef, setOpen, buttons, checkEmptyPhoneEmailType, addEmail, deleteEmail, mailOutline, addSocial, deleteSocial, myContactSocialNetworksType, paperPlaneOutline, logoInstagram, logoVk
             }
         }
     })

@@ -24,13 +24,17 @@ const state = reactive({
   // Было для фона, чтобы не прокурчивался при открытом попапе
   // isBackgroundFixed: false
 
-  // contact array
+  // contact array in page mu contact
   myContactsArray: [],
-  // phone types of my contact array
+  // phone types array in page my contact 
   myContactPhoneEmailTypes: [
     { value: 'Личный' }, { value: 'Рабочий' }
+  ],
+  // social networks array in page my contact
+  myContactSocialNetworksType: [
+    { value: 'Instagram' }, { value: 'Vkontakte' }, { value: 'Telegram' }, 
+    // { value: 'Odnoklassniki' }, { value: 'Twitter' }
   ]
-
 });
 
 const methods = {
