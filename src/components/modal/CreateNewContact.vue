@@ -185,6 +185,14 @@
                 </ion-row>
             </ion-item-group>
 
+            <!-- ====================== Events =========================== -->
+            <ion-item-group>
+                <!-- Заголовок -->
+                <ion-text>
+                    <h4 class="ion-no-margin ion-margin-top">События</h4>
+                </ion-text>
+            </ion-item-group>
+
             <br>
             <div style="margin-bottom: 100px;">
                 {{ contactData }}
