@@ -223,20 +223,21 @@
                             Укажите дату события
                         </ion-label>
                         <!-- <ion-datetime v-if="isCalendarOpen" presentation="date" @ionChange="closeCalendar" v-model="event.date"></ion-datetime> -->
-                        <ion-text @click="setCalendarOpened">Выбрать дату</ion-text>
+                        <ion-text @click="isCalendarOpen = true">Выбрать дату</ion-text>
 
                         <ModalCalendar 
                             :is-open="isCalendarOpen" 
+                            @date-updated="(pickedDate) => event.date = pickedDate"
                             @closeModal="isCalendarOpen = false"
-                            :isCalendarOpen="isCalendarOpen"
-                            @selectedDate="selectedDateFunc"
                         />
-                        {{event.date}}
+                        Дата: {{event.date}}
                     </ion-item>
-                    <div>
-                    </div>
-                    {{selectedDate}}
+
                 </div>
+                <!-- Кнопка добавить еще один social к контакту -->
+                <ion-row class="ion-justify-content-end">
+                    <ion-text color="primary" v-if="contactData.contactEvents.length" @click="$emit('addContactEvent')">Добавить еще</ion-text>
+                </ion-row>
             </ion-item-group>
 
             <br>
@@ -255,6 +256,8 @@
     import store from '../../store/index';
     import Select from '../Select.vue';
     import ModalCalendar from '../modal/ModalCalendar.vue'
+    import { format, parseISO } from 'date-fns';
+    import { ru } from 'date-fns/locale'
 
     export default defineComponent({
         name: 'CreateNewContact',
@@ -265,30 +268,15 @@
             IonModal, IonHeader, IonContent, IonToolbar, IonButtons, IonButton, IonTitle, IonText, IonItem, IonLabel, IonInput, IonItemGroup, IonGrid, IonRow, IonCol, IonSelect, IonSelectOption, Select, IonToggle, IonIcon, ModalCalendar
         },
         setup() {
+            // Типы Рабочий /Личный
             const phoneTypes = ref(store.state.myContactPhoneEmailTypes)
+            // Типы соц сетей (Инста, Вконтакте и т.д.)
             const myContactSocialNetworksType = ref(store.state.myContactSocialNetworksType)
-
             // Управление модалкой календаря
             const isCalendarOpen = ref(false);
-            const closeCalendar = () => {
-                console.log('clicked')
-                isCalendarOpen.value = !isCalendarOpen.value
-                return '123'
-            }
-
-            const setCalendarOpened = () => {
-                isCalendarOpen.value = true;
-            }
-
-            const selectedDate = ref();
-
-            const selectedDateFunc = (date) => {
-                isCalendarOpen.value = false;
-                console.log(date)
-            }
 
             return {
-                phoneTypes, myContactSocialNetworksType, closeOutline, setCalendarOpened, closeCalendar, isCalendarOpen, selectedDateFunc, selectedDate
+                phoneTypes, myContactSocialNetworksType, closeOutline, isCalendarOpen
             }
         }
     })

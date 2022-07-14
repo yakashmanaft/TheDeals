@@ -6,20 +6,16 @@
                     <ion-button @click="$emit('closeModal')">Отменить</ion-button>
                 </ion-buttons>
                 <ion-title>Новый</ion-title>
-                <ion-buttons slot="end">
-                    <ion-button @click="$emit('selectedDate', pickedDate)">Создать</ion-button>
-                </ion-buttons>
             </ion-toolbar>
         </ion-header>
         <ion-content>
             <ion-datetime 
+                size="cover"
                 presentation="date"
                 v-model="pickedDate"
-                @ionChange="setContactDate"
+                @ionChange="$emit('closeModal')"
             >
             </ion-datetime>
-            {{ isCalendarOpen }}
-            {{ pickedDate }}
         </ion-content>
     </ion-modal>
 </template>
@@ -30,21 +26,20 @@
 
     export default defineComponent({
         name: 'Calendar',
-        props: ['isCalendarOpen'],
+        emit: ['date-updated'],
         components: {
             IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonDatetime
         },
-        setup() {
+        setup(props, {emit}) {
             //
             const pickedDate = ref();
             //
-            const setContactDate = () => {
-                console.log(pickedDate.value)
-                return pickedDate.value;
-            }
+            watch(pickedDate, (currentValue) => {
+                emit('date-updated', {currentValue})
+            })
 
             return {
-                pickedDate, setContactDate
+                pickedDate
             }
         }
     })
