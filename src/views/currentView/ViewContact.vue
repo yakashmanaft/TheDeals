@@ -464,9 +464,24 @@
                 } else {
                     const now = new Date();
                     const date = new Date(eventDate);
-                    console.log((new Date(eventDate) - new Date())/86400000)
-                    const result = 0
-                    return result
+
+                    date.setFullYear(now.getFullYear());
+                    if(now > date) {
+                        date.setFullYear(now.getFullYear() + 1);
+                    }
+                    // А если високосный год?
+                    const result = Math.floor((date - now) / (1000*60*60*24) + 1)
+                    if (result === 0 || result === 365 || result === 366) {
+                        return 'Сегодня'
+                    } else if (result % 100 === 11 || result % 100 === 12 || result % 100 === 13 || result % 100 === 14) {
+                        return result + ' дней';
+                    } else if (result % 10 === 1) {
+                        return 'Завтра';
+                    } else if (result % 10 === 2 || result % 10 === 3 || result % 10 === 4) {
+                        return 'Через ' + result + ' дня';
+                    } else {
+                        return 'Через ' + result + ' дней'
+                    }
                 }
             }
 
