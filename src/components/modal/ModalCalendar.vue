@@ -1,11 +1,11 @@
 <template>
-    <ion-modal>
+    <ion-modal :initial-breakpoint="0.6">
         <ion-header>
             <ion-toolbar>
                 <ion-buttons slot="start">
                     <ion-button @click="$emit('closeModal')">Отменить</ion-button>
                 </ion-buttons>
-                <ion-title>Новый</ion-title>
+                <ion-title>Выберите дату</ion-title>
             </ion-toolbar>
         </ion-header>
         <ion-content>
