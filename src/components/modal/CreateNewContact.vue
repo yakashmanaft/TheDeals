@@ -130,7 +130,7 @@
                         <ion-label position="stacked">
                             Тип электронной почты
                         </ion-label>
-                        <Select :data="phoneTypes" :placeholder="'Тип номера'" @date-updated="(selected) => email.type = selected"/>
+                        <Select :data="phoneTypes" :placeholder="'Тип почты'" @date-updated="(selected) => email.type = selected"/>
                     </ion-item>
                 </div>
                 <!-- Кнопка добавить еще один email к контакту -->
@@ -222,15 +222,14 @@
                         <ion-label position="stacked">
                             Укажите дату события
                         </ion-label>
-                        <!-- <ion-datetime v-if="isCalendarOpen" presentation="date" @ionChange="closeCalendar" v-model="event.date"></ion-datetime> -->
-                        <ion-text @click="isCalendarOpen = true">Выбрать дату</ion-text>
-
+                        <!-- Кнопка активации компонента, она же показывает выбранное -->
+                        <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click="isCalendarOpen = true">{{datepicker(event.date)}}</ion-button>
+                        <!-- Компонент выбора даты -->
                         <ModalCalendar 
                             :is-open="isCalendarOpen" 
                             @date-updated="(pickedDate) => event.date = pickedDate"
                             @closeModal="isCalendarOpen = false"
                         />
-                        Дата: {{event.date}}
                     </ion-item>
 
                 </div>
@@ -238,6 +237,14 @@
                 <ion-row class="ion-justify-content-end">
                     <ion-text color="primary" v-if="contactData.contactEvents.length" @click="$emit('addContactEvent')">Добавить еще</ion-text>
                 </ion-row>
+            </ion-item-group>
+
+            <!-- ======================= Notes =========================== -->
+            <ion-item-group>
+                <!-- Заголовок -->
+                <ion-text>
+                    <h4 class="ion-no-margin ion-margin-top">Заметки</h4>
+                </ion-text>
             </ion-item-group>
 
             <br>
@@ -274,9 +281,19 @@
             const myContactSocialNetworksType = ref(store.state.myContactSocialNetworksType)
             // Управление модалкой календаря
             const isCalendarOpen = ref(false);
+            //вставляем в кнопку выбора даты данные из datepicker и форматируем их к показу
+            
+            const datepicker = (eventDate) => {
+                if(eventDate.currentValue === undefined) {
+                    return 'Выберите дату'
+                }
+                const data = eventDate.currentValue
+                const formattedString = format(parseISO(data), 'd MMMM', { locale: ru });
+                return formattedString
+            }
 
             return {
-                phoneTypes, myContactSocialNetworksType, closeOutline, isCalendarOpen
+                phoneTypes, myContactSocialNetworksType, closeOutline, isCalendarOpen, datepicker
             }
         }
     })

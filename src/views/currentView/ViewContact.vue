@@ -282,6 +282,71 @@
                     <!-- <a href="skype:LOGIN?add">Добавить в список контактов Skype</a> -->
                 </ion-item-group>
 
+                <!-- ======================= Events ==================== -->
+                <ion-item-group>
+                    <!-- Заголовок -->
+                    <ion-item v-if="edit" lines="none">
+                        <ion-text >
+                            <h4 class="ion-no-margin ion-margin-top">События</h4>
+                        </ion-text>
+                    </ion-item>
+                    <!-- Если ни одного event не добавлено -->
+                    <ion-item v-if="!currentContact.contactEvents.length" lines="none">
+                        <ion-grid class="ion-no-padding">
+                            <ion-row class="ion-justify-content-between">
+                                <ion-text>Нет событий</ion-text>
+                                <!-- Если включен режим редактирования -->
+                                <ion-text v-if="edit" @click="addContactEvent" color="primary">Добавить</ion-text> 
+                            </ion-row>
+                        </ion-grid>
+                    </ion-item>
+                    <!-- Если event уже есть (добавлен шаблон или имелись в БД)  -->
+                    <ion-item-group v-for="(event, index) in currentContact.contactEvents" :key="index" class="ion-padding-start ion-padding-end">
+                        <!-- Показываем в режиме edit -->
+                        <div v-if="edit" class="current-phone-content">
+                            <!-- sequence number &  delete current email btn-->
+                            <ion-grid class="ion-no-padding">
+                                <ion-row class="ion-padding-start ion-justify-content-between ion-align-items-center">
+                                    <!-- sequence number -->
+                                    <ion-text position="stacked">Событие #{{index + 1}}</ion-text>
+                                    <!-- delete current phone btn -->
+                                    <ion-button fill="clear" class="btn-delete-phone" @click="deleteContactEvent(event.id)">
+                                        <ion-icon :icon="closeOutline" color="danger" slot="end"></ion-icon>
+                                    </ion-button>
+                                </ion-row>
+                            </ion-grid>
+                            <!-- event title -->
+                            <ion-item>
+                                <ion-input inputmode="text" placeholder="Название события" v-model="event.title"></ion-input>
+                            </ion-item>
+                            <!-- date of event -->
+                            <ion-item>
+                                <ion-label position="stacked">
+                                    Укажите дату события
+                                </ion-label>
+                                <!-- Кнопка активации компонента, она же показывает выбранное -->
+                                <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click="isCalendarOpen = true">{{datepicker(event.date)}}</ion-button>
+                                <!-- Компонент выбора даты -->
+                                <ModalCalendar 
+                                    :is-open="isCalendarOpen" 
+                                    @date-updated="(pickedDate) => event.date = pickedDate"
+                                    @closeModal="isCalendarOpen = false"
+                                />
+                            </ion-item>
+                        </div>
+                        <!-- Показываем в режиме просмотра -->
+                        <div v-else>
+                            <ion-text color="medium">{{ event.title }}</ion-text>
+                            <ion-text color="primary">{{ checkHasDate(event.date.currentValue) }}</ion-text>
+                            <ion-text>{{calcDaysUntilDate(event.date.currentValue)}}</ion-text>
+                        </div>
+                    </ion-item-group>
+                    <!-- Button to add new event to current contact -->
+                    <ion-row class="ion-justify-content-end ion-padding-end">
+                        <ion-text color="primary" v-if="edit && currentContact.contactEvents.length" @click="addContactEvent">Добавить еще</ion-text>
+                    </ion-row>
+                </ion-item-group>
+
                 <br>
                 {{ currentContact }}
                 <br>
@@ -312,12 +377,15 @@
     import Select from '../../components/Select.vue';
     import { IonContent, IonHeader, IonButton, IonToolbar, IonButtons, IonBackButton, IonRow, IonAvatar, IonText, IonItem, IonLabel, IonInput, IonItemGroup, IonGrid, IonIcon, IonToggle, IonActionSheet } from '@ionic/vue';
     import { callOutline, logoWhatsapp, closeOutline, mailOutline, paperPlaneOutline, logoInstagram, logoVk } from 'ionicons/icons';
+    import ModalCalendar from '../../components/modal/ModalCalendar.vue';    
+    import { format, parseISO } from 'date-fns';
+    import { ru } from 'date-fns/locale'
     
 
     export default defineComponent({
         name: 'view-contact',
         components: {
-            ViewContactHeader, IonContent, IonHeader, IonButton, IonToolbar, IonButtons, IonBackButton, IonRow, IonAvatar, IonText, IonItem, IonLabel, IonInput, Spinner, IonItemGroup, IonGrid, IonIcon, IonToggle, Select, IonActionSheet
+            ViewContactHeader, IonContent, IonHeader, IonButton, IonToolbar, IonButtons, IonBackButton, IonRow, IonAvatar, IonText, IonItem, IonLabel, IonInput, Spinner, IonItemGroup, IonGrid, IonIcon, IonToggle, Select, IonActionSheet, ModalCalendar
         },
         setup() {
             const route = useRoute();
@@ -372,12 +440,33 @@
                     return initials;
             }
 
-            // проверка, если  в типе телефона будет пустая строка
+            // проверка, если  в типе телефона| имейла будет пустая строка
             const checkEmptyPhoneEmailType = (typeValue) => {
                 if(typeValue === undefined) {
                     return 'Тип не указан'
                 } else {
                     return typeValue
+                }
+            }
+            // проверка, если дату в contact event забыли указать
+            const checkHasDate = (value) => {
+                if(value === undefined) {
+                    return 'Дата не указана'
+                } else {
+                    const formattedString = format(parseISO(value), 'd MMMM', { locale: ru });
+                    return formattedString
+                }
+            }
+            // считаем количество дней до даты
+            const calcDaysUntilDate = (eventDate) => {
+                if(eventDate === undefined) {
+                    return
+                } else {
+                    const now = new Date();
+                    const date = new Date(eventDate);
+                    console.log((new Date(eventDate) - new Date())/86400000)
+                    const result = 0
+                    return result
                 }
             }
 
@@ -392,6 +481,7 @@
                         phoneNumbers: currentContact.value.phoneNumbers,
                         emails: currentContact.value.emails,
                         socialNetworks: currentContact.value.socialNetworks,
+                        contactEvents: currentContact.value.contactEvents,
                     }).eq('id', currentId)
                     if(error) throw error;
                     // Контакт успешно обновлен
@@ -438,6 +528,13 @@
                     link: ''
                 })
             }
+            const addContactEvent = () => {
+                currentContact.value.contactEvents.push({
+                    id: uid(),
+                    title: '',
+                    date: '',
+                })
+            }
 
             //Check mobile or not (for viber)
             // вынести в отдельный файл
@@ -450,7 +547,6 @@
                     return peace
                 }
             }
-
             // Cut Phone Number for massengers
             // вынести в отдельный файл
             const cutPhoneNumber = (phoneNumber) => {
@@ -468,22 +564,40 @@
                 }
             }
 
+            // Управление модалкой календаря
+            const isCalendarOpen = ref(false);
+            //
+            const datepicker = (eventDate) => {
+                if(eventDate.currentValue === undefined) {
+                    return 'Выберите дату'
+                }
+                const data = eventDate.currentValue
+                const formattedString = format(parseISO(data), 'd MMMM', { locale: ru });
+                return formattedString
+            }
+
             // Delete Phone Number of Current Contact
-            // вынести в store
+            // вынести в store и объединить что ли в одну
             const deletePhoneNumber = (id) => {
                 currentContact.value.phoneNumbers = currentContact.value.phoneNumbers.filter(number => number.id !== id);
                 return;
             }
             // Delete email of Current Contact
-            // вынести в store
+            // вынести в store и объединить что ли в одну
             const deleteEmail = (id) => {
                 currentContact.value.emails = currentContact.value.emails.filter(number => number.id !== id);
                 return;
             }
             // Delete social of Current Contact
-            // вынести в store
+            // вынести в store и объединить что ли в одну
             const deleteSocial = (id) => {
                 currentContact.value.socialNetworks = currentContact.value.socialNetworks.filter(social => social.id !== id);
+                return;
+            }
+            // Delete event of Current Contact
+            // вынести в store и объединить что ли в одну
+            const deleteContactEvent = (id) => {
+                currentContact.value.contactEvents = currentContact.value.contactEvents.filter(event => event.id !== id);
                 return;
             }
 
@@ -535,7 +649,7 @@
 
 
             return {
-                pageTitle, currentId, info, currentContact, checkInitials, edit, editMode, cancelEdit, update, spinner, deleteContact, addPhoneNumber, callOutline, checkMobile, logoWhatsapp, cutPhoneNumber, phoneEmailTypes, deletePhoneNumber, closeOutline, setSelectPlaceholderValue, isOpenRef, setOpen, buttons, checkEmptyPhoneEmailType, addEmail, deleteEmail, mailOutline, addSocial, deleteSocial, myContactSocialNetworksType, paperPlaneOutline, logoInstagram, logoVk
+                pageTitle, currentId, info, currentContact, checkInitials, edit, editMode, cancelEdit, update, spinner, deleteContact, addPhoneNumber, callOutline, checkMobile, logoWhatsapp, cutPhoneNumber, phoneEmailTypes, deletePhoneNumber, closeOutline, setSelectPlaceholderValue, isOpenRef, setOpen, buttons, checkEmptyPhoneEmailType, addEmail, deleteEmail, mailOutline, addSocial, deleteSocial, myContactSocialNetworksType, paperPlaneOutline, logoInstagram, logoVk, addContactEvent, deleteContactEvent, isCalendarOpen, datepicker, checkHasDate, calcDaysUntilDate
             }
         }
     })
