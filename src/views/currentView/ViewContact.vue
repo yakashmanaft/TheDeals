@@ -471,6 +471,7 @@
                     }
                     // А если високосный год?
                     const result = Math.floor((date - now) / (1000*60*60*24) + 1)
+                    // условия показа доп. фраз
                     if (result === 0 || result === 365 || result === 366) {
                         return 'Сегодня'
                     } else if (result % 100 === 11 || result % 100 === 12 || result % 100 === 13 || result % 100 === 14) {
