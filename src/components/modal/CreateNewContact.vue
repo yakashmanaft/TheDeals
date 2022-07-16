@@ -26,12 +26,12 @@
                 <!-- Name -->
                 <ion-item>
                     <ion-label position="stacked">Укажите имя</ion-label>
-                    <ion-input v-model="contactData.contactInfo.name" inputmode="text" placeholder="Имя"></ion-input>
+                    <ion-input v-model="contactData.contactInfo.name" inputmode="text" placeholder="Имя" autocapitalize="on"></ion-input>
                 </ion-item>
                 <!-- Company -->
                 <ion-item>
                     <ion-label position="stacked">Укажите наименование организации</ion-label>
-                    <ion-input v-model="contactData.contactInfo.company" inputmode="text" placeholder="Компания"></ion-input>
+                    <ion-input v-model="contactData.contactInfo.company" inputmode="text" placeholder="Компания" autocapitalize="on"></ion-input>
                 </ion-item>
             </ion-item-group>
 
@@ -215,7 +215,7 @@
                     </ion-grid>
                     <!-- event title -->
                     <ion-item>
-                        <ion-input inputmode="text" placeholder="Название события" v-model="event.title"></ion-input>
+                        <ion-input inputmode="text" placeholder="Название события" v-model="event.title" autocapitalize="on"></ion-input>
                     </ion-item>
                     <!-- date of event -->
                     <ion-item>
@@ -246,18 +246,20 @@
                     <h4 class="ion-no-margin ion-margin-top">Заметки</h4>
                 </ion-text>
             </ion-item-group>
+            <!-- Если заметка создана -->
+            <ion-item lines="none">
+                <ion-textarea v-model="contactData.contactInfo.note" inputmode="text" placeholder="Впишите текст заметки" autocapitalize="on" auto-grow="true"></ion-textarea>
+            </ion-item>
 
             <br>
-            <div style="margin-bottom: 100px;">
-                {{ contactData }}
-            </div>
+            <br>
         </ion-content>
     </ion-modal>
 </template>
 
 <script>
     import { defineComponent, ref, computed } from 'vue'; 
-    import { IonModal, IonHeader, IonContent, IonToolbar, IonButtons, IonButton, IonTitle, IonText, IonItem, IonLabel, IonInput, IonItemGroup, IonGrid, IonRow, IonCol, IonSelect, IonSelectOption, IonToggle, IonIcon } from '@ionic/vue';
+    import { IonModal, IonHeader, IonContent, IonToolbar, IonButtons, IonButton, IonTitle, IonText, IonItem, IonLabel, IonInput, IonItemGroup, IonGrid, IonRow, IonCol, IonSelect, IonSelectOption, IonToggle, IonIcon, IonTextarea } from '@ionic/vue';
     import { closeOutline } from 'ionicons/icons';
     import { uid } from 'uid';
     import store from '../../store/index';
@@ -272,7 +274,7 @@
             contactData: Object
         },
         components: {
-            IonModal, IonHeader, IonContent, IonToolbar, IonButtons, IonButton, IonTitle, IonText, IonItem, IonLabel, IonInput, IonItemGroup, IonGrid, IonRow, IonCol, IonSelect, IonSelectOption, Select, IonToggle, IonIcon, ModalCalendar
+            IonModal, IonHeader, IonContent, IonToolbar, IonButtons, IonButton, IonTitle, IonText, IonItem, IonLabel, IonInput, IonItemGroup, IonGrid, IonRow, IonCol, IonSelect, IonSelectOption, Select, IonToggle, IonIcon, ModalCalendar, IonTextarea
         },
         setup() {
             // Типы Рабочий /Личный

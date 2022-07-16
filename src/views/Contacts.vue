@@ -24,7 +24,7 @@
             @addSocial="addSocial"
             @deleteSocial="deleteSocial"
             @addContactEvent="addContactEvent"
-            @deleteContactEvent="deleteContactEvent "
+            @deleteContactEvent="deleteContactEvent"
         />
         
         <!-- page content -->
@@ -198,7 +198,8 @@
                 contactInfo: {
                     name: '',
                     surname: '',
-                    company: ''
+                    company: '',
+                    note: null
                 },
                 phoneNumbers: [],
                 emails: [],
@@ -215,7 +216,8 @@
                     contactInfo: {
                         name: '',
                         surname: '',
-                        company: ''
+                        company: '',
+                        note: null
                     },
                     phoneNumbers: [],
                     emails: [],
@@ -329,7 +331,7 @@
 
 
             return {
-                user, router, logout, pageTitle, userEmail, myContacts, spinner, dataLoaded, search, searchedContacts, isOpen, setOpen, createNew, contactData, addPhoneNumber, addEmail, deletePhoneNumber, deleteEmail, addSocial, deleteSocial, addContactEvent, deleteContactEvent 
+                user, router, logout, pageTitle, userEmail, myContacts, spinner, dataLoaded, search, searchedContacts, isOpen, setOpen, createNew, contactData, addPhoneNumber, addEmail, deletePhoneNumber, deleteEmail, addSocial, deleteSocial, addContactEvent, deleteContactEvent
             }
         }
     })
