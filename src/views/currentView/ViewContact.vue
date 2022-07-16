@@ -64,7 +64,7 @@
                 <ion-item-group>
                     <!-- Заголовок -->
                     <ion-item v-if="edit" lines="none">
-                        <ion-text >
+                        <ion-text>
                             <h4 class="ion-no-margin ion-margin-top">Телефоны</h4>
                         </ion-text>
                     </ion-item>
@@ -79,9 +79,9 @@
                         </ion-grid>
                     </ion-item>
                     <!-- Если телефоны уже есть (добавлен шаблон или имелись в БД)  -->
-                    <ion-item-group v-for="(number, index) in currentContact.phoneNumbers" :key="index" class="ion-padding-start ion-padding-end">
+                    <ion-item-group v-for="(number, index) in currentContact.phoneNumbers" :key="index" class="ion-margin-horizontal">
                         <!-- Показываем в режиме edit -->
-                        <div v-if="edit" class="current-phone-content">
+                        <div v-if="edit" class="current-content">
                             <!-- sequence number &  delete current phone btn-->
                             <ion-grid class="ion-no-padding">
                                 <ion-row class="ion-padding-start ion-justify-content-between ion-align-items-center">
@@ -121,11 +121,11 @@
                         </div>
                         <!-- Показываем в режиме просмотра -->
                         <!-- Рассмотреть в дальнейшем возможность добавлять заготовленные тексты к "написать в мессенджер контакту" -->
-                        <div v-else>
+                        <div v-else class="flex ion-justify-content-between ion-align-items-center ion-margin-vertical">
                             <!-- вызов по телефону -->
-                            <a :href="`tel:${number.phone}`">
-                                <ion-icon :icon="callOutline"></ion-icon>
-                                <div>
+                            <a :href="`tel:${number.phone}`" class="flex ion-align-items-center">
+                                <ion-icon :icon="callOutline" class="ion-margin-end"></ion-icon>
+                                <div class="flex flex-col ion-align-items-start">
                                     <ion-text color="medium">{{ checkEmptyPhoneEmailType(number.type.currentValue) }}</ion-text>
                                     <ion-text>{{ number.phone }}</ion-text>
                                 </div>
@@ -138,7 +138,7 @@
                                     <ion-icon :icon="logoWhatsapp" color="viber"></ion-icon>
                                 </a>
                                 <!-- Ссылка на чат в whatsApp -->
-                                <a v-if="number.messengers[1].name === 'whatsup' && number.messengers[1].status === true" :href="`https://wa.me/7${cutPhoneNumber(number.phone)}`">
+                                <a v-if="number.messengers[1].name === 'whatsup' && number.messengers[1].status === true" :href="`https://wa.me/7${cutPhoneNumber(number.phone)}`" class="ion-margin-start">
                                     <ion-icon :icon="logoWhatsapp" color="whatsapp"></ion-icon>
                                 </a>
                             </div>
@@ -169,9 +169,9 @@
                         </ion-grid>
                     </ion-item>
                     <!-- Если emails уже есть (добавлен шаблон или имелись в БД)  -->
-                    <ion-item-group v-for="(email, index) in currentContact.emails" :key="index" class="ion-padding-start ion-padding-end">
+                    <ion-item-group v-for="(email, index) in currentContact.emails" :key="index">
                         <!-- Показываем в режиме edit -->
-                        <div v-if="edit" class="current-phone-content">
+                        <div v-if="edit" class="current-content ion-margin-horizontal">
                             <!-- sequence number &  delete current email btn-->
                             <ion-grid class="ion-no-padding">
                                 <ion-row class="ion-padding-start ion-justify-content-between ion-align-items-center">
@@ -198,11 +198,15 @@
                         <!-- Показываем в режиме просмотра -->
                         <ion-item v-else lines="none" class="ion-no-padding">
                             <a :href="`mailto:${email.email}`" target="_blank">
-                                <ion-icon :icon="mailOutline"></ion-icon>
-                                <div>
-                                    <ion-text color="medium">{{ checkEmptyPhoneEmailType(email.type.currentValue) }}</ion-text>
-                                    <ion-text>{{ email.email }}</ion-text>
-                                </div>
+                                <ion-grid class="ion-no-padding ion-margin-start">
+                                    <ion-row class="ion-justify-content-between ion-align-items-center">
+                                        <ion-icon class="ion-margin-end" :icon="mailOutline"></ion-icon>
+                                        <div class="flex flex-col">
+                                            <ion-text color="medium">{{ checkEmptyPhoneEmailType(email.type.currentValue) }}</ion-text>
+                                            <ion-text>{{ email.email }}</ion-text>
+                                        </div>
+                                    </ion-row>
+                                </ion-grid>
                             </a>
                         </ion-item>
                     </ion-item-group>
@@ -231,9 +235,9 @@
                         </ion-grid>
                     </ion-item>
                     <!-- Если Соцсети уже есть (добавлен шаблон или имелись в БД)  -->
-                    <ion-item-group v-for="(social, index) in currentContact.socialNetworks" :key="index" class="ion-padding-start ion-padding-end">
-                        <!-- Показываем в режиме edit -->
-                        <div v-if="edit" class="current-phone-content">
+                    <ion-item-group v-for="(social, index) in currentContact.socialNetworks" :key="index" class="ion-margin-horizontal">
+                    <!-- Показываем в режиме edit -->
+                        <div v-if="edit" class="current-content">
                             <!-- sequence number &  delete current social btn-->
                             <ion-grid class="ion-no-padding">
                                 <ion-row class="ion-padding-start ion-justify-content-between ion-align-items-center">
@@ -257,18 +261,18 @@
                                 <Select :data="myContactSocialNetworksType" :placeholder="setSelectPlaceholderValue(social.name.currentValue)" @date-updated="(selected) => social.name = selected"/>
                             </ion-item>
                         </div>
-                        <!-- Показываем в режиме просмотра -->
-                        <!-- Как можно динамики добавить? -->
-                        <div v-else>
-                            <a :href="`${social.link}`" target="_blank">
+                    </ion-item-group>
+                    <!-- Показываем в режиме просмотра -->
+                    <!-- Как можно динамики добавить? -->
+                    <ion-item v-if="!edit && currentContact.socialNetworks.length" lines="none">
+                        <a v-for="(social, index) in currentContact.socialNetworks" :key="index" :href="`${social.link}`" target="_blank" class="ion-margin-top ion-margin-end">
                                 <ion-icon v-if="social.name.currentValue === 'Telegram'" :icon="paperPlaneOutline"></ion-icon>
                                 <ion-icon v-if="social.name.currentValue === 'Instagram'" :icon="logoInstagram"></ion-icon>
                                 <ion-icon v-if="social.name.currentValue === 'Vkontakte'" :icon="logoVk"></ion-icon>
                                 <!-- <ion-icon v-if="social.name.currentValue === 'Odnoklassniki'" :icon="paperPlaneOutline"></ion-icon> -->
                                 <!-- <ion-icon v-if="social.name.currentValue === 'Twitter'" :icon="paperPlaneOutline"></ion-icon> -->
-                            </a>
-                        </div>
-                    </ion-item-group>
+                        </a>
+                    </ion-item>
                     <!-- Button to add new email to current contact -->
                     <ion-row class="ion-justify-content-end ion-padding-end">
                         <ion-text color="primary" v-if="edit && currentContact.socialNetworks.length" @click="addSocial">Добавить еще</ion-text>
@@ -280,7 +284,9 @@
                     <!-- <a href="skype:LOGIN?voicemail">Отправить голосовое сообщение в Skype</a> -->
                     <!-- <a href="skype:LOGIN?call">Позвонить пользователю Skype</a> -->
                     <!-- <a href="skype:LOGIN?add">Добавить в список контактов Skype</a> -->
+
                 </ion-item-group>
+
 
                 <!-- ======================= Events ==================== -->
                 <ion-item-group>
@@ -301,9 +307,9 @@
                         </ion-grid>
                     </ion-item>
                     <!-- Если event уже есть (добавлен шаблон или имелись в БД)  -->
-                    <ion-item-group v-for="(event, index) in currentContact.contactEvents" :key="index" class="ion-padding-start ion-padding-end">
+                    <ion-item-group v-for="(event, index) in currentContact.contactEvents" :key="index">
                         <!-- Показываем в режиме edit -->
-                        <div v-if="edit" class="current-phone-content">
+                        <div v-if="edit" class="current-content margin-horizontal-16">
                             <!-- sequence number &  delete current email btn-->
                             <ion-grid class="ion-no-padding">
                                 <ion-row class="ion-padding-start ion-justify-content-between ion-align-items-center">
@@ -335,11 +341,17 @@
                             </ion-item>
                         </div>
                         <!-- Показываем в режиме просмотра -->
-                        <div v-else>
-                            <ion-text color="medium">{{ event.title }}</ion-text>
-                            <ion-text color="primary">{{ checkHasDate(event.date.currentValue) }}</ion-text>
-                            <ion-text>{{calcDaysUntilDate(event.date.currentValue)}}</ion-text>
-                        </div>
+                        <ion-item v-else lines="none" class="ion-margin-top">
+                            <ion-grid class="ion-no-padding">
+                                <ion-row class="ion-justify-content-between ion-align-items-center">
+                                    <ion-text class="flex flex-col">
+                                        <ion-text color="medium" class="ion-text-start">{{ event.title }}</ion-text>
+                                        <ion-text color="primary" class="ion-text-start">{{ checkHasDate(event.date.currentValue) }}</ion-text>
+                                    </ion-text>
+                                    <ion-text class="ion-padding-end" color="medium">{{calcDaysUntilDate(event.date.currentValue)}}</ion-text>
+                                </ion-row>
+                            </ion-grid>
+                        </ion-item>
                     </ion-item-group>
                     <!-- Button to add new event to current contact -->
                     <ion-row class="ion-justify-content-end ion-padding-end">
@@ -363,21 +375,23 @@
                         </ion-item>
                     </div>
                     <!-- В режиме просмотра -->
-                    <div else>
+                    <ion-item v-else lines="none" class="ion-no-padding">
                         <ion-item v-if="currentContact.contactInfo.note === ''" lines="none">
                             Нет заметок
                         </ion-item>
-                        <ion-item v-if="currentContact.contactInfo.note !== ''" lines="none">
-                            <ion-text color="medium">Заметки</ion-text>
-                            <ion-text color="primary">{{currentContact.contactInfo.note}}</ion-text>
+                        <ion-item v-if="currentContact.contactInfo.note !== ''" lines="none" class="ion-margin-top">
+                            <div class="flex flex-col">
+                                <ion-text color="medium">Заметки</ion-text>
+                                <ion-text color="primary">{{currentContact.contactInfo.note}}</ion-text>
+                            </div>
                         </ion-item>
-                    </div>
+                    </ion-item>
                 </ion-item-group>
 
                 <br>
                 <!-- Кнопка удалить контакта -->
                 <!-- Не показываем в режиме edit -->
-                <ion-button v-if="!edit" @click="setOpen(true)" fill="clear" color="danger">Delete contact</ion-button>
+                <ion-button v-if="!edit" @click="setOpen(true)" fill="clear" color="danger">Удалить контакт</ion-button>
                 <!-- Всплывашка подтверждение -->
                 <ion-action-sheet
                     :is-open="isOpenRef"
@@ -734,14 +748,37 @@
     }
 
 
-    .current-phone-content {
+    .current-content {
         border-left: 1px solid var(--ion-color-medium);
-        margin: 10px 0;
+        margin-top: 16px;
+        margin-bottom: 16px;
         padding-bottom: 10px;
         border-radius: 10px;
     }
 
+    ion-icon {
+        font-size: 25px;
+    }
+
     .margin-top {
         margin-top: 10px;
+    }
+
+    .flex {
+        display: flex;
+    }
+
+    .flex-col {
+        flex-direction: column;
+    }
+
+    .margin-horizontal-16 {
+        margin-left: 16px;
+        margin-right: 16px;
+    }
+
+    .norma {
+        display: flex!important;
+        justify-content: space-between!important;
     }
 </style>
