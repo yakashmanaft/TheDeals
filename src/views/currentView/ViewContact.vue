@@ -196,7 +196,7 @@
                             </ion-item>
                         </div>
                         <!-- Показываем в режиме просмотра -->
-                        <div v-else>
+                        <ion-item v-else lines="none" class="ion-no-padding">
                             <a :href="`mailto:${email.email}`" target="_blank">
                                 <ion-icon :icon="mailOutline"></ion-icon>
                                 <div>
@@ -204,7 +204,7 @@
                                     <ion-text>{{ email.email }}</ion-text>
                                 </div>
                             </a>
-                        </div>
+                        </ion-item>
                     </ion-item-group>
                     <!-- Button to add new email to current contact -->
                     <ion-row class="ion-justify-content-end ion-padding-end">
@@ -347,13 +347,38 @@
                     </ion-row>
                 </ion-item-group>
 
-                <br>
-                {{ currentContact }}
-                <br>
+                <!-- ======================= Note ====================== -->
+                <ion-item-group>
+                    <!-- В режиме редактирования -->
+                    <div v-if="edit">
+                        <!-- Заголовок -->
+                        <ion-item lines="none">
+                            <ion-text>
+                                <h4 class="ion-no-margin ion-margin-top">Заметки</h4>
+                            </ion-text>
+                        </ion-item>
+                        <!-- Показываем текст заметки -->
+                        <ion-item lines="none">
+                            <ion-textarea color="medium" v-model="currentContact.contactInfo.note" inputmode="text" placeholder="Впишите текст заметки" autocapitalize="on" auto-grow="true"></ion-textarea>
+                        </ion-item>
+                    </div>
+                    <!-- В режиме просмотра -->
+                    <div else>
+                        <ion-item v-if="currentContact.contactInfo.note === ''" lines="none">
+                            Нет заметок
+                        </ion-item>
+                        <ion-item v-if="currentContact.contactInfo.note !== ''" lines="none">
+                            <ion-text color="medium">Заметки</ion-text>
+                            <ion-text color="primary">{{currentContact.contactInfo.note}}</ion-text>
+                        </ion-item>
+                    </div>
+                </ion-item-group>
+
                 <br>
                 <!-- Кнопка удалить контакта -->
                 <!-- Не показываем в режиме edit -->
-                <ion-button v-if="!edit" @click="setOpen(true)">Delete contact</ion-button>
+                <ion-button v-if="!edit" @click="setOpen(true)" fill="clear" color="danger">Delete contact</ion-button>
+                <!-- Всплывашка подтверждение -->
                 <ion-action-sheet
                     :is-open="isOpenRef"
                     header="Точно удалить?"
@@ -361,6 +386,9 @@
                     @didDismiss="setOpen(false)"
                 >
                 </ion-action-sheet>
+                <br>
+                <br>
+                <br>
             </div>
         </ion-content>
     </div>
@@ -375,7 +403,7 @@
     import { uid } from 'uid';
     import Spinner from '../../components/Spinner.vue';
     import Select from '../../components/Select.vue';
-    import { IonContent, IonHeader, IonButton, IonToolbar, IonButtons, IonBackButton, IonRow, IonAvatar, IonText, IonItem, IonLabel, IonInput, IonItemGroup, IonGrid, IonIcon, IonToggle, IonActionSheet } from '@ionic/vue';
+    import { IonContent, IonHeader, IonButton, IonToolbar, IonButtons, IonBackButton, IonRow, IonAvatar, IonText, IonItem, IonLabel, IonInput, IonItemGroup, IonGrid, IonIcon, IonToggle, IonActionSheet, IonTextarea } from '@ionic/vue';
     import { callOutline, logoWhatsapp, closeOutline, mailOutline, paperPlaneOutline, logoInstagram, logoVk } from 'ionicons/icons';
     import ModalCalendar from '../../components/modal/ModalCalendar.vue';    
     import { format, parseISO } from 'date-fns';
@@ -385,7 +413,7 @@
     export default defineComponent({
         name: 'view-contact',
         components: {
-            ViewContactHeader, IonContent, IonHeader, IonButton, IonToolbar, IonButtons, IonBackButton, IonRow, IonAvatar, IonText, IonItem, IonLabel, IonInput, Spinner, IonItemGroup, IonGrid, IonIcon, IonToggle, Select, IonActionSheet, ModalCalendar
+            ViewContactHeader, IonContent, IonHeader, IonButton, IonToolbar, IonButtons, IonBackButton, IonRow, IonAvatar, IonText, IonItem, IonLabel, IonInput, Spinner, IonItemGroup, IonGrid, IonIcon, IonToggle, Select, IonActionSheet, ModalCalendar, IonTextarea
         },
         setup() {
             const route = useRoute();

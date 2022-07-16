@@ -245,11 +245,11 @@
                 <ion-text>
                     <h4 class="ion-no-margin ion-margin-top">Заметки</h4>
                 </ion-text>
+                <!-- Если заметка создана -->
+                <ion-item lines="none">
+                    <ion-textarea v-model="contactData.contactInfo.note" inputmode="text" placeholder="Впишите текст заметки" autocapitalize="on" auto-grow="true"></ion-textarea>
+                </ion-item>
             </ion-item-group>
-            <!-- Если заметка создана -->
-            <ion-item lines="none">
-                <ion-textarea v-model="contactData.contactInfo.note" inputmode="text" placeholder="Впишите текст заметки" autocapitalize="on" auto-grow="true"></ion-textarea>
-            </ion-item>
 
             <br>
             <br>
