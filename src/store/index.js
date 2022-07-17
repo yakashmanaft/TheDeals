@@ -21,9 +21,6 @@ const state = reactive({
   // user
   user: null,
   userEmail: null,
-  // Было для фона, чтобы не прокурчивался при открытом попапе
-  // isBackgroundFixed: false
-
   // contact array in page mu contact
   myContactsArray: [],
   // phone types array in page my contact 
@@ -42,11 +39,6 @@ const methods = {
   setUser(payload) {
     state.user = payload ? payload.user : null;
   },
-  // Было для фона, чтобы не прокурчивался при открытом попапе
-  // backgroundFixed() {
-  //   state.isBackgroundFixed = !state.isBackgroundFixed;
-  // }
-  
   // Забираем из БД списки контактов
   getMyContactsFromDB: async () => {
     try {
