@@ -57,6 +57,7 @@
                     </ion-item>
                     <ion-text v-else color="medium">
                         <p class="ion-margin-top">{{ currentContact.contactInfo.company }}</p>
+                        <br>
                     </ion-text>
                 </ion-item-group>
 
