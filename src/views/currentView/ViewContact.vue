@@ -332,12 +332,12 @@
                                     Укажите дату события
                                 </ion-label>
                                 <!-- Кнопка активации компонента, она же показывает выбранное -->
-                                <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click="isCalendarOpen = true">{{datepicker(event.date)}}</ion-button>
+                                <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click="openModalCalendar(event)">{{datepicker(event.date)}}</ion-button>
                                 <!-- Компонент выбора даты -->
                                 <ModalCalendar 
-                                    :is-open="isCalendarOpen" 
+                                    :isOpen="event.show === true" 
                                     @date-updated="(pickedDate) => event.date = pickedDate"
-                                    @closeModal="isCalendarOpen = false"
+                                    @closeModal="closeModalCalendar(event)"
                                 />
                             </ion-item>
                         </div>
@@ -592,6 +592,7 @@
                     id: uid(),
                     title: '',
                     date: '',
+                    show: ''
                 })
             }
 
@@ -624,8 +625,14 @@
             }
 
             // Управление модалкой календаря
-            const isCalendarOpen = ref(false);
-            //
+            const openModalCalendar = (event) => {
+                event.show = true;
+            }
+            const closeModalCalendar = (event) => {
+                event.show = false;
+            }
+            // выбираем дату
+            // вывести в отдельный файл (вместе с функцией из CreateNewContact)
             const datepicker = (eventDate) => {
                 if(eventDate.currentValue === undefined) {
                     return 'Выберите дату'
@@ -708,7 +715,7 @@
 
 
             return {
-                pageTitle, currentId, info, currentContact, checkInitials, edit, editMode, cancelEdit, update, spinner, deleteContact, addPhoneNumber, callOutline, checkMobile, logoWhatsapp, cutPhoneNumber, phoneEmailTypes, deletePhoneNumber, closeOutline, setSelectPlaceholderValue, isOpenRef, setOpen, buttons, checkEmptyPhoneEmailType, addEmail, deleteEmail, mailOutline, addSocial, deleteSocial, myContactSocialNetworksType, paperPlaneOutline, logoInstagram, logoVk, addContactEvent, deleteContactEvent, isCalendarOpen, datepicker, checkHasDate, calcDaysUntilDate
+                pageTitle, currentId, info, currentContact, checkInitials, edit, editMode, cancelEdit, update, spinner, deleteContact, addPhoneNumber, callOutline, checkMobile, logoWhatsapp, cutPhoneNumber, phoneEmailTypes, deletePhoneNumber, closeOutline, setSelectPlaceholderValue, isOpenRef, setOpen, buttons, checkEmptyPhoneEmailType, addEmail, deleteEmail, mailOutline, addSocial, deleteSocial, myContactSocialNetworksType, paperPlaneOutline, logoInstagram, logoVk, addContactEvent, deleteContactEvent, datepicker, checkHasDate, calcDaysUntilDate, openModalCalendar, closeModalCalendar
             }
         }
     })

@@ -223,12 +223,12 @@
                             Укажите дату события
                         </ion-label>
                         <!-- Кнопка активации компонента, она же показывает выбранное -->
-                        <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click="isCalendarOpen = true">{{datepicker(event.date)}}</ion-button>
+                        <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click="openModalCalendar(event)">{{datepicker(event.date)}}</ion-button>
                         <!-- Компонент выбора даты -->
                         <ModalCalendar 
-                            :is-open="isCalendarOpen" 
+                            :isOpen="event.show === true" 
                             @date-updated="(pickedDate) => event.date = pickedDate"
-                            @closeModal="isCalendarOpen = false"
+                            @closeModal="closeModalCalendar(event)"
                         />
                     </ion-item>
 
@@ -282,9 +282,13 @@
             // Типы соц сетей (Инста, Вконтакте и т.д.)
             const myContactSocialNetworksType = ref(store.state.myContactSocialNetworksType)
             // Управление модалкой календаря
-            const isCalendarOpen = ref(false);
-            //вставляем в кнопку выбора даты данные из datepicker и форматируем их к показу
-            
+            const openModalCalendar = (event) => {
+                event.show = true;
+            }
+            const closeModalCalendar = (event) => {
+                event.show = false;
+            }
+            // Выбираем дату
             const datepicker = (eventDate) => {
                 if(eventDate.currentValue === undefined) {
                     return 'Выберите дату'
@@ -295,7 +299,7 @@
             }
 
             return {
-                phoneTypes, myContactSocialNetworksType, closeOutline, isCalendarOpen, datepicker
+                phoneTypes, myContactSocialNetworksType, closeOutline, datepicker, openModalCalendar, closeModalCalendar
             }
         }
     })
