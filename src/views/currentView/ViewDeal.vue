@@ -84,7 +84,15 @@
             }     
             // update current deal functin
             const update = async () => {
-                console.log(`Deal ${currentId.value} is updated`)
+                try {
+                    spinner.value = true;
+                    // Вынести в store?
+                    console.log(`Deal ${currentId} is updated`)
+                } catch (error) {
+                    alert(`Error: ${error.message}`)
+                }
+                edit.value = !edit.value;
+                spinner.value = false;
             }
             return {
                 spinner, currentId, info, currentDeal, edit, editMode, cancelEdit, update
