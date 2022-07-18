@@ -5,7 +5,7 @@
                 <ion-buttons slot="start">
                     <ion-button @click="$emit('closeModal')">Отменить</ion-button>
                 </ion-buttons>
-                <ion-title>Новый</ion-title>
+                <ion-title class="ion-text-center">Новый</ion-title>
                 <ion-buttons slot="end">
                     <ion-button @click="$emit('createContact', contactData)">Создать</ion-button>
                 </ion-buttons>

@@ -1,4 +1,5 @@
 <template>
+    <div>
         <!-- Спиннер как имитация загрузки -->
         <Spinner v-if="spinner"/>
 
@@ -44,31 +45,40 @@
                         <ion-label>{{ status.title }} 1</ion-label>
                     </ion-chip>
                     <ion-chip color="primary" outline="true">
-                        <ion-label color="primary">Secondary Label 1</ion-label>
+                        <ion-label color="primary">Secondary Label</ion-label>
                     </ion-chip>
                 </div>
                 Выбран статус: {{ currentDealStatus }}
                 {{foundDealsByStatus.length}}
 
                 <!-- Карточки дел-->
-                <router-link 
-                    v-for="deal in foundDealsByStatus" 
-                    :key="deal.id"
-                    :to="{ name: 'View-Deal', params: { 
-                            dealId: deal.id,
-                            dealUid: deal.uid,
-                            deal: JSON.stringify(deal)
-                        }}"
-                >
-                    <ion-card>
-
-                        {{deal}}
-                    </ion-card>
-                </router-link>
+                <div v-for="(day, idx) in days" :key="idx">
+                    {{day}}
+                    <div 
+                        v-for="deal in foundDealsByStatus" 
+                        :key="deal.id"
+                        >
+                        <!-- {{ deal.executionDate }} -->
+                        
+                        <router-link 
+                            v-if="deal.executionDate === day"
+                            :to="{ name: 'View-Deal', params: { 
+                                    dealId: deal.id,
+                                    dealUid: deal.uid,
+                                    deal: JSON.stringify(deal)
+                                }}"
+                        >
+                            <ion-card>
+                                {{deal}}
+                            </ion-card>
+                        </router-link>
+                    </div>
+                </div>
 
 
             </div>
         </ion-content>
+    </div>
 </template>
 
 <script>
@@ -151,24 +161,53 @@
             const spinner = ref(null);
             const dataLoaded = ref(null);
             const myDeals = ref([]);
+            // счетчик количества дел по конкретному статусу
+            // const countDealsByCurrentStatus = ref(null);
 
             // Статусы дел
             const dealStatusList = ref(store.state.dealStatusList)
-            // Выбранный к показу статус дел
-            const currentDealStatus = ref('deal-in-booking');
-            // Следим за изменением статуса дела и запускаем функцию показа
-            watch(currentDealStatus, (currentValue) => {
-                console.log(currentValue)
-                foundDealsByStatus.value = myDeals.value.filter(deal => deal.dealStatus === currentDealStatus.value)
-            })
-
+            //Все даты по конкретному статусу
+            const daysArray = ref([])
+            // уникальные даты по конкретному статусу
+            const days = ref([])
             // Подтягиваем список дел из store
             spinner.value = true;
             onMounted( async() => {
+                // daysArray.value = []
                 await store.methods.getMyDealsFromBD();
                 myDeals.value = store.state.myDealsArray;
                 spinner.value = false
                 dataLoaded.value = true;
+                daysArray.value = []
+                days.value = []
+                foundDealsByStatus.value = myDeals.value.filter(deal => {
+                    if(deal.dealStatus === currentDealStatus.value) {
+                        daysArray.value.push(deal.executionDate)
+                        daysArray.value.sort()
+                        days.value = new Set(daysArray.value)
+                        return deal.dealStatus === currentDealStatus.value
+                    } 
+                })
+            })
+
+            // Выбранный к показу статус дел
+            const currentDealStatus = ref('deal-in-booking');
+
+            // Следим за изменением статуса дела и запускаем функцию показа
+            watch(currentDealStatus, (currentValue) => {
+                console.log(currentValue)
+                daysArray.value = []
+                days.value = []
+                // 
+                foundDealsByStatus.value = myDeals.value.filter(deal => {
+                    
+                    if(deal.dealStatus === currentDealStatus.value) {
+                        daysArray.value.push(deal.executionDate)
+                        daysArray.value.sort()
+                        days.value = new Set(daysArray.value)
+                        return deal.dealStatus === currentDealStatus.value
+                    } 
+                })            
             })
             
             // =======================================
@@ -196,14 +235,13 @@
 
             //
             const foundDealsByStatus = ref([])
-
             //
             const setDealStatus = (name) => {
                 currentDealStatus.value = name
             }
 
             return {
-                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isOpen, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus
+                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isOpen, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days
             }
         }
     })
