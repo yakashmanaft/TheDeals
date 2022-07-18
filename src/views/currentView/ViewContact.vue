@@ -4,7 +4,7 @@
         <Spinner v-if="spinner"/>
 
         <!-- page header -->
-        <ViewContactHeader :edit="edit" :editMode="editMode" :update="update" :cancelEdit="cancelEdit"/>
+        <ViewHeader :edit="edit" :editMode="editMode" :update="update" :cancelEdit="cancelEdit"/>
 
         <!-- page content -->
         <ion-content 
@@ -21,6 +21,7 @@
             <!-- No data -->
             <div>
                 <!-- Если !data -->
+                <!-- Data is not available -->
             </div>
     
             <!-- Data -->
@@ -410,7 +411,7 @@
 </template>
 
 <script>
-    import ViewContactHeader from '../../components/headers/HeaderViewCurrent.vue';
+    import ViewHeader from '../../components/headers/HeaderViewCurrent.vue';
     import { onMounted, defineComponent, ref } from 'vue';
     import { supabase } from '../../supabase/init';
     import { useRoute, useRouter } from 'vue-router';
@@ -428,14 +429,11 @@
     export default defineComponent({
         name: 'view-contact',
         components: {
-            ViewContactHeader, IonContent, IonHeader, IonButton, IonToolbar, IonButtons, IonBackButton, IonRow, IonAvatar, IonText, IonItem, IonLabel, IonInput, Spinner, IonItemGroup, IonGrid, IonIcon, IonToggle, Select, IonActionSheet, ModalCalendar, IonTextarea
+            ViewHeader, IonContent, IonHeader, IonButton, IonToolbar, IonButtons, IonBackButton, IonRow, IonAvatar, IonText, IonItem, IonLabel, IonInput, Spinner, IonItemGroup, IonGrid, IonIcon, IonToggle, Select, IonActionSheet, ModalCalendar, IonTextarea
         },
         setup() {
             const route = useRoute();
             const router = useRouter();
-            // Берем имя роута для заголовка
-            const pageTitle = router.currentRoute._value.meta.translation;  
-
             // Get current info of route
             const currentId = route.params.contactId;
             const info = route.params;
@@ -715,7 +713,7 @@
 
 
             return {
-                pageTitle, currentId, info, currentContact, checkInitials, edit, editMode, cancelEdit, update, spinner, deleteContact, addPhoneNumber, callOutline, checkMobile, logoWhatsapp, cutPhoneNumber, phoneEmailTypes, deletePhoneNumber, closeOutline, setSelectPlaceholderValue, isOpenRef, setOpen, buttons, checkEmptyPhoneEmailType, addEmail, deleteEmail, mailOutline, addSocial, deleteSocial, myContactSocialNetworksType, paperPlaneOutline, logoInstagram, logoVk, addContactEvent, deleteContactEvent, datepicker, checkHasDate, calcDaysUntilDate, openModalCalendar, closeModalCalendar
+                currentId, info, currentContact, checkInitials, edit, editMode, cancelEdit, update, spinner, deleteContact, addPhoneNumber, callOutline, checkMobile, logoWhatsapp, cutPhoneNumber, phoneEmailTypes, deletePhoneNumber, closeOutline, setSelectPlaceholderValue, isOpenRef, setOpen, buttons, checkEmptyPhoneEmailType, addEmail, deleteEmail, mailOutline, addSocial, deleteSocial, myContactSocialNetworksType, paperPlaneOutline, logoInstagram, logoVk, addContactEvent, deleteContactEvent, datepicker, checkHasDate, calcDaysUntilDate, openModalCalendar, closeModalCalendar
             }
         }
     })

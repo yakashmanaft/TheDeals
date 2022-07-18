@@ -30,6 +30,16 @@ const routes = [
     }
   },
   {
+    path: '/view-deal/:dealId',
+    name: 'View-Deal',
+    component: () => import('../views/currentView/ViewDeal.vue'),
+    meta: {
+      title: 'View Deal',
+      auth: true,
+      type: 'CurrentView'
+    }
+  },
+  {
     path: '/contacts',
     name: 'Contacts',
     component: () => import('../views/Contacts.vue'),

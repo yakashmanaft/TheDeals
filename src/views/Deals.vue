@@ -37,8 +37,46 @@
             </div>
             <!-- Data -->
             <div v-if="dataLoaded && myDeals.length !== 0">
-                {{myDeals.length}}
-                {{myDeals}}
+
+                <!-- Статусы дел -->
+                <div class="horizontal-scroll">
+                    <ion-chip>
+                        <ion-label color="primary">Secondary Label</ion-label>
+                    </ion-chip>
+                    <ion-chip>
+                        <ion-label color="primary">Secondary Label</ion-label>
+                    </ion-chip>
+                    <ion-chip color="primary" outline="true" @click="doSomethind">
+                        <ion-label color="primary">Secondary Label</ion-label>
+                    </ion-chip>
+                    <ion-chip>
+                        <ion-label color="primary">Secondary Label</ion-label>
+                    </ion-chip>
+                    <ion-chip>
+                        <ion-label color="primary">Secondary Label</ion-label>
+                    </ion-chip>
+                    <ion-chip>
+                        <ion-label color="primary">Secondary Label</ion-label>
+                    </ion-chip>
+                </div>
+
+                <!-- Карточки дел -->
+                <router-link 
+                    v-for="deal in myDeals" 
+                    :key="deal.id"
+                    :to="{ name: 'View-Deal', params: { 
+                            dealId: deal.id,
+                            dealUid: deal.uid,
+                            deal: JSON.stringify(deal)
+                        }}"
+                >
+                    <ion-card>
+
+                        {{deal}}
+                    </ion-card>
+                </router-link>
+
+
             </div>
         </ion-content>
 </template>
@@ -62,7 +100,14 @@
         IonTitle, 
         IonToolbar,
         IonIcon,
-        IonText
+        IonText,
+        IonChip,
+        IonLabel,
+        IonItemOption,
+        IonItemOptions,
+        IonItemSliding,
+        IonVirtualScroll,
+        IonCard
     } from '@ionic/vue';
     import { defineComponent, ref, computed, onMounted } from 'vue';
     import store from '../store/index';
@@ -91,7 +136,14 @@
             IonToolbar,
             IonIcon,
             IonText,
-            NavigationMenu
+            NavigationMenu,
+            IonChip,
+            IonLabel,
+            IonItemOption,
+            IonItemOptions,
+            IonItemSliding,
+            IonVirtualScroll,
+            IonCard
         },
         setup() {
             // Get user from store
@@ -142,8 +194,13 @@
                 console.log(newDealData)
             }
 
+            //
+            const doSomethind = () => {
+                console.log(123)
+            }
+
             return {
-                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isOpen, dealData, setOpen
+                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isOpen, dealData, setOpen, doSomethind
             }
         }
     })
@@ -152,5 +209,16 @@
 <style scoped>
     ion-img {
         height: 50vh;
+    }
+
+    ::-webkit-scrollbar, *::-webkit-scrollbar {
+        display: none;
+        overflow: hidden;
+    }
+
+    .horizontal-scroll {
+        overflow: scroll;
+        --overflow: scroll;
+        white-space: nowrap;
     }
 </style>
