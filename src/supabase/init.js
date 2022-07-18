@@ -1,5 +1,16 @@
 import { createClient } from '@supabase/supabase-js';
-//  SUPABASE MyContacts
+//  SUPABASE myContacts
+// БЫЛО
+// Delete: (role() = 'authenticated'::text)
+// INSERT: (role() = 'authenticated'::text)
+// SELECT: true
+// UPDATE: (role() = 'authenticated'::text)
+// СТАЛО:
+// DELETE: (email() = email)
+// INSERT: (role() = 'authenticated'::text)
+// SELECT: (email() = email)
+// UPDATE: (email() = email)
+//  SUPABASE deals
 // БЫЛО
 // Delete: (role() = 'authenticated'::text)
 // INSERT: (role() = 'authenticated'::text)

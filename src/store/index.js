@@ -21,8 +21,10 @@ const state = reactive({
   // user
   user: null,
   userEmail: null,
-  // contact array in page mu contact
+  // contact array in page Contacts
   myContactsArray: [],
+  // deals array in page Deals
+  myDealsArray: [],
   // phone types array in page my contact 
   myContactPhoneEmailTypes: [
     { value: 'Личный' }, { value: 'Рабочий' }
@@ -38,6 +40,13 @@ const methods = {
   // Устанавливаем пользователя
   setUser(payload) {
     state.user = payload ? payload.user : null;
+  },
+  // Забираем из БД списки дел
+  getMyDealsFromBD: async () => {
+    const { data: myDeals, error } = await supabase.from('deals').select('*');
+    if(error) throw error;
+    // Устанавливаем значение переменной myDealsArray в state
+    state.myDealsArray = myDeals;
   },
   // Забираем из БД списки контактов
   getMyContactsFromDB: async () => {
