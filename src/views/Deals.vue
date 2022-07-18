@@ -40,29 +40,19 @@
 
                 <!-- Статусы дел -->
                 <div class="horizontal-scroll">
-                    <ion-chip>
-                        <ion-label color="primary">Secondary Label</ion-label>
+                    <ion-chip v-for="(status, index) in dealStatusList" :key="index" @click="setDealStatus(status.name)">
+                        <ion-label>{{ status.title }} 1</ion-label>
                     </ion-chip>
-                    <ion-chip>
-                        <ion-label color="primary">Secondary Label</ion-label>
-                    </ion-chip>
-                    <ion-chip color="primary" outline="true" @click="doSomethind">
-                        <ion-label color="primary">Secondary Label</ion-label>
-                    </ion-chip>
-                    <ion-chip>
-                        <ion-label color="primary">Secondary Label</ion-label>
-                    </ion-chip>
-                    <ion-chip>
-                        <ion-label color="primary">Secondary Label</ion-label>
-                    </ion-chip>
-                    <ion-chip>
-                        <ion-label color="primary">Secondary Label</ion-label>
+                    <ion-chip color="primary" outline="true">
+                        <ion-label color="primary">Secondary Label 1</ion-label>
                     </ion-chip>
                 </div>
+                Выбран статус: {{ currentDealStatus }}
+                {{foundDealsByStatus.length}}
 
-                <!-- Карточки дел -->
+                <!-- Карточки дел-->
                 <router-link 
-                    v-for="deal in myDeals" 
+                    v-for="deal in foundDealsByStatus" 
                     :key="deal.id"
                     :to="{ name: 'View-Deal', params: { 
                             dealId: deal.id,
@@ -109,7 +99,7 @@
         IonVirtualScroll,
         IonCard
     } from '@ionic/vue';
-    import { defineComponent, ref, computed, onMounted } from 'vue';
+    import { defineComponent, ref, computed, onMounted, watch } from 'vue';
     import store from '../store/index';
     import { supabase } from '../supabase/init';
     import { useRouter } from 'vue-router';
@@ -162,6 +152,16 @@
             const dataLoaded = ref(null);
             const myDeals = ref([]);
 
+            // Статусы дел
+            const dealStatusList = ref(store.state.dealStatusList)
+            // Выбранный к показу статус дел
+            const currentDealStatus = ref('deal-in-booking');
+            // Следим за изменением статуса дела и запускаем функцию показа
+            watch(currentDealStatus, (currentValue) => {
+                console.log(currentValue)
+                foundDealsByStatus.value = myDeals.value.filter(deal => deal.dealStatus === currentDealStatus.value)
+            })
+
             // Подтягиваем список дел из store
             spinner.value = true;
             onMounted( async() => {
@@ -195,12 +195,15 @@
             }
 
             //
-            const doSomethind = () => {
-                console.log(123)
+            const foundDealsByStatus = ref([])
+
+            //
+            const setDealStatus = (name) => {
+                currentDealStatus.value = name
             }
 
             return {
-                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isOpen, dealData, setOpen, doSomethind
+                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isOpen, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus
             }
         }
     })

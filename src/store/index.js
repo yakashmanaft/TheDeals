@@ -33,6 +33,45 @@ const state = reactive({
   myContactSocialNetworksType: [
     { value: 'Instagram' }, { value: 'Vkontakte' }, { value: 'Telegram' }, 
     // { value: 'Odnoklassniki' }, { value: 'Twitter' }
+  ],
+  // deal status list
+  dealStatusList: [
+    {
+      name: 'deal-in-booking',
+      title: 'Бронь даты',
+      caption: 'Нет забронированных дат',
+      text: 'Создайте дело и укажите дату.'
+    },
+    {
+      name: 'deal-in-process',
+      title: 'В процессе',
+      caption: 'Где дела в процессе?',
+      text: 'Создайте дело и приступайте.'
+    },
+    {
+      name: 'deal-in-delivery',
+      title: 'В доставке',
+      caption: 'А как же доставка?',
+      text: 'Сделали дело, доставьте товар.'
+    },
+    {
+      name: 'deal-in-debt',
+      title: 'Долг',
+      caption: 'У вас нет дел с долгами',
+      text: 'Никто никому ничего не должен.'
+    },
+    {
+      name: 'deal-complete',
+      title: 'Завершен',
+      caption: 'Где завершенные дела?',
+      text: 'Кажется, вы беретесь и не доделываете...'
+    },
+    {
+      name: 'deal-cancelled',
+      title: 'Отменен',
+      caption: 'Ни одного отмененного дела!',
+      text: 'Вы супер! Так держать!'
+    }
   ]
 });
 
