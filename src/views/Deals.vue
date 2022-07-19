@@ -254,6 +254,8 @@
                 currentDealStatus.value = name
             }
 
+            //
+
             return {
                 user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isOpen, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate
             }

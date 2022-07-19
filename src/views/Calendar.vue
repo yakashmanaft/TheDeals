@@ -20,6 +20,7 @@
                 <ion-datetime
                     minute-values="0,15,30,45"
                     day-values="5,10,15, 18, 20,25,30"
+                    presentation="date"
                     size="cover"
                     @ionChange="doSomething"
                     v-model="choosenDate"
@@ -101,5 +102,8 @@
 </script>
 
 <style scoped>
-
+    ion-datetime {
+        --background: #ffffff;
+        --background-rgb: 255,255,255;
+    }
 </style>

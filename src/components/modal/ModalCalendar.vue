@@ -46,5 +46,8 @@
 </script>
 
 <style scoped>
-
+    ion-datetime {
+        --background: #ffffff;
+        --background-rgb: 255,255,255;
+    }
 </style>

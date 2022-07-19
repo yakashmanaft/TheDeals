@@ -339,6 +339,7 @@
                                     :isOpen="event.show === true" 
                                     @date-updated="(pickedDate) => event.date = pickedDate"
                                     @closeModal="closeModalCalendar(event)"
+                                    @didDismiss="event.show = false"
                                 />
                             </ion-item>
                         </div>
@@ -624,10 +625,10 @@
 
             // Управление модалкой календаря
             const openModalCalendar = (event) => {
-                event.show = true;
+                event.show = !event.show;
             }
             const closeModalCalendar = (event) => {
-                event.show = false;
+                event.show = !event.show;
             }
             // выбираем дату
             // вывести в отдельный файл (вместе с функцией из CreateNewContact)

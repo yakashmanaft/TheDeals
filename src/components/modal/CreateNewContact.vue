@@ -229,6 +229,7 @@
                             :isOpen="event.show === true" 
                             @date-updated="(pickedDate) => event.date = pickedDate"
                             @closeModal="closeModalCalendar(event)"
+                            @didDismiss="event.show = false"
                         />
                     </ion-item>
 
@@ -283,10 +284,10 @@
             const myContactSocialNetworksType = ref(store.state.myContactSocialNetworksType)
             // Управление модалкой календаря
             const openModalCalendar = (event) => {
-                event.show = true;
+                event.show = !event.show;
             }
             const closeModalCalendar = (event) => {
-                event.show = false;
+                event.show = !event.show;
             }
             // Выбираем дату
             const datepicker = (eventDate) => {
