@@ -40,11 +40,11 @@
             <br>
             <!-- page content -->
             <!-- No data -->
-            <div v-if="(!dataLoaded || myContacts.length === 0) && !spinner">
+            <div v-if="(!dataLoaded || myContacts.length === 0) && !spinner" class="no-data ion-padding-horizontal">
                 <!-- настроить responsive под разные экраны -->
                 <ion-img src="img/common/contact-sticker.webp" alt="нет контактов"></ion-img>
                 <ion-text color="primary"><h2>У вас еще нет контактов...</h2></ion-text>
-                <ion-text>Самое время начать заполнение справочника заказчиками, коллегами. <br>И не забывайте про близких!</ion-text>
+                <ion-text>Начните заполнять справочник уже сейчас</ion-text>
             </div>
 
             <!-- Data -->
@@ -343,5 +343,12 @@
 <style scoped>
     ion-img {
         height: 50vh;
+    }
+    .no-data {
+        height: 80vh; 
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+        justify-content: center;
     }
 </style>

@@ -8,7 +8,7 @@
             sub-header="Важное сообщение"
             :message="errorMsg"
             :buttons="['OK']"
-            @didDismiss="setClose()"
+            @didDismiss="isOpenRef = false"
         ></ion-alert>
 
         <!-- Confirm email alert-->

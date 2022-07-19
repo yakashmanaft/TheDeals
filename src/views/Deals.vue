@@ -22,56 +22,58 @@
 
         <ion-content 
             :scroll-events="true"
-            class="ion-page ion-margin-top" 
+            class="ion-page ion-margin-top ion-padding-top" 
             id="main"
             type="push" 
         >
             <br>
             <br>
-            <br>
             <!-- page content -->
             <!-- No data -->
-            <div v-if="(!dataLoaded || myDeals.length === 0) && !spinner" class="ion-padding-horizontal">
+            <div v-if="(!dataLoaded || myDeals.length === 0) && !spinner" class="no-status-deal ion-padding-horizontal">
                 <ion-img style="height: 30vh;" src="img/common/deals-sticker.webp" alt="нет дел"></ion-img>
                 <ion-text color="primary"><h2>У вас еще нет дел...</h2></ion-text>
                 <ion-text>Самое время начать заниматься деятельностью. <br>И создать первое дело!</ion-text>
             </div>
             <!-- Data -->
             <div v-if="dataLoaded && myDeals.length !== 0">
-
                 <!-- Статусы дел -->
                 <div class="horizontal-scroll">
-                    <ion-chip v-for="(status, index) in dealStatusList" :key="index" @click="setDealStatus(status.name)">
-                        <ion-label>{{ status.title }} 1</ion-label>
-                    </ion-chip>
-                    <ion-chip color="primary" outline="true">
-                        <ion-label color="primary">Secondary Label</ion-label>
+                    <ion-chip v-for="(status, index) in dealStatusList" :key="index" @click="setDealStatus(status.name)" :color="setChipColor(status.name)" :outline="setChipOutline(status.name)">
+                        <ion-label>{{ status.title }} {{countDealByStatus(status.name)}}</ion-label>
                     </ion-chip>
                 </div>
-                Выбран статус: {{ currentDealStatus }}
-                {{foundDealsByStatus.length}}
+                <!-- Если по данному статусу нет дел -->
+                <div class="no-status-deal" v-if="foundDealsByStatus.length === 0">
+                    <div v-for="(status, index) in dealStatusList" :key="index">
+                        <div v-if="currentDealStatus === status.name">
+                            <ion-img class="no-status-deal_img" :src="`img/status/${status.name}.svg`"></ion-img>
+                            <h4>{{ status.caption }}</h4>
+                            <ion-text color="medium">{{ status.text }}</ion-text>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Карточки дел-->
-                <div v-for="(day, idx) in getExecutionDate(days)" :key="idx">
+                <div v-for="(day, idx) in getExecutionDate(days)" :key="idx" class="ion-margin-top">
                     {{day}}
                     <div 
                         v-for="deal in foundDealsByStatus" 
                         :key="deal.id"
                         >
-                        <!-- {{ deal.executionDate }} -->
-                        
-                        <router-link 
-                            v-if="formattedDate(deal.executionDate) === day"
-                            :to="{ name: 'View-Deal', params: { 
-                                    dealId: deal.id,
-                                    dealUid: deal.uid,
-                                    deal: JSON.stringify(deal)
-                                }}"
-                        >
-                            <ion-card>
-                                {{deal}}
-                            </ion-card>
-                        </router-link>
+                            <router-link 
+                                v-if="formattedDate(deal.executionDate) === day"
+                                :to="{ name: 'View-Deal', params: { 
+                                        dealId: deal.id,
+                                        dealUid: deal.uid,
+                                        deal: JSON.stringify(deal)
+                                    }}"
+                            >
+                                <ion-card>
+                                    {{deal}}
+                                    <div @click.prevent.stop="doSomething">КНОПКА</div>
+                                </ion-card>
+                            </router-link>
                     </div>
                 </div>
 
@@ -205,12 +207,11 @@
                 return formattedString;
             }
 
-            // Выбранный к показу статус дел
+            // Выбранный по умолчанию статус дел при загрузке экрана
             const currentDealStatus = ref('deal-in-booking');
 
             // Следим за изменением статуса дела и запускаем функцию показа
             watch(currentDealStatus, (currentValue) => {
-                console.log(currentValue)
                 daysArray.value = []
                 days.value = []
                 // 
@@ -219,10 +220,48 @@
                     const executionDate = formattedDate(new Date(deal.executionDate).toISOString().split("T")[0])
                     if(deal.dealStatus === currentDealStatus.value) {
                         daysArray.value.push(executionDate)
-                        return deal.dealStatus === currentDealStatus.value
+                        return deal.dealStatus === currentValue
                     } 
                 })            
             })
+
+            // Счетчик коилчества дел по конкретному статусу
+            const countDealByStatus = (status) => {
+                const result = myDeals.value.filter(item => item.dealStatus === status)
+                return result.length
+            }
+            // Массив сделок по выбранному статусу
+            const foundDealsByStatus = ref([])
+            // Текущий выбранный статус сделок
+            const setDealStatus = (name) => {
+                currentDealStatus.value = name
+            }
+            // 
+            const setChipColor = (status) => {
+                if (status === 'deal-in-debt') {
+                    return 'danger'
+                }
+                if (status === 'deal-complete') {
+                    return 'success'
+                }
+                if(status === 'deal-cancelled') {
+                    return 'warning'
+                }
+                return 'primary'
+            }
+            //
+            const setChipOutline = (status) => {
+                if(status === currentDealStatus.value) {
+                    return false
+                }
+                return true
+            }
+
+            // =====================================
+            // Work with deal card
+            const doSomething = () => {
+                console.log('clicked')
+            }
             
             // =======================================
             // Work with Modal Create New Deal
@@ -247,17 +286,8 @@
                 console.log(newDealData)
             }
 
-            //
-            const foundDealsByStatus = ref([])
-            //
-            const setDealStatus = (name) => {
-                currentDealStatus.value = name
-            }
-
-            //
-
             return {
-                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isOpen, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate
+                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isOpen, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething
             }
         }
     })
@@ -277,5 +307,19 @@
         overflow: scroll;
         --overflow: scroll;
         white-space: nowrap;
+    }
+
+    .no-status-deal {
+        height: 80vh; 
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+        justify-content: center;
+    }
+
+    .no-status-deal_img {
+        width: 50%; 
+        height: 50%; 
+        margin:0 auto;
     }
 </style>
