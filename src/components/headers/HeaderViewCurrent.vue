@@ -1,12 +1,12 @@
 <template>
     <!-- page header -->
-    <ion-header>
-        <ion-toolbar>
-            <ion-buttons slot="start">
+    <ion-header translucent="true">
+        <ion-toolbar color="white">
+            <ion-buttons class="color-primary" slot="start">
                 <ion-button fill="clear" v-if="edit" @click="cancelEdit">Отмена</ion-button>
-                <ion-back-button default-href="home" v-else text="Назад"></ion-back-button>
+                <ion-back-button  default-href="home" v-else text="Назад"></ion-back-button>
             </ion-buttons>
-            <ion-buttons slot="end">
+            <ion-buttons class="color-primary" slot="end">
                 <ion-button fill="clear" v-if="edit"  @click="update">Готово</ion-button>
                 <ion-button fill="clear" v-else @click="editMode">Править</ion-button>
             </ion-buttons>
@@ -33,5 +33,10 @@
 </script>
 
 <style scoped>
-
+    ion-toolbar {
+        --border-color: var(--ion-color-white);
+    }
+    .color-primary {
+        color: var(--ion-color-primary)
+    }
 </style>

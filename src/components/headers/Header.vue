@@ -1,6 +1,6 @@
 <template v-show="user">
     <ion-header translucent="true">
-        <ion-toolbar >
+        <ion-toolbar color="white">
             <ion-grid>
                 <ion-row class="ion-justify-content-between ion-align-items-center">
                     <h1 class="ion-no-margin">{{ title }}</h1>
@@ -41,6 +41,9 @@
 </script>
 
 <style scoped>
+    ion-toolbar {
+        --border-color: var(--ion-color-white);
+    }
     ion-icon {
         font-size: 30px;
     }
