@@ -52,7 +52,7 @@
                 {{foundDealsByStatus.length}}
 
                 <!-- Карточки дел-->
-                <div v-for="(day, idx) in days" :key="idx">
+                <div v-for="(day, idx) in getExecutionDate(days)" :key="idx">
                     {{day}}
                     <div 
                         v-for="deal in foundDealsByStatus" 
@@ -61,7 +61,7 @@
                         <!-- {{ deal.executionDate }} -->
                         
                         <router-link 
-                            v-if="deal.executionDate === day"
+                            v-if="formattedDate(deal.executionDate) === day"
                             :to="{ name: 'View-Deal', params: { 
                                     dealId: deal.id,
                                     dealUid: deal.uid,
@@ -114,8 +114,8 @@
     import { supabase } from '../supabase/init';
     import { useRouter } from 'vue-router';
     import { uid } from 'uid';
-  
-
+    import { format, parseISO, formatISO  } from 'date-fns';
+    import { ru } from 'date-fns/locale'
 
     export default defineComponent({
         name: 'Deals',
@@ -181,14 +181,29 @@
                 daysArray.value = []
                 days.value = []
                 foundDealsByStatus.value = myDeals.value.filter(deal => {
+                    // Задаем формат отображения для даты полеченных дел
+                    const executionDate = formattedDate(new Date(deal.executionDate).toISOString().split("T")[0])
                     if(deal.dealStatus === currentDealStatus.value) {
-                        daysArray.value.push(deal.executionDate)
-                        daysArray.value.sort()
-                        days.value = new Set(daysArray.value)
+                        daysArray.value.push(executionDate)
                         return deal.dealStatus === currentDealStatus.value
                     } 
                 })
             })
+
+            // Получаем массив форматированных к показу дат
+            const getExecutionDate = (days) => {
+                // Сортируем от ближайшей даты и по удалению от сегодня
+                daysArray.value.sort()
+                // исключаем дубли дат
+                days = new Set(daysArray.value)
+                return days
+            }
+
+            // функция форматирования даты для сравнения даты дела и даты дня
+            const formattedDate = (day) => {
+                const formattedString = format(parseISO(day), 'd MMMM Y', { locale: ru });
+                return formattedString;
+            }
 
             // Выбранный к показу статус дел
             const currentDealStatus = ref('deal-in-booking');
@@ -200,11 +215,10 @@
                 days.value = []
                 // 
                 foundDealsByStatus.value = myDeals.value.filter(deal => {
-                    
+                    // Задаем формат отображения для даты полеченных дел
+                    const executionDate = formattedDate(new Date(deal.executionDate).toISOString().split("T")[0])
                     if(deal.dealStatus === currentDealStatus.value) {
-                        daysArray.value.push(deal.executionDate)
-                        daysArray.value.sort()
-                        days.value = new Set(daysArray.value)
+                        daysArray.value.push(executionDate)
                         return deal.dealStatus === currentDealStatus.value
                     } 
                 })            
@@ -241,7 +255,7 @@
             }
 
             return {
-                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isOpen, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days
+                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isOpen, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate
             }
         }
     })
