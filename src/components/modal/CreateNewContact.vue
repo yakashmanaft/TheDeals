@@ -191,7 +191,7 @@
                 <ion-text>
                     <h4 class="ion-no-margin ion-margin-top">События</h4>
                 </ion-text>
-                <!-- Если социальные сети не указаны -->
+                <!-- Если event не указаны -->
                 <ion-item v-if="!contactData.contactEvents.length" lines="none">
                     <ion-grid class="ion-no-padding">
                         <ion-row class="ion-justify-content-between">

@@ -3,11 +3,11 @@
         <ion-item lines="none" class="ion-no-padding">
             <ion-select interface="action-sheet" :placeholder="placeholder" v-model="selected" @select="$emit('date-updated', selected.value)">
                 <ion-select-option
-                    v-for="(type, index) in data" 
+                    v-for="(item, index) in data" 
                     :key="index" 
-                    :value="`${type.value}`"
+                    :value="`${item.value}`"
                     >
-                        {{type.value}}
+                        {{item.name}}
                     </ion-select-option>
             </ion-select>
         </ion-item>

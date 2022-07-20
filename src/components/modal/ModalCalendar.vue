@@ -14,8 +14,10 @@
                 presentation="date"
                 v-model="pickedDate"
                 @ionChange="$emit('closeModal')"
+                :value="setCurrentDate(date)"
             >
             </ion-datetime>
+        
         </ion-content>
     </ion-modal>
 </template>
@@ -27,6 +29,7 @@
     export default defineComponent({
         name: 'Calendar',
         emit: ['date-updated'],
+        props: ['date'],
         components: {
             IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonDatetime
         },
@@ -37,9 +40,18 @@
             watch(pickedDate, (currentValue) => {
                 emit('date-updated', {currentValue})
             })
+            //
+            const setCurrentDate = (date) => {
+                // console.log(date)
+                if(date === undefined) {
+                    return
+                } else if(date) {
+                    return date.currentValue
+                }
+            }
 
             return {
-                pickedDate
+                pickedDate, setCurrentDate
             }
         }
     })

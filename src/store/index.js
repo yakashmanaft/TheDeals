@@ -46,48 +46,61 @@ const state = reactive({
   myDealsArray: [],
   // phone types array in page my contact 
   myContactPhoneEmailTypes: [
-    { value: 'Личный' }, { value: 'Рабочий' }
+    { name: 'Личный',
+      value: 'Личный'
+    }, 
+    { name: 'Рабочий',
+      value: 'Рабочий' 
+    }
   ],
   // social networks array in page my contact
   myContactSocialNetworksType: [
-    { value: 'Instagram' }, { value: 'Vkontakte' }, { value: 'Telegram' }, 
+    { name:'Инстаграм',
+      value: 'Instagram' 
+    }, 
+    { name: 'Вконтакте',
+      value: 'Vkontakte' 
+    }, 
+    { name: 'Телеграм',
+      value: 'Telegram' 
+    }, 
     // { value: 'Odnoklassniki' }, { value: 'Twitter' }
   ],
   // deal status list
   dealStatusList: [
     {
-      name: 'deal-in-booking',
-      title: 'Бронь даты',
+      name: 'Бронь даты',
+      value: 'deal-in-booking',
       caption: 'Нет забронированных дат',
       text: 'Создайте дело и укажите дату'
     },
     {
-      name: 'deal-in-process',
-      title: 'В процессе',
+      name: 'В процессе',
+      value: 'deal-in-process',
       caption: 'Где дела в процессе?',
       text: 'Создайте дело и приступайте'
     },
     {
-      name: 'deal-in-delivery',
-      title: 'В доставке',
+      name: 'В доставке',
+      value: 'deal-in-delivery',
       caption: 'А как же доставка?',
       text: 'Сделали дело, доставьте товар'
     },
     {
-      name: 'deal-in-debt',
-      title: 'Долг',
+      name: 'Долг',
+      value: 'deal-in-debt',
       caption: 'У вас нет дел с долгами',
       text: 'Никто никому ничего не должен'
     },
     {
-      name: 'deal-complete',
-      title: 'Завершен',
+      name: 'Завершен',
+      value: 'deal-complete',
       caption: 'Где завершенные дела?',
       text: 'Кажется, вы беретесь и не доделываете...'
     },
     {
-      name: 'deal-cancelled',
-      title: 'Отменен',
+      name: 'Отменен',
+      value: 'deal-cancelled',
       caption: 'Ни одного отмененного дела!',
       text: 'Вы супер! Так держать!'
     }

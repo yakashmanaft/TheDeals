@@ -340,6 +340,7 @@
                                     @date-updated="(pickedDate) => event.date = pickedDate"
                                     @closeModal="closeModalCalendar(event)"
                                     @didDismiss="event.show = false"
+                                    :date="event.date"
                                 />
                             </ion-item>
                         </div>
@@ -379,11 +380,11 @@
                     </div>
                     <!-- В режиме просмотра -->
                     <ion-item v-else lines="none" class="ion-no-padding">
-                        <ion-item v-if="currentContact.contactInfo.note === ''" lines="none">
+                        <ion-item v-if="currentContact.contactInfo.note === '' || currentContact.contactInfo.note === null" lines="none">
                             Нет заметок
                         </ion-item>
-                        <ion-item v-if="currentContact.contactInfo.note !== ''" lines="none" class="ion-margin-top">
-                            <div class="flex flex-col">
+                        <ion-item v-else lines="none" class="ion-margin-top">
+                            <div class="flex flex-col ">
                                 <ion-text color="medium">Заметки</ion-text>
                                 <ion-text color="primary">{{currentContact.contactInfo.note}}</ion-text>
                             </div>

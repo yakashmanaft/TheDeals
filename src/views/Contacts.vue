@@ -199,7 +199,7 @@
                     name: '',
                     surname: '',
                     company: '',
-                    note: null
+                    note: 'null'
                 },
                 phoneNumbers: [],
                 emails: [],
@@ -217,7 +217,7 @@
                         name: '',
                         surname: '',
                         company: '',
-                        note: null
+                        note: 'null'
                     },
                     phoneNumbers: [],
                     emails: [],

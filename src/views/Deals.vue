@@ -39,15 +39,15 @@
             <div v-if="dataLoaded && myDeals.length !== 0">
                 <!-- Статусы дел -->
                 <ion-list class="horizontal-scroll ion-margin-top">
-                    <ion-chip v-for="(status, index) in dealStatusList" :key="index" @click="setDealStatus(status.name)" :color="setChipColor(status.name)" :outline="setChipOutline(status.name)">
-                        <ion-label>{{ status.title }} {{countDealByStatus(status.name)}}</ion-label>
+                    <ion-chip v-for="(status, index) in dealStatusList" :key="index" @click="setDealStatus(status.value)" :color="setChipColor(status.value)" :outline="setChipOutline(status.value)">
+                        <ion-label>{{ status.name }} {{countDealByStatus(status.value)}}</ion-label>
                     </ion-chip>
                 </ion-list>
                 <!-- Если по данному статусу нет дел -->
                 <div class="no-status-deal" v-if="foundDealsByStatus.length === 0">
                     <div v-for="(status, index) in dealStatusList" :key="index">
-                        <div v-if="currentDealStatus === status.name">
-                            <ion-img class="no-status-deal_img" :src="`img/status/${status.name}.svg`"></ion-img>
+                        <div v-if="currentDealStatus === status.value">
+                            <ion-img class="no-status-deal_img" :src="`img/status/${status.value}.svg`"></ion-img>
                             <h4>{{ status.caption }}</h4>
                             <ion-text color="medium">{{ status.text }}</ion-text>
                         </div>
@@ -71,7 +71,12 @@
                             >
                                 <ion-card>
                                     {{deal}}
-                                    <div @click.prevent.stop="doSomething">КНОПКА</div>
+
+                                <!-- Кнопка смены статуса дела -->
+                                <div @click.prevent.stop="doSomething">
+                                    <Select :data="dealStatusList" :placeholder="deal.dealStatus.currentValue" @date-updated="(selected) => {deal.dealStatus = selected; updateCurrentDealStatus(deal)}"/>
+                                </div>
+
                                 </ion-card>
                             </router-link>
                     </div>
@@ -90,6 +95,7 @@
     import Spinner from '@/components/Spinner.vue';
     import CreateButton from '@/components/CreateButton.vue';
     import CreateNewDeal from '@/components/modal/CreateNewDeal.vue';
+    import Select from '../components/Select.vue'
     import { 
         IonContent, 
         IonHeader, 
@@ -126,6 +132,7 @@
             Spinner,
             CreateButton,
             CreateNewDeal,
+            Select,
             IonContent, 
             IonHeader, 
             IonItem, 
@@ -185,9 +192,9 @@
                 foundDealsByStatus.value = myDeals.value.filter(deal => {
                     // Задаем формат отображения для даты полеченных дел
                     const executionDate = formattedDate(new Date(deal.executionDate).toISOString().split("T")[0])
-                    if(deal.dealStatus === currentDealStatus.value) {
+                    if(deal.dealStatus.currentValue === currentDealStatus.value) {
                         daysArray.value.push(executionDate)
-                        return deal.dealStatus === currentDealStatus.value
+                        return deal.dealStatus.currentValue === currentDealStatus.value
                     } 
                 })
             })
@@ -209,6 +216,7 @@
 
             // Выбранный по умолчанию статус дел при загрузке экрана
             const currentDealStatus = ref('deal-in-booking');
+            // const currentDealStatus = ref();
 
             // Следим за изменением статуса дела и запускаем функцию показа
             watch(currentDealStatus, (currentValue) => {
@@ -218,16 +226,16 @@
                 foundDealsByStatus.value = myDeals.value.filter(deal => {
                     // Задаем формат отображения для даты полеченных дел
                     const executionDate = formattedDate(new Date(deal.executionDate).toISOString().split("T")[0])
-                    if(deal.dealStatus === currentDealStatus.value) {
+                    if(deal.dealStatus.currentValue === currentDealStatus.value) {
                         daysArray.value.push(executionDate)
-                        return deal.dealStatus === currentValue
+                        return deal.dealStatus.currentValue === currentValue
                     } 
                 })            
             })
 
             // Счетчик коилчества дел по конкретному статусу
             const countDealByStatus = (status) => {
-                const result = myDeals.value.filter(item => item.dealStatus === status)
+                const result = myDeals.value.filter(item => item.dealStatus.currentValue === status)
                 return result.length
             }
             // Массив сделок по выбранному статусу
@@ -257,13 +265,30 @@
                 return true
             }
 
-            // =====================================
+            // ====================================================================
             // Work with deal card
             const doSomething = () => {
                 console.log('clicked')
             }
+            // Меняем статус прямо на карточке дела
+            const updateCurrentDealStatus = async (deal) => {
+                //
+                
+                // Обновляем данные в БД
+                try{
+                    const { error } = await supabase.from('deals').update({
+                        dealStatus: deal.dealStatus
+                    }).eq('id', deal.id)
+                    if(error) throw error;
+                    
+                } catch (error) {
+                    alert(`Error: ${error.message}`)
+                }
+
+            }
+            // Переводчик placeholder
             
-            // =======================================
+            // ====================================================================
             // Work with Modal Create New Deal
             const isOpen = ref(false)
             // Изменяемый шаблон нового дела
@@ -287,7 +312,7 @@
             }
 
             return {
-                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isOpen, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething
+                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isOpen, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus
             }
         }
     })
