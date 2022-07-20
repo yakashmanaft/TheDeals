@@ -38,7 +38,7 @@
                     <!-- Surname -->
                     <ion-item v-if="edit" class="ion-margin-top ion-padding-start">
                         <ion-label position="stacked">Изменить фамилию</ion-label>
-                        <ion-input color="medium" v-model="currentContact.contactInfo.surname" type="text" placeholder="Фамилия"></ion-input>
+                        <ion-input autocapitalize="on" color="medium" v-model="currentContact.contactInfo.surname" type="text" placeholder="Фамилия"></ion-input>
                     </ion-item>
                     <ion-text v-else color="primary">
                         <h1 class="ion-no-margin ion-margin-top">{{ currentContact.contactInfo.surname }}</h1>
@@ -46,7 +46,7 @@
                     <!-- Name -->
                     <ion-item v-if="edit" class="ion-padding-start">
                         <ion-label position="stacked">Изменить имя</ion-label>
-                        <ion-input color="medium" v-model="currentContact.contactInfo.name" type="text" placeholder="Имя"></ion-input>
+                        <ion-input autocapitalize="on" color="medium" v-model="currentContact.contactInfo.name" type="text" placeholder="Имя"></ion-input>
                     </ion-item>
                     <ion-text v-else color="medium">
                         <h3 class="ion-no-margin">{{ currentContact.contactInfo.name }}</h3>
@@ -54,7 +54,7 @@
                     <!-- Company -->
                     <ion-item v-if="edit" class="ion-padding-start">
                         <ion-label position="stacked">Изменить наименование организации</ion-label>
-                        <ion-input color="medium" v-model="currentContact.contactInfo.company" type="text" placeholder="Организация"></ion-input>
+                        <ion-input autocapitalize="on" color="medium" v-model="currentContact.contactInfo.company" type="text" placeholder="Организация"></ion-input>
                     </ion-item>
                     <ion-text v-else color="medium">
                         <p class="ion-margin-top">{{ currentContact.contactInfo.company }}</p>
@@ -325,7 +325,7 @@
                             </ion-grid>
                             <!-- event title -->
                             <ion-item>
-                                <ion-input inputmode="text" placeholder="Название события" v-model="event.title"></ion-input>
+                                <ion-input autocapitalize="on" inputmode="text" placeholder="Название события" v-model="event.title"></ion-input>
                             </ion-item>
                             <!-- date of event -->
                             <ion-item>
@@ -516,10 +516,10 @@
                     // условия показа доп. фраз
                     if (result === 0 || result === 365 || result === 366) {
                         return 'Сегодня'
-                    } else if (result % 100 === 11 || result % 100 === 12 || result % 100 === 13 || result % 100 === 14) {
+                    } else if (result === 1) {
+                        return 'Завтра'
+                    }else if (result % 100 === 11 || result % 100 === 12 || result % 100 === 13 || result % 100 === 14) {
                         return result + ' дней';
-                    } else if (result % 10 === 1) {
-                        return 'Завтра';
                     } else if (result % 10 === 2 || result % 10 === 3 || result % 10 === 4) {
                         return 'Через ' + result + ' дня';
                     } else {
