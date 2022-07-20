@@ -22,7 +22,7 @@
 
         <ion-content 
             :scroll-events="true"
-            class="ion-page ion-margin-top ion-padding-top" 
+            class="ion-page ion-margin-top" 
             id="main"
             type="push" 
         >
@@ -38,11 +38,11 @@
             <!-- Data -->
             <div v-if="dataLoaded && myDeals.length !== 0">
                 <!-- Статусы дел -->
-                <div class="horizontal-scroll">
+                <ion-list class="horizontal-scroll ion-margin-top">
                     <ion-chip v-for="(status, index) in dealStatusList" :key="index" @click="setDealStatus(status.name)" :color="setChipColor(status.name)" :outline="setChipOutline(status.name)">
                         <ion-label>{{ status.title }} {{countDealByStatus(status.name)}}</ion-label>
                     </ion-chip>
-                </div>
+                </ion-list>
                 <!-- Если по данному статусу нет дел -->
                 <div class="no-status-deal" v-if="foundDealsByStatus.length === 0">
                     <div v-for="(status, index) in dealStatusList" :key="index">

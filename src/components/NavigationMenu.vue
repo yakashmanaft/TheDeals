@@ -61,7 +61,7 @@
 
 <script>
     import store from '../store/index';
-    import { ref, computed } from 'vue';
+    import { defineComponent, ref, computed } from 'vue';
     import { supabase } from '../supabase/init';
     import { useRouter } from 'vue-router';
     import { 
@@ -80,8 +80,7 @@
         IonCol
     } from '@ionic/vue';
     import PWAPrompt from '../components/PWAPrompt.vue';
-    import { defineComponent } from 'vue';
-    import { exitOutline, clipboardOutline, calendarOutline, peopleOutline, settingsOutline, helpCircleOutline } from 'ionicons/icons';
+    import { exitOutline, settingsOutline, helpCircleOutline } from 'ionicons/icons';
 
     export default defineComponent({
         name: 'NavigationMenu',
@@ -102,26 +101,10 @@
                 router.push({ name: 'Login' });
             }
             // menu items array
-            const menuList = [
-                {
-                    name: 'Deals',
-                    title: 'Все мои дела',
-                    icon: clipboardOutline
-                },
-                {
-                    name: 'Calendar',
-                    title: 'Календарь',
-                    icon: calendarOutline
-                },
-                {
-                    name: 'Contacts',
-                    title: 'Мои контакты',
-                    icon: peopleOutline
-                },
-            ]
+            const menuList = ref(store.state.menuList)
 
             return {
-                user, router, userEmail, logout, menuList, exitOutline, clipboardOutline, calendarOutline, peopleOutline, settingsOutline, helpCircleOutline
+                user, router, userEmail, logout, menuList, exitOutline, settingsOutline, helpCircleOutline
             }
         }
     })

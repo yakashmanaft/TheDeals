@@ -16,11 +16,30 @@
 import { reactive } from "vue";
 import { supabase } from '../supabase/init';
 import { sortAlphabetically  } from '../helpers/sortMyContacts.js';
+import { clipboardOutline, calendarOutline, peopleOutline } from 'ionicons/icons';
 
 const state = reactive({
   // user
   user: null,
   userEmail: null,
+  // Список модулей для отображения в меню
+  menuList : [
+      {
+          name: 'Deals',
+          title: 'Все мои дела',
+          icon: clipboardOutline
+      },
+      {
+          name: 'Calendar',
+          title: 'Календарь',
+          icon: calendarOutline
+      },
+      {
+          name: 'Contacts',
+          title: 'Мои контакты',
+          icon: peopleOutline
+      },
+  ],
   // contact array in page Contacts
   myContactsArray: [],
   // deals array in page Deals
