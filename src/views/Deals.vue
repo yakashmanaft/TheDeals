@@ -190,16 +190,7 @@
                 myDeals.value = store.state.myDealsArray;
                 spinner.value = false
                 dataLoaded.value = true;
-                daysArray.value = []
-                days.value = []
-                foundDealsByStatus.value = myDeals.value.filter(deal => {
-                    // Задаем формат отображения для даты полеченных дел
-                    const executionDate = formattedDate(new Date(deal.executionDate).toISOString().split("T")[0])
-                    if(deal.dealStatus.currentValue === currentDealStatus.value) {
-                        daysArray.value.push(executionDate)
-                        return deal.dealStatus.currentValue === currentDealStatus.value
-                    } 
-                })
+                resfreshData();
             })
 
             // Получаем массив форматированных к показу дат
@@ -223,17 +214,7 @@
 
             // Следим за изменением статуса дела и запускаем функцию показа
             watch(currentDealStatus, (currentValue) => {
-                daysArray.value = []
-                days.value = []
-                // 
-                foundDealsByStatus.value = myDeals.value.filter(deal => {
-                    // Задаем формат отображения для даты полеченных дел
-                    const executionDate = formattedDate(new Date(deal.executionDate).toISOString().split("T")[0])
-                    if(deal.dealStatus.currentValue === currentValue) {
-                        daysArray.value.push(executionDate)  
-                        return deal.dealStatus.currentValue === currentValue
-                    } 
-                })   
+                resfreshData(currentValue)
             })
 
             // Счетчик коилчества дел по конкретному статусу
