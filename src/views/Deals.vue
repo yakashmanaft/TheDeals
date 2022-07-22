@@ -181,6 +181,9 @@
             const days = ref([])
             // Подтягиваем список дел из store
             spinner.value = true;
+            // Массив сделок по выбранному статусу
+            const foundDealsByStatus = ref([])
+            //
             onMounted( async() => {
                 // daysArray.value = []
                 await store.methods.getMyDealsFromBD();
@@ -226,25 +229,24 @@
                 foundDealsByStatus.value = myDeals.value.filter(deal => {
                     // Задаем формат отображения для даты полеченных дел
                     const executionDate = formattedDate(new Date(deal.executionDate).toISOString().split("T")[0])
-                    if(deal.dealStatus.currentValue === currentDealStatus.value) {
-                        daysArray.value.push(executionDate)
+                    if(deal.dealStatus.currentValue === currentValue) {
+                        daysArray.value.push(executionDate)  
                         return deal.dealStatus.currentValue === currentValue
                     } 
-                })            
+                })   
             })
 
             // Счетчик коилчества дел по конкретному статусу
             const countDealByStatus = (status) => {
-                const result = myDeals.value.filter(item => item.dealStatus.currentValue === status)
+                const result = myDeals.value.filter(item => item.dealStatus.currentValue === status)   
                 return result.length
             }
-            // Массив сделок по выбранному статусу
-            const foundDealsByStatus = ref([])
+
             // Текущий выбранный статус сделок
             const setDealStatus = (name) => {
                 currentDealStatus.value = name
             }
-            // 
+            // Задаем цвет chip
             const setChipColor = (status) => {
                 if (status === 'deal-in-debt') {
                     return 'danger'
@@ -272,17 +274,15 @@
             }
             // Меняем статус прямо на карточке дела
             const updateCurrentDealStatus = async (deal) => {
-                //
-                
                 // Обновляем данные в БД
                 try{
                     const { error } = await supabase.from('deals').update({
                         dealStatus: deal.dealStatus
-                    }).eq('id', deal.id)
+                    }).eq('id', deal.id);
                     if(error) throw error;
-                    
+                    resfreshData();
                 } catch (error) {
-                    alert(`Error: ${error.message}`)
+                    alert(`Error: ${error.message}`);
                 }
 
             }
@@ -311,8 +311,23 @@
                 console.log(newDealData)
             }
 
+            // Функция обновления контента к показу (после обновления в записей в БД)
+            const resfreshData = () => {
+                daysArray.value = []
+                days.value = []
+                // Обновляем содержимое к отображению
+                foundDealsByStatus.value = myDeals.value.filter(deal => {
+                    // Задаем формат отображения для даты полеченных дел
+                    const executionDate = formattedDate(new Date(deal.executionDate).toISOString().split("T")[0])
+                    if(deal.dealStatus.currentValue === currentDealStatus.value) {
+                        daysArray.value.push(executionDate)
+                        return deal.dealStatus.currentValue === currentDealStatus.value
+                    } 
+                })
+            }
+
             return {
-                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isOpen, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus
+                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isOpen, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, resfreshData
             }
         }
     })
