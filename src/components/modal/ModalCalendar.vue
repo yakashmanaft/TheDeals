@@ -15,6 +15,8 @@
                 v-model="pickedDate"
                 @ionChange="$emit('closeModal')"
                 :value="setCurrentDate(date)"
+                :first-day-of-week="1"
+                locale="ru"
             >
             </ion-datetime>
         

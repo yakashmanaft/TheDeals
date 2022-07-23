@@ -513,9 +513,9 @@
                         date.setFullYear(now.getFullYear() + 1);
                     }
                     // А если високосный год?
-                    const result = Math.floor((date - now) / (1000*60*60*24) + 1)
+                    const result = Math.floor((date - now) / (864e5) + 1)
                     // условия показа доп. фраз
-                    if (result === 0 || result === 365 || result === 366) {
+                    if (result === 0 || result === 365) {
                         return 'Сегодня'
                     } else if (result === 1) {
                         return 'Завтра'

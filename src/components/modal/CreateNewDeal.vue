@@ -12,6 +12,7 @@
             </ion-toolbar>
         </ion-header>
     </ion-modal>
+    <!-- Значение статуса дела по умолчанию: Бронь даты, deal-in-booking -->
 </template>
 
 <script>

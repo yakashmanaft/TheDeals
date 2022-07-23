@@ -74,7 +74,7 @@
 
                                 <!-- Кнопка смены статуса дела -->
                                 <div @click.prevent.stop="doSomething">
-                                    <Select :data="dealStatusList" :placeholder="deal.dealStatus.currentValue" @date-updated="(selected) => {deal.dealStatus = selected; updateCurrentDealStatus(deal)}"/>
+                                    <Select :data="dealStatusList" :placeholder="translatePlaceholder(deal.dealStatus.currentValue, dealStatusList)" @date-updated="(selected) => {deal.dealStatus = selected; updateCurrentDealStatus(deal)}"/>
                                 </div>
 
                                 </ion-card>
@@ -265,9 +265,20 @@
                 } catch (error) {
                     alert(`Error: ${error.message}`);
                 }
-
             }
             // Переводчик placeholder
+            // Еслит надо переиспользовать
+            // А если будет слишком много данных? Мы же каждый раз их обходим циклом...
+            const translatePlaceholder = (value, array) => {
+                let currentName = ''
+                array.forEach(item => {
+                    if(item.value === value) {
+                        currentName = item.name
+                        return currentName
+                    }
+                })
+                return currentName
+            }
             
             // ====================================================================
             // Work with Modal Create New Deal
@@ -308,7 +319,7 @@
             }
 
             return {
-                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isOpen, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, resfreshData
+                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isOpen, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translatePlaceholder, resfreshData
             }
         }
     })
