@@ -72,10 +72,11 @@
                                 <ion-card>
                                     {{deal}}
 
-                                <!-- Кнопка смены статуса дела -->
-                                <div @click.prevent.stop="doSomething">
-                                    <Select :data="dealStatusList" :placeholder="translatePlaceholder(deal.dealStatus.currentValue, dealStatusList)" @date-updated="(selected) => {deal.dealStatus = selected; updateCurrentDealStatus(deal)}"/>
-                                </div>
+                                    <!-- Кнопка смены статуса дела -->
+                                    <div @click.prevent.stop="doSomething">
+                                        <!-- Как будет вести себя translatePlaceholder при тысяче дел например?  -->
+                                        <Select :data="dealStatusList" :placeholder="translatePlaceholder(deal.dealStatus.currentValue, dealStatusList)" @date-updated="(selected) => {deal.dealStatus = selected; updateCurrentDealStatus(deal)}"/>
+                                    </div>
 
                                 </ion-card>
                             </router-link>
