@@ -11,6 +11,16 @@
                 </ion-buttons>
             </ion-toolbar>
         </ion-header>
+        <ion-content class="ion-padding">
+            <!-- ============================ Контакт по делу ===================================== -->
+            <ion-item-group>
+                <!-- заголовок -->
+                <ion-text>
+                    <h4>Укажите контакт</h4>
+                </ion-text>
+            </ion-item-group>
+            {{dealData}}
+        </ion-content>
     </ion-modal>
     <!-- Значение статуса дела по умолчанию: Бронь даты, deal-in-booking -->
 </template>
@@ -19,7 +29,7 @@
     import { defineComponent, ref, computed } from 'vue';
     import store from '../../store/index'; 
     //
-    import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle } from '@ionic/vue';
+    import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText } from '@ionic/vue';
 
     export default defineComponent({
         name: 'CreateNewDeal',
@@ -27,7 +37,7 @@
             dealData: Object
         },
         components: {
-            IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle
+            IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText
         },
         setup() {
             return {

@@ -69,14 +69,32 @@
                                         deal: JSON.stringify(deal)
                                     }}"
                             >
-                                <ion-card>
+                                <ion-card class="ion-padding-horizontal">
+                                    <ion-card-header class="ion-no-padding">
+                                        <ion-grid>
+                                            <ion-row class="ion-justify-content-between ion-align-items-center">
+                                                <!-- Кнопка смены статуса дела -->
+                                                <div @click.prevent.stop="doSomething">
+                                                    <!-- Как будет вести себя translatePlaceholder при тысяче дел например?  -->
+                                                    <Select :data="dealStatusList" :placeholder="translatePlaceholder(deal.dealStatus.currentValue, dealStatusList)" @date-updated="(selected) => {deal.dealStatus = selected; updateCurrentDealStatus(deal)}"/>
+                                                </div>
+                                                <!-- Контакт по делу -->
+                                                <div>
+                                                    <ion-text v-if="deal.contactID === '000'" color="primary">Неизвестный</ion-text>
+                                                    <ion-text v-else>
+                                                        <router-link 
+                                                            :to="{ name: 'View-Contact', params: { 
+                                                                contactId: deal.contactID,
+                                                                contact: getContact(deal.contactID)
+                                                                }}"
+                                                        >{{showNameByID(deal.contactID)}}</router-link>
+                                                    </ion-text>
+                                                </div>
+                                            </ion-row>
+                                        </ion-grid>
+                                    </ion-card-header>
                                     {{deal}}
 
-                                    <!-- Кнопка смены статуса дела -->
-                                    <div @click.prevent.stop="doSomething">
-                                        <!-- Как будет вести себя translatePlaceholder при тысяче дел например?  -->
-                                        <Select :data="dealStatusList" :placeholder="translatePlaceholder(deal.dealStatus.currentValue, dealStatusList)" @date-updated="(selected) => {deal.dealStatus = selected; updateCurrentDealStatus(deal)}"/>
-                                    </div>
 
                                 </ion-card>
                             </router-link>
@@ -114,7 +132,10 @@
         IonItemOption,
         IonItemOptions,
         IonItemSliding,
-        IonCard
+        IonCard,
+        IonCardHeader,
+        IonGrid,
+        IonRow
     } from '@ionic/vue';
     import { defineComponent, ref, computed, onMounted, watch } from 'vue';
     import store from '../store/index';
@@ -150,7 +171,10 @@
             IonItemOption,
             IonItemOptions,
             IonItemSliding,
-            IonCard
+            IonCard,
+            IonCardHeader,
+            IonGrid,
+            IonRow
         },
         setup() {
             // Get user from store
@@ -277,6 +301,27 @@
                 })
                 return currentName
             }
+            // Храним данные контакта
+            const myContacts = ref([])
+            onMounted( async () => {
+                await store.methods.getMyContactsFromDB()
+                myContacts.value = store.state.myContactsArray
+            })
+            // Передаем в роут данные ко конкретному контакту
+            const getContact = (contactID) => {
+                const result = myContacts.value.filter(contact => contact.id === +contactID)
+                const contact = result[0]
+                return JSON.stringify(contact)
+            }
+            // Подтягиваем name, surname на основании contactID
+            const showNameByID = (contactID) => {
+                const result = myContacts.value.filter(contact => contact.id === +contactID)
+                if(result.length !== 0) {
+                    const nameByID = (result[0].contactInfo.surname + ' ' + result[0].contactInfo.name).toString().replace(/"/g, "")
+                    return nameByID;
+                }
+                
+            }
             
             // ====================================================================
             // Work with Modal Create New Deal
@@ -285,6 +330,10 @@
             const dealData = ref({
                 uid: uid(),
                 email: userEmail.value,
+                dealType: '',
+                dealStatus: '',
+                dealList: [],
+                contactID: ''
             })
 
             // При закрытии или открытии modal очищаем шаблон дела
@@ -293,6 +342,10 @@
                 dealData.value = {
                     uid: uid(),
                     email: userEmail.value,
+                    dealType: '',
+                    dealStatus: '',
+                    dealList: [],
+                    contactID: ''
                 }
             }
 
@@ -317,7 +370,7 @@
             }
 
             return {
-                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isOpen, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translatePlaceholder, resfreshData
+                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isOpen, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translatePlaceholder, resfreshData, myContacts, getContact, showNameByID
             }
         }
     })

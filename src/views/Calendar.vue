@@ -24,6 +24,8 @@
                     size="cover"
                     @ionChange="doSomething"
                     v-model="choosenDate"
+                    :first-day-of-week="1"
+                    locale="ru"
                 ></ion-datetime>
             </div>
 
