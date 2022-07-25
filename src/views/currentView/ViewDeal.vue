@@ -26,6 +26,20 @@
             <!-- Data -->
             <div>
                 {{currentId}}
+                <br>
+                {{currentDeal}}
+                <br>
+                <!-- Кнопка удалить контакта -->
+                <!-- Не показываем в режиме edit -->
+                <ion-button v-if="!edit" @click="setOpen(true)" fill="clear" color="danger">Удалить дело</ion-button>
+                <!-- Всплывашка подтверждение -->
+                <ion-action-sheet
+                    :is-open="isOpenRef"
+                    header="Точно удалить?"
+                    :buttons="buttons"
+                    @didDismiss="setOpen(false)"
+                >
+                </ion-action-sheet>
             </div>
         </ion-content>
 
@@ -38,7 +52,7 @@
     import { useRoute, useRouter } from 'vue-router';
     import store from '../../store/index';
     import { uid } from 'uid';
-    import { IonContent } from '@ionic/vue';
+    import { IonContent, IonButton, IonActionSheet } from '@ionic/vue';
     import {  } from 'ionicons/icons';
     //
     import Spinner from '../../components/Spinner.vue';
@@ -46,7 +60,7 @@
     export default defineComponent({
         name: 'View-deal',
         components: {
-            Spinner, ViewHeader, IonContent
+            Spinner, ViewHeader, IonContent, IonButton, IonActionSheet
         }, 
         setup() {
             const route = useRoute();
@@ -82,7 +96,7 @@
                     alert(`Error: ${error.message}`)
                 }
             }     
-            // update current deal functin
+            // update current deal function
             const update = async () => {
                 try {
                     spinner.value = true;
@@ -94,8 +108,41 @@
                 edit.value = !edit.value;
                 spinner.value = false;
             }
+            // delete current deal function
+            const deleteDeal = async () => {
+                try {
+                    const { error } = await supabase.from('deals').delete().eq('id',currentId);
+                    if(error) throw error;
+                    router.push({ name: 'Deals' })
+                } catch (error) {
+                    alert(`Error: ${error.message}`)
+                }
+            }
+            // меню подтверждения удаления current contact
+            const isOpenRef = ref(false);
+            const setOpen = (boolean) => isOpenRef.value = boolean;
+            const buttons = [
+                {
+                    text: 'Удалить',
+                    role: 'destructive',
+                    data: {
+                        type: 'delete'
+                    },
+                    handler: () => {
+                        console.log('Delete clicked')
+                        deleteDeal()
+                    },
+                },
+                {
+                    text: 'Отменить',
+                    role: 'cancel',
+                    handler: () => {
+                        console.log('Cancel clicked')
+                    },
+                }
+            ]
             return {
-                spinner, currentId, info, currentDeal, edit, editMode, cancelEdit, update
+                spinner, currentId, info, currentDeal, edit, editMode, cancelEdit, update, isOpenRef, setOpen, buttons, deleteDeal
             }
         }
     })

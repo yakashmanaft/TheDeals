@@ -24,7 +24,7 @@
             :scroll-events="true"
             class="ion-page ion-margin-top" 
             id="main"
-            type="push" 
+            type="push"
         >
             <br>
             <br>
@@ -83,7 +83,6 @@
                     </div>
                 </div>
 
-
             </div>
         </ion-content>
     </div>
@@ -115,7 +114,6 @@
         IonItemOption,
         IonItemOptions,
         IonItemSliding,
-        IonVirtualScroll,
         IonCard
     } from '@ionic/vue';
     import { defineComponent, ref, computed, onMounted, watch } from 'vue';
@@ -152,7 +150,6 @@
             IonItemOption,
             IonItemOptions,
             IonItemSliding,
-            IonVirtualScroll,
             IonCard
         },
         setup() {
