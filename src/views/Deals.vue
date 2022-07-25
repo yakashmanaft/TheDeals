@@ -97,7 +97,7 @@
                                         </ion-grid>
                                     </ion-card-header>
                                     <!-- Body of the card -->
-                                    {{deal}}
+                                    
 
 
                                 </ion-card>
@@ -111,7 +111,6 @@
 </template>
 
 <script>
-
     import NavigationMenu from '@/components/NavigationMenu.vue';
     import Header from '@/components/headers/Header.vue'
     import Spinner from '@/components/Spinner.vue';
@@ -148,7 +147,6 @@
     import { uid } from 'uid';
     import { format, parseISO, formatISO  } from 'date-fns';
     import { ru } from 'date-fns/locale'
-
     export default defineComponent({
         name: 'Deals',
         components: {
@@ -191,14 +189,12 @@
             console.log(userEmail.value)
             // Get page title
             const pageTitle = router.currentRoute._value.meta.translation;
-
             // 
             const spinner = ref(null);
             const dataLoaded = ref(null);
             const myDeals = ref([]);
             // счетчик количества дел по конкретному статусу
             // const countDealsByCurrentStatus = ref(null);
-
             // Статусы дел
             const dealStatusList = ref(store.state.dealStatusList)
             //Все даты по конкретному статусу
@@ -218,7 +214,6 @@
                 dataLoaded.value = true;
                 resfreshData();
             })
-
             // Получаем массив форматированных к показу дат
             const getExecutionDate = (days) => {
                 // Сортируем от ближайшей даты и по удалению от сегодня
@@ -227,28 +222,23 @@
                 days = new Set(daysArray.value)
                 return days
             }
-
             // функция форматирования даты для сравнения даты дела и даты дня
             const formattedDate = (day) => {
                 const formattedString = format(parseISO(day), 'd MMMM Y', { locale: ru });
                 return formattedString;
             }
-
             // Выбранный по умолчанию статус дел при загрузке экрана
             const currentDealStatus = ref('deal-in-booking');
             // const currentDealStatus = ref();
-
             // Следим за изменением статуса дела и запускаем функцию показа
             watch(currentDealStatus, (currentValue) => {
                 resfreshData(currentValue)
             })
-
             // Счетчик коилчества дел по конкретному статусу
             const countDealByStatus = (status) => {
                 const result = myDeals.value.filter(item => item.dealStatus.currentValue === status)   
                 return result.length
             }
-
             // Текущий выбранный статус сделок
             const setDealStatus = (name) => {
                 currentDealStatus.value = name
@@ -273,7 +263,6 @@
                 }
                 return true
             }
-
             // ====================================================================
             // Work with deal card
             const doSomething = () => {
@@ -324,7 +313,6 @@
                     const nameByID = (result[0].contactInfo.surname + ' ' + result[0].contactInfo.name).toString().replace(/"/g, "")
                     return nameByID;
                 }
-                
             }
             
             // ====================================================================
@@ -336,17 +324,16 @@
                 email: userEmail.value,
                 dealType: '',
                 dealStatus: {
-                    "currentValue": "deal-in-booking"
+                    currentValue: "deal-in-booking"
                 },
                 contactID: '',
                 dealsList: [],
                 shipping: '',
                 totalDealValue: '',
-                executionDate: new Date(),
+                executionDate: '2022-06-18 00:00:00+00',
                 dealPaid: '',
                 cancelledReason: ''
             })
-
             // При закрытии или открытии modal очищаем шаблон дела
             const setOpen = () => {
                 isOpen.value = !isOpen.value;
@@ -355,18 +342,17 @@
                     email: userEmail.value,
                     dealType: '',
                     dealStatus: {
-                        "currentValue": "deal-in-booking"
+                        currentValue: "deal-in-booking"
                     },
                     contactID: '000',
                     dealsList: [],
                     shipping: '',
                     totalDealValue: '',
-                    executionDate: new Date(),
+                    executionDate: '2022-06-18 00:00:00+00',
                     dealPaid: '',
                     cancelledReason: ''
                 }
             }
-
             // Создаем новую сделку
             const createNew = async (newDealData) => {
                 // принимаем инфу по контакту из modal
@@ -392,7 +378,6 @@
                     alert(`Error: ${error.message}`)
                 }
             }
-
             // Функция обновления контента к показу (после обновления в записей в БД)
             const resfreshData = () => {
                 daysArray.value = []
@@ -407,7 +392,6 @@
                     } 
                 })
             }
-
             return {
                 user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isOpen, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translatePlaceholder, resfreshData, myContacts, getContact, showNameByID
             }
@@ -419,18 +403,15 @@
     ion-img {
         height: 50vh;
     }
-
     ::-webkit-scrollbar, *::-webkit-scrollbar {
         display: none;
         overflow: hidden;
     }
-
     .horizontal-scroll {
         overflow: scroll;
         --overflow: scroll;
         white-space: nowrap;
     }
-
     .no-status-deal {
         height: 80vh; 
         display: flex; 
@@ -438,7 +419,6 @@
         align-items: center; 
         justify-content: center;
     }
-
     .no-status-deal_img {
         width: 50%; 
         height: 50%; 

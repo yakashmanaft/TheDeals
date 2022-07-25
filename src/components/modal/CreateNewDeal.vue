@@ -28,7 +28,7 @@
                 </ion-grid>
                 <ion-input v-model="dealData.contactID" ></ion-input>
                 <div v-if="searchContactMenu">
-                    <div v-for="(contact, id) in myContacts" :key="contact.id" @click="choose(contact)">
+                    <div v-for="contact in myContacts" :key="contact.id" @click="choose(contact)">
                         {{contact.contactInfo.name}} {{contact.contactInfo.surname}}
                     </div>
                 </div>
@@ -54,7 +54,6 @@
     import store from '../../store/index'; 
     //
     import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonInput } from '@ionic/vue';
-
     export default defineComponent({
         name: 'CreateNewDeal',
         emits: ['date-updated', 'closeModal', 'createDeal'],
@@ -81,7 +80,6 @@
                 console.log(currentValue)
                 emit('date-updated', {currentValue})
             })
-
             return {
                 dealContact, dealContactID , searchContactMenu, choose
             }
@@ -90,5 +88,4 @@
 </script>
 
 <style scoped>
-
 </style>
