@@ -18,6 +18,8 @@
             @closeModal="setOpen"
             @createDeal="createNew"
             :dealData="dealData"
+            :myContacts="myContacts"
+            @date-updated="(dealContactID) => dealData.contactID = dealContactID.currentValue"
         />
 
         <ion-content 
@@ -70,6 +72,7 @@
                                     }}"
                             >
                                 <ion-card class="ion-padding-horizontal">
+                                    <!-- Header of the card -->
                                     <ion-card-header class="ion-no-padding">
                                         <ion-grid>
                                             <ion-row class="ion-justify-content-between ion-align-items-center">
@@ -93,6 +96,7 @@
                                             </ion-row>
                                         </ion-grid>
                                     </ion-card-header>
+                                    <!-- Body of the card -->
                                     {{deal}}
 
 
@@ -331,9 +335,16 @@
                 uid: uid(),
                 email: userEmail.value,
                 dealType: '',
-                dealStatus: '',
-                dealList: [],
-                contactID: ''
+                dealStatus: {
+                    "currentValue": "deal-in-booking"
+                },
+                contactID: '',
+                dealsList: [],
+                shipping: '',
+                totalDealValue: '',
+                executionDate: new Date(),
+                dealPaid: '',
+                cancelledReason: ''
             })
 
             // При закрытии или открытии modal очищаем шаблон дела
@@ -343,15 +354,43 @@
                     uid: uid(),
                     email: userEmail.value,
                     dealType: '',
-                    dealStatus: '',
-                    dealList: [],
-                    contactID: ''
+                    dealStatus: {
+                        "currentValue": "deal-in-booking"
+                    },
+                    contactID: '000',
+                    dealsList: [],
+                    shipping: '',
+                    totalDealValue: '',
+                    executionDate: new Date(),
+                    dealPaid: '',
+                    cancelledReason: ''
                 }
             }
 
             // Создаем новую сделку
             const createNew = async (newDealData) => {
-                console.log(newDealData)
+                // принимаем инфу по контакту из modal
+                dealData.value = newDealData
+                spinner.value = true;
+                // Если строки Имя Фамилия пустые или не пустые 
+                // использовать валидацию 
+                try{
+                    // Добавляем в БД инфу по новому контакту
+                    // Скорей всего надо будет вынести в store или нет
+                    const { error } = await supabase.from('deals').insert([dealData.value])
+                    if(error) throw error;
+                    // обновляем массив в store
+                    await store.methods.getMyDealsFromBD();
+                    myDeals.value = store.state.myDealsArray
+                    // ищем созданное новое дело в массиве всех дел в store (по uid)
+                    const newDeal = myDeals.value.find(el => el.uid === dealData.value.uid)
+                    // закрываем modal
+                    isOpen.value = false;
+                    // переходим на страницу созданного нового контакта
+                    router.push({name: 'View-Deal', params: { dealId: newDeal.id, deal: JSON.stringify(newDeal)}})
+                } catch (error) {
+                    alert(`Error: ${error.message}`)
+                }
             }
 
             // Функция обновления контента к показу (после обновления в записей в БД)
