@@ -57,7 +57,7 @@
                 </div>
 
                 <!-- Карточки дел-->
-                <div v-for="(day, idx) in getExecutionDate(days)" :key="idx" class="ion-margin-top">
+                <div v-for="(day, idx) in getExecutionDate()" :key="idx" class="ion-margin-top">
                     {{day}}
                     <div 
                         v-for="deal in foundDealsByStatus" 
@@ -215,11 +215,19 @@
                 resfreshData();
             })
             // Получаем массив форматированных к показу дат
-            const getExecutionDate = (days) => {
+            const getExecutionDate = () => {
                 // Сортируем от ближайшей даты и по удалению от сегодня
-                daysArray.value.sort()
+                daysArray.value.sort((a,b) => {
+                    return new Date(a) - new Date(b);
+                })
+                // создаем новый массив на основе форматированных дат
+                const array = []
+                daysArray.value.forEach(item => {
+                    array.push(formattedDate(item))
+                })
                 // исключаем дубли дат
-                days = new Set(daysArray.value)
+                const days = new Set(array)
+                // возвращаем данные
                 return days
             }
             // функция форматирования даты для сравнения даты дела и даты дня
@@ -229,7 +237,6 @@
             }
             // Выбранный по умолчанию статус дел при загрузке экрана
             const currentDealStatus = ref('deal-in-booking');
-            // const currentDealStatus = ref();
             // Следим за изменением статуса дела и запускаем функцию показа
             watch(currentDealStatus, (currentValue) => {
                 resfreshData(currentValue)
@@ -330,7 +337,7 @@
                 dealsList: [],
                 shipping: '',
                 totalDealValue: '',
-                executionDate: '2022-06-18 00:00:00+00',
+                executionDate: '',
                 dealPaid: '',
                 cancelledReason: ''
             })
@@ -348,7 +355,7 @@
                     dealsList: [],
                     shipping: '',
                     totalDealValue: '',
-                    executionDate: '2022-06-18 00:00:00+00',
+                    executionDate: '',
                     dealPaid: '',
                     cancelledReason: ''
                 }
@@ -384,10 +391,15 @@
                 days.value = []
                 // Обновляем содержимое к отображению
                 foundDealsByStatus.value = myDeals.value.filter(deal => {
-                    // Задаем формат отображения для даты полеченных дел
-                    const executionDate = formattedDate(new Date(deal.executionDate).toISOString().split("T")[0])
+                    // Задаем формат отображения для даты полученных дел
+                    // const executionDate = formattedDate(new Date(deal.executionDate).toISOString().split("T")[0])
+                    // const executionDate = formattedDate(deal.executionDate)
+                    const executionDate = deal.executionDate
                     if(deal.dealStatus.currentValue === currentDealStatus.value) {
                         daysArray.value.push(executionDate)
+                        // daysArray.value.sort((a,b) => {
+                        //     return new Date(b) - new Date(a);
+                        // })
                         return deal.dealStatus.currentValue === currentDealStatus.value
                     } 
                 })

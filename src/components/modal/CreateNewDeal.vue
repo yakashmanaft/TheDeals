@@ -40,6 +40,15 @@
                 <ion-text>
                     <h4>Дата и время исполнения</h4>
                 </ion-text>
+                <!-- Кнопка активации компонента, она же показывает выбранное -->
+                <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click="openModalCalendar(isCalendarOpened)">{{datepicker(dealData.executionDate)}}</ion-button>
+                <!-- Компонент выбора даты -->
+                <ModalCalendar 
+                    :isOpen="isCalendarOpened" 
+                    @date-updated="(pickedDate) => dealData.executionDate = pickedDate.currentValue"
+                    @closeModal="closeModalCalendar(isCalendarOpened)"
+                    @didDismiss="isCalendarOpened = false"
+                />
             </ion-item-group>
             <br>
             <br>
@@ -54,6 +63,11 @@
     import store from '../../store/index'; 
     //
     import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonInput } from '@ionic/vue';
+    //
+    import ModalCalendar from '../modal/ModalCalendar.vue'
+    import { format, parseISO } from 'date-fns';
+    import { ru } from 'date-fns/locale'
+    //
     export default defineComponent({
         name: 'CreateNewDeal',
         emits: ['date-updated', 'closeModal', 'createDeal'],
@@ -62,7 +76,7 @@
             myContacts: Array
         },
         components: {
-            IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonInput
+            IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonInput, ModalCalendar
         },
         setup(props, { emit }) {
             // ================= choose contact for deal ==========================
@@ -80,8 +94,25 @@
                 console.log(currentValue)
                 emit('date-updated', {currentValue})
             })
+            // Управление модалкой календаря
+            const isCalendarOpened = ref(true)
+            const openModalCalendar = () => {
+                isCalendarOpened.value = true
+            }
+            const closeModalCalendar = () => {
+                isCalendarOpened.value = !isCalendarOpened.value
+            }
+            // Выбираем дату
+            const datepicker = (eventDate) => {
+                if(eventDate.currentValue === undefined) {
+                    return 'Выберите дату'
+                }
+                const data = eventDate.currentValue
+                const formattedString = format(parseISO(data), 'd MMMM', { locale: ru });
+                return formattedString
+            }
             return {
-                dealContact, dealContactID , searchContactMenu, choose
+                dealContact, dealContactID , searchContactMenu, choose, isCalendarOpened, openModalCalendar, closeModalCalendar, datepicker
             }
         }
     })
