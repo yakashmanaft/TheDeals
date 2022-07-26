@@ -26,12 +26,9 @@
         emits: ["date-updated"],
         setup(props, {emit}) {
             const selected = ref('');
-
             watch(selected, (currentValue) => {
-                // console.log(`В селекте ${currentValue}`)
                 emit('date-updated', {currentValue})
             })
-
             return {
                 selected
             }

@@ -333,7 +333,7 @@
                 dealStatus: {
                     currentValue: "deal-in-booking"
                 },
-                contactID: '',
+                contactID: '000',
                 dealsList: [],
                 shipping: '',
                 totalDealValue: '',
