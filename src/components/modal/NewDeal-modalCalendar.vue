@@ -12,7 +12,6 @@
             <ion-datetime 
                 size="cover"
                 presentation="date-time"
-                dayValues="1, 2, 3"
                 v-model="pickedDate"
                 @ionChange="$emit('closeModal')"
                 :value="setCurrentDate(date)"

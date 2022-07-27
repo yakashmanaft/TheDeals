@@ -18,19 +18,23 @@
                 <ion-text>
                     <h4>Контакт</h4>
                 </ion-text>
-                <ion-grid>
+                <ion-grid class="ion-no-padding">
                     <ion-row class="ion-justify-content-between ion-align-items-center">
-                        <ion-text color="medium">{{dealContact}}</ion-text>
-                        <ion-text color="primary" @click="searchContactMenu = true">
+                        <ion-text color="primary" @click="searchContactMenu = true">{{dealContact}}</ion-text>
+                        <!-- <ion-text color="primary" @click="searchContactMenu = true">
                             Изменить
-                        </ion-text>
+                        </ion-text> -->
                     </ion-row>
                 </ion-grid>
-                <ion-input v-model="dealData.contactID" ></ion-input>
                 <div v-if="searchContactMenu">
-                    <div v-for="contact in myContacts" :key="contact.id" @click="choose(contact)">
+                    <ion-searchbar class="ion-text-left" placeholder="Поиск..." v-model="searchDealContact"></ion-searchbar>
+                    <div v-for="contact in searchedContacts" :key="contact.id" @click="choose(contact)">
                         {{contact.contactInfo.name}} {{contact.contactInfo.surname}}
                     </div>
+                    <!-- Если поиском в списке контактов ничего не найдено -->
+                    <ion-item lines="none" v-if="searchedContacts.length <= 0">
+                        <ion-text color="medium">Ничего не найдено</ion-text>
+                    </ion-item>
                 </div>
                 <!-- Поиск -->
             </ion-item-group>
@@ -62,11 +66,14 @@
     import { defineComponent, ref, computed, watch } from 'vue';
     import store from '../../store/index'; 
     //
-    import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonInput } from '@ionic/vue';
+    import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonInput, IonSearchbar, IonItem } from '@ionic/vue';
     //
     import ModalCalendar from './NewDeal-modalCalendar.vue'
     import { format, parseISO } from 'date-fns';
     import { ru } from 'date-fns/locale'
+    //
+    import { searchFilter } from '../../helpers/filterMyContacts'; 
+    import { watchEffect } from 'vue';
     //
     export default defineComponent({
         name: 'CreateNewDeal',
@@ -76,9 +83,11 @@
             myContacts: Array
         },
         components: {
-            IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonInput, ModalCalendar
+            IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonInput, ModalCalendar, IonSearchbar, IonItem
         },
         setup(props, { emit }) {
+            //
+            const searchDealContact = ref('');
             // ================= choose contact for deal ==========================
             const dealContact = ref('Неизвестный');
             const dealContactID = ref('000');
@@ -112,8 +121,16 @@
                 return formattedString
             }
             //
+            const myContactsArray = ref([])
+            const searchedContacts = computed(() => {
+                return searchFilter(myContactsArray.value, searchDealContact.value)
+            })
+
+            
+            watchEffect(() => myContactsArray.value = props.myContacts);
+            console.log(myContactsArray.value)
             return {
-                dealContact, dealContactID , searchContactMenu, choose, isCalendarOpened, openModalCalendar, closeModalCalendar, datepicker
+                dealContact, dealContactID , searchContactMenu, choose, isCalendarOpened, openModalCalendar, closeModalCalendar, datepicker, myContactsArray, searchDealContact, searchedContacts
             }
         }
     })
