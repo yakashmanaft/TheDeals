@@ -64,7 +64,7 @@
     //
     import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonInput } from '@ionic/vue';
     //
-    import ModalCalendar from '../modal/ModalCalendar.vue'
+    import ModalCalendar from './NewDeal-modalCalendar.vue'
     import { format, parseISO } from 'date-fns';
     import { ru } from 'date-fns/locale'
     //
@@ -91,7 +91,6 @@
             }
             // следим за изменениями в ID и передаем наверх
             watch(dealContactID, (currentValue) => {
-                console.log(currentValue)
                 emit('date-updated', {currentValue})
             })
             // Управление модалкой календаря
@@ -104,10 +103,10 @@
             }
             // Выбираем дату
             const datepicker = (eventDate) => {
-                if(eventDate.currentValue === undefined) {
+                if(eventDate === '') {
                     return 'Выберите дату'
                 }
-                const data = eventDate.currentValue
+                const data = eventDate
                 const formattedString = format(parseISO(data), 'd MMMM', { locale: ru });
                 console.log(formattedString)
                 return formattedString

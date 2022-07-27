@@ -337,7 +337,7 @@
                                 <!-- Компонент выбора даты -->
                                 <ModalCalendar 
                                     :isOpen="event.show === true" 
-                                    @date-updated="(pickedDate) => event.date = pickedDate"
+                                    @date-updated="(pickedDate) => event.date = pickedDate.currentValue"
                                     @closeModal="closeModalCalendar(event)"
                                     @didDismiss="event.show = false"
                                     :date="event.date"
@@ -350,9 +350,9 @@
                                 <ion-row class="ion-justify-content-between ion-align-items-center">
                                     <ion-text class="flex flex-col">
                                         <ion-text color="medium" class="ion-text-start">{{ event.title }}</ion-text>
-                                        <ion-text color="primary" class="ion-text-start">{{ checkHasDate(event.date.currentValue) }}</ion-text>
+                                        <ion-text color="primary" class="ion-text-start">{{ checkHasDate(event.date) }}</ion-text>
                                     </ion-text>
-                                    <ion-text class="ion-padding-end" color="medium">{{calcDaysUntilDate(event.date.currentValue)}}</ion-text>
+                                    <ion-text class="ion-padding-end" color="medium">{{calcDaysUntilDate(event.date)}}</ion-text>
                                 </ion-row>
                             </ion-grid>
                         </ion-item>
@@ -423,7 +423,7 @@
     import Select from '../../components/Select.vue';
     import { IonContent, IonHeader, IonButton, IonToolbar, IonButtons, IonBackButton, IonRow, IonAvatar, IonText, IonItem, IonLabel, IonInput, IonItemGroup, IonGrid, IonIcon, IonToggle, IonActionSheet, IonTextarea } from '@ionic/vue';
     import { callOutline, logoWhatsapp, closeOutline, mailOutline, paperPlaneOutline, logoInstagram, logoVk } from 'ionicons/icons';
-    import ModalCalendar from '../../components/modal/ModalCalendar.vue';    
+    import ModalCalendar from '../../components/modal/NewContact-modalCalendar.vue';    
     import { format, parseISO } from 'date-fns';
     import { ru } from 'date-fns/locale'
     
@@ -634,10 +634,10 @@
             // выбираем дату
             // вывести в отдельный файл (вместе с функцией из CreateNewContact)
             const datepicker = (eventDate) => {
-                if(eventDate.currentValue === undefined) {
+                if(eventDate === undefined) {
                     return 'Выберите дату'
                 }
-                const data = eventDate.currentValue
+                const data = eventDate
                 const formattedString = format(parseISO(data), 'd MMMM', { locale: ru });
                 return formattedString
             }

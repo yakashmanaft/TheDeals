@@ -227,7 +227,7 @@
                         <!-- Компонент выбора даты -->
                         <ModalCalendar 
                             :isOpen="event.show === true" 
-                            @date-updated="(pickedDate) => event.date = pickedDate"
+                            @date-updated="(pickedDate) => event.date = pickedDate.currentValue"
                             @closeModal="closeModalCalendar(event)"
                             @didDismiss="event.show = false"
                         />
@@ -265,7 +265,7 @@
     import { uid } from 'uid';
     import store from '../../store/index';
     import Select from '../Select.vue';
-    import ModalCalendar from '../modal/ModalCalendar.vue'
+    import ModalCalendar from './NewContact-modalCalendar.vue'
     import { format, parseISO } from 'date-fns';
     import { ru } from 'date-fns/locale'
 
@@ -291,10 +291,10 @@
             }
             // Выбираем дату
             const datepicker = (eventDate) => {
-                if(eventDate.currentValue === undefined) {
+                if(eventDate === '') {
                     return 'Выберите дату'
                 }
-                const data = eventDate.currentValue
+                const data = eventDate
                 const formattedString = format(parseISO(data), 'd MMMM', { locale: ru });
                 return formattedString
             }

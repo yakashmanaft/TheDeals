@@ -115,7 +115,7 @@
     import Header from '@/components/headers/Header.vue'
     import Spinner from '@/components/Spinner.vue';
     import CreateButton from '@/components/CreateButton.vue';
-    import CreateNewDeal from '@/components/modal/CreateNewDeal.vue';
+    import CreateNewDeal from '@/components/modal/NewDeal-modalCreate.vue';
     import Select from '../components/Select.vue'
     import { 
         IonContent, 

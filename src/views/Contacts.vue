@@ -120,7 +120,7 @@
     import { useRouter } from 'vue-router';
     import { searchFilter } from '../helpers/filterMyContacts.js'; 
     import { uid } from 'uid';
-    import CreateNewContact from '@/components/modal/CreateNewContact.vue';
+    import CreateNewContact from '@/components/modal/NewContact-modalCreate.vue';
 
 
     export default defineComponent({

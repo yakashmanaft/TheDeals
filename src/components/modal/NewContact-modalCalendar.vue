@@ -48,7 +48,7 @@
                 if(date === undefined) {
                     return
                 } else if(date) {
-                    return date.currentValue
+                    return date
                 }
             }
 
