@@ -20,30 +20,30 @@
                 </ion-text>
                 <ion-grid class="ion-no-padding">
                     <ion-row class="ion-justify-content-between ion-align-items-center">
-                        <ion-text color="primary" @click="searchContactMenu = true">{{dealContact}}</ion-text>
-                        <!-- <ion-text color="primary" @click="searchContactMenu = true">
-                            Изменить
-                        </ion-text> -->
+                        <ion-button color="primary" size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click="searchContactMenu = true">{{dealContact}}</ion-button>
                     </ion-row>
                 </ion-grid>
-                <div v-if="searchContactMenu">
-                    <ion-searchbar class="ion-text-left" placeholder="Поиск..." v-model="searchDealContact"></ion-searchbar>
-                    <ion-item v-for="contact in searchedContacts" :key="contact.id" @click="choose(contact)">
-                        <ion-grid>
-                            <ion-row>
-                                <ion-text>{{contact.contactInfo.name}} {{contact.contactInfo.surname}}</ion-text>
-                            </ion-row>
-                            <ion-row>
-                                <ion-text style="font-size: 1rem;" color="medium">{{contact.contactInfo.company}}</ion-text>
-                            </ion-row>
-                        </ion-grid>
-                        
-                    </ion-item>
-                    <!-- Если поиском в списке контактов ничего не найдено -->
-                    <ion-item lines="none" v-if="searchedContacts.length <= 0">
-                        <ion-text color="medium">Ничего не найдено</ion-text>
-                    </ion-item>
-                </div>
+                <!-- модалка для выбора контакта по делу -->
+                <!-- Может быть вынести в отдельны компонент? -->
+                <ion-modal :isOpen="searchContactMenu" >
+                    <ion-searchbar class="ion-text-left" placeholder="Поиск..." v-model="searchDealContact" show-cancel-button="always" cancelButtonText="Отменить" @ionCancel="searchContactMenu = false"></ion-searchbar>
+                    <ion-content style="height: 90vh">
+                        <ion-item v-for="contact in searchedContacts" :key="contact.id" @click="choose(contact)">
+                            <ion-grid>
+                                <ion-row>
+                                    <ion-text>{{contact.contactInfo.name}} {{contact.contactInfo.surname}}</ion-text>
+                                </ion-row>
+                                <ion-row>
+                                    <ion-text style="font-size: 1rem;" color="medium">{{contact.contactInfo.company}}</ion-text>
+                                </ion-row>
+                            </ion-grid>
+                        </ion-item>
+                        <!-- Если поиском в списке контактов ничего не найдено -->
+                        <ion-item lines="none" v-if="searchedContacts.length <= 0">
+                            <ion-text color="medium">Ничего не найдено</ion-text>
+                        </ion-item>
+                    </ion-content>
+                </ion-modal>
                 <!-- Поиск -->
             </ion-item-group>
             <!-- Дата и время исполнения -->
@@ -74,7 +74,7 @@
     import { defineComponent, ref, computed, watch } from 'vue';
     import store from '../../store/index'; 
     //
-    import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonInput, IonSearchbar, IonItem } from '@ionic/vue';
+    import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonInput, IonSearchbar, IonItem  } from '@ionic/vue';
     //
     import ModalCalendar from './NewDeal-modalCalendar.vue'
     import { format, parseISO } from 'date-fns';
@@ -94,6 +94,8 @@
             IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonInput, ModalCalendar, IonSearchbar, IonItem
         },
         setup(props, { emit }) {
+            //
+            const presentingElement =  ref(null)
             //
             const searchDealContact = ref('');
             // ================= choose contact for deal ==========================
