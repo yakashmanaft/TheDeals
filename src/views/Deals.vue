@@ -79,7 +79,7 @@
                                                 <!-- Кнопка смены статуса дела -->
                                                 <div @click.prevent.stop="doSomething">
                                                     <!-- Как будет вести себя translatePlaceholder при тысяче дел например?  -->
-                                                    <Select :data="dealStatusList" :placeholder="translatePlaceholder(deal.dealStatus.currentValue, dealStatusList)" @date-updated="(selected) => {deal.dealStatus = selected; updateCurrentDealStatus(deal)}"/>
+                                                    <Select :data="dealStatusList" :placeholder="translatePlaceholder(deal.dealStatus, dealStatusList)" @date-updated="(selected) => {deal.dealStatus = selected.currentValue; updateCurrentDealStatus(deal)}"/>
                                                 </div>
                                                 <!-- Контакт по делу -->
                                                 <div>
@@ -243,7 +243,7 @@
             })
             // Счетчик коилчества дел по конкретному статусу
             const countDealByStatus = (status) => {
-                const result = myDeals.value.filter(item => item.dealStatus.currentValue === status)   
+                const result = myDeals.value.filter(item => item.dealStatus === status)   
                 return result.length
             }
             // Текущий выбранный статус сделок
@@ -330,9 +330,7 @@
                 uid: uid(),
                 email: userEmail.value,
                 dealType: '',
-                dealStatus: {
-                    currentValue: "deal-in-booking"
-                },
+                dealStatus: "deal-in-booking",
                 contactID: '000',
                 dealsList: [],
                 shipping: '',
@@ -348,9 +346,7 @@
                     uid: uid(),
                     email: userEmail.value,
                     dealType: '',
-                    dealStatus: {
-                        currentValue: "deal-in-booking"
-                    },
+                    dealStatus:"deal-in-booking",
                     contactID: '000',
                     dealsList: [],
                     shipping: '',
@@ -395,12 +391,12 @@
                     // const executionDate = formattedDate(new Date(deal.executionDate).toISOString().split("T")[0])
                     // const executionDate = formattedDate(deal.executionDate)
                     const executionDate = deal.executionDate
-                    if(deal.dealStatus.currentValue === currentDealStatus.value) {
+                    if(deal.dealStatus === currentDealStatus.value) {
                         daysArray.value.push(executionDate)
                         // daysArray.value.sort((a,b) => {
                         //     return new Date(b) - new Date(a);
                         // })
-                        return deal.dealStatus.currentValue === currentDealStatus.value
+                        return deal.dealStatus === currentDealStatus.value
                     } 
                 })
             }

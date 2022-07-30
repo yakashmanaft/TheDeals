@@ -104,7 +104,7 @@
                                 <ion-label position="stacked">
                                     Тип номера телефона
                                 </ion-label>
-                                <Select :data="phoneEmailTypes" :placeholder="setSelectPlaceholderValue(number.type.currentValue)" @date-updated="(selected) => number.type = selected"/>
+                                <Select :data="phoneEmailTypes" :placeholder="setSelectPlaceholderValue(number.type)" @date-updated="(selected) => number.type = selected.currentValue"/>
                             </ion-item>
                             <!-- link to messengers -->
                             <ion-item lines="none">
@@ -128,7 +128,7 @@
                             <a :href="`tel:${number.phone}`" class="flex ion-align-items-center">
                                 <ion-icon :icon="callOutline" class="ion-margin-end"></ion-icon>
                                 <div class="flex flex-col ion-align-items-start">
-                                    <ion-text color="medium">{{ checkEmptyPhoneEmailType(number.type.currentValue) }}</ion-text>
+                                    <ion-text color="medium">{{ checkEmptyPhoneEmailType(number.type) }}</ion-text>
                                     <ion-text>{{ number.phone }}</ion-text>
                                 </div>
                             </a>
@@ -194,7 +194,7 @@
                                 <ion-label position="stacked">
                                     Тип электронной почты
                                 </ion-label>
-                                <Select :data="phoneEmailTypes" :placeholder="setSelectPlaceholderValue(email.type.currentValue)" @date-updated="(selected) => email.type = selected"/>
+                                <Select :data="phoneEmailTypes" :placeholder="setSelectPlaceholderValue(email.type)" @date-updated="(selected) => email.type = selected.currentValue"/>
                             </ion-item>
                         </div>
                         <!-- Показываем в режиме просмотра -->
@@ -204,7 +204,7 @@
                                     <ion-row class="ion-justify-content-between ion-align-items-center">
                                         <ion-icon class="ion-margin-end" :icon="mailOutline"></ion-icon>
                                         <div class="flex flex-col">
-                                            <ion-text color="medium">{{ checkEmptyPhoneEmailType(email.type.currentValue) }}</ion-text>
+                                            <ion-text color="medium">{{ checkEmptyPhoneEmailType(email.type) }}</ion-text>
                                             <ion-text>{{ email.email }}</ion-text>
                                         </div>
                                     </ion-row>
@@ -260,7 +260,7 @@
                                 <ion-label position="stacked">
                                     Название социальной сети
                                 </ion-label>
-                                <Select :data="myContactSocialNetworksType" :placeholder="setSelectPlaceholderValue(social.name.currentValue)" @date-updated="(selected) => social.name = selected"/>
+                                <Select :data="myContactSocialNetworksType" :placeholder="setSelectPlaceholderValue(social.name)" @date-updated="(selected) => social.name = selected.currentValue"/>
                             </ion-item>
                         </div>
                     </ion-item-group>
@@ -268,9 +268,9 @@
                     <!-- Как можно динамики добавить? -->
                     <ion-item v-if="!edit && currentContact.socialNetworks.length" lines="none">
                         <a v-for="(social, index) in currentContact.socialNetworks" :key="index" :href="`${social.link}`" target="_blank" class="ion-margin-top ion-margin-end">
-                                <ion-icon v-if="social.name.currentValue === 'Telegram'" :icon="paperPlaneOutline"></ion-icon>
-                                <ion-icon v-if="social.name.currentValue === 'Instagram'" :icon="logoInstagram"></ion-icon>
-                                <ion-icon v-if="social.name.currentValue === 'Vkontakte'" :icon="logoVk"></ion-icon>
+                                <ion-icon v-if="social.name === 'Telegram'" :icon="paperPlaneOutline"></ion-icon>
+                                <ion-icon v-if="social.name === 'Instagram'" :icon="logoInstagram"></ion-icon>
+                                <ion-icon v-if="social.name === 'Vkontakte'" :icon="logoVk"></ion-icon>
                                 <!-- <ion-icon v-if="social.name.currentValue === 'Odnoklassniki'" :icon="paperPlaneOutline"></ion-icon> -->
                                 <!-- <ion-icon v-if="social.name.currentValue === 'Twitter'" :icon="paperPlaneOutline"></ion-icon> -->
                         </a>
@@ -681,7 +681,7 @@
 
             // Если placeholder у select (тип phone || email) изначально пустая строка
             const setSelectPlaceholderValue = (currentValue) => {
-                if(currentValue === undefined) {
+                if(currentValue === undefined || currentValue === '') {
                     currentValue = 'Не указано';
                     return currentValue;
                 } else {

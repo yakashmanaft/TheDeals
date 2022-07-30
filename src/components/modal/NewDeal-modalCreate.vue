@@ -28,9 +28,17 @@
                 </ion-grid>
                 <div v-if="searchContactMenu">
                     <ion-searchbar class="ion-text-left" placeholder="Поиск..." v-model="searchDealContact"></ion-searchbar>
-                    <div v-for="contact in searchedContacts" :key="contact.id" @click="choose(contact)">
-                        {{contact.contactInfo.name}} {{contact.contactInfo.surname}}
-                    </div>
+                    <ion-item v-for="contact in searchedContacts" :key="contact.id" @click="choose(contact)">
+                        <ion-grid>
+                            <ion-row>
+                                <ion-text>{{contact.contactInfo.name}} {{contact.contactInfo.surname}}</ion-text>
+                            </ion-row>
+                            <ion-row>
+                                <ion-text style="font-size: 1rem;" color="medium">{{contact.contactInfo.company}}</ion-text>
+                            </ion-row>
+                        </ion-grid>
+                        
+                    </ion-item>
                     <!-- Если поиском в списке контактов ничего не найдено -->
                     <ion-item lines="none" v-if="searchedContacts.length <= 0">
                         <ion-text color="medium">Ничего не найдено</ion-text>
@@ -45,7 +53,7 @@
                     <h4>Дата и время исполнения</h4>
                 </ion-text>
                 <!-- Кнопка активации компонента, она же показывает выбранное -->
-                <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click="openModalCalendar(isCalendarOpened = true)">{{datepicker(dealData.executionDate)}}</ion-button>
+                <ion-button color="primary" size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click="openModalCalendar(isCalendarOpened = true)">{{datepicker(dealData.executionDate)}}</ion-button>
                 <!-- Компонент выбора даты -->
                 <ModalCalendar 
                     :is-open="isCalendarOpened" 
@@ -111,13 +119,14 @@
                 isCalendarOpened.value = false;
             }
             // Выбираем дату
+            // и показываем ее уже в варианте с указанием времени
             const datepicker = (eventDate) => {
                 if(eventDate === '') {
                     return 'Выберите дату'
                 }
                 const data = eventDate
-                const formattedString = format(parseISO(data), 'd MMMM', { locale: ru });
-                console.log(formattedString)
+                const formattedString = format(parseISO(data), 'd MMMM к HH:mm', { locale: ru });
+                // console.log(formattedString)
                 return formattedString
             }
             //
@@ -128,7 +137,7 @@
 
             
             watchEffect(() => myContactsArray.value = props.myContacts);
-            console.log(myContactsArray.value)
+            // console.log(myContactsArray.value)
             return {
                 dealContact, dealContactID , searchContactMenu, choose, isCalendarOpened, openModalCalendar, closeModalCalendar, datepicker, myContactsArray, searchDealContact, searchedContacts
             }
