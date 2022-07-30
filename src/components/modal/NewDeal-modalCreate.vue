@@ -18,12 +18,13 @@
                 <ion-text>
                     <h4>Контакт</h4>
                 </ion-text>
+                <!-- Показываем контакт по делу -->
                 <ion-grid class="ion-no-padding">
                     <ion-row class="ion-justify-content-between ion-align-items-center">
                         <ion-button color="primary" size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click="searchContactMenu = true">{{dealContact}}</ion-button>
                     </ion-row>
                 </ion-grid>
-                <!-- модалка для выбора контакта по делу -->
+                <!-- модалка для выбора (ПОИСК КОНТАКТА) контакта по делу -->
                 <!-- Может быть вынести в отдельны компонент? -->
                 <ion-modal :isOpen="searchContactMenu" >
                     <ion-searchbar class="ion-text-left" placeholder="Поиск..." v-model="searchDealContact" show-cancel-button="always" cancelButtonText="Отменить" @ionCancel="searchContactMenu = false"></ion-searchbar>
@@ -44,7 +45,6 @@
                         </ion-item>
                     </ion-content>
                 </ion-modal>
-                <!-- Поиск -->
             </ion-item-group>
             <!-- Дата и время исполнения -->
             <ion-item-group>
@@ -94,8 +94,6 @@
             IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonInput, ModalCalendar, IonSearchbar, IonItem
         },
         setup(props, { emit }) {
-            //
-            const presentingElement =  ref(null)
             //
             const searchDealContact = ref('');
             // ================= choose contact for deal ==========================

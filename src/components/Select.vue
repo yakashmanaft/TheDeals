@@ -37,7 +37,7 @@
 </script>
 
 <style scoped>
-ion-select::part(text) {
-  color: var(--ion-color-medium);
-}
+    ion-select::part(text) {
+    color: var(--ion-color-medium);
+    }
 </style>

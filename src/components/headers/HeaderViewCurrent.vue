@@ -6,27 +6,50 @@
                 <ion-button fill="clear" v-if="edit" @click="cancelEdit">Отмена</ion-button>
                 <ion-back-button  default-href="home" v-else text="Назад"></ion-back-button>
             </ion-buttons>
-            <ion-buttons class="color-primary" slot="end">
+            <!-- Если текущий роут View-Deal -->
+            <ion-buttons class="color-primary" slot="end" v-if="route.name !== 'View-Deal'">
                 <ion-button fill="clear" v-if="edit"  @click="update">Готово</ion-button>
                 <ion-button fill="clear" v-else @click="editMode">Править</ion-button>
+            </ion-buttons>
+            <!-- Если текущий роут НЕ View-Deal -->
+            <ion-buttons slot="end" v-if="route.name === 'View-Deal'">
+                <ion-chip>
+                    <Select :data="dealStatusList" placeholder="Бронь даты"></Select>
+                </ion-chip>
             </ion-buttons>
         </ion-toolbar>
     </ion-header>
 </template>
 
 <script>
-    import { defineComponent } from 'vue';
-    import { IonHeader, IonToolbar, IonButtons, IonButton, IonBackButton } from '@ionic/vue';
+    import { defineComponent, ref } from 'vue';
+    import { useRoute, useRouter } from 'vue-router';
+    import store from '../../store/index';
+    //
+    import Select from '../Select.vue'
+    //
+    import { IonHeader, IonToolbar, IonButtons, IonButton, IonBackButton, IonChip } from '@ionic/vue';
 
     export default defineComponent({
         name: 'ViewContactHeader',
         props: ['edit', 'editMode', 'update', 'cancelEdit'],
         components: {
-            IonHeader, IonToolbar, IonButtons, IonButton, IonBackButton
+            IonHeader,
+            IonToolbar,
+            IonButtons,
+            IonButton,
+            IonBackButton,
+            Select,
+            IonChip
         },
         setup() {
-            return {
+            //
+            const route = useRoute();
+            // Статусы дел
+            const dealStatusList = ref(store.state.dealStatusList)
 
+            return {
+                route, dealStatusList
             }
         }
     })

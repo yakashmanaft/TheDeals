@@ -314,10 +314,14 @@
                 return JSON.stringify(contact)
             }
             // Подтягиваем name, surname на основании contactID
+            // Вынести в отдельный файл
             const showNameByID = (contactID) => {
                 const result = myContacts.value.filter(contact => contact.id === +contactID)
                 if(result.length !== 0) {
                     const nameByID = (result[0].contactInfo.surname + ' ' + result[0].contactInfo.name).toString().replace(/"/g, "")
+                    return nameByID;
+                } else if (result.length === 0) {
+                    const nameByID = 'Неизвестный'
                     return nameByID;
                 }
             }
