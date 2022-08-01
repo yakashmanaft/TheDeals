@@ -105,7 +105,7 @@
                                     Тип номера телефона
                                 </ion-label>
                                 <ion-chip>
-                                    <Select style="width: 200px" :data="phoneEmailTypes" :placeholder="setSelectPlaceholderValue(number.type)" @date-updated="(selected) => number.type = selected.currentValue"/>
+                                    <Select :data="phoneEmailTypes" :placeholder="setSelectPlaceholderValue(number.type)" @date-updated="(selected) => number.type = selected.currentValue"/>
                                 </ion-chip>
                             </div>
                             <!-- link to messengers -->
