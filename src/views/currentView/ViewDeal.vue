@@ -24,10 +24,26 @@
 
             <!-- Data -->
             <div>
+                <!-- ============================== Статус дела ========================================== -->
+                <ion-item-group>
+                    <ion-grid class="ion-margin-top" style="padding-top: 0!important">
+                        <ion-row class="ion-justify-content-between ion-align-items-center">
+                            <ion-chip :color="setChipColor(dealStatus)">
+                                <SelectDealStatus 
+                                    :data="dealStatusList" 
+                                    :placeholder="translatePlaceholder(currentDeal.dealStatus, dealStatusList)"
+                                    @date-updated="(selected) => {dealStatus = selected.currentValue;}"
+                                />
+                            </ion-chip>
+                            <ion-text></ion-text>
+                        </ion-row>
+                    </ion-grid>
+                </ion-item-group>
+
                 <!-- ============================== Контакт по делу ====================================== -->
                 <ion-item-group class="ion-text-left ion-padding-horizontal">
                     <!-- Заголовок -->
-                    <ion-text>
+                    <ion-text >
                         <h4>Контакт</h4>
                     </ion-text>
                     <!-- Показываем контакт по делу -->
@@ -88,22 +104,37 @@
 </template>
 
 <script>
-    import { onMounted, defineComponent, ref, computed } from 'vue';
+    import { onMounted, defineComponent, ref, computed, watch } from 'vue';
     import { supabase } from '../../supabase/init';
     import { useRoute, useRouter } from 'vue-router';
     import store from '../../store/index';
     import { uid } from 'uid';
-    import { IonContent, IonButton, IonActionSheet, IonItemGroup, IonText, IonGrid, IonRow, IonModal, IonItem, IonSearchbar  } from '@ionic/vue';
+    import { IonContent, IonButton, IonActionSheet, IonItemGroup, IonText, IonGrid, IonRow, IonModal, IonItem, IonSearchbar, IonChip } from '@ionic/vue';
     import {  } from 'ionicons/icons';
     //
     import { searchFilter } from '../../helpers/filterMyContacts'; 
     //
     import Spinner from '../../components/Spinner.vue';
     import ViewHeader from '../../components/headers/HeaderViewCurrent.vue';
+    import SelectDealStatus from '@/components/SelectDealStatus.vue';
+    //
     export default defineComponent({
         name: 'View-deal',
         components: {
-            Spinner, ViewHeader, IonContent, IonButton, IonActionSheet, IonItemGroup, IonText, IonGrid, IonRow, IonModal, IonItem, IonSearchbar
+            Spinner,
+            ViewHeader,
+            IonContent,
+            IonButton,
+            IonActionSheet,
+            IonItemGroup,
+            IonText,
+            IonGrid,
+            IonRow,
+            IonModal,
+            IonItem,
+            IonSearchbar,
+            SelectDealStatus,
+            IonChip
         }, 
         setup() {
             const route = useRoute();
@@ -128,6 +159,8 @@
             //     currentDeal.value = tempData
             //     reloadData()
             // }
+            // Статусы дел
+            const dealStatusList = ref(store.state.dealStatusList)
             //
             const myContacts = ref([])
             myContacts.value = store.state.myContactsArray; 
@@ -146,10 +179,16 @@
                     return nameByID;
                 }
             }
-            //
+            // храним значение contactID
             const dealContactID = ref();
             dealContactID.value = currentDeal.value.contactID
             const dealContact = ref(showNameByID(dealContactID.value));
+            // храним значение dealStatus
+            const dealStatus = ref(currentDeal.value.dealStatus);
+            // следим за изменениями значения dealStatus у текущего дела и обновляем его в БД
+            watch (dealStatus, () => {
+                update()
+            })
             // выдергиваем из массива нужный контакт
             const searchContactMenu = ref(false)
             const choose = (contact) => {
@@ -169,6 +208,19 @@
             //         alert(`Error: ${error.message}`)
             //     }
             // }     
+            // Переводчик placeholder
+            // Еслит надо переиспользовать
+            // А если будет слишком много данных? Мы же каждый раз их обходим циклом...
+            const translatePlaceholder = (value, array) => {
+                let currentName = ''
+                array.forEach(item => {
+                    if(item.value === value) {
+                        currentName = item.name
+                        return currentName
+                    }
+                })
+                return currentName
+            }
             // update current deal
             const update = async () => {
                 try {
@@ -177,7 +229,8 @@
                     console.log(`Deal ${currentId} is updated`);
                     //
                     const {error} = await supabase.from('deals').update({
-                        contactID: dealContactID.value
+                        contactID: dealContactID.value,
+                        dealStatus: dealStatus.value
                     }).eq('id', currentId);
                     if(error) throw error;
                     // Дело успешно обновлено
@@ -220,9 +273,22 @@
                     },
                 }
             ]
+            // Задаем цвет chip
+            const setChipColor = (status) => {
+                if (status === 'deal-in-debt') {
+                    return 'danger'
+                }
+                if (status === 'deal-complete') {
+                    return 'success'
+                }
+                if(status === 'deal-cancelled') {
+                    return 'warning'
+                }
+                return 'primary'
+            }
 
             return {
-                spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, buttons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts
+                spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, buttons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translatePlaceholder, setChipColor
             }
         }
     })

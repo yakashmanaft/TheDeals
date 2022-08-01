@@ -11,24 +11,18 @@
                 <ion-button fill="clear" v-if="edit"  @click="update">Готово</ion-button>
                 <ion-button fill="clear" v-else @click="editMode">Править</ion-button>
             </ion-buttons>
-            <!-- Если текущий роут НЕ View-Deal -->
-            <ion-buttons slot="end" v-if="route.name === 'View-Deal'">
-                <ion-chip>
-                    <Select :data="dealStatusList" placeholder="Бронь даты"></Select>
-                </ion-chip>
-            </ion-buttons>
         </ion-toolbar>
     </ion-header>
 </template>
 
 <script>
-    import { defineComponent, ref } from 'vue';
-    import { useRoute, useRouter } from 'vue-router';
+    import { defineComponent } from 'vue';
+    import { useRoute } from 'vue-router';
     import store from '../../store/index';
     //
     import Select from '../Select.vue'
     //
-    import { IonHeader, IonToolbar, IonButtons, IonButton, IonBackButton, IonChip } from '@ionic/vue';
+    import { IonHeader, IonToolbar, IonButtons, IonButton, IonBackButton } from '@ionic/vue';
 
     export default defineComponent({
         name: 'ViewContactHeader',
@@ -38,18 +32,14 @@
             IonToolbar,
             IonButtons,
             IonButton,
-            IonBackButton,
-            Select,
-            IonChip
+            IonBackButton
         },
         setup() {
             //
             const route = useRoute();
-            // Статусы дел
-            const dealStatusList = ref(store.state.dealStatusList)
 
             return {
-                route, dealStatusList
+                route
             }
         }
     })
