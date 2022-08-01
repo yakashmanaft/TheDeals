@@ -68,12 +68,14 @@
                         <ion-input inputmode="tel" placeholder="Укажите номер телефона" v-model="number.phone"></ion-input>
                     </ion-item>
                     <!-- Type of numper -->
-                    <ion-item>
+                    <div class="ion-padding-start ion-padding-top">
                         <ion-label position="stacked">
                             Тип номера телефона
                         </ion-label>
-                        <Select :data="phoneTypes" :placeholder="'Тип номера'" @date-updated="(selected) => number.type = selected"/>
-                    </ion-item>
+                        <ion-chip>
+                            <Select :data="phoneTypes" :placeholder="'Тип номера'" @date-updated="(selected) => number.type = selected"/>
+                        </ion-chip>
+                    </div>
                     <!-- link to messengers -->
                     <ion-item lines="none">
                         <ion-label position="stacked">Привязка к мессенджерам</ion-label>
@@ -126,12 +128,14 @@
                         <ion-input inputmode="email" placeholder="Укажите адрес почты" v-model="email.email"></ion-input>
                     </ion-item>
                     <!-- Type of email -->
-                    <ion-item>
+                    <div class="ion-padding-start ion-padding-top">
                         <ion-label position="stacked">
                             Тип электронной почты
                         </ion-label>
-                        <Select :data="phoneTypes" :placeholder="'Тип почты'" @date-updated="(selected) => email.type = selected"/>
-                    </ion-item>
+                        <ion-chip>
+                            <Select :data="phoneTypes" :placeholder="'Тип почты'" @date-updated="(selected) => email.type = selected"/>
+                        </ion-chip>
+                    </div>
                 </div>
                 <!-- Кнопка добавить еще один email к контакту -->
                 <ion-row class="ion-justify-content-end">
@@ -172,12 +176,14 @@
                         <ion-input inputmode="email" placeholder="Укажите ссылку на аккаунт" v-model="social.link"></ion-input>
                     </ion-item>
                     <!-- name of social network -->
-                    <ion-item>
+                    <div class="ion-padding-start ion-padding-top">
                         <ion-label position="stacked">
                             Укажите название соц.сети
                         </ion-label>
-                        <Select :data="myContactSocialNetworksType" :placeholder="'Выберите соцсеть'" @date-updated="(selected) => social.name = selected"/>
-                    </ion-item>
+                        <ion-chip>
+                            <Select :data="myContactSocialNetworksType" :placeholder="'Выберите соцсеть'" @date-updated="(selected) => social.name = selected"/>
+                        </ion-chip>
+                    </div>
                 </div>
                 <!-- Кнопка добавить еще один social к контакту -->
                 <ion-row class="ion-justify-content-end">
@@ -218,12 +224,12 @@
                         <ion-input inputmode="text" placeholder="Название события" v-model="event.title" autocapitalize="on"></ion-input>
                     </ion-item>
                     <!-- date of event -->
-                    <ion-item>
+                    <div class="ion-padding-start ion-padding-top">
                         <ion-label position="stacked">
                             Укажите дату события
                         </ion-label>
                         <!-- Кнопка активации компонента, она же показывает выбранное -->
-                        <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click="openModalCalendar(event)">{{datepicker(event.date)}}</ion-button>
+                        <ion-button color="primary" size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click="openModalCalendar(event)">{{datepicker(event.date)}}</ion-button>
                         <!-- Компонент выбора даты -->
                         <ModalCalendar 
                             :isOpen="event.show === true" 
@@ -231,7 +237,7 @@
                             @closeModal="closeModalCalendar(event)"
                             @didDismiss="event.show = false"
                         />
-                    </ion-item>
+                    </div>
 
                 </div>
                 <!-- Кнопка добавить еще один social к контакту -->
@@ -260,7 +266,7 @@
 
 <script>
     import { defineComponent, ref, computed } from 'vue'; 
-    import { IonModal, IonHeader, IonContent, IonToolbar, IonButtons, IonButton, IonTitle, IonText, IonItem, IonLabel, IonInput, IonItemGroup, IonGrid, IonRow, IonCol, IonSelect, IonSelectOption, IonToggle, IonIcon, IonTextarea } from '@ionic/vue';
+    import { IonModal, IonHeader, IonContent, IonToolbar, IonButtons, IonButton, IonTitle, IonText, IonItem, IonLabel, IonInput, IonItemGroup, IonGrid, IonRow, IonCol, IonSelect, IonSelectOption, IonToggle, IonIcon, IonTextarea, IonChip } from '@ionic/vue';
     import { closeOutline } from 'ionicons/icons';
     import { uid } from 'uid';
     import store from '../../store/index';
@@ -275,7 +281,7 @@
             contactData: Object
         },
         components: {
-            IonModal, IonHeader, IonContent, IonToolbar, IonButtons, IonButton, IonTitle, IonText, IonItem, IonLabel, IonInput, IonItemGroup, IonGrid, IonRow, IonCol, IonSelect, IonSelectOption, Select, IonToggle, IonIcon, ModalCalendar, IonTextarea
+            IonModal, IonHeader, IonContent, IonToolbar, IonButtons, IonButton, IonTitle, IonText, IonItem, IonLabel, IonInput, IonItemGroup, IonGrid, IonRow, IonCol, IonSelect, IonSelectOption, Select, IonToggle, IonIcon, ModalCalendar, IonTextarea, IonChip
         },
         setup() {
             // Типы Рабочий /Личный

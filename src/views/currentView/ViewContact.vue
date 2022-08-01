@@ -81,7 +81,7 @@
                         </ion-grid>
                     </ion-item>
                     <!-- Если телефоны уже есть (добавлен шаблон или имелись в БД)  -->
-                    <ion-item-group v-for="(number, index) in currentContact.phoneNumbers" :key="index" class="ion-margin-horizontal">
+                    <ion-item-group v-for="(number, index) in currentContact.phoneNumbers" :key="index" class="ion-margin-horizontal ion-text-left">
                         <!-- Показываем в режиме edit -->
                         <div v-if="edit" class="current-content">
                             <!-- sequence number &  delete current phone btn-->
@@ -100,12 +100,14 @@
                                 <ion-input inputmode="tel" placeholder="Укажите номер телефона" v-model="number.phone"></ion-input>
                             </ion-item>
                             <!-- Type of number -->
-                            <ion-item>
+                            <div class="ion-padding-start ion-padding-top">
                                 <ion-label position="stacked">
                                     Тип номера телефона
                                 </ion-label>
-                                <Select :data="phoneEmailTypes" :placeholder="setSelectPlaceholderValue(number.type)" @date-updated="(selected) => number.type = selected.currentValue"/>
-                            </ion-item>
+                                <ion-chip>
+                                    <Select style="width: 200px" :data="phoneEmailTypes" :placeholder="setSelectPlaceholderValue(number.type)" @date-updated="(selected) => number.type = selected.currentValue"/>
+                                </ion-chip>
+                            </div>
                             <!-- link to messengers -->
                             <ion-item lines="none">
                                     <ion-label position="stacked">
@@ -171,7 +173,7 @@
                         </ion-grid>
                     </ion-item>
                     <!-- Если emails уже есть (добавлен шаблон или имелись в БД)  -->
-                    <ion-item-group v-for="(email, index) in currentContact.emails" :key="index">
+                    <ion-item-group v-for="(email, index) in currentContact.emails" :key="index" class="ion-text-left">
                         <!-- Показываем в режиме edit -->
                         <div v-if="edit" class="current-content ion-margin-horizontal">
                             <!-- sequence number &  delete current email btn-->
@@ -190,12 +192,14 @@
                                 <ion-input inputmode="email" placeholder="Укажите адрес почты" v-model="email.email"></ion-input>
                             </ion-item>
                             <!-- Type of email -->
-                            <ion-item>
+                            <div class="ion-padding-start ion-padding-top">
                                 <ion-label position="stacked">
                                     Тип электронной почты
                                 </ion-label>
-                                <Select :data="phoneEmailTypes" :placeholder="setSelectPlaceholderValue(email.type)" @date-updated="(selected) => email.type = selected.currentValue"/>
-                            </ion-item>
+                                <ion-chip>
+                                    <Select :data="phoneEmailTypes" :placeholder="setSelectPlaceholderValue(email.type)" @date-updated="(selected) => email.type = selected.currentValue"/>
+                                </ion-chip>
+                            </div>
                         </div>
                         <!-- Показываем в режиме просмотра -->
                         <ion-item v-else lines="none" class="ion-no-padding">
@@ -237,7 +241,7 @@
                         </ion-grid>
                     </ion-item>
                     <!-- Если Соцсети уже есть (добавлен шаблон или имелись в БД)  -->
-                    <ion-item-group v-for="(social, index) in currentContact.socialNetworks" :key="index" class="ion-margin-horizontal">
+                    <ion-item-group v-for="(social, index) in currentContact.socialNetworks" :key="index" class="ion-margin-horizontal ion-text-left">
                     <!-- Показываем в режиме edit -->
                         <div v-if="edit" class="current-content">
                             <!-- sequence number &  delete current social btn-->
@@ -256,12 +260,14 @@
                                 <ion-input inputmode="email" placeholder="Вставьте ссылку на аккаунт" v-model="social.link"></ion-input>
                             </ion-item>
                             <!-- Social name -->
-                            <ion-item>
+                            <div class="ion-padding-start ion-padding-top">
                                 <ion-label position="stacked">
                                     Название социальной сети
                                 </ion-label>
-                                <Select :data="myContactSocialNetworksType" :placeholder="setSelectPlaceholderValue(social.name)" @date-updated="(selected) => social.name = selected.currentValue"/>
-                            </ion-item>
+                                <ion-chip>
+                                    <Select :data="myContactSocialNetworksType" :placeholder="setSelectPlaceholderValue(social.name)" @date-updated="(selected) => social.name = selected.currentValue"/>
+                                </ion-chip>
+                            </div>
                         </div>
                     </ion-item-group>
                     <!-- Показываем в режиме просмотра -->
@@ -309,7 +315,7 @@
                         </ion-grid>
                     </ion-item>
                     <!-- Если event уже есть (добавлен шаблон или имелись в БД)  -->
-                    <ion-item-group v-for="(event, index) in currentContact.contactEvents" :key="index">
+                    <ion-item-group v-for="(event, index) in currentContact.contactEvents" :key="index" class="ion-text-left">
                         <!-- Показываем в режиме edit -->
                         <div v-if="edit" class="current-content margin-horizontal-16">
                             <!-- sequence number &  delete current email btn-->
@@ -328,12 +334,12 @@
                                 <ion-input autocapitalize="on" inputmode="text" placeholder="Название события" v-model="event.title"></ion-input>
                             </ion-item>
                             <!-- date of event -->
-                            <ion-item>
+                            <div class="ion-padding-start ion-padding-top">
                                 <ion-label position="stacked">
                                     Укажите дату события
                                 </ion-label>
                                 <!-- Кнопка активации компонента, она же показывает выбранное -->
-                                <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click="openModalCalendar(event)">{{datepicker(event.date)}}</ion-button>
+                                <ion-button color="primary" size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click="openModalCalendar(event)">{{datepicker(event.date)}}</ion-button>
                                 <!-- Компонент выбора даты -->
                                 <ModalCalendar 
                                     :isOpen="event.show === true" 
@@ -342,7 +348,7 @@
                                     @didDismiss="event.show = false"
                                     :date="event.date"
                                 />
-                            </ion-item>
+                            </div>
                         </div>
                         <!-- Показываем в режиме просмотра -->
                         <ion-item v-else lines="none" class="ion-margin-top">
@@ -421,7 +427,7 @@
     import { uid } from 'uid';
     import Spinner from '../../components/Spinner.vue';
     import Select from '../../components/Select.vue';
-    import { IonContent, IonHeader, IonButton, IonToolbar, IonButtons, IonBackButton, IonRow, IonAvatar, IonText, IonItem, IonLabel, IonInput, IonItemGroup, IonGrid, IonIcon, IonToggle, IonActionSheet, IonTextarea } from '@ionic/vue';
+    import { IonContent, IonHeader, IonButton, IonToolbar, IonButtons, IonBackButton, IonRow, IonAvatar, IonText, IonItem, IonLabel, IonInput, IonItemGroup, IonGrid, IonIcon, IonToggle, IonActionSheet, IonTextarea, IonChip } from '@ionic/vue';
     import { callOutline, logoWhatsapp, closeOutline, mailOutline, paperPlaneOutline, logoInstagram, logoVk } from 'ionicons/icons';
     import ModalCalendar from '../../components/modal/NewContact-modalCalendar.vue';    
     import { format, parseISO } from 'date-fns';
@@ -431,7 +437,7 @@
     export default defineComponent({
         name: 'view-contact',
         components: {
-            ViewHeader, IonContent, IonHeader, IonButton, IonToolbar, IonButtons, IonBackButton, IonRow, IonAvatar, IonText, IonItem, IonLabel, IonInput, Spinner, IonItemGroup, IonGrid, IonIcon, IonToggle, Select, IonActionSheet, ModalCalendar, IonTextarea
+            ViewHeader, IonContent, IonHeader, IonButton, IonToolbar, IonButtons, IonBackButton, IonRow, IonAvatar, IonText, IonItem, IonLabel, IonInput, Spinner, IonItemGroup, IonGrid, IonIcon, IonToggle, Select, IonActionSheet, ModalCalendar, IonTextarea, IonChip
         },
         setup() {
             const route = useRoute();

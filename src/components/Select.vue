@@ -1,6 +1,5 @@
 <template>
     <ion-list>
-        <ion-item lines="none" class="ion-no-padding">
             <ion-select interface="action-sheet" :placeholder="placeholder" v-model="selected" @select="$emit('date-updated', selected.value)">
                 <ion-select-option
                     v-for="(item, index) in data" 
@@ -10,7 +9,6 @@
                         {{item.name}}
                     </ion-select-option>
             </ion-select>
-        </ion-item>
     </ion-list>
 </template>
 
@@ -37,7 +35,15 @@
 </script>
 
 <style scoped>
-    ion-select::part(text) {
-    color: var(--ion-color-medium);
+    ion-select {
+        --placeholder-opacity: 1;
+        --padding-start: 5px;
+        --padding-bottom: 0;
+        --padding-top: 0;
+        --padding-end: 5px;
+    }
+    ion-list {
+        border-radius: 20px;
+        background-color: transparent
     }
 </style>

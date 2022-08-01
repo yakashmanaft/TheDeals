@@ -71,7 +71,7 @@
                                         deal: JSON.stringify(deal)
                                     }}"
                             >
-                                <ion-card class="ion-padding-horizontal">
+                                <ion-card class="ion-padding-horizontal ion-padding-vertical">
                                     <!-- Header of the card -->
                                     <ion-card-header class="ion-no-padding">
                                         <ion-grid>

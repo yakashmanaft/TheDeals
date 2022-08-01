@@ -29,7 +29,12 @@
                     <ion-grid class="ion-margin-top" style="padding-top: 0!important">
                         <ion-row class="ion-justify-content-between ion-align-items-center">
                             <ion-chip :color="setChipColor(dealStatus)">
-                                <SelectDealStatus 
+                                <!-- <SelectDealStatus 
+                                    :data="dealStatusList" 
+                                    :placeholder="translatePlaceholder(currentDeal.dealStatus, dealStatusList)"
+                                    @date-updated="(selected) => {dealStatus = selected.currentValue;}"
+                                /> -->
+                                <Select
                                     :data="dealStatusList" 
                                     :placeholder="translatePlaceholder(currentDeal.dealStatus, dealStatusList)"
                                     @date-updated="(selected) => {dealStatus = selected.currentValue;}"
@@ -116,7 +121,8 @@
     //
     import Spinner from '../../components/Spinner.vue';
     import ViewHeader from '../../components/headers/HeaderViewCurrent.vue';
-    import SelectDealStatus from '@/components/SelectDealStatus.vue';
+    // import SelectDealStatus from '@/components/SelectDealStatus.vue';
+    import Select from '@/components/Select.vue';
     //
     export default defineComponent({
         name: 'View-deal',
@@ -133,7 +139,8 @@
             IonModal,
             IonItem,
             IonSearchbar,
-            SelectDealStatus,
+            // SelectDealStatus,
+            Select,
             IonChip
         }, 
         setup() {
