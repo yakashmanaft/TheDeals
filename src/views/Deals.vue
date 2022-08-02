@@ -74,7 +74,7 @@
                                 <ion-card class="ion-padding-horizontal ion-padding-vertical">
                                     <!-- Header of the card -->
                                     <ion-card-header class="ion-no-padding">
-                                        <ion-grid>
+                                        <ion-grid class="ion-no-padding">
                                             <ion-row class="ion-justify-content-between ion-align-items-center">
                                                 <!-- Кнопка смены статуса дела -->
                                                 <div @click.prevent.stop="doSomething">
@@ -97,7 +97,23 @@
                                         </ion-grid>
                                     </ion-card-header>
                                     <!-- Body of the card -->
-                                    
+                                    <ion-card-content class="ion-no-padding ion-margin-top">
+                                        <ion-grid>
+                                            <ion-row style="gap: 0.8rem">
+                                                <!-- Предмет заказа -->
+                                                <div class="item-subject" v-for="(item, index) in deal.dealsList" :key="index">
+                                                    <!-- item -->
+                                                    <ion-thumbnail style="height: 64px; width: 64px;">
+                                                        <ion-img style="height: 100%" :src="`img/subjects/sale/${item.selectedProduct}.webp`"></ion-img>
+                                                    </ion-thumbnail>
+                                                    <ion-label style="font-size: 12px">
+                                                        x{{item.productQuantity}}
+                                                    </ion-label>
+                                                </div>
+                                                <div class="empty-item "></div>
+                                            </ion-row>
+                                        </ion-grid>
+                                    </ion-card-content>
 
 
                                 </ion-card>
@@ -138,7 +154,9 @@
         IonCard,
         IonCardHeader,
         IonGrid,
-        IonRow
+        IonRow,
+        IonCardContent,
+        IonThumbnail
     } from '@ionic/vue';
     import { defineComponent, ref, computed, onMounted, watch } from 'vue';
     import store from '../store/index';
@@ -176,7 +194,9 @@
             IonCard,
             IonCardHeader,
             IonGrid,
-            IonRow
+            IonRow,
+            IonCardContent,
+            IonThumbnail
         },
         setup() {
             // Get user from store
@@ -435,5 +455,13 @@
         width: 50%; 
         height: 50%; 
         margin:0 auto;
+    }
+    ion-thumbnail {
+        background-color: var(--ion-color-light);
+        --border-radius: 100%;
+        padding: 0.5rem;
+    }
+    .empty-item {
+        margin-left: auto
     }
 </style>

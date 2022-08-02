@@ -75,7 +75,7 @@ const state = reactive({
       text: 'Создайте дело и укажите дату'
     },
     {
-      name: 'В процессе',
+      name: 'Готовлю',
       value: 'deal-in-process',
       caption: 'Где дела в процессе?',
       text: 'Создайте дело и приступайте'
