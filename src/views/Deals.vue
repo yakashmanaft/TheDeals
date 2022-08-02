@@ -42,7 +42,7 @@
                 <!-- Статусы дел -->
                 <ion-list class="horizontal-scroll ion-margin-top">
                     <ion-chip v-for="(status, index) in dealStatusList" :key="index" @click="setDealStatus(status.value)" :color="setChipColor(status.value)" :outline="setChipOutline(status.value)">
-                        <ion-label>{{ status.name }} {{countDealByStatus(status.value)}}</ion-label>
+                        <ion-label>{{ status.name }} <span v-if="status.value !== 'deal-cancelled' && status.value !== 'deal-complete'">{{countDealByStatus(status.value)}}</span></ion-label>
                     </ion-chip>
                 </ion-list>
                 <!-- Если по данному статусу нет дел -->
@@ -98,10 +98,10 @@
                                     </ion-card-header>
                                     <!-- Body of the card -->
                                     <ion-card-content class="ion-no-padding ion-margin-top">
+                                        <!-- Предмет заказа -->
                                         <ion-grid>
                                             <ion-row style="gap: 0.8rem">
-                                                <!-- Предмет заказа -->
-                                                <div class="item-subject" v-for="(item, index) in deal.dealsList" :key="index">
+                                                <div class="item-subject relative" v-for="(item, index) in deal.dealsList" :key="index">
                                                     <!-- item -->
                                                     <ion-thumbnail style="height: 64px; width: 64px;">
                                                         <ion-img style="height: 100%" :src="`img/subjects/sale/${item.selectedProduct}.webp`"></ion-img>
@@ -109,10 +109,13 @@
                                                     <ion-label style="font-size: 12px">
                                                         x{{item.productQuantity}}
                                                     </ion-label>
+                                                    <!-- mark where subject has attribute -->
+                                                    <div v-if="checkRentAttr(item)" class="absolute mark-atribute"></div>
                                                 </div>
-                                                <div class="empty-item "></div>
+                                                <div class="empty-item"></div>
                                             </ion-row>
                                         </ion-grid>
+
                                     </ion-card-content>
 
 
@@ -424,8 +427,19 @@
                     } 
                 })
             }
+            // Проверяем выбрани ли атрибуты у предмета заказа
+            const checkRentAttr = (item) => {
+                if(item.additionalAttributes.length > 0) {
+                    // Если атрибут выбран
+                    return true
+                } else if (item.additionalAttributes.length === 0 ){
+                    // Если атрибутов в принципе не выбрано
+                    // console.log('без атрибутов')
+                    return false;
+                }
+            }
             return {
-                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isOpen, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translatePlaceholder, resfreshData, myContacts, getContact, showNameByID
+                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isOpen, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translatePlaceholder, resfreshData, myContacts, getContact, showNameByID, checkRentAttr
             }
         }
     })
@@ -463,5 +477,19 @@
     }
     .empty-item {
         margin-left: auto
+    }
+    .relative {
+        position: relative;
+    }
+    .absolute {
+        position: absolute;
+    }
+    .mark-atribute {
+        top: 0;
+        right: 0;
+        width: 1rem;
+        height: 1rem;
+        background-color: var(--ion-color-warning);
+        border-radius: 100%
     }
 </style>
