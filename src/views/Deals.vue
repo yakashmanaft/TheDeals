@@ -493,7 +493,7 @@
         white-space: nowrap;
     }
     .no-status-deal {
-        height: 80vh; 
+        height: 60vh; 
         display: flex; 
         flex-direction: column; 
         align-items: center; 
