@@ -45,7 +45,17 @@
                         <ion-label>{{ status.name }} <span v-if="status.value !== 'deal-cancelled' && status.value !== 'deal-complete'">{{countDealByStatus(status.value)}}</span></ion-label>
                     </ion-chip>
                 </ion-list>
-                <!-- Если по данному статусу нет дел -->
+                <!-- Фильтр по типу дела -->
+                <ion-item-group class="ion-text-left ion-margin-start">
+                    <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                        <Select 
+                            :data="dealTypesList"
+                            placeholder="Все"
+                            @date-updated="(selected) => dealByType = selected.currentValue"
+                        />
+                    </ion-button>
+                </ion-item-group>
+                <!-- Если по конкретному статусу нет дел -->
                 <div class="no-status-deal" v-if="foundDealsByStatus.length === 0">
                     <div v-for="(status, index) in dealStatusList" :key="index">
                         <div v-if="currentDealStatus === status.value">
@@ -97,7 +107,8 @@
                                         </ion-grid>
                                     </ion-card-header>
                                     <!-- Body of the card -->
-                                    <ion-card-content class="ion-no-padding ion-margin-top">
+                                    <!-- Если заказ -->
+                                    <ion-card-content v-if="deal.dealType === 'sale'" class="ion-no-padding ion-margin-top">
                                         <!-- Предмет заказа -->
                                         <ion-grid>
                                             <ion-row style="gap: 0.8rem">
@@ -115,11 +126,12 @@
                                                 <div class="empty-item"></div>
                                             </ion-row>
                                         </ion-grid>
-                                        <!--  -->
-                                        {{deal.executionDate}}
+                                        тип дела Продажа
                                     </ion-card-content>
-
-
+                                    <!-- Если закупка -->
+                                    <ion-card-content v-if="deal.dealType === 'buy'">
+                                        тип дела Закупка
+                                    </ion-card-content>
                                 </ion-card>
                             </router-link>
                     </div>
@@ -160,7 +172,8 @@
         IonGrid,
         IonRow,
         IonCardContent,
-        IonThumbnail
+        IonThumbnail,
+        IonItemGroup
     } from '@ionic/vue';
     import { defineComponent, ref, computed, onMounted, watch } from 'vue';
     import store from '../store/index';
@@ -200,7 +213,8 @@
             IonGrid,
             IonRow,
             IonCardContent,
-            IonThumbnail
+            IonThumbnail,
+            IonItemGroup
         },
         setup() {
             // Get user from store
@@ -267,7 +281,7 @@
             })
             // Счетчик коилчества дел по конкретному статусу
             const countDealByStatus = (status) => {
-                const result = myDeals.value.filter(item => item.dealStatus === status)   
+                const result = myDeals.value.filter(item => item.dealStatus === status && showDealByType(item.dealType))   
                 return result.length
             }
             // Текущий выбранный статус сделок
@@ -419,7 +433,7 @@
                     // const executionDate = formattedDate(new Date(deal.executionDate).toISOString().split("T")[0])
                     // const executionDate = formattedDate(deal.executionDate)
                     const executionDate = deal.executionDate
-                    if(deal.dealStatus === currentDealStatus.value) {
+                    if(deal.dealStatus === currentDealStatus.value && showDealByType(deal.dealType)) {
                         daysArray.value.push(executionDate)
                         // daysArray.value.sort((a,b) => {
                         //     return new Date(b) - new Date(a);
@@ -439,8 +453,27 @@
                     return false;
                 }
             }
+            // ============================ Фильтр для отображения на доске сделок по конкретному типу =====================
+            // Типы дел
+            const dealTypesList = ref(store.state.dealTypes)
+            // Переключатель дел к показу (Все / Продажи / Закупки)
+            const dealByType = ref('all')
+            // Фильтр для показа дел (Все / Продажи / Закупки)
+            const showDealByType = (dealType) => {
+                if(dealByType.value === 'all') {
+                    return dealType
+                } else if (dealByType.value === 'sale') {
+                    return dealType === 'sale'
+                } else if (dealByType.value === 'buy') {
+                     return dealType === 'buy'
+                }
+            }
+            // Следим за изменением dealByType и запускаем обнолвение дел к показу по выбранным критериям
+            watch(dealByType, () => {
+                resfreshData(currentDealStatus)
+            })
             return {
-                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isOpen, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translatePlaceholder, resfreshData, myContacts, getContact, showNameByID, checkRentAttr
+                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isOpen, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translatePlaceholder, resfreshData, myContacts, getContact, showNameByID, checkRentAttr, dealTypesList, dealByType, showDealByType
             }
         }
     })

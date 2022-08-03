@@ -44,6 +44,21 @@ const state = reactive({
   myContactsArray: [],
   // deals array in page Deals
   myDealsArray: [],
+  // deals type array
+  dealTypes: [
+    {
+      name: 'Все',
+      value: 'all'
+    },
+    {
+      name: 'Продажи',
+      value: 'sale'
+    },
+    {
+      name: 'Закупки',
+      value: 'buy'
+    }
+  ],
   // phone types array in page my contact 
   myContactPhoneEmailTypes: [
     { name: 'Личный',
