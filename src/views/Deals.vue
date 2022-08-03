@@ -126,7 +126,7 @@
                                                 <div class="empty-item"></div>
                                             </ion-row>
                                         </ion-grid>
-                                        тип дела Продажа
+
                                     </ion-card-content>
                                     <!-- Если закупка -->
                                     <ion-card-content v-if="deal.dealType === 'buy'">

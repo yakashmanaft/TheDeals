@@ -101,6 +101,32 @@
                     />
                 </ion-item-group>
 
+                <!-- Предмет дела -->
+                <ion-item-group class="ion-text-left ion-padding-horizontal">
+                    <!-- Заголовок -->
+                    <ion-text>
+                        <h4>Предмет дела</h4>
+                    </ion-text>
+                    <!--  -->
+                    <div >
+                        <ion-grid>
+                            <ion-row class="horizontal-scroll">
+                                <ion-card v-for="(item, uid) in currentDeal.dealsList" :key="uid">
+                                    <p>{{ item.id }}</p>
+                                                                                        <!-- item -->
+                                <ion-thumbnail style="height: 64px; width: 64px;">
+                                    <ion-img style="height: 100%" :src="`../img/subjects/sale/${item.selectedProduct}.webp`"></ion-img>
+                                </ion-thumbnail>
+                                <ion-label style="font-size: 12px">
+                                    x{{item.productQuantity}}
+                                </ion-label>
+                                    <p>{{ item.recipe }}</p>
+                                </ion-card>
+                            </ion-row>
+                        </ion-grid>
+                    </div>
+                </ion-item-group>
+
                 <br>
                 {{currentDeal}}
                 <br>
@@ -127,7 +153,7 @@
     import { useRoute, useRouter } from 'vue-router';
     import store from '../../store/index';
     import { uid } from 'uid';
-    import { IonContent, IonButton, IonActionSheet, IonItemGroup, IonText, IonGrid, IonRow, IonModal, IonItem, IonSearchbar, IonChip } from '@ionic/vue';
+    import { IonContent, IonButton, IonActionSheet, IonItemGroup, IonText, IonGrid, IonRow, IonModal, IonItem, IonSearchbar, IonChip, IonCard, IonImg, IonThumbnail, IonLabel } from '@ionic/vue';
     import {  } from 'ionicons/icons';
     //
     import { searchFilter } from '../../helpers/filterMyContacts'; 
@@ -157,7 +183,11 @@
             IonSearchbar,
             Select,
             IonChip,
-            ModalCalendar
+            ModalCalendar,
+            IonCard,
+            IonImg,
+            IonThumbnail,
+            IonLabel
         }, 
         setup() {
             const route = useRoute();
@@ -353,4 +383,13 @@
 </script>
 
 <style scoped>
+    .horizontal-scroll {
+        overflow: scroll!important;
+        --overflow: scroll!important;
+        white-space: nowrap!important;
+    }
+    ::-webkit-scrollbar, *::-webkit-scrollbar {
+        display: none;
+        overflow: hidden;
+    }
 </style>
