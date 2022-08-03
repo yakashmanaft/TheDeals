@@ -101,19 +101,19 @@
                     />
                 </ion-item-group>
 
-                <!-- Предмет дела -->
-                <ion-item-group class="ion-text-left ion-padding-horizontal">
+                <!-- =========================== Предмет дела ============================================ -->
+                <ion-item-group class="ion-text-left">
                     <!-- Заголовок -->
                     <ion-text>
-                        <h4>Предмет дела</h4>
+                        <h4 class="ion-padding-horizontal">Предмет дела</h4>
                     </ion-text>
                     <!--  -->
-                    <div >
-                        <ion-grid>
-                            <ion-row class="horizontal-scroll">
-                                <ion-card v-for="(item, uid) in currentDeal.dealsList" :key="uid">
-                                    <p>{{ item.id }}</p>
-                                                                                        <!-- item -->
+                    <ion-grid class="ion-no-padding">
+                        <ion-row class="ion-nowrap horizontal-scroll">
+                            <!-- Карточки предметов заказа -->
+                            <ion-card v-for="(item, uid) in currentDeal.dealsList" :key="uid">
+                                <p>{{ item.id }}</p>
+                                <!-- item -->
                                 <ion-thumbnail style="height: 64px; width: 64px;">
                                     <ion-img style="height: 100%" :src="`../img/subjects/sale/${item.selectedProduct}.webp`"></ion-img>
                                 </ion-thumbnail>
@@ -121,10 +121,13 @@
                                     x{{item.productQuantity}}
                                 </ion-label>
                                     <p>{{ item.recipe }}</p>
-                                </ion-card>
-                            </ion-row>
-                        </ion-grid>
-                    </div>
+                            </ion-card>
+                            <!-- Добавить еще предмет к заказу -->
+                            <ion-card>
+                                Добавить
+                            </ion-card>
+                        </ion-row>
+                    </ion-grid>
                 </ion-item-group>
 
                 <br>
@@ -384,12 +387,17 @@
 
 <style scoped>
     .horizontal-scroll {
-        overflow: scroll!important;
-        --overflow: scroll!important;
-        white-space: nowrap!important;
+        overflow: scroll;
+        --overflow: scroll;
+        white-space: nowrap;
     }
     ::-webkit-scrollbar, *::-webkit-scrollbar {
         display: none;
         overflow: hidden;
+    }
+    ion-card {
+        overflow: visible;
+        /* overflow-x: auto;
+        width: 100%; */
     }
 </style>
