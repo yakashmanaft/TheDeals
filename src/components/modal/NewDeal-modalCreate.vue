@@ -12,6 +12,13 @@
             </ion-toolbar>
         </ion-header>
         <ion-content class="ion-padding">
+            <!-- ============================ Статус дела ========================================= -->
+            <ion-item-group>
+                <ion-text color="medium">
+                    Все новые дела создаются со статусом <b>"Бронь даты"</b>. В дальнейшем вы можете редактировать статус по необходимости.
+                </ion-text>
+            </ion-item-group>
+
             <!-- ============================ Контакт по делу ===================================== -->
             <ion-item-group>
                 <!-- заголовок -->
@@ -46,7 +53,8 @@
                     </ion-content>
                 </ion-modal>
             </ion-item-group>
-            <!-- Дата и время исполнения -->
+
+            <!-- ========================== Дата и время исполнения ============================== -->
             <ion-item-group>
                 <!-- заголовок -->
                 <ion-text>
@@ -59,6 +67,7 @@
                     :is-open="isCalendarOpened" 
                     @date-updated="(pickedDate) => dealData.executionDate = pickedDate.currentValue"
                     @closeModal="closeModalCalendar()"
+                    @updateDate="updateExecutionDate()"
                     @didDismiss="isCalendarOpened = false"
                 />
             </ion-item-group>
@@ -85,7 +94,7 @@
     //
     export default defineComponent({
         name: 'CreateNewDeal',
-        emits: ['date-updated', 'closeModal', 'createDeal'],
+        emits: ['date-updated', 'closeModal', 'createDeal', 'updateDate'],
         props: {
             dealData: Object,
             myContacts: Array
@@ -115,7 +124,11 @@
             const openModalCalendar = () => {
                 isCalendarOpened.value = true
             }
-            const closeModalCalendar = () => {
+            const closeModalCalendar = (executionDate) => {
+                executionDate = 'Выберите дату'
+                isCalendarOpened.value = false;
+            }
+            const updateExecutionDate = () => {
                 isCalendarOpened.value = false;
             }
             // Выбираем дату
@@ -124,22 +137,21 @@
                 if(eventDate === '') {
                     return 'Выберите дату'
                 }
-                const data = eventDate
+                const data = eventDate;
                 const formattedString = format(parseISO(data), 'd MMMM к HH:mm', { locale: ru });
                 // console.log(formattedString)
                 return formattedString
             }
-            //
+            // Поиск при выборе контакта по делу
             const myContactsArray = ref([])
             const searchedContacts = computed(() => {
                 return searchFilter(myContactsArray.value, searchDealContact.value)
             })
-
-            
+            //
             watchEffect(() => myContactsArray.value = props.myContacts);
             // console.log(myContactsArray.value)
             return {
-                dealContact, dealContactID , searchContactMenu, choose, isCalendarOpened, openModalCalendar, closeModalCalendar, datepicker, myContactsArray, searchDealContact, searchedContacts
+                dealContact, dealContactID , searchContactMenu, choose, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, datepicker, myContactsArray, searchDealContact, searchedContacts
             }
         }
     })

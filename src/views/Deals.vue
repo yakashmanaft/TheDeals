@@ -115,7 +115,8 @@
                                                 <div class="empty-item"></div>
                                             </ion-row>
                                         </ion-grid>
-
+                                        <!--  -->
+                                        {{deal.executionDate}}
                                     </ion-card-content>
 
 

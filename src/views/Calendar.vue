@@ -58,7 +58,8 @@
     IonTitle, 
     IonToolbar,
     IonIcon,
-    IonText
+    IonText,
+    IonItemGroup
     } from '@ionic/vue';
     import { menu } from 'ionicons/icons';
     import store from '../store/index';
@@ -84,6 +85,7 @@
             IonToolbar,
             IonIcon,
             IonText,
+            IonItemGroup,
             NavigationMenu,
             IonDatetime 
         },

@@ -32,7 +32,7 @@
                                 <Select
                                     :data="dealStatusList" 
                                     :placeholder="translatePlaceholder(currentDeal.dealStatus, dealStatusList)"
-                                    @date-updated="(selected) => {dealStatus = selected.currentValue;}"
+                                    @date-updated="(selected) => dealStatus = selected.currentValue"
                                 />
                             </ion-chip>
                             <ion-text></ion-text>
@@ -49,8 +49,7 @@
                     <!-- Показываем контакт по делу -->
                     <ion-grid class="ion-no-padding">
                         <ion-row class="ion-justify-content-between ion-align-items-center">
-                            <!-- <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin" >{{dealContact}}</ion-button> -->
-                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin" >{{dealContact}}</ion-button>
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">{{dealContact}}</ion-button>
                             <ion-button size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click="searchContactMenu = true">Изменить</ion-button>
                         </ion-row>
                     </ion-grid>
@@ -76,17 +75,36 @@
                         </ion-content>
                     </ion-modal>
                 </ion-item-group>
-                <!-- Дата и время исполнения -->
+
+                <!-- =========================== Дата и время исполнения ================================= -->
                 <ion-item-group class="ion-text-left ion-padding-horizontal">
                     <!-- Заголовок -->
                     <ion-text>
                         <h4>Дата и время исполнения</h4>
                     </ion-text>
+                    <!-- Блок показа / редактирования даты и времени исполнения -->
+                    <ion-grid class="ion-no-padding">
+                        <ion-row class="ion-justify-content-between ion-align-items-center">
+                            <!-- Текущая дата и время исполнения -->
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">{{ datepicker(currentDeal.executionDate) }}</ion-button>
+                            <!-- Кнопка активации компонента, она же показывает выбранное -->
+                            <ion-button size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click="openModalCalendar(isCalendarOpened = true)">Изменить</ion-button>
+                        </ion-row>
+                    </ion-grid>
+                    <ModalCalendar 
+                        :is-open="isCalendarOpened" 
+                        @date-updated="(pickedDate) => executionDate = pickedDate.currentValue"
+                        @closeModal="closeModalCalendar(executionDate)"
+                        @updateDate="updateExecutionDate()"
+                        @didDismiss="isCalendarOpened = false"
+                        :date="currentDeal.executionDate"
+                    />
                 </ion-item-group>
+
                 <br>
                 {{currentDeal}}
                 <br>
-                <!-- Кнопка удалить контакта -->
+                <!-- ========================== Кнопка удалить дело =================================== -->
                 <!-- Не показываем в режиме edit -->
                 <ion-button @click="setOpen(true)" fill="clear" color="danger">Удалить дело</ion-button>
                 <!-- Всплывашка подтверждение -->
@@ -118,6 +136,10 @@
     import ViewHeader from '../../components/headers/HeaderViewCurrent.vue';
     import Select from '@/components/Select.vue';
     //
+    import ModalCalendar from '../../components/modal/NewDeal-modalCalendar.vue'
+    import { format, parseISO } from 'date-fns';
+    import { ru } from 'date-fns/locale'
+    //
     export default defineComponent({
         name: 'View-deal',
         components: {
@@ -134,7 +156,8 @@
             IonItem,
             IonSearchbar,
             Select,
-            IonChip
+            IonChip,
+            ModalCalendar
         }, 
         setup() {
             const route = useRoute();
@@ -187,6 +210,7 @@
             const dealStatus = ref(currentDeal.value.dealStatus);
             // следим за изменениями значения dealStatus у текущего дела и обновляем его в БД
             watch (dealStatus, () => {
+                // console.log(dealStatus.value)
                 update()
             })
             // выдергиваем из массива нужный контакт
@@ -221,7 +245,39 @@
                 })
                 return currentName
             }
-            // update current deal
+            // =========================== Выбираем дату ==========================
+            // храним значение executionDate
+            const executionDate = ref();
+            // и показываем ее уже в варианте с указанием времени
+            const datepicker = (eventDate) => {
+                if(eventDate === '') {
+                    return 'Выберите дату'
+                }
+                const data = eventDate;
+                const formattedString = format(parseISO(data), 'd MMMM к HH:mm', { locale: ru });
+                return formattedString
+            }
+            // Управление модалкой календаря
+            const isCalendarOpened = ref(false)
+            const openModalCalendar = () => {
+                isCalendarOpened.value = true
+            }
+            const closeModalCalendar = (executionDate) => {
+                executionDate = currentDeal.value.executionDate
+                isCalendarOpened.value = false;
+            }
+            const updateExecutionDate = () => {
+                currentDeal.value.executionDate = executionDate.value 
+                isCalendarOpened.value = false;
+                update()
+            }
+            // следим за изменениями значения executionDate у текущего дела и обновляем его в БД
+            // watch (executionDate, () => {
+            //     currentDeal.value.executionDate = executionDate.value 
+            //     update()
+            //     console.log(executionDate.value)
+            // })
+            // ======================================== update current deal ================================
             const update = async () => {
                 try {
                     spinner.value = true;
@@ -230,7 +286,9 @@
                     //
                     const {error} = await supabase.from('deals').update({
                         contactID: dealContactID.value,
-                        dealStatus: dealStatus.value
+                        dealStatus: dealStatus.value,
+                        executionDate: executionDate.value
+
                     }).eq('id', currentId);
                     if(error) throw error;
                     // Дело успешно обновлено
@@ -288,7 +346,7 @@
             }
 
             return {
-                spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, buttons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translatePlaceholder, setChipColor
+                spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, buttons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translatePlaceholder, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate
             }
         }
     })

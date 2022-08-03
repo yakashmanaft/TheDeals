@@ -6,20 +6,23 @@
                     <ion-button @click="$emit('closeModal')">Отменить</ion-button>
                 </ion-buttons>
                 <ion-title>Выберите дату</ion-title>
+                <ion-buttons slot="end">
+                    <ion-button @click="$emit('updateDate')">Готово</ion-button>
+                </ion-buttons>
             </ion-toolbar>
         </ion-header>
         <ion-content>
             <ion-datetime 
+                :prefer-wheel="true"
                 size="cover"
                 presentation="date-time"
                 v-model="pickedDate"
-                @ionChange="$emit('closeModal')"
                 :value="setCurrentDate(date)"
                 :first-day-of-week="1"
                 locale="ru"
             >
+                <span slot="time-label">Время исполнения</span>
             </ion-datetime>
-        
         </ion-content>
     </ion-modal>
 </template>
