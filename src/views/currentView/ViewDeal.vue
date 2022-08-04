@@ -13,6 +13,15 @@
             :subjectData="currentDealSubject"
         />
 
+        <!-- add subject to deal -->
+        <CreateDealSubject
+            :isOpen="isCreateNewSubjectOpened"
+            @closeModal="closeCreateSubjectModal"
+            :subjectData="currentSubject"
+            @createSubject="addNewSubject"
+            :currentDealType="currentDeal.dealType"
+        />
+
         <!-- page-content -->
         <ion-content
             :scroll-events="true"
@@ -126,10 +135,12 @@
                             <!-- Карточки предметов заказа -->
                             <ion-card @click.stop="openCurrentDealSubject(index)" class="ion-padding ion-text-center card-center relative" v-for="(item, index) in currentDeal.dealsList" :key="item.id">
                                 <!-- Кнопка удалить конкретный предмет дела -->
-                                <ion-icon @click.stop="openDeleteSubjectModal(item.id)" class="icon_size icon_absolute" :icon="closeCircleOutline"></ion-icon>
+                                <ion-icon @click.stop="openDeleteSubjectModal(item.id)" class="icon_size icon_del absolute" :icon="closeCircleOutline"></ion-icon>
                                 <!-- item -->
-                                <ion-thumbnail style="height: 64px; width: 64px; margin: 0 auto">
+                                <ion-thumbnail style="height: 64px; width: 64px; margin: 0 auto" class="relative">
                                     <ion-img style="height: 100%" :src="`../img/subjects/sale/${item.selectedProduct}.webp`"></ion-img>
+                                    <!-- mark where subject has attribute -->
+                                    <div v-if="checkRentAttr(item)" class="absolute mark-atribute"></div>
                                 </ion-thumbnail>
                                 <ion-label style="font-size: 12px">
                                     x{{item.productQuantity}}
@@ -137,7 +148,7 @@
                                 <ion-text style="white-space: normal">{{ item.recipe }}</ion-text>
                             </ion-card>
                             <!-- Добавить еще предмет к заказу -->
-                            <div class="ion-padding card-center card-add">
+                            <div class="ion-padding card-center card-add" @click="openCreateSubjectModal()">
                                 <ion-icon :icon="addCircleOutline" color="primary" class="icon_size"></ion-icon>
                                 <ion-text class="ion-text-center ion-margin-top" color="primary">
                                     Добавить
@@ -191,6 +202,7 @@
     import Select from '@/components/Select.vue';
     import ModalCalendar from '../../components/modal/NewDeal-modalCalendar.vue';
     import ViewDealSubject from '../../components/modal/ViewDeal-modalViewSubject.vue';
+    import CreateDealSubject from '../../components/modal/ViewDeal-modalCreateSubject.vue';
     //
     import { format, parseISO } from 'date-fns';
     import { ru } from 'date-fns/locale'
@@ -201,6 +213,7 @@
             Spinner,
             ViewHeader,
             ViewDealSubject,
+            CreateDealSubject,
             IonContent,
             IonButton,
             IonActionSheet,
@@ -434,9 +447,9 @@
                     return 'Закупка'
                 }
             }
-            // ================================ управление current deal item ===================================
+            // ================================ управление current deal subject ===================================
             const currentDealSubject = ref()
-            // открываем просмотр подробностей current deal item
+            // открываем view current deal item
             const isViewDealSubjectOpened = ref(false);
             const openCurrentDealSubject = (index) => {
                 isViewDealSubjectOpened.value = true;
@@ -455,9 +468,43 @@
                 currentDeal.value.dealsList = currentDeal.value.dealsList.filter(subject => subject.id !== id);
                 update();
             }
+            // create new current deal subject
+            const isCreateNewSubjectOpened = ref(false);
+            // Открывает модалку создания нового предмета к текущему делу
+            const openCreateSubjectModal = () => {
+                isCreateNewSubjectOpened.value = true;
+            }
+            // Закрываем модалку создания нового предмета к текущему делу
+            const closeCreateSubjectModal = () => {
+                isCreateNewSubjectOpened.value = false;
+            }
+            // Щаблон нового предмета к текущему делу
+            const currentSubject = ref({
+                id: uid(),
+                selectedProduct: 'cake',
+                additionalAttributes: []
+            })
+            // Добавляем новый предмет к текущему делу и делаем запись в БД
+            const addNewSubject = () => {
+                currentDeal.value.dealsList.push(currentSubject.value);
+                isCreateNewSubjectOpened.value = false;
+                update();
+            }
+
+            // Проверяем выбрани ли атрибуты у предмета заказа
+            const checkRentAttr = (item) => {
+                if(item.additionalAttributes.length > 0) {
+                    // Если атрибут выбран
+                    return true
+                } else if (item.additionalAttributes.length === 0 ){
+                    // Если атрибутов в принципе не выбрано
+                    // console.log('без атрибутов')
+                    return false;
+                }
+            }
 
             return {
-                spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translatePlaceholder, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete
+                spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translatePlaceholder, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr
             }
         }
     })
@@ -493,9 +540,19 @@
     .relative {
         position: relative;
     }
-    .icon_absolute {
+    .absolute {
         position: absolute;
+    }
+    .icon_del {
+        top: 0.3rem;
+        left: 0.3rem;
+    }
+    .mark-atribute {
         top: 0;
-        right: 0;
+        right: -0.7rem;
+        width: 1rem;
+        height: 1rem;
+        background-color: var(--ion-color-warning);
+        border-radius: 100%
     }
 </style>
