@@ -137,23 +137,27 @@
                                 <!-- Кнопка удалить конкретный предмет дела -->
                                 <ion-icon @click.stop="openDeleteSubjectModal(item.id)" class="icon_size icon_del absolute" :icon="closeCircleOutline"></ion-icon>
                                 <!-- item -->
-                                <ion-thumbnail style="height: 64px; width: 64px; margin: 0 auto" class="relative">
-                                    <ion-img style="height: 100%" :src="`../img/subjects/sale/${item.selectedProduct}.webp`"></ion-img>
+                                <ion-thumbnail v-if="item.selectedProduct !== ''" style="height: 64px; width: 64px; margin: 0 auto" class="relative">
+                                    <ion-img  style="height: 100%" :src="`../img/subjects/sale/${item.selectedProduct}.webp`"></ion-img>
                                     <!-- mark where subject has attribute -->
                                     <div v-if="checkRentAttr(item)" class="absolute mark-atribute"></div>
                                 </ion-thumbnail>
+                                <!--  -->
+                                <!-- <ion-thumbnail v-if="item.selectedProduct === ''" class="empty-deal-list_thumbnail">
+                                    <ion-icon class="empty-deal-list_icon" :icon="helpOutline"></ion-icon>
+                                </ion-thumbnail> -->
                                 <ion-label style="font-size: 12px">
                                     x{{item.productQuantity}}
                                 </ion-label>
                                 <ion-text style="white-space: normal">{{ item.recipe }}</ion-text>
                             </ion-card>
                             <!-- Добавить еще предмет к заказу -->
-                            <div class="ion-padding card-center card-add" @click="openCreateSubjectModal()">
+                            <ion-card class="ion-padding card-center card-add" @click="openCreateSubjectModal()">
                                 <ion-icon :icon="addCircleOutline" color="primary" class="icon_size"></ion-icon>
                                 <ion-text class="ion-text-center ion-margin-top" color="primary">
                                     Добавить
                                 </ion-text>    
-                            </div>
+                            </ion-card>
                         </ion-row>
                     </ion-grid>
                 </ion-item-group>
@@ -193,7 +197,7 @@
     import store from '../../store/index';
     import { uid } from 'uid';
     import { IonContent, IonButton, IonActionSheet, IonItemGroup, IonText, IonGrid, IonRow, IonModal, IonItem, IonSearchbar, IonChip, IonCard, IonImg, IonThumbnail, IonLabel, IonIcon } from '@ionic/vue';
-    import { addCircleOutline, closeCircleOutline } from 'ionicons/icons';
+    import { addCircleOutline, closeCircleOutline, helpOutline } from 'ionicons/icons';
     //
     import { searchFilter } from '../../helpers/filterMyContacts'; 
     //
@@ -481,14 +485,19 @@
             // Щаблон нового предмета к текущему делу
             const currentSubject = ref({
                 id: uid(),
-                selectedProduct: 'cake',
-                additionalAttributes: []
+                selectedProduct: '',
+                additionalAttributes: [],
+                productNote: ''
             })
             // Добавляем новый предмет к текущему делу и делаем запись в БД
             const addNewSubject = () => {
-                currentDeal.value.dealsList.push(currentSubject.value);
-                isCreateNewSubjectOpened.value = false;
-                update();
+                if(currentSubject.value.selectedProduct !== ''){
+                    currentDeal.value.dealsList.push(currentSubject.value);
+                    isCreateNewSubjectOpened.value = false;
+                    update();
+                } else {
+                    alert('SelectedProduct не можут быть пустым')
+                }
             }
 
             // Проверяем выбрани ли атрибуты у предмета заказа
@@ -504,7 +513,7 @@
             }
 
             return {
-                spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translatePlaceholder, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr
+                spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translatePlaceholder, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline
             }
         }
     })
@@ -554,5 +563,17 @@
         height: 1rem;
         background-color: var(--ion-color-warning);
         border-radius: 100%
+    }
+    .empty-deal-list_thumbnail {
+        height: 64px;
+        width: 64px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: black;
+    }
+    .empty-deal-list_icon {
+        width: 100%;
+        height: 100%
     }
 </style>

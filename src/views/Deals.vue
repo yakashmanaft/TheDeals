@@ -108,15 +108,19 @@
                                     </ion-card-header>
                                     <!-- Body of the card -->
                                     <!-- Если заказ -->
-                                    <ion-card-content v-if="deal.dealType === 'sale'" class="ion-no-padding ion-margin-top">
+                                    <ion-card-content class="ion-no-padding ion-margin-top">
                                         <!-- Предмет заказа -->
                                         <ion-grid>
                                             <ion-row style="gap: 0.8rem">
-                                                <div v-if="deal.dealsList.length" class="relative" v-for="(item, index) in deal.dealsList" :key="index">
+                                                <div class="relative" v-for="(item, index) in deal.dealsList" :key="index">
                                                     <!-- item -->
-                                                    <ion-thumbnail style="height: 64px; width: 64px;">
+                                                    <ion-thumbnail v-if="item.selectedProduct !== ''" style="height: 64px; width: 64px;">
                                                         <ion-img style="height: 100%" :src="`img/subjects/sale/${item.selectedProduct}.webp`"></ion-img>
                                                     </ion-thumbnail>
+                                                    <!--  -->
+                                                    <!-- <ion-thumbnail v-if="item.selectedProduct === ''" class="empty-deal-list_thumbnail">
+                                                        <ion-icon class="empty-deal-list_icon" :icon="helpOutline"></ion-icon>
+                                                    </ion-thumbnail> -->
                                                     <ion-label style="font-size: 12px">
                                                         x{{item.productQuantity}}
                                                     </ion-label>
@@ -135,15 +139,15 @@
 
                                     </ion-card-content>
                                     <!-- Если закупка -->
-                                    <ion-card-content v-if="deal.dealType === 'buy'" class="ion-no-padding ion-margin-top">
+                                    <!-- <ion-card-content v-if="deal.dealType === 'buy'" class="ion-no-padding ion-margin-top">
                                         <ion-grid>
                                             <ion-row style="gap: 0.8rem">
-                                                <!-- Заготовка под v-for массива -->
+                                                
                                                 <div v-if="deal.dealsList.length">
 
                                                 </div>
                                                 <div v-if="deal.dealsList.length" class="empty-item"></div>
-                                                <!-- deal.dealsList is empty array -->
+                                                
                                                 <div v-if="!deal.dealsList.length">
                                                     <ion-thumbnail class="empty-deal-list_thumbnail">
                                                         <ion-icon class="empty-deal-list_icon" :icon="helpOutline"></ion-icon>
@@ -151,7 +155,7 @@
                                                 </div>
                                             </ion-row>
                                         </ion-grid>
-                                    </ion-card-content>
+                                    </ion-card-content> -->
                                 </ion-card>
                             </router-link>
                     </div>

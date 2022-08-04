@@ -14,6 +14,17 @@
         <ion-content class="ion-padding">
             {{currentDealType}}
             {{subjectData}}
+            <!--  -->
+            <div v-if="currentDealType === 'sale'">
+                Это добавление предмета для Продажи
+                <input type="text" v-model="subjectData.selectedProduct"/>
+            </div>
+            <!--  -->
+            <div v-if="currentDealType === 'buy'">
+                Это добавление предмета для Закупа
+                <input type="text" v-model="subjectData.selectedProduct"/>
+                <textarea name="" id="" cols="30" rows="10" v-model="subjectData.productNote"></textarea>
+            </div>
         </ion-content>
     </ion-modal>
 </template>
