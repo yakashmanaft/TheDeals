@@ -6,6 +6,13 @@
         <!-- page header -->
         <ViewHeader />
 
+        <!-- view deal subject -->
+        <ViewDealSubject 
+            :isOpen="isViewDealSubjectOpened"
+            @closeModal="isViewDealSubjectOpened = false"
+            :subjectData="currentDealSubject"
+        />
+
         <!-- page-content -->
         <ion-content
             :scroll-events="true"
@@ -24,6 +31,7 @@
 
             <!-- Data -->
             <div>
+                <!-- Тип дела -->
                 <!-- ============================== Статус дела ========================================== -->
                 <ion-item-group>
                     <ion-grid class="ion-margin-top" style="padding-top: 0!important">
@@ -35,7 +43,7 @@
                                     @date-updated="(selected) => dealStatus = selected.currentValue"
                                 />
                             </ion-chip>
-                            <ion-text></ion-text>
+                            <ion-chip color="medium" outline="true">{{setDealType(currentDeal.dealType)}}</ion-chip>
                         </ion-row>
                     </ion-grid>
                 </ion-item-group>
@@ -105,14 +113,20 @@
                 <ion-item-group class="ion-text-left">
                     <!-- Заголовок -->
                     <ion-text>
-                        <h4 class="ion-padding-horizontal">Предмет дела</h4>
+                        <ion-grid class="ion-no-padding">
+                            <ion-row class="ion-align-items-center ion-margin-top ion-justify-content-between ion-padding-horizontal">
+                                <h4 class="ion-no-margin">Предмет дела</h4>
+                                <ion-text color="medium">Всего {{ currentDeal.dealsList.length }}</ion-text>
+                            </ion-row>
+                        </ion-grid>
                     </ion-text>
                     <!--  -->
                     <ion-grid class="ion-no-padding">
                         <ion-row class="ion-nowrap horizontal-scroll">
                             <!-- Карточки предметов заказа -->
-                            <ion-card class="ion-padding ion-text-center card-center" v-for="(item, uid) in currentDeal.dealsList" :key="uid">
-                                <ion-text>{{ item.id }}</ion-text>
+                            <ion-card @click.stop="openCurrentDealSubject(index)" class="ion-padding ion-text-center card-center relative" v-for="(item, index) in currentDeal.dealsList" :key="item.id">
+                                <!-- Кнопка удалить конкретный предмет дела -->
+                                <ion-icon @click.stop="openDeleteSubjectModal(item.id)" class="icon_size icon_absolute" :icon="closeCircleOutline"></ion-icon>
                                 <!-- item -->
                                 <ion-thumbnail style="height: 64px; width: 64px; margin: 0 auto">
                                     <ion-img style="height: 100%" :src="`../img/subjects/sale/${item.selectedProduct}.webp`"></ion-img>
@@ -123,7 +137,7 @@
                                 <ion-text style="white-space: normal">{{ item.recipe }}</ion-text>
                             </ion-card>
                             <!-- Добавить еще предмет к заказу -->
-                            <div class="ion-padding card-center">
+                            <div class="ion-padding card-center card-add">
                                 <ion-icon :icon="addCircleOutline" color="primary" class="icon_size"></ion-icon>
                                 <ion-text class="ion-text-center ion-margin-top" color="primary">
                                     Добавить
@@ -132,6 +146,14 @@
                         </ion-row>
                     </ion-grid>
                 </ion-item-group>
+                <!-- Всплывашка подтверждение -->
+                <ion-action-sheet
+                    :is-open="deleteSubject"
+                    header="Точно удалить?"
+                    :buttons="deleteDealSubjectButtons"
+                    @didDismiss="deleteSubject = false"
+                >
+                </ion-action-sheet>
 
                 <br>
                 {{currentDeal}}
@@ -143,7 +165,7 @@
                 <ion-action-sheet
                     :is-open="isOpenRef"
                     header="Точно удалить?"
-                    :buttons="buttons"
+                    :buttons="deleteDealButtons"
                     @didDismiss="setOpen(false)"
                 >
                 </ion-action-sheet>
@@ -160,15 +182,16 @@
     import store from '../../store/index';
     import { uid } from 'uid';
     import { IonContent, IonButton, IonActionSheet, IonItemGroup, IonText, IonGrid, IonRow, IonModal, IonItem, IonSearchbar, IonChip, IonCard, IonImg, IonThumbnail, IonLabel, IonIcon } from '@ionic/vue';
-    import { addCircleOutline } from 'ionicons/icons';
+    import { addCircleOutline, closeCircleOutline } from 'ionicons/icons';
     //
     import { searchFilter } from '../../helpers/filterMyContacts'; 
     //
     import Spinner from '../../components/Spinner.vue';
     import ViewHeader from '../../components/headers/HeaderViewCurrent.vue';
     import Select from '@/components/Select.vue';
+    import ModalCalendar from '../../components/modal/NewDeal-modalCalendar.vue';
+    import ViewDealSubject from '../../components/modal/ViewDeal-modalViewSubject.vue';
     //
-    import ModalCalendar from '../../components/modal/NewDeal-modalCalendar.vue'
     import { format, parseISO } from 'date-fns';
     import { ru } from 'date-fns/locale'
     //
@@ -177,6 +200,7 @@
         components: {
             Spinner,
             ViewHeader,
+            ViewDealSubject,
             IonContent,
             IonButton,
             IonActionSheet,
@@ -324,7 +348,8 @@
                     const {error} = await supabase.from('deals').update({
                         contactID: dealContactID.value,
                         dealStatus: dealStatus.value,
-                        executionDate: executionDate.value
+                        executionDate: executionDate.value,
+                        dealsList: currentDeal.value.dealsList
 
                     }).eq('id', currentId);
                     if(error) throw error;
@@ -335,7 +360,7 @@
                 // edit.value = !edit.value;
                 spinner.value = false;
             }
-            // delete current deal function
+            // ================================== delete current deal function ===============================
             const deleteDeal = async () => {
                 try {
                     const { error } = await supabase.from('deals').delete().eq('id',currentId);
@@ -348,7 +373,27 @@
             // меню подтверждения удаления current contact
             const isOpenRef = ref(false);
             const setOpen = (boolean) => isOpenRef.value = boolean;
-            const buttons = [
+            const deleteDealSubjectButtons = [
+                {
+                    text: 'Удалить',
+                    role: 'destructive',
+                    data: {
+                        type: 'delete'
+                    },
+                    handler: () => {
+                        console.log('Delete clicked')
+                        deleteCurrentDealItem(subjectToDelete.value)
+                    },
+                },
+                {
+                    text: 'Отменить',
+                    role: 'cancel',
+                    handler: () => {
+                        console.log('Cancel clicked')
+                    },
+                }
+            ]
+            const deleteDealButtons = [
                 {
                     text: 'Удалить',
                     role: 'destructive',
@@ -381,9 +426,38 @@
                 }
                 return 'primary'
             }
+            // Переводчик dealType
+            const setDealType = (dealType) => {
+                if(dealType === 'sale') {
+                    return 'Продажа'
+                } else if (dealType === 'buy') {
+                    return 'Закупка'
+                }
+            }
+            // ================================ управление current deal item ===================================
+            const currentDealSubject = ref()
+            // открываем просмотр подробностей current deal item
+            const isViewDealSubjectOpened = ref(false);
+            const openCurrentDealSubject = (index) => {
+                isViewDealSubjectOpened.value = true;
+                currentDealSubject.value = currentDeal.value.dealsList[index];
+            }
+            // Вызываем action sheet уведомление в качестве подтверждения
+            const deleteSubject = ref(false);
+            // Храним айди предмета к удалению
+            const subjectToDelete = ref();
+            const openDeleteSubjectModal = (id) => {
+                deleteSubject.value = true;
+                subjectToDelete.value = id;
+            }
+            // удаляем current deal item и обновляем запись в БД
+            const deleteCurrentDealItem = (id) => {
+                currentDeal.value.dealsList = currentDeal.value.dealsList.filter(subject => subject.id !== id);
+                update();
+            }
 
             return {
-                spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, buttons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translatePlaceholder, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline
+                spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translatePlaceholder, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete
             }
         }
     })
@@ -410,10 +484,18 @@
         min-width: 140px; 
         max-width: 140px;
     }
-    .card-no-border {
-
+    .card-add {
+        min-height: 140px;
     }
     .icon_size {
         font-size: 25px;
+    }
+    .relative {
+        position: relative;
+    }
+    .icon_absolute {
+        position: absolute;
+        top: 0;
+        right: 0;
     }
 </style>

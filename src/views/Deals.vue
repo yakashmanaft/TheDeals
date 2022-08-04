@@ -112,7 +112,7 @@
                                         <!-- Предмет заказа -->
                                         <ion-grid>
                                             <ion-row style="gap: 0.8rem">
-                                                <div class="item-subject relative" v-for="(item, index) in deal.dealsList" :key="index">
+                                                <div v-if="deal.dealsList.length" class="relative" v-for="(item, index) in deal.dealsList" :key="index">
                                                     <!-- item -->
                                                     <ion-thumbnail style="height: 64px; width: 64px;">
                                                         <ion-img style="height: 100%" :src="`img/subjects/sale/${item.selectedProduct}.webp`"></ion-img>
@@ -123,14 +123,34 @@
                                                     <!-- mark where subject has attribute -->
                                                     <div v-if="checkRentAttr(item)" class="absolute mark-atribute"></div>
                                                 </div>
-                                                <div class="empty-item"></div>
+                                                <div v-if="deal.dealsList.length" class="empty-item"></div>
+                                                <!-- deal.dealsList is empty array -->
+                                                <div v-if="!deal.dealsList.length">
+                                                    <ion-thumbnail class="empty-deal-list_thumbnail">
+                                                        <ion-icon class="empty-deal-list_icon" :icon="helpOutline"></ion-icon>
+                                                    </ion-thumbnail>
+                                                </div>
                                             </ion-row>
                                         </ion-grid>
 
                                     </ion-card-content>
                                     <!-- Если закупка -->
-                                    <ion-card-content v-if="deal.dealType === 'buy'">
-                                        тип дела Закупка
+                                    <ion-card-content v-if="deal.dealType === 'buy'" class="ion-no-padding ion-margin-top">
+                                        <ion-grid>
+                                            <ion-row style="gap: 0.8rem">
+                                                <!-- Заготовка под v-for массива -->
+                                                <div v-if="deal.dealsList.length">
+
+                                                </div>
+                                                <div v-if="deal.dealsList.length" class="empty-item"></div>
+                                                <!-- deal.dealsList is empty array -->
+                                                <div v-if="!deal.dealsList.length">
+                                                    <ion-thumbnail class="empty-deal-list_thumbnail">
+                                                        <ion-icon class="empty-deal-list_icon" :icon="helpOutline"></ion-icon>
+                                                    </ion-thumbnail>
+                                                </div>
+                                            </ion-row>
+                                        </ion-grid>
                                     </ion-card-content>
                                 </ion-card>
                             </router-link>
@@ -175,6 +195,7 @@
         IonThumbnail,
         IonItemGroup
     } from '@ionic/vue';
+    import { helpOutline } from 'ionicons/icons';
     import { defineComponent, ref, computed, onMounted, watch } from 'vue';
     import store from '../store/index';
     import { supabase } from '../supabase/init';
@@ -473,7 +494,7 @@
                 resfreshData(currentDealStatus)
             })
             return {
-                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isOpen, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translatePlaceholder, resfreshData, myContacts, getContact, showNameByID, checkRentAttr, dealTypesList, dealByType, showDealByType
+                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isOpen, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translatePlaceholder, resfreshData, myContacts, getContact, showNameByID, checkRentAttr, dealTypesList, dealByType, showDealByType, helpOutline
             }
         }
     })
@@ -525,5 +546,16 @@
         height: 1rem;
         background-color: var(--ion-color-warning);
         border-radius: 100%
+    }
+    .empty-deal-list_thumbnail {
+        height: 64px;
+        width: 64px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .empty-deal-list_icon {
+        width: 100%;
+        height: 100%
     }
 </style>
