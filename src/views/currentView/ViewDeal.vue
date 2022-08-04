@@ -397,7 +397,5 @@
     }
     ion-card {
         overflow: visible;
-        /* overflow-x: auto;
-        width: 100%; */
     }
 </style>
