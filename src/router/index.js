@@ -61,6 +61,17 @@ const routes = [
     }
   },
   {
+    path: '/recipes',
+    name: 'Recipes',
+    component: () => import('../views/Recipes.vue'),
+    meta: {
+      title: 'Recipes',
+      auth: true,
+      translation: 'Мои рецепты',
+      type: 'View'
+    }
+  },
+  {
     path: '/login',
     name: 'Login',
     component: Login,

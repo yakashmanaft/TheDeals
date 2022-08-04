@@ -111,21 +111,24 @@
                     <ion-grid class="ion-no-padding">
                         <ion-row class="ion-nowrap horizontal-scroll">
                             <!-- Карточки предметов заказа -->
-                            <ion-card v-for="(item, uid) in currentDeal.dealsList" :key="uid">
-                                <p>{{ item.id }}</p>
+                            <ion-card class="ion-padding ion-text-center card-center" v-for="(item, uid) in currentDeal.dealsList" :key="uid">
+                                <ion-text>{{ item.id }}</ion-text>
                                 <!-- item -->
-                                <ion-thumbnail style="height: 64px; width: 64px;">
+                                <ion-thumbnail style="height: 64px; width: 64px; margin: 0 auto">
                                     <ion-img style="height: 100%" :src="`../img/subjects/sale/${item.selectedProduct}.webp`"></ion-img>
                                 </ion-thumbnail>
                                 <ion-label style="font-size: 12px">
                                     x{{item.productQuantity}}
                                 </ion-label>
-                                    <p>{{ item.recipe }}</p>
+                                <ion-text style="white-space: normal">{{ item.recipe }}</ion-text>
                             </ion-card>
                             <!-- Добавить еще предмет к заказу -->
-                            <ion-card>
-                                Добавить
-                            </ion-card>
+                            <div class="ion-padding card-center">
+                                <ion-icon :icon="addCircleOutline" color="primary" class="icon_size"></ion-icon>
+                                <ion-text class="ion-text-center ion-margin-top" color="primary">
+                                    Добавить
+                                </ion-text>    
+                            </div>
                         </ion-row>
                     </ion-grid>
                 </ion-item-group>
@@ -156,8 +159,8 @@
     import { useRoute, useRouter } from 'vue-router';
     import store from '../../store/index';
     import { uid } from 'uid';
-    import { IonContent, IonButton, IonActionSheet, IonItemGroup, IonText, IonGrid, IonRow, IonModal, IonItem, IonSearchbar, IonChip, IonCard, IonImg, IonThumbnail, IonLabel } from '@ionic/vue';
-    import {  } from 'ionicons/icons';
+    import { IonContent, IonButton, IonActionSheet, IonItemGroup, IonText, IonGrid, IonRow, IonModal, IonItem, IonSearchbar, IonChip, IonCard, IonImg, IonThumbnail, IonLabel, IonIcon } from '@ionic/vue';
+    import { addCircleOutline } from 'ionicons/icons';
     //
     import { searchFilter } from '../../helpers/filterMyContacts'; 
     //
@@ -190,7 +193,8 @@
             IonCard,
             IonImg,
             IonThumbnail,
-            IonLabel
+            IonLabel,
+            IonIcon
         }, 
         setup() {
             const route = useRoute();
@@ -379,7 +383,7 @@
             }
 
             return {
-                spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, buttons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translatePlaceholder, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate
+                spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, buttons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translatePlaceholder, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline
             }
         }
     })
@@ -397,5 +401,19 @@
     }
     ion-card {
         overflow: visible;
+    }
+    .card-center {
+        display: flex; 
+        flex-direction: column; 
+        justify-content: center; 
+        align-items: center; 
+        min-width: 140px; 
+        max-width: 140px;
+    }
+    .card-no-border {
+
+    }
+    .icon_size {
+        font-size: 25px;
     }
 </style>

@@ -35,7 +35,7 @@
             <div v-if="(!dataLoaded || myDeals.length === 0) && !spinner" class="no-status-deal ion-padding-horizontal">
                 <ion-img style="height: 30vh;" src="img/common/deals-sticker.webp" alt="нет дел"></ion-img>
                 <ion-text color="primary"><h2>У вас еще нет дел...</h2></ion-text>
-                <ion-text>Самое время начать заниматься деятельностью. <br>И создать первое дело!</ion-text>
+                <ion-text color="medium">Самое время начать заниматься деятельностью. <br>И создать первое дело!</ion-text>
             </div>
             <!-- Data -->
             <div v-if="dataLoaded && myDeals.length !== 0">

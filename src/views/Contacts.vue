@@ -44,7 +44,7 @@
                 <!-- настроить responsive под разные экраны -->
                 <ion-img src="img/common/contact-sticker.webp" alt="нет контактов"></ion-img>
                 <ion-text color="primary"><h2>У вас еще нет контактов...</h2></ion-text>
-                <ion-text>Начните заполнять справочник уже сейчас</ion-text>
+                <ion-text color="medium">Начните заполнять справочник уже сейчас</ion-text>
             </div>
 
             <!-- Data -->
@@ -93,6 +93,7 @@
     import NavigationMenu from '@/components/NavigationMenu.vue';
     import CreateButton from '@/components/CreateButton.vue';
     import Spinner from '@/components/Spinner.vue';
+    import CreateNewContact from '@/components/modal/NewContact-modalCreate.vue';
     import { 
         IonContent, 
         IonHeader,
@@ -120,13 +121,26 @@
     import { useRouter } from 'vue-router';
     import { searchFilter } from '../helpers/filterMyContacts.js'; 
     import { uid } from 'uid';
-    import CreateNewContact from '@/components/modal/NewContact-modalCreate.vue';
 
 
     export default defineComponent({
         name: 'Contacts',
         components: {
             Header,
+            NavigationMenu,
+            CreateButton,
+            Spinner,
+            CreateNewContact,
+            //
+            IonSearchbar,
+            IonInput,
+            IonModal,
+            IonItem,
+            IonButtons,
+            IonTitle,
+            IonToolbar,
+            IonLabel,
+            IonHeader,
             IonContent, 
             IonList,
             IonGrid,
@@ -134,20 +148,6 @@
             IonImg,
             IonText,
             IonButton,
-            NavigationMenu,
-            CreateButton,
-            Spinner,
-            IonSearchbar,
-            IonInput,
-            CreateNewContact,
-            //
-            IonModal,
-            IonItem,
-            IonButtons,
-            IonTitle,
-            IonToolbar,
-            IonLabel,
-            IonHeader
         },
         setup() {
             // Get user from store
@@ -161,10 +161,10 @@
             // Get page title
             const pageTitle = router.currentRoute._value.meta.translation;
             // Logout function
-            const logout = async () => {
-                await supabase.auth.signOut();
-                router.push({ name: 'Login' })
-            }
+            // const logout = async () => {
+            //     await supabase.auth.signOut();
+            //     router.push({ name: 'Login' })
+            // }
 
             // 
             const spinner = ref(null);
@@ -332,7 +332,7 @@
 
 
             return {
-                user, router, logout, pageTitle, userEmail, myContacts, spinner, dataLoaded, search, searchedContacts, isOpen, setOpen, createNew, contactData, addPhoneNumber, addEmail, deletePhoneNumber, deleteEmail, addSocial, deleteSocial, addContactEvent, deleteContactEvent
+                user, router, pageTitle, userEmail, myContacts, spinner, dataLoaded, search, searchedContacts, isOpen, setOpen, createNew, contactData, addPhoneNumber, addEmail, deletePhoneNumber, deleteEmail, addSocial, deleteSocial, addContactEvent, deleteContactEvent
             }
         }
     })

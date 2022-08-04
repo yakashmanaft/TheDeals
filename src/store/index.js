@@ -16,7 +16,7 @@
 import { reactive } from "vue";
 import { supabase } from '../supabase/init';
 import { sortAlphabetically  } from '../helpers/sortMyContacts.js';
-import { clipboardOutline, calendarOutline, peopleOutline } from 'ionicons/icons';
+import { clipboardOutline, calendarOutline, peopleOutline, leafOutline } from 'ionicons/icons';
 
 const state = reactive({
   // user
@@ -39,6 +39,11 @@ const state = reactive({
           title: 'Мои контакты',
           icon: peopleOutline
       },
+      {
+        name: 'Recipes',
+        title: 'Мои рецепты',
+        icon: leafOutline
+    },
   ],
   // contact array in page Contacts
   myContactsArray: [],
