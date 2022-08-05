@@ -49,12 +49,22 @@ const state = reactive({
   myContactsArray: [],
   // deals array in page Deals
   myDealsArray: [],
-  // deals type array
+  // deals type array (Для фильтра дел в экране deals)
   dealTypes: [
     {
       name: 'Все',
       value: 'all'
     },
+    {
+      name: 'Продажи',
+      value: 'sale'
+    },
+    {
+      name: 'Закупки',
+      value: 'buy'
+    }
+  ],
+  newDealTypes: [
     {
       name: 'Продажи',
       value: 'sale'

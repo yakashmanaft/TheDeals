@@ -19,6 +19,18 @@
                 </ion-text>
             </ion-item-group>
 
+            <!-- ============================== Типа дела ========================================== -->
+            <ion-item-group>
+                <!-- заголовок -->
+                <ion-text>
+                    <h4>Тип дела</h4>
+                </ion-text>
+                <!-- Выбор типа дела -->
+                <ion-chip color="primary" class="ion-no-margin">
+                    <Select :data="dealTypes" :placeholder="`Укажите тип дела`" @date-updated="(selected) => dealData.dealType = selected.currentValue"/>
+                </ion-chip>
+            </ion-item-group>
+
             <!-- ============================ Контакт по делу ===================================== -->
             <ion-item-group>
                 <!-- заголовок -->
@@ -83,9 +95,11 @@
     import { defineComponent, ref, computed, watch } from 'vue';
     import store from '../../store/index'; 
     //
-    import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonInput, IonSearchbar, IonItem  } from '@ionic/vue';
+    import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonInput, IonSearchbar, IonItem, IonChip  } from '@ionic/vue';
     //
     import ModalCalendar from './NewDeal-modalCalendar.vue'
+    import Select from '../Select.vue'
+    //
     import { format, parseISO } from 'date-fns';
     import { ru } from 'date-fns/locale'
     //
@@ -100,9 +114,11 @@
             myContacts: Array
         },
         components: {
-            IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonInput, ModalCalendar, IonSearchbar, IonItem
+            IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonInput, ModalCalendar, IonSearchbar, IonItem, Select, IonChip
         },
         setup(props, { emit }) {
+            // Типы дел для создания нового дела
+            const dealTypes = ref(store.state.newDealTypes)
             //
             const searchDealContact = ref('');
             // ================= choose contact for deal ==========================
@@ -151,7 +167,7 @@
             watchEffect(() => myContactsArray.value = props.myContacts);
             // console.log(myContactsArray.value)
             return {
-                dealContact, dealContactID , searchContactMenu, choose, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, datepicker, myContactsArray, searchDealContact, searchedContacts
+                dealContact, dealContactID , searchContactMenu, choose, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, datepicker, myContactsArray, searchDealContact, searchedContacts, dealTypes
             }
         }
     })

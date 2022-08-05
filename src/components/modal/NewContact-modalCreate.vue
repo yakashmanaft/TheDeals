@@ -73,7 +73,7 @@
                             Тип номера телефона
                         </ion-label>
                         <ion-chip>
-                            <Select :data="phoneTypes" :placeholder="'Тип номера'" @date-updated="(selected) => number.type = selected"/>
+                            <Select :data="phoneTypes" :placeholder="'Тип номера'" @date-updated="(selected) => number.type = selected.currentValue"/>
                         </ion-chip>
                     </div>
                     <!-- link to messengers -->
@@ -133,7 +133,7 @@
                             Тип электронной почты
                         </ion-label>
                         <ion-chip>
-                            <Select :data="phoneTypes" :placeholder="'Тип почты'" @date-updated="(selected) => email.type = selected"/>
+                            <Select :data="phoneTypes" :placeholder="'Тип почты'" @date-updated="(selected) => email.type = selected.currentValue"/>
                         </ion-chip>
                     </div>
                 </div>
@@ -181,7 +181,7 @@
                             Укажите название соц.сети
                         </ion-label>
                         <ion-chip>
-                            <Select :data="myContactSocialNetworksType" :placeholder="'Выберите соцсеть'" @date-updated="(selected) => social.name = selected"/>
+                            <Select :data="myContactSocialNetworksType" :placeholder="'Выберите соцсеть'" @date-updated="(selected) => social.name = selected.currentValue"/>
                         </ion-chip>
                     </div>
                 </div>
