@@ -14,12 +14,13 @@
 
         <!-- popup создания нового дела -->
         <CreateNewDeal
-            :isOpen="isOpen"
+            :isOpen="isViewDealModalOpened"
             @closeModal="setOpen"
             @createDeal="createNew"
             :dealData="dealData"
             :myContacts="myContacts"
             @date-updated="(dealContactID) => dealData.contactID = dealContactID.currentValue"
+            @addSubject="addSubject"
         />
 
         <ion-content 
@@ -391,7 +392,7 @@
             
             // ====================================================================
             // Work with Modal Create New Deal
-            const isOpen = ref(false)
+            const isViewDealModalOpened = ref(false)
             // Изменяемый шаблон нового дела
             const dealData = ref({
                 uid: uid(),
@@ -408,7 +409,7 @@
             })
             // При закрытии или открытии modal очищаем шаблон дела
             const setOpen = () => {
-                isOpen.value = !isOpen.value;
+                isViewDealModalOpened.value = !isViewDealModalOpened.value;
                 dealData.value = {
                     uid: uid(),
                     email: userEmail.value,
@@ -441,7 +442,7 @@
                     // ищем созданное новое дело в массиве всех дел в store (по uid)
                     const newDeal = myDeals.value.find(el => el.uid === dealData.value.uid)
                     // закрываем modal
-                    isOpen.value = false;
+                    isViewDealModalOpened.value = false;
                     // переходим на страницу созданного нового контакта
                     router.push({name: 'View-Deal', params: { dealId: newDeal.id, deal: JSON.stringify(newDeal)}})
                 } catch (error) {
@@ -497,8 +498,18 @@
             watch(dealByType, () => {
                 resfreshData(currentDealStatus)
             })
+            // 
+            const addSubject = () => {
+                dealData.value.dealsList.push({
+                    id: uid(),
+                    selectedProduct: '',
+                    additionalAttributes: [],
+                    productNote: '',
+                    show: false
+                })
+            }
             return {
-                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isOpen, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translatePlaceholder, resfreshData, myContacts, getContact, showNameByID, checkRentAttr, dealTypesList, dealByType, showDealByType, helpOutline
+                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isViewDealModalOpened, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translatePlaceholder, resfreshData, myContacts, getContact, showNameByID, checkRentAttr, dealTypesList, dealByType, showDealByType, helpOutline, addSubject
             }
         }
     })

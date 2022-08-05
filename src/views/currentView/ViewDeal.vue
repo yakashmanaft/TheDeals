@@ -564,16 +564,16 @@
         background-color: var(--ion-color-warning);
         border-radius: 100%
     }
-    .empty-deal-list_thumbnail {
+    /* .empty-deal-list_thumbnail {
         height: 64px;
         width: 64px;
         display: flex;
         justify-content: center;
         align-items: center;
         background-color: black;
-    }
-    .empty-deal-list_icon {
+    } */
+    /* .empty-deal-list_icon {
         width: 100%;
         height: 100%
-    }
+    } */
 </style>
