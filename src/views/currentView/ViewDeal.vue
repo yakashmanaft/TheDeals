@@ -161,7 +161,7 @@
                         </ion-row>
                     </ion-grid>
                 </ion-item-group>
-                <!-- Всплывашка подтверждение -->
+                <!-- Всплывашка подтверждение удаления предмета заказа -->
                 <ion-action-sheet
                     :is-open="deleteSubject"
                     header="Точно удалить?"
@@ -176,7 +176,7 @@
                 <!-- ========================== Кнопка удалить дело =================================== -->
                 <!-- Не показываем в режиме edit -->
                 <ion-button @click="setOpen(true)" fill="clear" color="danger">Удалить дело</ion-button>
-                <!-- Всплывашка подтверждение -->
+                <!-- Всплывашка подтверждение удаления дела-->
                 <ion-action-sheet
                     :is-open="isOpenRef"
                     header="Точно удалить?"
@@ -477,22 +477,24 @@
             // Открывает модалку создания нового предмета к текущему делу
             const openCreateSubjectModal = () => {
                 isCreateNewSubjectOpened.value = true;
+                // Обнуляем шаблон нового предмета у дела
+                currentSubject.value  = {
+                    id: uid(),
+                    selectedProduct: '',
+                    additionalAttributes: [],
+                    productNote: ''
+                }
             }
             // Закрываем модалку создания нового предмета к текущему делу
             const closeCreateSubjectModal = () => {
                 isCreateNewSubjectOpened.value = false;
             }
-            // Щаблон нового предмета к текущему делу
-            const currentSubject = ref({
-                id: uid(),
-                selectedProduct: '',
-                additionalAttributes: [],
-                productNote: ''
-            })
+            // Заготовка под шаблон нового предмета к делу
+            const currentSubject = ref({})
             // Добавляем новый предмет к текущему делу и делаем запись в БД
             const addNewSubject = () => {
                 if(currentSubject.value.selectedProduct !== ''){
-                    currentDeal.value.dealsList.push(currentSubject.value);
+                    currentDeal.value.dealsList.push(currentSubject.value); 
                     isCreateNewSubjectOpened.value = false;
                     update();
                 } else {

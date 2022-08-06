@@ -7,17 +7,21 @@
                 </ion-buttons>
                 <ion-title class="ion-text-center">Новый предмет</ion-title>
                 <ion-buttons slot="end">
-                    <ion-button @click="$emit('createSubject', subjectData)">Готово</ion-button>
+                    <ion-button @click="$emit('createSubject', subjectData)">Добавить</ion-button>
                 </ion-buttons>
             </ion-toolbar>
         </ion-header>
         <ion-content class="ion-padding">
             {{currentDealType}}
             {{subjectData}}
-            <!--  -->
+            <!-- ================  Показываем в зависимости от выбранного типа дела ==============-->
             <div v-if="currentDealType === 'sale'">
-                Это добавление предмета для Продажи
+                <!-- Это указываем предмет продажи -->
+                <p>Выберите предмет</p>
                 <input type="text" v-model="subjectData.selectedProduct"/>
+                <!-- Это указываем рецепт предмета -->
+                <p>Выберите рецепт предмета</p>
+                <input type="text" v-model="subjectData.recipe">
             </div>
             <!--  -->
             <div v-if="currentDealType === 'buy'">

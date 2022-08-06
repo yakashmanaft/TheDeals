@@ -21,6 +21,7 @@
             :myContacts="myContacts"
             @date-updated="(dealContactID) => dealData.contactID = dealContactID.currentValue"
             @addSubject="addSubject"
+            @deleteSubject="deleteSubject"
         />
 
         <ion-content 
@@ -431,22 +432,28 @@
                 spinner.value = true;
                 // Если строки Имя Фамилия пустые или не пустые 
                 // использовать валидацию 
-                try{
-                    // Добавляем в БД инфу по новому контакту
-                    // Скорей всего надо будет вынести в store или нет
-                    const { error } = await supabase.from('deals').insert([dealData.value])
-                    if(error) throw error;
-                    // обновляем массив в store
-                    await store.methods.getMyDealsFromBD();
-                    myDeals.value = store.state.myDealsArray
-                    // ищем созданное новое дело в массиве всех дел в store (по uid)
-                    const newDeal = myDeals.value.find(el => el.uid === dealData.value.uid)
-                    // закрываем modal
-                    isViewDealModalOpened.value = false;
-                    // переходим на страницу созданного нового контакта
-                    router.push({name: 'View-Deal', params: { dealId: newDeal.id, deal: JSON.stringify(newDeal)}})
-                } catch (error) {
-                    alert(`Error: ${error.message}`)
+                if(dealData.value.executionDate === ''){
+                    alert('Вы не выбрали дату исполнения')
+                } else if(dealData.value.dealType === '') {
+                    alert('Вы не указали тип дела')
+                } else {
+                    try{
+                        // Добавляем в БД инфу по новому контакту
+                        // Скорей всего надо будет вынести в store или нет
+                        const { error } = await supabase.from('deals').insert([dealData.value])
+                        if(error) throw error;
+                        // обновляем массив в store
+                        await store.methods.getMyDealsFromBD();
+                        myDeals.value = store.state.myDealsArray
+                        // ищем созданное новое дело в массиве всех дел в store (по uid)
+                        const newDeal = myDeals.value.find(el => el.uid === dealData.value.uid)
+                        // закрываем modal
+                        isViewDealModalOpened.value = false;
+                        // переходим на страницу созданного нового контакта
+                        router.push({name: 'View-Deal', params: { dealId: newDeal.id, deal: JSON.stringify(newDeal)}})
+                    } catch (error) {
+                        alert(`Error: ${error.message}`)
+                    }
                 }
             }
             // Функция обновления контента к показу (после обновления в записей в БД)
@@ -499,17 +506,22 @@
                 resfreshData(currentDealStatus)
             })
             // 
-            const addSubject = () => {
+            const addSubject = (subjectData) => {
+                // console.log(subjectData)
                 dealData.value.dealsList.push({
                     id: uid(),
-                    selectedProduct: '',
+                    selectedProduct: subjectData.selectedProduct,
+                    recipe: subjectData.recipe,
+                    // массив пока шаблоном, в modalCreateSubject задавать значения
                     additionalAttributes: [],
                     productNote: '',
-                    show: false
                 })
             }
+            const deleteSubject = (id) => {
+                dealData.value.dealsList = dealData.value.dealsList.filter(subject => subject.id !== id);
+            }
             return {
-                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isViewDealModalOpened, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translatePlaceholder, resfreshData, myContacts, getContact, showNameByID, checkRentAttr, dealTypesList, dealByType, showDealByType, helpOutline, addSubject
+                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isViewDealModalOpened, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translatePlaceholder, resfreshData, myContacts, getContact, showNameByID, checkRentAttr, dealTypesList, dealByType, showDealByType, helpOutline, addSubject, deleteSubject
             }
         }
     })
