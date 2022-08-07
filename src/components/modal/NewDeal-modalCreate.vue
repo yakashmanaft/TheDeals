@@ -238,7 +238,11 @@
             const isCreateNewSubjectOpened = ref(false);
             // Открывает модалку создания нового предмета к текущему делу
             const openCreateSubjectModal = () => {
-                isCreateNewSubjectOpened.value = true
+                if(dealData.value.dealType !== '') {
+                    isCreateNewSubjectOpened.value = true
+                } else {
+                    alert('NewDeal-modalCreate: Вы не указали тип дела')
+                }
             }
             // Закрываем модалку создания нового предмета к текущему делу
             const closeCreateSubjectModal = () => {
@@ -295,10 +299,11 @@
             const dealData = ref();
 
             const addNewSubject = (subjectData) => {
-                if(dealData.value.dealType === '') {
-                    alert('Вы не выбрали тип дела')
-                } else if (currentSubject.value.selectedProduct === '') {
-                    alert('Вы не выбрали предмет дела')
+                // Выдумать варианты валидации
+                if (currentSubject.value.selectedProduct === '') {
+                    alert('NewDeal-modalCreate: Вы не выбрали предмет дела')
+                } else if(dealData.value.dealType === 'sale' && currentSubject.value.recipe === '') {
+                    alert('NewDeal-modalCreate: Вы не указали рецепт')
                 } else {
                     currentSubject.value = subjectData
                     emit('addSubject', currentSubject.value)
