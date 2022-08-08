@@ -41,7 +41,7 @@
             </div>
             <!-- Data -->
             <div v-if="dataLoaded && myDeals.length !== 0">
-                <!-- Статусы дел -->
+                <!-- ======================================= Статусы дел ================================ -->
                 <ion-list class="horizontal-scroll ion-margin-top">
                     <ion-chip v-for="(status, index) in dealStatusList" :key="index" @click="setDealStatus(status.value)" :color="setChipColor(status.value)" :outline="setChipOutline(status.value)">
                         <ion-label>{{ status.name }} <span v-if="status.value !== 'deal-cancelled' && status.value !== 'deal-complete'">{{countDealByStatus(status.value)}}</span></ion-label>
@@ -68,7 +68,7 @@
                     </div>
                 </div>
 
-                <!-- Карточки дел-->
+                <!-- ======================================== Карточки дел ============================= -->
                 <div v-for="(day, idx) in getExecutionDate()" :key="idx" class="ion-margin-top">
                     {{day}}
                     <div 
@@ -88,10 +88,15 @@
                                     <ion-card-header class="ion-no-padding">
                                         <ion-grid class="ion-no-padding">
                                             <ion-row class="ion-justify-content-between ion-align-items-center">
-                                                <!-- Кнопка смены статуса дела -->
-                                                <div @click.prevent.stop="doSomething">
-                                                    <!-- Как будет вести себя translatePlaceholder при тысяче дел например?  -->
-                                                    <Select :data="dealStatusList" :placeholder="translatePlaceholder(deal.dealStatus, dealStatusList)" @date-updated="(selected) => {deal.dealStatus = selected.currentValue; updateCurrentDealStatus(deal)}"/>
+                                                <div style="display: flex;" class="relative">
+                                                    <ion-thumbnail class="icon-thumbnail absolute">
+                                                        <ion-icon class="icon-thumbnail_icon" :icon="setIconByDealStatus(deal.dealType)"></ion-icon>
+                                                    </ion-thumbnail>
+                                                    <!-- Кнопка смены статуса дела -->
+                                                    <div @click.prevent.stop="doSomething">
+                                                        <!-- Как будет вести себя translatePlaceholder при тысяче дел например?  -->
+                                                        <Select :data="dealStatusList" :placeholder="translatePlaceholder(deal.dealStatus, dealStatusList)" @date-updated="(selected) => {deal.dealStatus = selected.currentValue; updateCurrentDealStatus(deal)}"/>
+                                                    </div>
                                                 </div>
                                                 <!-- Контакт по делу -->
                                                 <div>
@@ -117,7 +122,14 @@
                                                 <div class="relative" v-for="(item, index) in deal.dealsList" :key="index">
                                                     <!-- item -->
                                                     <ion-thumbnail v-if="item.selectedProduct !== ''" style="height: 64px; width: 64px;">
-                                                        <ion-img style="height: 100%" :src="`img/subjects/sale/${item.selectedProduct}.webp`"></ion-img>
+                                                        <!-- Если типа дела Продажа -->
+                                                        <div v-if="deal.dealType === 'sale'">
+                                                            <ion-img style="height: 100%" :src="`img/subjects/sale/${item.selectedProduct}.webp`"></ion-img>
+                                                        </div>
+                                                        <!-- Если типа дела Закупка -->
+                                                        <div v-if="deal.dealType === 'buy'">
+                                                            <ion-img style="height: 100%" :src="`img/subjects/buy/${item.selectedProduct}.webp`"></ion-img>
+                                                        </div>
                                                     </ion-thumbnail>
                                                     <!--  -->
                                                     <!-- <ion-thumbnail v-if="item.selectedProduct === ''" class="empty-deal-list_thumbnail">
@@ -201,7 +213,7 @@
         IonThumbnail,
         IonItemGroup
     } from '@ionic/vue';
-    import { helpOutline } from 'ionicons/icons';
+    import { helpOutline, bagHandleOutline, cubeOutline } from 'ionicons/icons';
     import { defineComponent, ref, computed, onMounted, watch } from 'vue';
     import store from '../store/index';
     import { supabase } from '../supabase/init';
@@ -520,8 +532,17 @@
             const deleteSubject = (id) => {
                 dealData.value.dealsList = dealData.value.dealsList.filter(subject => subject.id !== id);
             }
+            //
+            const setIconByDealStatus = (dealStatus) => {
+                if(dealStatus === 'sale') {
+                    return bagHandleOutline
+                } else if(dealStatus === 'buy') {
+                    return cubeOutline
+                }
+            }
+
             return {
-                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isViewDealModalOpened, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translatePlaceholder, resfreshData, myContacts, getContact, showNameByID, checkRentAttr, dealTypesList, dealByType, showDealByType, helpOutline, addSubject, deleteSubject
+                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isViewDealModalOpened, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translatePlaceholder, resfreshData, myContacts, getContact, showNameByID, checkRentAttr, dealTypesList, dealByType, showDealByType, helpOutline, addSubject, deleteSubject, bagHandleOutline, cubeOutline, setIconByDealStatus
             }
         }
     })
@@ -584,5 +605,19 @@
     .empty-deal-list_icon {
         width: 100%;
         height: 100%
+    }
+    .icon-thumbnail {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        padding: 0.4rem;
+        top: -22px;
+        left: -22px;
+    }
+    .icon-thumbnail_icon {
+        width: 100%;
+        height: 100%;
     }
 </style>

@@ -30,7 +30,10 @@
                         </ion-button>
                         <!-- Если уже указан предмет -->
                         <ion-thumbnail v-if="subjectData.selectedProduct !== ''" class="thumbnail_deal-subject">
-                            <ion-img :src="`../img/subjects/sale/${subjectData.selectedProduct}.webp`"></ion-img>
+                            <!-- Если тип дела Продажа -->
+                            <ion-img v-if="currentDealType === 'sale'" :src="`../img/subjects/sale/${subjectData.selectedProduct}.webp`"></ion-img>
+                            <!-- Если тип дела Закупка -->
+                            <ion-img v-if="currentDealType === 'buy'" :src="`../img/subjects/buy/${subjectData.selectedProduct}.webp`"></ion-img>
                         </ion-thumbnail>
                         <!-- Если предмет не указан -->
                         <ion-thumbnail v-else class="thumbnail_deal-subject">
@@ -110,6 +113,7 @@
             IonItem
         },
         setup(props, {emit}) {
+            //
             const dealSaleSubjectArray = ref([
                 {
                     value: 'cake',
@@ -158,17 +162,27 @@
                 }
             ])
             //
+            const dealBuySubjectArray = ref([
+                {
+                    value: 'sugar',
+                    name: 'Сахар',
+                    // costEstimation: 'perKilogram'
+                },
+            ])
+            //
             const subjectData = ref();
             const currentDealType = ref();
             //
             const showSelectedProduct = (selectedProduct) => {
                 if(subjectData.value.selectedProduct !== '') {
                     // Если currentDealType - Продажи
-                    if(currentDealType.value = 'sale') {
+                    if(currentDealType.value === 'sale') {
                         return translatePlaceholder(selectedProduct, dealSaleSubjectArray.value)
-                        // return selectedProduct
                     }
                     // Если currentDealType - Закупки
+                    else if (currentDealType.value === 'buy') {
+                        return translatePlaceholder(selectedProduct, dealBuySubjectArray.value)
+                    }
                     //
                 } else {
                     return 'Не выбран'
@@ -201,7 +215,11 @@
             })
             // 
             const searchedSubject = computed(() => {
-                return searchFilter(dealSaleSubjectArray.value, searchSelectedProduct.value)
+                if(currentDealType.value === 'sale') {
+                    return searchFilter(dealSaleSubjectArray.value, searchSelectedProduct.value)
+                } else if(currentDealType.value === 'buy') {
+                    return searchFilter(dealBuySubjectArray.value, searchSelectedProduct.value)
+                }
             }) 
 
             // Задаем из выбранному списка значение для selectedProduct
@@ -212,7 +230,7 @@
             }
 
             return {
-                dealSaleSubjectArray, helpOutline, showSelectedProduct, searchSubjectMenu, searchSelectedProduct, currentDealType, translatePlaceholder, searchedSubject, choose
+                dealSaleSubjectArray, dealBuySubjectArray, helpOutline, showSelectedProduct, searchSubjectMenu, searchSelectedProduct, currentDealType, translatePlaceholder, searchedSubject, choose
             }
         }
     })

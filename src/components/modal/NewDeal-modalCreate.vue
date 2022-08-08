@@ -106,10 +106,16 @@
                             <ion-icon @click.stop="openDeleteSubjectModal(item.id)" class="icon_size icon_del absolute" :icon="closeCircleOutline"></ion-icon>
                             <!-- Item -->
                             <ion-thumbnail v-if="item.selectedProduct !== ''" style="height: 64px; width: 64px; margin: 0 auto" class="relative">
-                                <ion-img style="height: 100%" :src="`../img/subjects/sale/${item.selectedProduct}.webp`">
-                                    <!-- mark where subject has attribute -->
-                                    <div v-if="checkRentAttr(item)" class="absolute mark-atribute"></div>
-                                </ion-img>
+                                <!-- Если тип дела Продажа -->
+                                <div v-if="dealData.dealType === 'sale'">
+                                    <ion-img style="height: 100%" :src="`../img/subjects/sale/${item.selectedProduct}.webp`"></ion-img>
+                                </div>
+                                <!-- Если тип дела Закупка -->
+                                <div v-if="dealData.dealType === 'buy'">
+                                    <ion-img style="height: 100%" :src="`../img/subjects/buy/${item.selectedProduct}.webp`"></ion-img>
+                                </div>
+                                <!-- mark where subject has attribute -->
+                                <div v-if="checkRentAttr(item)" class="absolute mark-atribute"></div>
                             </ion-thumbnail>
                             <ion-label style="font-size: 12px">
                                 x{{item.productQuantity}}
