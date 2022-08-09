@@ -113,7 +113,7 @@
             IonItem
         },
         setup(props, {emit}) {
-            //
+            // массив с вариантами предмета ПРОДАЖИ
             const dealSaleSubjectArray = ref([
                 {
                     value: 'cake',
@@ -161,11 +161,91 @@
                     costEstimation: 'perUnit'
                 }
             ])
-            //
+            // массив с вариантами предмета ЗАКУПКИ
             const dealBuySubjectArray = ref([
                 {
                     value: 'sugar',
                     name: 'Сахар',
+                    // costEstimation: 'perKilogram'
+                },
+                {
+                    value: 'cottage-cheese',
+                    name: 'Сливочный творожный сыр',
+                    // costEstimation: 'perKilogram'
+                },
+                {
+                    value: 'sugar-powder',
+                    name: 'Сахарная пудра',
+                    // costEstimation: 'perKilogram'
+                },
+                {
+                    value: 'nuts',
+                    name: 'Орехи',
+                    // costEstimation: 'perKilogram'
+                },
+                {
+                    value: 'egg',
+                    name: 'Яйцо',
+                    // costEstimation: 'perKilogram'
+                },
+                {
+                    value: 'flour',
+                    name: 'Мука',
+                    // costEstimation: 'perKilogram'
+                },
+                {
+                    value: 'cocoa',
+                    name: 'Какао',
+                    // costEstimation: 'perKilogram'
+                },
+                {
+                    value: 'corn-starch',
+                    name: 'Кукурузный крахмал',
+                    // costEstimation: 'perKilogram'
+                },
+                {
+                    value: 'salt',
+                    name: 'Соль',
+                    // costEstimation: 'perKilogram'
+                },
+                {
+                    value: 'vanilla',
+                    name: 'Ваниль',
+                    // costEstimation: 'perKilogram'
+                },
+                {
+                    value: 'sour-cream',
+                    name: 'Сметана',
+                    // costEstimation: 'perKilogram'
+                },
+                {
+                    value: 'banana',
+                    name: 'Банан',
+                    // costEstimation: 'perKilogram'
+                },
+                {
+                    value: 'baking-soda',
+                    name: 'Пищевая сода',
+                    // costEstimation: 'perKilogram'
+                },
+                {
+                    value: 'vanilla-extract',
+                    name: 'Ванильный экстракт',
+                    // costEstimation: 'perKilogram'
+                },
+                {
+                    value: 'cream',
+                    name: 'Сливки',
+                    // costEstimation: 'perKilogram'
+                },
+                {
+                    value: 'gouda-cheese',
+                    name: 'Сыр гауда',
+                    // costEstimation: 'perKilogram'
+                },
+                {
+                    value: 'lemon-juice',
+                    name: 'Сок лимона',
                     // costEstimation: 'perKilogram'
                 },
             ])
@@ -216,9 +296,29 @@
             // 
             const searchedSubject = computed(() => {
                 if(currentDealType.value === 'sale') {
-                    return searchFilter(dealSaleSubjectArray.value, searchSelectedProduct.value)
+                    const sortedDealSellSubjectArray = dealSaleSubjectArray.value.sort((a,b) => {
+                        let fa = a.name.toLowerCase(), fb = b.name.toLowerCase();
+                        if (fa < fb) {
+                            return -1;
+                        } 
+                        if (fa > fb) {
+                            return 1;
+                        }
+                        return 0;
+                    });
+                    return searchFilter(sortedDealSellSubjectArray, searchSelectedProduct.value)
                 } else if(currentDealType.value === 'buy') {
-                    return searchFilter(dealBuySubjectArray.value, searchSelectedProduct.value)
+                    const sortedDealBuySubjectArray = dealBuySubjectArray.value.sort((a,b) => {
+                        let fa = a.name.toLowerCase(), fb = b.name.toLowerCase();
+                        if (fa < fb) {
+                            return -1;
+                        } 
+                        if (fa > fb) {
+                            return 1;
+                        }
+                        return 0;
+                    });
+                    return searchFilter(sortedDealBuySubjectArray, searchSelectedProduct.value)
                 }
             }) 
 

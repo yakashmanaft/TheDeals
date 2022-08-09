@@ -53,7 +53,7 @@
                         <ion-item v-for="contact in searchedContacts" :key="contact.id" @click="choose(contact)">
                             <ion-grid>
                                 <ion-row>
-                                    <ion-text>{{contact.contactInfo.name}} {{contact.contactInfo.surname}}</ion-text>
+                                    <ion-text>{{contact.contactInfo.surname}} {{contact.contactInfo.name}}</ion-text>
                                 </ion-row>
                                 <ion-row>
                                     <ion-text style="font-size: 1rem;" color="medium">{{contact.contactInfo.company}}</ion-text>
