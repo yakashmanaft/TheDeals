@@ -29,7 +29,10 @@
                 </ion-text>
                 <!-- Выбор типа дела -->
                 <ion-chip :color="setColorByDealType(dealData.dealType)" class="ion-no-margin">
-                    <Select :data="dealTypes" :placeholder="`Укажите тип дела`" @date-updated="(selected) => dealData.dealType = selected.currentValue"/>
+                    <ion-icon class="ion-no-margin" v-if="dealData.dealType !== ''" :icon="setIconByDealType(dealData.dealType)"></ion-icon>
+                    <ion-label>
+                        <Select :data="dealTypes" :placeholder="`Укажите тип дела`" @date-updated="(selected) => dealData.dealType = selected.currentValue"/>
+                    </ion-label>
                 </ion-chip>
             </ion-item-group>
 
@@ -183,6 +186,8 @@
     import { ru } from 'date-fns/locale'
     //
     import { searchFilter } from '../../helpers/filterMyContacts'; 
+    import { setColorByDealType } from '../../helpers/setColorByDealType';
+    import { setIconByDealType } from '../../helpers/setIconByDealType'
     //
     export default defineComponent({
         name: 'CreateNewDeal',
@@ -338,17 +343,6 @@
                 isViewDealSubjectOpened.value = true;
                 currentDealSubject.value = dealData.value.dealsList[index];
             }
-            // Ставим цвет метки типа дела исходя из типа дела
-            const setColorByDealType = (dealType) => {
-                if(dealType === 'sale') {
-                    return 'success'
-                } else if (dealType === 'buy') {
-                    return 'warning'
-                } else {
-                    return 'primary'
-                }
-            }
-            
             //
             watchEffect(() => {
                 myContactsArray.value = props.myContacts;
@@ -356,7 +350,7 @@
 
             });
             return {
-                dealContact, dealContactID , searchContactMenu, choose, isCalendarOpened, closeModalCalendar, updateExecutionDate, datepicker, myContactsArray, searchDealContact, searchedContacts, dealTypes, addCircleOutline, closeCircleOutline, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, openDeleteSubjectModal, subjectToDelete, deleteDealSubjectButtons, addNewSubject, deleteSubject, dealData, currentDealSubject, isViewDealSubjectOpened, openCurrentDealSubject, checkRentAttr, setColorByDealType
+                dealContact, dealContactID , searchContactMenu, choose, isCalendarOpened, closeModalCalendar, updateExecutionDate, datepicker, myContactsArray, searchDealContact, searchedContacts, dealTypes, addCircleOutline, closeCircleOutline, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, openDeleteSubjectModal, subjectToDelete, deleteDealSubjectButtons, addNewSubject, deleteSubject, dealData, currentDealSubject, isViewDealSubjectOpened, openCurrentDealSubject, checkRentAttr, setColorByDealType, setIconByDealType
             }
         }
     })

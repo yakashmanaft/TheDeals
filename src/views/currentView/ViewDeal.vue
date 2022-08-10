@@ -54,7 +54,12 @@
                                 />
                             </ion-chip>
                             <!-- Тип дела -->
-                            <ion-chip :color="setColorByDealType(currentDeal.dealType)" outline="true">{{setDealType(currentDeal.dealType)}}</ion-chip>
+                            <ion-chip :color="setColorByDealType(currentDeal.dealType)" outline="true">
+                                <ion-icon :icon="setIconByDealType(currentDeal.dealType)"></ion-icon>
+                                <ion-label>
+                                    {{setDealType(currentDeal.dealType)}}
+                                </ion-label>
+                            </ion-chip>
                         </ion-row>
                     </ion-grid>
                 </ion-item-group>
@@ -209,6 +214,8 @@
     import { addCircleOutline, closeCircleOutline, helpOutline } from 'ionicons/icons';
     //
     import { searchFilter } from '../../helpers/filterMyContacts'; 
+    import { setColorByDealType } from '../../helpers/setColorByDealType';
+    import { setIconByDealType } from '../../helpers/setIconByDealType';
     //
     import Spinner from '../../components/Spinner.vue';
     import ViewHeader from '../../components/headers/HeaderViewCurrent.vue';
@@ -257,18 +264,6 @@
             // const tempData = JSON.parse(info.deal)
             //
             const spinner = ref(null);
-            // Edit contact info
-            // const edit = ref(null)
-            // const editMode = () => {
-            //     edit.value = !edit.value;
-            // }
-            // Cancel editMode & cancel all changes
-            // const cancelEdit = () => {
-            //     edit.value = !edit.value;
-            //     // note.value = !note.value;
-            //     currentDeal.value = tempData
-            //     reloadData()
-            // }
             // Статусы дел
             const dealStatusList = ref(store.state.dealStatusList)
             //
@@ -307,18 +302,7 @@
                 dealContactID.value = contact.id
                 searchContactMenu.value = false
                 update()
-            }
-            // Обновляем данные из БД
-            // вынести в store?
-            // const reloadData = async () => {
-            //     try {
-            //         const { data: myDeals, error } = await supabase.from('deals').select('*').eq('id', currentId);
-            //         currentDeal.value = myDeals[0];
-            //         if (error) throw error;
-            //     } catch (error) {
-            //         alert(`Error: ${error.message}`)
-            //     }
-            // }     
+            }   
             // Переводчик placeholder
             // Еслит надо переиспользовать
             // А если будет слишком много данных? Мы же каждый раз их обходим циклом...
@@ -358,12 +342,6 @@
                 isCalendarOpened.value = false;
                 update()
             }
-            // следим за изменениями значения executionDate у текущего дела и обновляем его в БД
-            // watch (executionDate, () => {
-            //     currentDeal.value.executionDate = executionDate.value 
-            //     update()
-            //     console.log(executionDate.value)
-            // })
             // ======================================== update current deal ================================
             const update = async () => {
                 try {
@@ -460,16 +438,6 @@
                     return 'Закупка'
                 }
             }
-            // Ставим цвет метки типа дела исходя из типа дела
-            const setColorByDealType = (dealType) => {
-                if(dealType === 'sale') {
-                    return 'success'
-                } else if (dealType === 'buy') {
-                    return 'warning'
-                } else {
-                    return 'primary'
-                }
-            }
             // ================================ управление current deal subject ===================================
             const currentDealSubject = ref()
             // открываем view current deal item
@@ -534,7 +502,7 @@
             }
 
             return {
-                spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translatePlaceholder, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType
+                spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translatePlaceholder, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType
             }
         }
     })

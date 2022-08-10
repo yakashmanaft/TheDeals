@@ -90,7 +90,7 @@
                                             <ion-row class="ion-justify-content-between ion-align-items-center">
                                                 <div style="display: flex;" class="relative">
                                                     <ion-thumbnail class="icon-thumbnail absolute" :class="{'icon-thumbnail_sale': deal.dealType === 'sale', 'icon-thumbnail_buy': deal.dealType === 'buy'}">
-                                                        <ion-icon class="icon-thumbnail_icon" :icon="setIconByDealStatus(deal.dealType)"></ion-icon>
+                                                        <ion-icon class="icon-thumbnail_icon" :icon="setIconByDealType(deal.dealType)"></ion-icon>
                                                     </ion-thumbnail>
                                                     <!-- Кнопка смены статуса дела -->
                                                     <div @click.prevent.stop="doSomething">
@@ -201,7 +201,10 @@
     import { useRouter } from 'vue-router';
     import { uid } from 'uid';
     import { format, parseISO, formatISO  } from 'date-fns';
-    import { ru } from 'date-fns/locale'
+    import { ru } from 'date-fns/locale';
+    //
+    import { setIconByDealType } from '../helpers/setIconByDealType';
+    //
     export default defineComponent({
         name: 'Deals',
         components: {
@@ -513,17 +516,9 @@
             const deleteSubject = (id) => {
                 dealData.value.dealsList = dealData.value.dealsList.filter(subject => subject.id !== id);
             }
-            //
-            const setIconByDealStatus = (dealStatus) => {
-                if(dealStatus === 'sale') {
-                    return bagHandleOutline
-                } else if(dealStatus === 'buy') {
-                    return cubeOutline
-                }
-            }
 
             return {
-                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isViewDealModalOpened, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translatePlaceholder, resfreshData, myContacts, getContact, showNameByID, checkRentAttr, dealTypesList, dealByType, showDealByType, helpOutline, addSubject, deleteSubject, bagHandleOutline, cubeOutline, setIconByDealStatus
+                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isViewDealModalOpened, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translatePlaceholder, resfreshData, myContacts, getContact, showNameByID, checkRentAttr, dealTypesList, dealByType, showDealByType, helpOutline, addSubject, deleteSubject, setIconByDealType
             }
         }
     })
