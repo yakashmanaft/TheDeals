@@ -468,6 +468,7 @@
                 currentSubject.value  = {
                     id: uid(),
                     selectedProduct: '',
+                    recipe:'',
                     additionalAttributes: [],
                     productNote: ''
                 }
@@ -480,12 +481,15 @@
             const currentSubject = ref({})
             // Добавляем новый предмет к текущему делу и делаем запись в БД
             const addNewSubject = () => {
-                if(currentSubject.value.selectedProduct !== ''){
+                //Выдумать варианты валидации
+                if(currentSubject.value.selectedProduct === '') {
+                    alert('ViewDeal: Вы не выбрали предмет дела')
+                } else if(currentDeal.value.dealType === 'sale' && currentSubject.value.recipe === '') {
+                    alert('ViewDeal: Вы не указали рецепт')
+                } else {
                     currentDeal.value.dealsList.push(currentSubject.value); 
                     isCreateNewSubjectOpened.value = false;
                     update();
-                } else {
-                    alert('SelectedProduct не можут быть пустым')
                 }
             }
 
