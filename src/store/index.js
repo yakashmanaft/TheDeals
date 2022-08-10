@@ -134,6 +134,37 @@ const state = reactive({
       caption: 'Ни одного отмененного дела!',
       text: 'Вы супер! Так держать!'
     }
+  ],
+  //User recipes list
+  userRecipeArray: [
+    {
+        value: 'red-velvet',
+        name: 'Красный бархат'
+    },
+    {
+        value: 'milk-girl',
+        name: 'Молочная девочка',
+    },
+    {
+        value: 'swiss-meringue',
+        name: 'Швейцарская меренга',
+        target: ['meringue']
+    },
+    {
+        value: 'banana-with-gouda',
+        name: 'Банановый с гаудой',
+        target: ['cake'],
+        productSize: {
+            concept: 'diameter',
+            measure: 'centimeters',
+            quantity: 17
+        },
+        ingredient: [
+            {
+                name: 'Шоколадно-банановый бисквит',
+            }
+        ]
+    },
   ]
 });
 

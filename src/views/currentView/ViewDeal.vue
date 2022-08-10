@@ -11,6 +11,7 @@
             :isOpen="isViewDealSubjectOpened"
             @closeModal="isViewDealSubjectOpened = false"
             :subjectData="currentDealSubject"
+            :currentDealType="currentDeal.dealType"
         />
 
         <!-- add subject to deal -->
@@ -163,7 +164,7 @@
                                 <ion-label style="font-size: 12px">
                                     x{{item.productQuantity}}
                                 </ion-label>
-                                <ion-text style="white-space: normal">{{ item.recipe }}</ion-text>
+                                <ion-text v-if="currentDeal.dealType === 'sale'" style="white-space: normal">{{ translateDealSubjectRecipe(item.recipe) }}</ion-text>
                             </ion-card>
                             <!-- Добавить еще предмет к заказу -->
                             <ion-card class="ion-padding card-center card-add" @click="openCreateSubjectModal()">
@@ -469,6 +470,7 @@
                     id: uid(),
                     selectedProduct: '',
                     recipe:'',
+                    productQuantity: 1,
                     additionalAttributes: [],
                     productNote: ''
                 }
@@ -504,9 +506,21 @@
                     return false;
                 }
             }
+            // Переводчик названий рецептов
+            const userRecipeArray = ref(store.state.userRecipeArray)
+            const translateDealSubjectRecipe = (value) => {
+                if (currentDeal.value.dealType === 'sale') {
+                    if(value === 'no-recipe' || value === ''){
+                        return 'Без рецепта'
+                    } else {
+                        return translatePlaceholder(value, userRecipeArray.value)
+                    }
+                }
+            }
+
 
             return {
-                spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translatePlaceholder, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType
+                spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translatePlaceholder, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, translateDealSubjectRecipe, userRecipeArray
             }
         }
     })

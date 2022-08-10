@@ -508,6 +508,7 @@
                     id: uid(),
                     selectedProduct: subjectData.selectedProduct,
                     recipe: subjectData.recipe,
+                    productQuantity: subjectData.productQuantity,
                     // массив пока шаблоном, в modalCreateSubject задавать значения
                     additionalAttributes: [],
                     productNote: '',

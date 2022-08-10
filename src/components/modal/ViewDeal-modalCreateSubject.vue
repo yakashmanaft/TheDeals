@@ -135,6 +135,8 @@
     import { searchUserRecipeFilter } from '../../helpers/filterUserRecipe';
     import { sortAlphabetically } from '../../helpers/sortDealSubject'
     //
+    import store from '../../store/index';
+    //
     export default defineComponent({
         name: 'CreateDealSubject',
         emits: ['closeModal', 'createSubject'],
@@ -162,28 +164,8 @@
             IonItem
         },
         setup(props, {emit}) {
-            // массив ПОЛЬЗОВАТЕЛЯ с вариантами рецептов 
-            const userRecipeArray = ref([
-                {
-                    value: 'red-velvet',
-                    name: 'Красный бархат'
-                },
-                {
-                    value: 'banana-with-gouda',
-                    name: 'Банановый с гаудой',
-                    target: ['cake'],
-                    productSize: {
-                        concept: 'diameter',
-                        measure: 'centimeters',
-                        quantity: 17
-                    },
-                    ingredient: [
-                        {
-                            name: 'Шоколадно-банановый бисквит',
-                        }
-                    ]
-                }
-            ])
+            // массив ПОЛЬЗОВАТЕЛЯ с вариантами рецептов (Временно в сторе)
+            const userRecipeArray = ref(store.state.userRecipeArray)
             // массив ПОЛЬЗОВАТЕЛЯ с вариантами предмета ПРОДАЖИ
             const dealSaleSubjectArray = ref([
                 {
@@ -341,7 +323,7 @@
             }
             //
             const showSelectedRecipe = (selectedRecipe) => {
-                if(subjectData.value.recipe === 'no-recipe') {
+                if(subjectData.value.recipe !== '' && subjectData.value.recipe === 'no-recipe') {
                     return 'Без рецепта'
                 }else if(subjectData.value.recipe !== '' && subjectData.value.recipe !== 'no-recipe') {
                     return translatePlaceholder(selectedRecipe, userRecipeArray.value)
@@ -391,7 +373,6 @@
                 const sortedUserRecipeArray = sortAlphabetically(userRecipeArray.value);
                 return searchUserRecipeFilter(sortedUserRecipeArray, searchRecipe.value)
             })
-
             // Задаем из выбранному списка значение для selectedProduct
             const choose = (subject) => {
                 subjectData.value.selectedProduct = subject.value

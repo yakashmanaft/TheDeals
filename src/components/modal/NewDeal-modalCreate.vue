@@ -262,6 +262,7 @@
                     id: uid(),
                     selectedProduct: '',
                     recipe: '',
+                    productQuantity: 1,
                     additionalAttributes: [],
                     productNote: '',
                 }
@@ -303,6 +304,7 @@
                 id: uid(),
                 selectedProduct: '',
                 recipe: '',
+                productQuantity: 1,
                 additionalAttributes: [],
                 productNote: '',
             })
