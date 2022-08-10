@@ -1,5 +1,5 @@
 // Сортировщик списка контактов по алфавиту
-// Оптимизировать contactInfo.surname (Чтобы функция стала более универсальной)
+// Оптимизировать contactInfo.surname (Чтобы функция стала более универсальной) sortMyContacts & sortDealSubject
 export const sortAlphabetically = (arrayToSort) => {
 
     return arrayToSort.sort((a, b) => {

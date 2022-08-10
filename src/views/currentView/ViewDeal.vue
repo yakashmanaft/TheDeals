@@ -41,10 +41,11 @@
             <!-- Data -->
             <div>
                 <!-- Тип дела -->
-                <!-- ============================== Статус дела ========================================== -->
+                <!-- ============================== Статус и тип дела ========================================== -->
                 <ion-item-group>
                     <ion-grid class="ion-margin-top" style="padding-top: 0!important">
                         <ion-row class="ion-justify-content-between ion-align-items-center">
+                            <!-- Статус дела -->
                             <ion-chip :color="setChipColor(dealStatus)">
                                 <Select
                                     :data="dealStatusList" 
@@ -52,7 +53,8 @@
                                     @date-updated="(selected) => dealStatus = selected.currentValue"
                                 />
                             </ion-chip>
-                            <ion-chip color="medium" outline="true">{{setDealType(currentDeal.dealType)}}</ion-chip>
+                            <!-- Тип дела -->
+                            <ion-chip :color="setColorByDealType(currentDeal.dealType)" outline="true">{{setDealType(currentDeal.dealType)}}</ion-chip>
                         </ion-row>
                     </ion-grid>
                 </ion-item-group>
@@ -458,6 +460,16 @@
                     return 'Закупка'
                 }
             }
+            // Ставим цвет метки типа дела исходя из типа дела
+            const setColorByDealType = (dealType) => {
+                if(dealType === 'sale') {
+                    return 'success'
+                } else if (dealType === 'buy') {
+                    return 'warning'
+                } else {
+                    return 'primary'
+                }
+            }
             // ================================ управление current deal subject ===================================
             const currentDealSubject = ref()
             // открываем view current deal item
@@ -522,7 +534,7 @@
             }
 
             return {
-                spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translatePlaceholder, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline
+                spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translatePlaceholder, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType
             }
         }
     })

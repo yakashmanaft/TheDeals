@@ -28,7 +28,7 @@
                     <h4>Тип дела</h4>
                 </ion-text>
                 <!-- Выбор типа дела -->
-                <ion-chip color="primary" class="ion-no-margin">
+                <ion-chip :color="setColorByDealType(dealData.dealType)" class="ion-no-margin">
                     <Select :data="dealTypes" :placeholder="`Укажите тип дела`" @date-updated="(selected) => dealData.dealType = selected.currentValue"/>
                 </ion-chip>
             </ion-item-group>
@@ -338,6 +338,16 @@
                 isViewDealSubjectOpened.value = true;
                 currentDealSubject.value = dealData.value.dealsList[index];
             }
+            // Ставим цвет метки типа дела исходя из типа дела
+            const setColorByDealType = (dealType) => {
+                if(dealType === 'sale') {
+                    return 'success'
+                } else if (dealType === 'buy') {
+                    return 'warning'
+                } else {
+                    return 'primary'
+                }
+            }
             
             //
             watchEffect(() => {
@@ -346,7 +356,7 @@
 
             });
             return {
-                dealContact, dealContactID , searchContactMenu, choose, isCalendarOpened, closeModalCalendar, updateExecutionDate, datepicker, myContactsArray, searchDealContact, searchedContacts, dealTypes, addCircleOutline, closeCircleOutline, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, openDeleteSubjectModal, subjectToDelete, deleteDealSubjectButtons, addNewSubject, deleteSubject, dealData, currentDealSubject, isViewDealSubjectOpened, openCurrentDealSubject, checkRentAttr
+                dealContact, dealContactID , searchContactMenu, choose, isCalendarOpened, closeModalCalendar, updateExecutionDate, datepicker, myContactsArray, searchDealContact, searchedContacts, dealTypes, addCircleOutline, closeCircleOutline, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, openDeleteSubjectModal, subjectToDelete, deleteDealSubjectButtons, addNewSubject, deleteSubject, dealData, currentDealSubject, isViewDealSubjectOpened, openCurrentDealSubject, checkRentAttr, setColorByDealType
             }
         }
     })

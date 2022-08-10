@@ -85,6 +85,7 @@
     import SelectDealSubject from '../Select-DealSubject.vue';
     //
     import { searchFilter } from '../../helpers/filterDealSubject';
+    import { sortAlphabetically } from '../../helpers/sortDealSubject'
     //
     export default defineComponent({
         name: 'CreateDealSubject',
@@ -293,31 +294,13 @@
                 currentDealType.value = props.currentDealType
 
             })
-            // 
+            // фильтр для поиска и сортировка по алфавиту списка при выборе предмета дела
             const searchedSubject = computed(() => {
                 if(currentDealType.value === 'sale') {
-                    const sortedDealSellSubjectArray = dealSaleSubjectArray.value.sort((a,b) => {
-                        let fa = a.name.toLowerCase(), fb = b.name.toLowerCase();
-                        if (fa < fb) {
-                            return -1;
-                        } 
-                        if (fa > fb) {
-                            return 1;
-                        }
-                        return 0;
-                    });
+                    const sortedDealSellSubjectArray = sortAlphabetically(dealSaleSubjectArray.value)
                     return searchFilter(sortedDealSellSubjectArray, searchSelectedProduct.value)
                 } else if(currentDealType.value === 'buy') {
-                    const sortedDealBuySubjectArray = dealBuySubjectArray.value.sort((a,b) => {
-                        let fa = a.name.toLowerCase(), fb = b.name.toLowerCase();
-                        if (fa < fb) {
-                            return -1;
-                        } 
-                        if (fa > fb) {
-                            return 1;
-                        }
-                        return 0;
-                    });
+                    const sortedDealBuySubjectArray = sortAlphabetically(dealBuySubjectArray.value)
                     return searchFilter(sortedDealBuySubjectArray, searchSelectedProduct.value)
                 }
             }) 

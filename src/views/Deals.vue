@@ -89,7 +89,7 @@
                                         <ion-grid class="ion-no-padding">
                                             <ion-row class="ion-justify-content-between ion-align-items-center">
                                                 <div style="display: flex;" class="relative">
-                                                    <ion-thumbnail class="icon-thumbnail absolute">
+                                                    <ion-thumbnail class="icon-thumbnail absolute" :class="{'icon-thumbnail_sale': deal.dealType === 'sale', 'icon-thumbnail_buy': deal.dealType === 'buy'}">
                                                         <ion-icon class="icon-thumbnail_icon" :icon="setIconByDealStatus(deal.dealType)"></ion-icon>
                                                     </ion-thumbnail>
                                                     <!-- Кнопка смены статуса дела -->
@@ -114,7 +114,6 @@
                                         </ion-grid>
                                     </ion-card-header>
                                     <!-- Body of the card -->
-                                    <!-- Если заказ -->
                                     <ion-card-content class="ion-no-padding ion-margin-top">
                                         <!-- Предмет заказа -->
                                         <ion-grid>
@@ -152,24 +151,6 @@
                                         </ion-grid>
 
                                     </ion-card-content>
-                                    <!-- Если закупка -->
-                                    <!-- <ion-card-content v-if="deal.dealType === 'buy'" class="ion-no-padding ion-margin-top">
-                                        <ion-grid>
-                                            <ion-row style="gap: 0.8rem">
-                                                
-                                                <div v-if="deal.dealsList.length">
-
-                                                </div>
-                                                <div v-if="deal.dealsList.length" class="empty-item"></div>
-                                                
-                                                <div v-if="!deal.dealsList.length">
-                                                    <ion-thumbnail class="empty-deal-list_thumbnail">
-                                                        <ion-icon class="empty-deal-list_icon" :icon="helpOutline"></ion-icon>
-                                                    </ion-thumbnail>
-                                                </div>
-                                            </ion-row>
-                                        </ion-grid>
-                                    </ion-card-content> -->
                                 </ion-card>
                             </router-link>
                     </div>
@@ -612,12 +593,23 @@
         justify-content: center;
         width: 30px;
         height: 30px;
-        padding: 0.4rem;
+        padding: 0.2rem;
+        padding-top: 0.4rem;
+        padding-left: 0.4rem;
+        padding-bottom: 0.3 rem;
         top: -22px;
         left: -22px;
+        
     }
     .icon-thumbnail_icon {
         width: 100%;
         height: 100%;
+        color: white;
+    }
+    .icon-thumbnail_sale {
+        background-color: var(--ion-color-success);
+    }
+    .icon-thumbnail_buy {
+        background-color: var(--ion-color-warning);
     }
 </style>
