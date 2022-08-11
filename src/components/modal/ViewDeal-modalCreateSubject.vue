@@ -213,7 +213,7 @@
                     value: 'cake-eskimos',
                     name: 'Эскимошки',
                     costEstimation: 'perUnit'
-                }
+                },
             ])
             // массив ПОЛЬЗОВАТЕЛЯ с вариантами предмета ЗАКУПКИ
             const dealBuySubjectArray = ref([
@@ -306,6 +306,21 @@
                     value: 'lemon-juice',
                     name: 'Сок лимона',
                     // costEstimation: 'perUnit'
+                },
+                {
+                    value: 'gingerbread',
+                    name: 'Пряник',
+                    costEstimation: 'perUnit'
+                },
+                {
+                    value: 'box-for-cake',
+                    name: 'Коробка под торт',
+                    costEstimation: 'perUnit'
+                },
+                {
+                    value: 'box-for-sweet',
+                    name: 'Коробка под сладости',
+                    costEstimation: 'perUnit'
                 },
             ])
             //

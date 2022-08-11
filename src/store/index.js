@@ -45,6 +45,8 @@ const state = reactive({
         icon: leafOutline
     },
   ],
+  // user price list
+  userSettings: [],
   // contact array in page Contacts
   myContactsArray: [],
   // deals array in page Deals
@@ -193,7 +195,19 @@ const methods = {
       console.log(error);
     }
   },
-
+  // Забираем из БД user price list
+  getUserSettingsfromDB: async () => {
+    try {
+      let { data: accountSettings, error } = await supabase.from('accountSettings').select('*');
+      if (error) throw error;
+      const userSettings = accountSettings;
+      state.userSettings = userSettings.filter(item => {
+        return item.email === state.userEmail;
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  } ,
   //
   setUserEmail: () => {
     if(state.user) {

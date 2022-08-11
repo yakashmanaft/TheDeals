@@ -91,6 +91,8 @@
     import { useRouter } from 'vue-router';
     import { IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert } from '@ionic/vue';
     import Spinner from '../../components/Spinner.vue';
+    //
+    import { uid } from 'uid';
 
     export default defineComponent ({
         name: 'register',
@@ -106,6 +108,14 @@
             const spinner = ref(null);
             const confirmRequire = ref(null);
 
+            // Шаблон для создания строки под настройки пользваотеля в БД accountSettings
+            const userAccountSetting = ref({
+                uid: uid(),
+                // Здесь еще нет имейла
+                email: email.value,
+                userPriceList: []
+            })
+
             // Register function
             const register = async () => {
             if (password.value === confirmPassword.value) {
@@ -119,6 +129,10 @@
                 setTimeout(() => {
                     confirmRequire.value = true
                     // router.push({ name: 'Login' })
+                    console.log(email.value)
+                    // Здесь имейл уже подтянулся
+                    userAccountSetting.value.email = email.value
+                    createAccountSettings()
                 }, 3000)
                 } catch (error) {
                 errorMsg.value = error.message;
@@ -143,8 +157,18 @@
             // show alert of errorMsg
             const setOpen = () => isOpenRef.value = !isOpenRef.value; 
 
+            //
+            const createAccountSettings = async () => {
+                try {
+                    const { error } = await supabase.from('accountSettings').insert([userAccountSetting.value])
+                    if (error) throw error;
+                } catch (error) {
+                    alert(`Error: ${error.message}`)
+                }
+            }
+
             return {
-                email, password, confirmPassword, spinner, confirmRequire, confirmRequireFunc, errorMsg, register, isOpenRef, isOpenRef, setOpen
+                email, password, confirmPassword, spinner, confirmRequire, confirmRequireFunc, errorMsg, register, isOpenRef, isOpenRef, setOpen, userAccountSetting, createAccountSettings
             }
         }
     })

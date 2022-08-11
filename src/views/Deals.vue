@@ -23,7 +23,6 @@
             @addSubject="addSubject"
             @deleteSubject="deleteSubject"
         />
-
         <ion-content 
             :scroll-events="true"
             class="ion-page ion-margin-top" 
