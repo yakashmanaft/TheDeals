@@ -12,6 +12,7 @@
             @closeModal="isViewDealSubjectOpened = false"
             :subjectData="currentDealSubject"
             :currentDealType="currentDeal.dealType"
+            @updateBD="updateBD"
         />
 
         <!-- add subject to deal -->
@@ -50,7 +51,7 @@
                             <ion-chip :color="setChipColor(dealStatus)">
                                 <Select
                                     :data="dealStatusList" 
-                                    :placeholder="translatePlaceholder(currentDeal.dealStatus, dealStatusList)"
+                                    :placeholder="translateValue(currentDeal.dealStatus, dealStatusList)"
                                     @date-updated="(selected) => dealStatus = selected.currentValue"
                                 />
                             </ion-chip>
@@ -217,6 +218,7 @@
     import { searchFilter } from '../../helpers/filterMyContacts'; 
     import { setColorByDealType } from '../../helpers/setColorByDealType';
     import { setIconByDealType } from '../../helpers/setIconByDealType';
+    import { translateValue } from '@/helpers/translateValue';
     //
     import Spinner from '../../components/Spinner.vue';
     import ViewHeader from '../../components/headers/HeaderViewCurrent.vue';
@@ -304,19 +306,6 @@
                 searchContactMenu.value = false
                 update()
             }   
-            // Переводчик placeholder
-            // Еслит надо переиспользовать
-            // А если будет слишком много данных? Мы же каждый раз их обходим циклом...
-            const translatePlaceholder = (value, array) => {
-                let currentName = ''
-                array.forEach(item => {
-                    if(item.value === value) {
-                        currentName = item.name
-                        return currentName
-                    }
-                })
-                return currentName
-            }
             // =========================== Выбираем дату ==========================
             // храним значение executionDate
             const executionDate = ref();
@@ -364,6 +353,9 @@
                 }
                 // edit.value = !edit.value;
                 spinner.value = false;
+            }
+            const updateBD = () => {
+                update()
             }
             // ================================== delete current deal function ===============================
             const deleteDeal = async () => {
@@ -513,14 +505,14 @@
                     if(value === 'no-recipe' || value === ''){
                         return 'Без рецепта'
                     } else {
-                        return translatePlaceholder(value, userRecipeArray.value)
+                        return translateValue(value, userRecipeArray.value)
                     }
                 }
             }
 
 
             return {
-                spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translatePlaceholder, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, translateDealSubjectRecipe, userRecipeArray
+                spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, translateDealSubjectRecipe, userRecipeArray, updateBD
             }
         }
     })

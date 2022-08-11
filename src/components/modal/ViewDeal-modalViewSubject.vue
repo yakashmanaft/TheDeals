@@ -19,10 +19,15 @@
                 <ion-text>
                     <h4>Рецепт</h4>
                 </ion-text>
-                <!-- Кнопка выбора рецепта к предмету -->
-                <ion-button color="primary" size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click="searchRecipeMenu = true">
-                    {{ showSelectedRecipe(subjectData.recipe) }}
-                </ion-button>
+                <!-- Показ и кнопка изменения рецепта к предмету -->
+                <ion-grid class="ion-no-padding">
+                    <ion-row class="ion-justify-content-between ion-align-items-center">
+                        <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">{{ showSelectedRecipe(subjectData.recipe) }}</ion-button>
+                        <ion-button color="primary" size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click="searchRecipeMenu = true">
+                            Изменить
+                        </ion-button>
+                    </ion-row>
+                </ion-grid>
                 <!-- Модалка для выбор (Выбор / поиск рецепта для предмета) -->
                 <ion-modal :isOpen="searchRecipeMenu">
                     <ion-searchbar class="ion-text-left" placeholder="Поиск..." v-model="searchRecipe" show-cancel-button="always" cancelButtonText="Отменить" @ionCancel="searchRecipeMenu = false">
@@ -68,12 +73,13 @@
     //
     import { searchUserRecipeFilter } from '../../helpers/filterUserRecipe';
     import { sortAlphabetically } from '../../helpers/sortDealSubject';
+    import { translateValue } from '@/helpers/translateValue';
     //
     import store from '../../store/index';
     //
     export default defineComponent({
         name: 'ViewDealSubject',
-        emits: ['closeModal'],
+        emits: ['closeModal', 'updateBD'],
         props: {
             subjectData: Object,
             currentDealType: String
@@ -99,31 +105,19 @@
             const chooseRecipe = (recipe) => {
                 subjectData.value.recipe = recipe.value;
                 searchRecipeMenu.value = false;
+                emit('updateBD');
             }
             // Заглушка под предмет продажи "БЕЗ РЕЦЕПТА"
             const noRecipe = ref({
                 value: 'no-recipe',
                 name: 'Без рецепта'
             })
-            // Переводчик placeholder
-            // Еслит надо переиспользовать
-            // А если будет слишком много данных? Мы же каждый раз их обходим циклом...
-            const translatePlaceholder = (value, array) => {
-                let currentName = ''
-                array.forEach(item => {
-                    if(item.value === value) {
-                        currentName = item.name
-                        return currentName
-                    }
-                })
-                return currentName
-            }
-            //
+
             const showSelectedRecipe = (selectedRecipe) => {
                 if(subjectData.value.recipe === 'no-recipe') {
                     return 'Без рецепта'
                 }else if(subjectData.value.recipe !== '' && subjectData.value.recipe !== 'no-recipe') {
-                    return translatePlaceholder(selectedRecipe, userRecipeArray.value)
+                    return translateValue(selectedRecipe, userRecipeArray.value)
                 } else {
                     return 'Не выбрано'
                 }

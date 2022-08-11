@@ -133,7 +133,8 @@
     //
     import { searchDealSubjectFilter } from '../../helpers/filterDealSubject';
     import { searchUserRecipeFilter } from '../../helpers/filterUserRecipe';
-    import { sortAlphabetically } from '../../helpers/sortDealSubject'
+    import { sortAlphabetically } from '../../helpers/sortDealSubject';
+    import { translateValue } from '@/helpers/translateValue';
     //
     import store from '../../store/index';
     //
@@ -301,6 +302,11 @@
                     name: 'Сок лимона',
                     // costEstimation: 'perKilogram'
                 },
+                {
+                    value: 'lemon-juice',
+                    name: 'Сок лимона',
+                    // costEstimation: 'perUnit'
+                },
             ])
             //
             const subjectData = ref();
@@ -310,11 +316,11 @@
                 if(subjectData.value.selectedProduct !== '') {
                     // Если currentDealType - Продажи
                     if(currentDealType.value === 'sale') {
-                        return translatePlaceholder(selectedProduct, dealSaleSubjectArray.value)
+                        return translateValue(selectedProduct, dealSaleSubjectArray.value)
                     }
                     // Если currentDealType - Закупки
                     else if (currentDealType.value === 'buy') {
-                        return translatePlaceholder(selectedProduct, dealBuySubjectArray.value)
+                        return translateValue(selectedProduct, dealBuySubjectArray.value)
                     }
                     //
                 } else {
@@ -326,7 +332,7 @@
                 if(subjectData.value.recipe !== '' && subjectData.value.recipe === 'no-recipe') {
                     return 'Без рецепта'
                 }else if(subjectData.value.recipe !== '' && subjectData.value.recipe !== 'no-recipe') {
-                    return translatePlaceholder(selectedRecipe, userRecipeArray.value)
+                    return translateValue(selectedRecipe, userRecipeArray.value)
                 } else {
                     return 'Не выбрано'
                 }
@@ -337,22 +343,7 @@
             //
             const searchRecipeMenu = ref(false);
             const searchRecipe = ref('');
-            
-            // Переводчик placeholder
-            // Еслит надо переиспользовать
-            // А если будет слишком много данных? Мы же каждый раз их обходим циклом...
-            const translatePlaceholder = (value, array) => {
-                let currentName = ''
-                array.forEach(item => {
-                    if(item.value === value) {
-                        currentName = item.name
-                        return currentName
-                    }
-                })
-                return currentName
-            }
-
-
+            //
             watchEffect(() => {
                 subjectData.value = props.subjectData;
                 currentDealType.value = props.currentDealType
@@ -392,7 +383,7 @@
             })
 
             return {
-                dealSaleSubjectArray, dealBuySubjectArray, helpOutline, showSelectedProduct, searchSubjectMenu, searchSelectedProduct, currentDealType, translatePlaceholder, searchedSubject, choose, searchRecipeMenu, searchRecipe, userRecipeArray, chooseRecipe, showSelectedRecipe, searchedRecipe, noRecipe
+                dealSaleSubjectArray, dealBuySubjectArray, helpOutline, showSelectedProduct, searchSubjectMenu, searchSelectedProduct, currentDealType, translateValue, searchedSubject, choose, searchRecipeMenu, searchRecipe, userRecipeArray, chooseRecipe, showSelectedRecipe, searchedRecipe, noRecipe
             }
         }
     })

@@ -123,7 +123,7 @@
                             <ion-label style="font-size: 12px">
                                 x{{item.productQuantity}}
                             </ion-label>
-                            <ion-text style="white-space: normal">{{ item.recipe }}</ion-text>
+                            <ion-text style="white-space: normal">{{ translateDealSubjectRecipe(item.recipe) }}</ion-text>
                         </ion-card>
                         <!-- Открываем меню создания предмета к делу -->
                         <ion-card class="ion-padding card-center card-add" @click="openCreateSubjectModal()">
@@ -187,7 +187,8 @@
     //
     import { searchFilter } from '../../helpers/filterMyContacts'; 
     import { setColorByDealType } from '../../helpers/setColorByDealType';
-    import { setIconByDealType } from '../../helpers/setIconByDealType'
+    import { setIconByDealType } from '../../helpers/setIconByDealType';
+    import { translateValue } from '../../helpers/translateValue';
     //
     export default defineComponent({
         name: 'CreateNewDeal',
@@ -313,7 +314,7 @@
 
             const addNewSubject = (subjectData) => {
                 // Выдумать варианты валидации
-                if (currentSubject.value.selectedProduct === '') {
+                if (currentSubject.value.selectedProduct === '' ) {
                     alert('NewDeal-modalCreate: Вы не выбрали предмет дела')
                 } else if(dealData.value.dealType === 'sale' && currentSubject.value.recipe === '') {
                     alert('NewDeal-modalCreate: Вы не указали рецепт')
@@ -346,13 +347,25 @@
                 currentDealSubject.value = dealData.value.dealsList[index];
             }
             //
+            const translateDealSubjectRecipe = (value) => {
+                if(dealData.value.dealType === 'sale') {
+                    if(value === 'no-recipe' || value === '') {
+                        return 'Без рецепта'
+                    } else {
+                        return translateValue(value, userRecipeArray.value)
+                    }
+                }
+            }
+            // Подтягивает данные по рецептам ПОЛЬЗОВАТЕЛЯ из стора (временно)
+            const userRecipeArray = ref(store.state.userRecipeArray)
+
             watchEffect(() => {
                 myContactsArray.value = props.myContacts;
                 dealData.value = props.dealData;
 
             });
             return {
-                dealContact, dealContactID , searchContactMenu, choose, isCalendarOpened, closeModalCalendar, updateExecutionDate, datepicker, myContactsArray, searchDealContact, searchedContacts, dealTypes, addCircleOutline, closeCircleOutline, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, openDeleteSubjectModal, subjectToDelete, deleteDealSubjectButtons, addNewSubject, deleteSubject, dealData, currentDealSubject, isViewDealSubjectOpened, openCurrentDealSubject, checkRentAttr, setColorByDealType, setIconByDealType
+                dealContact, dealContactID , searchContactMenu, choose, isCalendarOpened, closeModalCalendar, updateExecutionDate, datepicker, myContactsArray, searchDealContact, searchedContacts, dealTypes, addCircleOutline, closeCircleOutline, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, openDeleteSubjectModal, subjectToDelete, deleteDealSubjectButtons, addNewSubject, deleteSubject, dealData, currentDealSubject, isViewDealSubjectOpened, openCurrentDealSubject, checkRentAttr, setColorByDealType, setIconByDealType, translateDealSubjectRecipe, userRecipeArray
             }
         }
     })

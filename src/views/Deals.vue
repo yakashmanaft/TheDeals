@@ -94,8 +94,7 @@
                                                     </ion-thumbnail>
                                                     <!-- Кнопка смены статуса дела -->
                                                     <div @click.prevent.stop="doSomething">
-                                                        <!-- Как будет вести себя translatePlaceholder при тысяче дел например?  -->
-                                                        <Select :data="dealStatusList" :placeholder="translatePlaceholder(deal.dealStatus, dealStatusList)" @date-updated="(selected) => {deal.dealStatus = selected.currentValue; updateCurrentDealStatus(deal)}"/>
+                                                        <Select :data="dealStatusList" :placeholder="translateValue(deal.dealStatus, dealStatusList)" @date-updated="(selected) => {deal.dealStatus = selected.currentValue; updateCurrentDealStatus(deal)}"/>
                                                     </div>
                                                 </div>
                                                 <!-- Контакт по делу -->
@@ -204,6 +203,7 @@
     import { ru } from 'date-fns/locale';
     //
     import { setIconByDealType } from '../helpers/setIconByDealType';
+    import { translateValue } from '@/helpers/translateValue';
     //
     export default defineComponent({
         name: 'Deals',
@@ -348,19 +348,6 @@
                 } catch (error) {
                     alert(`Error: ${error.message}`);
                 }
-            }
-            // Переводчик placeholder
-            // Еслит надо переиспользовать
-            // А если будет слишком много данных? Мы же каждый раз их обходим циклом...
-            const translatePlaceholder = (value, array) => {
-                let currentName = ''
-                array.forEach(item => {
-                    if(item.value === value) {
-                        currentName = item.name
-                        return currentName
-                    }
-                })
-                return currentName
             }
             // Храним данные контакта
             const myContacts = ref([])
@@ -519,7 +506,7 @@
             }
 
             return {
-                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isViewDealModalOpened, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translatePlaceholder, resfreshData, myContacts, getContact, showNameByID, checkRentAttr, dealTypesList, dealByType, showDealByType, helpOutline, addSubject, deleteSubject, setIconByDealType
+                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isViewDealModalOpened, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translateValue, resfreshData, myContacts, getContact, showNameByID, checkRentAttr, dealTypesList, dealByType, showDealByType, helpOutline, addSubject, deleteSubject, setIconByDealType
             }
         }
     })
