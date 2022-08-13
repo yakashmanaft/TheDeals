@@ -168,7 +168,6 @@
             // массив ПОЛЬЗОВАТЕЛЯ с вариантами рецептов (Временно в сторе)
             const userRecipeArray = ref(store.state.userRecipeArray)
             // массив ПОЛЬЗОВАТЕЛЯ с вариантами предмета ПРОДАЖИ
-            // const dealSaleSubjectArray = ref(store.state.dealSaleSubjectArray)
             const dealSaleSubjectArray = ref();
             // массив ПОЛЬЗОВАТЕЛЯ с вариантами предмета ЗАКУПКИ
             const dealBuySubjectArray = ref(store.state.dealBuySubjectArray)

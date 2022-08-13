@@ -8,6 +8,9 @@
         <!-- page header -->
         <Header :title="pageTitle" />
 
+        <!-- Кнопка перехода к созданию нового дела -->
+        <create-button @click="toggleNewPriceProductModal"/>
+
         <!-- Модалка просмотра конкретного продукта в прайсе -->
         <ViewPriceProduct
             :is-open="isViewCurrentProductOpened" 
@@ -32,7 +35,6 @@
         >
             <br>
             <br>
-            <br>
             <!-- page content -->
             <!-- No data -->
             <div v-if="(!dataLoaded || userSettings.length === 0) && !spinner">
@@ -42,44 +44,28 @@
 
             <!-- Data -->
             <div v-if="dataLoaded && userSettings.length !== 0">
-                {{userSettings[0].id}}
-                <!-- Продуктовый прайс -->
-                <ion-item-group class="ion-text-left ion-padding-horizontal">
-                    <ion-card class="ion-no-margin ion-padding-bottom">
-                        <ion-card-header class="ion-no-padding ion-padding-horizontal">
-                            <ion-grid class="ion-no-padding">
-                                <ion-row class="ion-justify-content-between ion-align-items-center">
-                                    <ion-text>
-                                        <h4 class="ion-no-margin">Мои продукты</h4>
-                                    </ion-text>
-                                    <ion-button @click="toggleNewPriceProductModal" color="primary" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                                        Добавить
-                                    </ion-button>
-                                </ion-row>
-                            </ion-grid>
-                        </ion-card-header>
-                        <ion-card-content class="ion-no-padding">
-                            <div v-for="(item, index) in userSettings" :key="index">
-                                <div v-for="(item, idx) in item.userPriceList" :key="item.id" @click.stop="openSaleProductInfo(item)">
-                                    <!-- User Product -->
-                                    <ion-item-sliding>
-                                        <ion-item lines="none" class="ion-no-padding">
-                                            <ion-label>
-                                                <!-- Может этот и не нужен лэйбл -->
-                                            </ion-label>
+                <div v-for="(item, index) in userSettings" :key="index">
+                    <!-- Продуктовый прайс -->
+                    <ion-item-group class="ion-text-left ion-padding-horizontal">
+                        <ion-card class="ion-no-margin ion-margin-top" v-for="(item, idx) in item.userPriceList" :key="item.id" @click.stop="openSaleProductInfo(item)">
+                            <ion-card-content class="ion-no-padding">
+                                <!-- User Product -->
+                                <ion-item-sliding>
+                                    <ion-item lines="none" class="ion-no-padding">
+                                        <div class="ion-padding">
                                             {{ item }}
-                                        </ion-item>
-                                        <ion-item-options>
-                                            <ion-item-option color="danger" @click.stop="openDeleteProductModal(item.id)">
-                                                <ion-icon slot="start" :icon="trashOutline"></ion-icon>
-                                            </ion-item-option>
-                                        </ion-item-options>
-                                    </ion-item-sliding>
-                                </div>
-                            </div>
-                        </ion-card-content>
-                    </ion-card>
-                </ion-item-group>
+                                        </div>
+                                    </ion-item>
+                                    <ion-item-options>
+                                        <ion-item-option color="danger" @click.stop="openDeleteProductModal(item.id)">
+                                            <ion-icon slot="start" :icon="trashOutline"></ion-icon>
+                                        </ion-item-option>
+                                    </ion-item-options>
+                                </ion-item-sliding>
+                            </ion-card-content>
+                        </ion-card>
+                    </ion-item-group>
+                </div>
             </div>
             <!-- Всплывашка подтверждение удаления продукта из прайса листа пользователя -->
             <ion-action-sheet
@@ -101,6 +87,7 @@
     import NavigationMenu from '../components/NavigationMenu.vue';
     import CreatePriceProduct from '../components/modal/NewPriceProduct-modalCreate';
     import ViewPriceProduct from '../components/modal/ViewPriceProduct-modalViewProduct';
+    import CreateButton from '../components/CreateButton.vue';
     //
     import { 
         IonContent, 
@@ -166,7 +153,8 @@
             IonModal,
             IonButtons,
             CreatePriceProduct,
-            ViewPriceProduct
+            ViewPriceProduct,
+            CreateButton
         },
         setup(props, { emit }) {
             // Get user from store
@@ -262,9 +250,19 @@
             }
             // Добавляем новый продукт к прайсу
             const addNewPriceProduct = (newProductData) => {
-                userSettings.value[0].userPriceList.push({newProductData})
-                isModalNewPriceProductOpened.value = false
-                updateUserPriceListDB()
+                if(newProductData.value === '') {
+                    alert('My price: Вы не выбрали продукт')
+                } else {
+                    userSettings.value[0].userPriceList.push({
+                        uid: uid(),
+                        value: newProductData.value,
+                        name: newProductData.name,
+                        price: '',
+                        costEstimation: ''
+                    })
+                    isModalNewPriceProductOpened.value = false
+                    updateUserPriceListDB()
+                }
             } 
 
             // ================================ Обновление записи в БД =================================
