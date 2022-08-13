@@ -16,7 +16,7 @@
 import { reactive } from "vue";
 import { supabase } from '../supabase/init';
 import { sortAlphabetically  } from '../helpers/sortMyContacts.js';
-import { clipboardOutline, calendarOutline, peopleOutline, leafOutline } from 'ionicons/icons';
+import { clipboardOutline, calendarOutline, peopleOutline, leafOutline, pricetagsOutline } from 'ionicons/icons';
 
 const state = reactive({
   // user
@@ -43,7 +43,12 @@ const state = reactive({
         name: 'Recipes',
         title: 'Мои рецепты',
         icon: leafOutline
-    },
+      },
+      {
+        name: 'MyPrice',
+        title: 'Мой прайс-лист',
+        icon: pricetagsOutline
+      }
   ],
   // user price list
   userSettings: [],

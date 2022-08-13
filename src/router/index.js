@@ -72,6 +72,17 @@ const routes = [
     }
   },
   {
+    path: '/price-list',
+    name: 'MyPrice',
+    component: () => import('../views/MyPrice.vue'),
+    meta: {
+      title: 'MyPrice',
+      auth: true,
+      translation: 'Мой прайс-лист',
+      type: 'View'
+    }
+  },
+  {
     path: '/login',
     name: 'Login',
     component: Login,

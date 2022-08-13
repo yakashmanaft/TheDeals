@@ -7,7 +7,8 @@
 
         <!-- page header -->
         <Header :title="pageTitle" />
-
+        
+        <!-- Page content -->
         <ion-content 
             :scroll-events="true"
             class="ion-page ion-margin-top" 
@@ -26,73 +27,57 @@
 
             <!-- Data -->
             <div v-if="dataLoaded && userSettings.length !== 0">
+                {{userSettings}}
                 <!-- Продуктовый прайс -->
-                <ion-item-group class="ion-text-left ion-padding-horizontal">
-                    <!-- <ion-text>
-                        <h4>Рабочий прайс</h4>
-                    </ion-text> -->
-                    <ion-card class="ion-no-margin ion-padding">
-                        <ion-card-header class="ion-no-padding">
-                            <ion-grid class="ion-no-padding">
-                                <ion-row class="ion-justify-content-between ion-align-items-center">
-                                    <ion-text>
-                                        <h4 class="ion-no-margin">Мои продукты</h4>
-                                    </ion-text>
-                                    <ion-button color="primary" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                                        Добавить
-                                    </ion-button>
-                                </ion-row>
-                            </ion-grid>
-                        </ion-card-header>
-                        <ion-card-content class="ion-no-padding">
-                            <div v-for="(item, index) in userSettings" :key="index">
-                                <div v-for="(item, idx) in item.userPriceList" :key="item.id">
-                                    {{ item }}
-                                </div>
-                            </div>
-                                
-                        </ion-card-content>
-                    </ion-card>
-                </ion-item-group>
+
             </div>
-            
-            <!-- Тарифная сетка  -->
+
         </ion-content>
 </template>
 
 <script>
     import { defineComponent, onMounted, ref } from 'vue';
+    import { uid } from 'uid';
+    //
     import Header from '../components/headers/Header.vue';
     import Spinner from '../components/Spinner.vue';
+    import NavigationMenu from '../components/NavigationMenu.vue';
     //
     import { 
-    IonContent, 
-    IonHeader, 
-    IonItem, 
-    IonList, 
-    IonMenu, 
-    IonMenuToggle,
-    IonButton,
-    IonTitle, 
-    IonToolbar,
-    IonIcon,
-    IonText,
-    IonItemGroup,
-    IonCard,
-    IonCardHeader,
-    IonCardContent,
-    IonGrid,
-    IonRow
+        IonContent, 
+        IonHeader, 
+        IonItem, 
+        IonList, 
+        IonMenu, 
+        IonMenuToggle,
+        IonButton,
+        IonTitle, 
+        IonToolbar,
+        IonIcon,
+        IonText,
+        IonItemGroup,
+        IonCard,
+        IonCardHeader,
+        IonCardContent,
+        IonGrid,
+        IonRow,
+        IonItemSliding,
+        IonItemOptions,
+        IonItemOption,
+        IonLabel, 
+        IonActionSheet,
+        IonModal,
+        IonButtons
     } from '@ionic/vue';
-    import { menu } from 'ionicons/icons';
+    import { menu, trashOutline } from 'ionicons/icons';
     import store from '../store/index';
     import { computed } from 'vue';
     import { supabase } from '../supabase/init';
     import { useRouter } from 'vue-router';
-    import NavigationMenu from '../components/NavigationMenu.vue';
     //
     export default defineComponent({
         name: 'Settings',
+        emits: [],
         components: {
             Header,
             IonContent, 
@@ -113,9 +98,16 @@
             IonCardContent,
             Spinner,
             IonGrid,
-            IonRow
+            IonRow,
+            IonItemSliding,
+            IonItemOptions,
+            IonItemOption,
+            IonLabel,
+            IonActionSheet,
+            IonModal,
+            IonButtons,
         },
-        setup() {
+        setup(props, { emit }) {
             // Get user from store
             const user = computed(() => store.state.user);
             // Get user email
@@ -128,17 +120,18 @@
             //
             const userSettings = ref(store.state.userSettings)
             //
-            const spinner = ref(null);
+            const spinner = ref(null)
             const dataLoaded = ref(null)
             //
             spinner.value = true;
             onMounted( async() => {
                 await store.methods.getUserSettingsfromDB();
                 userSettings.value = store.state.userSettings
-                 spinner.value = false;
-                 dataLoaded.value = true;
+                spinner.value = false;
+                dataLoaded.value = true;
+                // console.log(userSettings.value[0].id)
             })
-            //
+
 
             return {
                 menu, user, userEmail, router, pageTitle, userSettings, spinner, dataLoaded

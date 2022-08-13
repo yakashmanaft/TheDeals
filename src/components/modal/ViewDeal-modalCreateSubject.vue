@@ -125,7 +125,7 @@
 </template>
 
 <script>
-    import { defineComponent, ref, computed, watchEffect } from 'vue';
+    import { defineComponent, ref, onMounted, computed, watchEffect } from 'vue';
     import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonImg, IonThumbnail, IonIcon, IonGrid, IonRow, IonSearchbar, IonItem } from '@ionic/vue';
     import { helpOutline } from 'ionicons/icons';
     //
@@ -168,12 +168,21 @@
             // массив ПОЛЬЗОВАТЕЛЯ с вариантами рецептов (Временно в сторе)
             const userRecipeArray = ref(store.state.userRecipeArray)
             // массив ПОЛЬЗОВАТЕЛЯ с вариантами предмета ПРОДАЖИ
-            const dealSaleSubjectArray = ref(store.state.dealSaleSubjectArray)
+            // const dealSaleSubjectArray = ref(store.state.dealSaleSubjectArray)
+            const dealSaleSubjectArray = ref();
             // массив ПОЛЬЗОВАТЕЛЯ с вариантами предмета ЗАКУПКИ
             const dealBuySubjectArray = ref(store.state.dealBuySubjectArray)
             //
             const subjectData = ref();
             const currentDealType = ref();
+            //
+            const userSettings = ref(store.state.userSettings)
+            onMounted( async() => {
+                await store.methods.getUserSettingsfromDB();
+                userSettings.value = store.state.userSettings
+                console.log(userSettings.value[0].userPriceList)
+                dealSaleSubjectArray.value = userSettings.value[0].userPriceList
+            })
             //
             const showSelectedProduct = (selectedProduct) => {
                 if(subjectData.value.selectedProduct !== '') {
