@@ -1,4 +1,5 @@
 <template>
+    <div>
         <!-- Спиннер как имитация загрузки -->
         <Spinner v-if="spinner"/>
 
@@ -36,18 +37,19 @@
             <br>
             <br>
             <!-- page content -->
-            <!-- No data -->
-            <div v-if="(!dataLoaded || userSettings.length === 0) && !spinner">
-                <!-- Если !data -->
-                <!-- Data is not available -->
-            </div>
+            <div v-for="(item, index) in userSettings" :key="index">
+                <!-- No data -->
+                <div v-if="!spinner && item.userPriceList.length === 0" class="no-status-deal ion-padding-horizontal">
+                    <ion-img style="height: 30vh;" src="img/common/price-sticker.webp" alt="нет дел"></ion-img>
+                    <ion-text color="primary"><h2>Ваш прайс пуст...</h2></ion-text>
+                    <ion-text color="medium">Добавьте продукт</ion-text>
+                </div>
 
-            <!-- Data -->
-            <div v-if="dataLoaded && userSettings.length !== 0">
-                <div v-for="(item, index) in userSettings" :key="index">
+                <!-- Data -->
+                <div v-if="item.userPriceList.length !== 0">
                     <!-- Продуктовый прайс -->
                     <ion-item-group class="ion-text-left ion-padding-horizontal">
-                        <ion-card class="ion-no-margin ion-margin-top" v-for="(item, idx) in item.userPriceList" :key="item.id" @click.stop="openSaleProductInfo(item)">
+                        <ion-card class="ion-no-margin ion-margin-top" v-for="item in item.userPriceList" :key="item.id" @click.stop="openSaleProductInfo(item)">
                             <ion-card-content class="ion-no-padding">
                                 <!-- User Product -->
                                 <ion-item-sliding>
@@ -67,6 +69,7 @@
                     </ion-item-group>
                 </div>
             </div>
+
             <!-- Всплывашка подтверждение удаления продукта из прайса листа пользователя -->
             <ion-action-sheet
                 :is-open="deleteProductAction"
@@ -76,6 +79,7 @@
             ></ion-action-sheet>
 
         </ion-content>
+    </div>
 </template>
 
 <script>
@@ -113,7 +117,8 @@
         IonLabel, 
         IonActionSheet,
         IonModal,
-        IonButtons
+        IonButtons,
+        IonImg
     } from '@ionic/vue';
     import { menu, trashOutline } from 'ionicons/icons';
     import store from '../store/index';
@@ -154,7 +159,8 @@
             IonButtons,
             CreatePriceProduct,
             ViewPriceProduct,
-            CreateButton
+            CreateButton,
+            IonImg
         },
         setup(props, { emit }) {
             // Get user from store
@@ -289,5 +295,11 @@
 </script>
 
 <style scoped>
-
+    .no-status-deal {
+        height: 60vh; 
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+        justify-content: center;
+    }
 </style>
