@@ -22,6 +22,11 @@ const state = reactive({
   // user
   user: null,
   userEmail: null,
+  // Валюты в сервисе
+  systemCurrency: {
+    name: 'RUB',
+    translation: 'Рубль'
+  },
   // Список модулей для отображения в меню
   menuList : [
       {

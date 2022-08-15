@@ -48,22 +48,37 @@
                 <!-- Data -->
                 <div v-if="item.userPriceList.length !== 0">
                     <!-- Продуктовый прайс -->
+                    <ion-item-group class="ion-text-left ion-padding-horizontal ion-margin-top">
+                        <ion-text color="medium">
+                            Кол-во позиций: {{item.userPriceList.length}}
+                        </ion-text>
+                    </ion-item-group>
                     <ion-item-group class="ion-text-left ion-padding-horizontal">
-                        <ion-card class="ion-no-margin ion-margin-top" v-for="item in item.userPriceList" :key="item.id" @click.stop="openSaleProductInfo(item)">
+                        <ion-card class="ion-no-margin ion-margin-top relative" v-for="item in item.userPriceList" :key="item.id" @click.stop="openSaleProductInfo(item)">
                             <ion-card-content class="ion-no-padding">
+                                <!-- Кнопка удалить конкретный предмет дела -->
+                                <ion-icon @click.stop="openDeleteProductModal(item.uid)" class="icon_size icon_del absolute" :icon="closeCircleOutline"></ion-icon>
                                 <!-- User Product -->
-                                <ion-item-sliding>
-                                    <ion-item lines="none" class="ion-no-padding">
-                                        <div class="ion-padding">
-                                            {{ item }}
+                                <ion-grid>
+                                    <ion-row class="ion-justify-content-between ion-align-items-center ion-padding">
+                                        <div>
+                                            <ion-thumbnail style="height: 4rem; width: 4rem; margin: 0 auto">
+                                                <ion-img  style="height: 100%" :src="`../img/subjects/sale/${item.value}.webp`"></ion-img>
+                                            </ion-thumbnail>
                                         </div>
-                                    </ion-item>
-                                    <ion-item-options>
-                                        <ion-item-option color="danger" @click.stop="openDeleteProductModal(item.uid)">
-                                            <ion-icon slot="start" :icon="trashOutline"></ion-icon>
-                                        </ion-item-option>
-                                    </ion-item-options>
-                                </ion-item-sliding>
+                                        <div class="ion-text-end">
+                                            <ion-label>
+                                                {{item.name}}
+                                            </ion-label>
+                                            <ion-text color="primary" style="font-size: 1.5rem">
+                                                {{item.price}} {{currency}}
+                                            </ion-text>
+                                            <ion-label>
+                                                {{ priceCalcType(item.costEstimation) }}
+                                            </ion-label>
+                                        </div>
+                                    </ion-row>
+                                </ion-grid>
                             </ion-card-content>
                         </ion-card>
                     </ion-item-group>
@@ -88,12 +103,16 @@
     import { defineComponent, onMounted, ref } from 'vue';
     import { uid } from 'uid';
     //
+    import store from '../store/index';
+    //
     import Header from '../components/headers/Header.vue';
     import Spinner from '../components/Spinner.vue';
     import NavigationMenu from '../components/NavigationMenu.vue';
     import CreatePriceProduct from '../components/modal/NewPriceProduct-modalCreate';
     import ViewPriceProduct from '../components/modal/ViewPriceProduct-modalViewProduct';
     import CreateButton from '../components/CreateButton.vue';
+    //
+    import { closeCircleOutline } from 'ionicons/icons'
     //
     import { 
         IonContent, 
@@ -120,10 +139,10 @@
         IonActionSheet,
         IonModal,
         IonButtons,
-        IonImg
+        IonImg,
+        IonThumbnail
     } from '@ionic/vue';
     import { menu, trashOutline } from 'ionicons/icons';
-    import store from '../store/index';
     import { computed } from 'vue';
     import { supabase } from '../supabase/init';
     import { useRouter } from 'vue-router';
@@ -162,9 +181,12 @@
             CreatePriceProduct,
             ViewPriceProduct,
             CreateButton,
-            IonImg
+            IonImg,
+            IonThumbnail
         },
         setup(props, { emit }) {
+            // Currency
+            const currency = ref(store.state.systemCurrency.name);
             // Get user from store
             const user = computed(() => store.state.user);
             // Get user email
@@ -205,7 +227,7 @@
             const productToDelete = ref();
             const openDeleteProductModal = (id) => {
                 productToDelete.value = id
-                deleteProductAction.value = true
+                deleteProductAction.value = true;
             }
             // Кнопка action sheet для подтверждения удаления
             const deleteProductButtons = [
@@ -256,14 +278,13 @@
             }
             // Добавляем новый продукт к прайсу
             const addNewPriceProduct = (newProductData) => {
-                console.log(userSettings.value[0].userPriceList)
-                console.log(userSettings.value[0].userPriceList.filter(item => item.value === newProductData.value))
-
+                // ищем в массиве продуктов в прайсе сходства
+                const isItemAlreadyHave = userSettings.value[0].userPriceList.find(item => item.value === newProductData.value)
+                //
                 if(newProductData.value === '') {
                     alert('My price: Вы не выбрали продукт')
-                } else if (newPriceProductData.value.value === '') {
-                    // alert('My Price: Продукт уже добавлен')
-                    
+                } else if (isItemAlreadyHave !== undefined) {
+                    alert('My Price: Продукт уже добавлен в прайс')
                 } else {
                     userSettings.value[0].userPriceList.push({
                         uid: uid(),
@@ -293,9 +314,17 @@
                 }
                 spinner.value = false;
             }
+            // Переводчик типа расчета цены
+            const priceCalcType = (type) => {
+                if (type === 'perKilogram') {
+                    return 'Цена за кг.'
+                } else if (type === 'perUnit') {
+                    return 'Цена за шт.'
+                }
+            }
 
             return {
-                menu, user, userEmail, router, pageTitle, userSettings, spinner, dataLoaded, trashOutline, deleteProductAction, openDeleteProductModal, deleteProductButtons, productToDelete, deleteProduct, openSaleProductInfo, updateUserPriceListDB, isViewCurrentProductOpened, currentProduct, isModalNewPriceProductOpened, addNewPriceProduct, toggleNewPriceProductModal, newPriceProductData
+                menu, user, userEmail, router, pageTitle, userSettings, spinner, dataLoaded, trashOutline, deleteProductAction, openDeleteProductModal, deleteProductButtons, productToDelete, deleteProduct, openSaleProductInfo, updateUserPriceListDB, isViewCurrentProductOpened, currentProduct, isModalNewPriceProductOpened, addNewPriceProduct, toggleNewPriceProductModal, newPriceProductData, closeCircleOutline, currency, priceCalcType
             }
         }
     })
@@ -308,5 +337,18 @@
         flex-direction: column; 
         align-items: center; 
         justify-content: center;
+    }
+    .icon_size {
+        font-size: 25px;
+    }
+    .icon_del {
+        top: 0.3rem;
+        left: 0.3rem;
+    }
+    .relative {
+        position: relative;
+    }
+    .absolute {
+        position: absolute;
     }
 </style>
