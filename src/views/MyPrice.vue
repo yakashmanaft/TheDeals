@@ -17,6 +17,7 @@
             :is-open="isViewCurrentProductOpened" 
             @closeModal="isViewCurrentProductOpened = false"   
             :productData="currentProduct"
+            @getCostEstimation="setCostEstimation"
         />
 
         <!-- Модалка создания нового продукта к прайсу -->
@@ -53,7 +54,7 @@
                             Кол-во позиций: {{item.userPriceList.length}}
                         </ion-text>
                     </ion-item-group>
-                    <ion-item-group class="ion-text-left ion-padding-horizontal">
+                    <ion-item-group class="ion-text-left ion-padding-horizontal ion-margin-bottom">
                         <ion-card class="ion-no-margin ion-margin-top relative" v-for="item in item.userPriceList" :key="item.id" @click.stop="openSaleProductInfo(item)">
                             <ion-card-content class="ion-no-padding">
                                 <!-- Кнопка удалить конкретный предмет дела -->
@@ -100,7 +101,7 @@
 </template>
 
 <script>
-    import { defineComponent, onMounted, ref } from 'vue';
+    import { defineComponent, onMounted, ref, watch } from 'vue';
     import { uid } from 'uid';
     //
     import store from '../store/index';
@@ -213,11 +214,12 @@
 
             // ==========================Управление current price product ================================================
             const currentProduct = ref();
+            const costEstimation = ref();
             //
             const isViewCurrentProductOpened = ref(false)
             const openSaleProductInfo = (item) => {
                 isViewCurrentProductOpened.value = true
-                currentProduct.value = item
+                currentProduct.value = item;
             }
 
             // ======================== Удаление конкретного продукта из прайса ===========================================
@@ -290,10 +292,9 @@
                         uid: uid(),
                         value: newProductData.value,
                         name: newProductData.name,
-                        price: '',
-                        costEstimation: ''
+                        price: newProductData.price,
+                        costEstimation: newProductData.costEstimation
                     })
-                    // console.log(userSettings.value[0].userPriceList)
                     isModalNewPriceProductOpened.value = false
                     updateUserPriceListDB()
                 }
@@ -322,9 +323,14 @@
                     return 'Цена за шт.'
                 }
             }
+            // 
+            const setCostEstimation = (costEstimation) => {
+                currentProduct.value.costEstimation = costEstimation;
+                updateUserPriceListDB()
+            }
 
             return {
-                menu, user, userEmail, router, pageTitle, userSettings, spinner, dataLoaded, trashOutline, deleteProductAction, openDeleteProductModal, deleteProductButtons, productToDelete, deleteProduct, openSaleProductInfo, updateUserPriceListDB, isViewCurrentProductOpened, currentProduct, isModalNewPriceProductOpened, addNewPriceProduct, toggleNewPriceProductModal, newPriceProductData, closeCircleOutline, currency, priceCalcType
+                menu, user, userEmail, router, pageTitle, userSettings, spinner, dataLoaded, trashOutline, deleteProductAction, openDeleteProductModal, deleteProductButtons, productToDelete, deleteProduct, openSaleProductInfo, updateUserPriceListDB, isViewCurrentProductOpened, currentProduct, isModalNewPriceProductOpened, addNewPriceProduct, toggleNewPriceProductModal, newPriceProductData, closeCircleOutline, currency, priceCalcType, costEstimation, setCostEstimation
             }
         }
     })

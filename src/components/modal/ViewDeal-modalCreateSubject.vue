@@ -129,8 +129,6 @@
     import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonImg, IonThumbnail, IonIcon, IonGrid, IonRow, IonSearchbar, IonItem } from '@ionic/vue';
     import { helpOutline } from 'ionicons/icons';
     //
-    import SelectDealSubject from '../Select-DealSubject.vue';
-    //
     import { searchDealSubjectFilter } from '../../helpers/filterDealSubject';
     import { searchUserRecipeFilter } from '../../helpers/filterUserRecipe';
     import { sortAlphabetically } from '../../helpers/sortDealSubject';
@@ -155,7 +153,6 @@
             IonContent,
             IonItemGroup,
             IonText,
-            SelectDealSubject,
             IonImg, 
             IonThumbnail,
             IonIcon, 

@@ -147,6 +147,17 @@ const state = reactive({
       text: 'Вы супер! Так держать!'
     }
   ],
+  //
+  priceEstimataionType: [
+    {
+      value: 'perKilogram',
+      name: 'Цена за кг.'
+    },
+    {
+      value: 'perUnit',
+      name: 'Цена за шт.'
+    }
+  ],
   //User recipes list
   userRecipeArray: [
     {
