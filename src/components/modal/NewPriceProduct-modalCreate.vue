@@ -109,7 +109,7 @@
             })
             //
             const chooseProduct = (product) => {
-                console.log(product)
+                // console.log(product)
                 newProductData.value.value = product.value
                 newProductData.value.name = product.name
                 searchProductMenu.value = false;

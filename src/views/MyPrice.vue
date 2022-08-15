@@ -59,7 +59,7 @@
                                         </div>
                                     </ion-item>
                                     <ion-item-options>
-                                        <ion-item-option color="danger" @click.stop="openDeleteProductModal(item.id)">
+                                        <ion-item-option color="danger" @click.stop="openDeleteProductModal(item.uid)">
                                             <ion-icon slot="start" :icon="trashOutline"></ion-icon>
                                         </ion-item-option>
                                     </ion-item-options>
@@ -67,6 +67,8 @@
                             </ion-card-content>
                         </ion-card>
                     </ion-item-group>
+                    <br>
+                    <br>
                 </div>
             </div>
 
@@ -192,7 +194,6 @@
             //
             const isViewCurrentProductOpened = ref(false)
             const openSaleProductInfo = (item) => {
-                // console.log(`opened: ${item.value} ${item.id}`)
                 isViewCurrentProductOpened.value = true
                 currentProduct.value = item
             }
@@ -202,6 +203,10 @@
             const deleteProductAction = ref(false);
             // Храним айди продукта к удалению
             const productToDelete = ref();
+            const openDeleteProductModal = (id) => {
+                productToDelete.value = id
+                deleteProductAction.value = true
+            }
             // Кнопка action sheet для подтверждения удаления
             const deleteProductButtons = [
                 {
@@ -211,7 +216,7 @@
                         type: 'delete'
                     },
                     handler: () => {
-                        deleteProduct(productToDelete.value)
+                        deleteProduct(productToDelete.value);
                     },
                 },
                 {
@@ -222,16 +227,11 @@
                     },
                 }
             ]
-            const openDeleteProductModal = (id) => {
-                productToDelete.value = id
-                deleteProductAction.value = true
-            }
             //
             const deleteProduct = (id) => {
-                console.log(id)
-                userSettings.value[0].userPriceList = userSettings.value[0].userPriceList.filter(product => product.id !== id);
+                // console.log(id)
+                userSettings.value[0].userPriceList = userSettings.value[0].userPriceList.filter(product => product.uid !== id);
                 updateUserPriceListDB();
-                console.log(userSettings.value[0].userPriceList)
             }
             // =============================== Добавление / Создание нового продукта к прайсу =================================
             const isModalNewPriceProductOpened = ref(false);
@@ -256,8 +256,14 @@
             }
             // Добавляем новый продукт к прайсу
             const addNewPriceProduct = (newProductData) => {
+                console.log(userSettings.value[0].userPriceList)
+                console.log(userSettings.value[0].userPriceList.filter(item => item.value === newProductData.value))
+
                 if(newProductData.value === '') {
                     alert('My price: Вы не выбрали продукт')
+                } else if (newPriceProductData.value.value === '') {
+                    // alert('My Price: Продукт уже добавлен')
+                    
                 } else {
                     userSettings.value[0].userPriceList.push({
                         uid: uid(),
@@ -266,6 +272,7 @@
                         price: '',
                         costEstimation: ''
                     })
+                    // console.log(userSettings.value[0].userPriceList)
                     isModalNewPriceProductOpened.value = false
                     updateUserPriceListDB()
                 }
@@ -288,7 +295,7 @@
             }
 
             return {
-                menu, user, userEmail, router, pageTitle, userSettings, spinner, dataLoaded, trashOutline, deleteProductAction, openDeleteProductModal, deleteProductButtons, deleteProduct, openSaleProductInfo, updateUserPriceListDB, isViewCurrentProductOpened, currentProduct, isModalNewPriceProductOpened, addNewPriceProduct, toggleNewPriceProductModal, newPriceProductData
+                menu, user, userEmail, router, pageTitle, userSettings, spinner, dataLoaded, trashOutline, deleteProductAction, openDeleteProductModal, deleteProductButtons, productToDelete, deleteProduct, openSaleProductInfo, updateUserPriceListDB, isViewCurrentProductOpened, currentProduct, isModalNewPriceProductOpened, addNewPriceProduct, toggleNewPriceProductModal, newPriceProductData
             }
         }
     })

@@ -14,7 +14,7 @@
                 {{productData}}
                 <!-- Заголовок -->
                 <ion-text>
-                    <h4>Продукт</h4>
+                    <h4 class="ion-no-margin ion-margin-top">Продукт</h4>
                 </ion-text>
                 <!-- Показываем текущий продукт -->
                 <ion-grid class="ion-no-padding">
