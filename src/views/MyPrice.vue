@@ -401,7 +401,7 @@
             // Добавляем новый продукт к прайсу
             const addNewPriceProduct = (newProductData) => {
                 // ищем в массиве продуктов в прайсе сходства
-                const isItemAlreadyHave = userSettings.value[0].userPriceList.find(item => item.value === newProductData.value)
+                const isItemAlreadyHave = ''
                 //
                 if(newProductData.value === '') {
                     alert('My price: Вы не выбрали продукт')
@@ -412,6 +412,7 @@
                 } else if (newProductData.price === '') {
                     alert('My price: Вы не указали стоимость')
                 } else if (blockToShow.value === 'products') {
+                    isItemAlreadyHave = userSettings.value[0].userPriceList.find(item => item.value === newProductData.value)
                     userSettings.value[0].userPriceList.push({
                         uid: uid(),
                         value: newProductData.value,
@@ -422,6 +423,7 @@
                     isModalNewPriceItemOpened.value = false
                     updateUserPriceListDB()
                 } else if (blockToShow.value === 'attributes') {
+                    isItemAlreadyHave = userSettings.value[0].userAdditionalAttributes.find(item => item.value === newProductData.value)
                     userSettings.value[0].userAdditionalAttributes.push({
                         uid: uid(),
                         value: newProductData.value,
