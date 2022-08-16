@@ -42,7 +42,7 @@
             <div v-if="dataLoaded && myDeals.length !== 0">
                 <!-- ======================================= Статусы дел ================================ -->
                 <ion-list class="horizontal-scroll ion-margin-top">
-                    <ion-chip v-for="(status, index) in dealStatusList" :key="index" @click="setDealStatus(status.value)" :color="setChipColor(status.value)" :outline="setChipOutline(status.value)">
+                    <ion-chip v-for="(status, index) in dealStatusList" :key="index" @click="setDealStatus(status.value)" :color="setChipColor(status.value)" :outline="setChipOutline(status.value, currentDealStatus)">
                         <ion-label>{{ status.name }} <span v-if="status.value !== 'deal-cancelled' && status.value !== 'deal-complete'">{{countDealByStatus(status.value)}}</span></ion-label>
                     </ion-chip>
                 </ion-list>
@@ -203,6 +203,7 @@
     //
     import { setIconByDealType } from '../helpers/setIconByDealType';
     import { translateValue } from '@/helpers/translateValue';
+    import { setChipOutline } from '@/helpers/setChip';
     //
     export default defineComponent({
         name: 'Deals',
@@ -323,13 +324,7 @@
                 }
                 return 'primary'
             }
-            //
-            const setChipOutline = (status) => {
-                if(status === currentDealStatus.value) {
-                    return false
-                }
-                return true
-            }
+
             // ====================================================================
             // Work with deal card
             const doSomething = () => {

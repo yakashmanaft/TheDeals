@@ -27,6 +27,17 @@ const state = reactive({
     name: 'RUB',
     translation: 'Рубль'
   },
+  // Варианты chip в прайс-листе
+  priceChipList: [
+    {
+      value: 'products',
+      name: 'Продукты'
+    },
+    {
+      value: 'attributes',
+      name: 'Доп. атрибуты'
+    }
+  ],
   // Список модулей для отображения в меню
   menuList : [
       {
@@ -162,6 +173,17 @@ const state = reactive({
       name: 'Цена за шт.'
     },
 
+  ],
+  //
+  priceAttributeType: [
+    {
+      value: 'rent',
+      name: 'Аренда',
+    },
+    {
+      value: 'sale',
+      name: 'Продажа',
+    },
   ],
   //User recipes list
   userRecipeArray: [
@@ -349,6 +371,36 @@ const state = reactive({
       name: 'Коробка под сладости',
       costEstimation: 'perUnit'
     },
+  ],
+  // type of Shipping
+  shippingTypeList: [
+    {
+      value: 'shipping-pickup',
+      name: 'Самовывоз'
+    },
+    {
+      value: 'shipping-delivery',
+      name: 'Доставка'
+    }
+  ],
+  // list of additional attributes
+  additionalAttributesList: [
+    {
+      value: 'cake-stand',
+      name: 'Аренда подставки',
+    },
+    {
+      value: 'tableware',
+      name: 'Аренда столовых приборов',
+    },
+    {
+      value: 'packing-box',
+      name: 'Упаковочная коробка',
+    },
+    {
+      value: 'drink',
+      name: 'Напиток',
+    }
   ]
 });
 

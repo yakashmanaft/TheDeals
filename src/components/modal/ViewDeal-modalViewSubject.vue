@@ -12,6 +12,30 @@
             </ion-toolbar>
         </ion-header>
         <ion-content class="ion-padding">
+            <!-- ================ Добавленный продукт ======================== -->
+            <ion-item-group>
+                <!-- Заголовок -->
+                <ion-text>
+                    <h4 class="ion-no-margin ion-margin-top">Продукт</h4>
+                </ion-text>
+                <!-- Показываем текущий продукт -->
+                <ion-grid class="ion-no-padding">
+                    <ion-row class="ion-justify-content-between ion-align-items-center">
+                        <!-- Название текущего продукта -->
+                        <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                            {{ translateProductValue(subjectData.selectedProduct) }}
+                        </ion-button>
+                        <!-- Иконка к текущему продукту -->
+                        <ion-thumbnail v-if="subjectData.selectedProduct !== '' && currentDealType === 'sale'" class="thumbnail_deal-subject">
+                            <ion-img :src="`../img/subjects/sale/${subjectData.selectedProduct}.webp`"></ion-img>
+                        </ion-thumbnail>
+                        <ion-thumbnail v-if="subjectData.selectedProduct !== '' && currentDealType === 'buy'" class="thumbnail_deal-subject">
+                            <ion-img :src="`../img/subjects/buy/${subjectData.selectedProduct}.webp`"></ion-img>
+                        </ion-thumbnail>
+                    </ion-row>
+                </ion-grid>
+            </ion-item-group>
+
             <!-- ================  Показываем в зависимости от выбранного типа дела ==============-->
             <!-- Если ПРОДАЖА -->
             <ion-item-group v-if="currentDealType === 'sale'">
@@ -69,7 +93,7 @@
 
 <script>
     import { defineComponent, computed, ref, watchEffect } from 'vue';
-    import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonSearchbar, IonItem, IonGrid, IonRow } from '@ionic/vue';
+    import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonSearchbar, IonItem, IonGrid, IonRow, IonThumbnail, IonImg } from '@ionic/vue';
     //
     import { searchUserRecipeFilter } from '../../helpers/filterUserRecipe';
     import { sortAlphabetically } from '../../helpers/sortDealSubject';
@@ -85,12 +109,16 @@
             currentDealType: String
         },
         components: {
-            IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonSearchbar, IonItem, IonGrid, IonRow
+            IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonSearchbar, IonItem, IonGrid, IonRow, IonThumbnail, IonImg
         },
         setup(props, { emit }) {
             //
             const subjectData = ref();
             const currentDealType = ref();
+            // Массив со списком предметов для продажи
+            const dealSaleSubjectArray = ref(store.state.dealSaleSubjectArray)
+            // Массив со списком предметов для закупа
+            const dealBuySubjectArray = ref(store.state.dealBuySubjectArray)
             //
             const searchRecipeMenu = ref(false);
             const searchRecipe = ref('');
@@ -127,14 +155,38 @@
                 subjectData.value = props.subjectData;
                 currentDealType.value = props.currentDealType;
             })
+            //
+            const translateProductValue = (selectedProduct) => {
+                if (subjectData.selectedProduct !== '') {
+                    // Если currentDealType - Продажи
+                    if(currentDealType.value === 'sale') {
+                        return translateValue(selectedProduct, dealSaleSubjectArray.value)
+                    }
+                    // Если currentDealType - Закупки
+                    if (currentDealType.value === 'buy') {
+                        return translateValue(selectedProduct, dealBuySubjectArray.value)
+                    }
+                } else {
+                    return
+                }
+            }
 
             return {
-                subjectData, currentDealType, searchRecipeMenu, searchRecipe, chooseRecipe, noRecipe, searchedRecipe, userRecipeArray, showSelectedRecipe
+                subjectData, currentDealType, searchRecipeMenu, searchRecipe, chooseRecipe, noRecipe, searchedRecipe, userRecipeArray, showSelectedRecipe, translateProductValue, dealSaleSubjectArray, dealBuySubjectArray
             }
         }
     })
 </script>
 
 <style scoped>
-
+    .thumbnail_deal-subject {
+        height: 64px;
+        width: 64px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: var(--ion-color-light);
+        border-radius: 50%;
+        padding: 0.5rem;
+    }
 </style>

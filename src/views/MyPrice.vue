@@ -19,12 +19,13 @@
             :productData="currentProduct"
             @getCostEstimation="setCostEstimation"
             @getProductPrice="setProductPrice"
+            :blockToShow="blockToShow"
         />
 
         <!-- Модалка создания нового продукта к прайсу -->
         <CreatePriceProduct
-            :is-open="isModalNewPriceProductOpened" 
-            @closeModal="isModalNewPriceProductOpened = false"   
+            :is-open="isModalNewPriceItemOpened" 
+            @closeModal="isModalNewPriceItemOpened = false"   
             :newProductData="newPriceProductData"
             @addPriceProduct="addNewPriceProduct"
         />
@@ -41,24 +42,28 @@
             <!-- page content -->
             <div v-for="(item, index) in userSettings" :key="index">
                 <!-- No data -->
-                <div v-if="!spinner && item.userPriceList.length === 0" class="no-status-deal ion-padding-horizontal">
+                <div v-if="!spinner && ((item.userPriceList.length === 0 && item.userAdditionalAttributes.length === 0) || !dataLoaded )" class="no-status-deal ion-padding-horizontal">
                     <ion-img style="height: 30vh;" src="img/common/price-sticker.webp" alt="нет дел"></ion-img>
                     <ion-text color="primary"><h2>Ваш прайс пуст...</h2></ion-text>
                     <ion-text color="medium">Добавьте продукт</ion-text>
                 </div>
 
-                <!-- Data -->
-                <div v-if="item.userPriceList.length !== 0">
-                    <!-- Продуктовый прайс -->
-                    <ion-item-group class="ion-text-left ion-padding-horizontal ion-margin-top">
-                        <ion-text color="medium">
-                            Кол-во позиций: {{item.userPriceList.length}}
-                        </ion-text>
+                <!-- Убирать если ни предметов ни атрибутов нет -->
+                <div v-if="dataLoaded && (item.userPriceList.length !== 0 || item.userAdditionalAttributes.length !== 0)">
+                    <ion-item-group class="ion-margin-top ion-text-left horizontal-scroll">
+                        <ion-chip v-for="(chip, index) in priceChipList" :key="index" @click="setBlockToShow(chip.value)" color="primary" :outline="setChipOutline(chip.value, blockToShow)">
+                            <ion-label>{{ chip.name }} <span>{{countItemChip(chip.value)}}</span></ion-label>
+                        </ion-chip>
                     </ion-item-group>
+                </div>
+
+                <!-- ==================================== Data ===================================== -->
+                <!-- Продуктовый прайс -->
+                <div v-if="dataLoaded && item.userPriceList.length !== 0 && blockToShow === 'products'">
                     <ion-item-group class="ion-text-left ion-padding-horizontal ion-margin-bottom">
                         <ion-card class="ion-no-margin ion-margin-top relative" v-for="item in item.userPriceList" :key="item.id" @click.stop="openSaleProductInfo(item)">
                             <ion-card-content class="ion-no-padding">
-                                <!-- Кнопка удалить конкретный предмет дела -->
+                                <!-- Кнопка удалить конкретный продукт -->
                                 <ion-icon @click.stop="openDeleteProductModal(item.uid)" class="icon_size icon_del absolute" :icon="closeCircleOutline"></ion-icon>
                                 <!-- User Product -->
                                 <ion-grid>
@@ -87,6 +92,52 @@
                     <br>
                     <br>
                 </div>
+
+                <!-- Прайс по доп.атрибутам -->
+                <div v-if="dataLoaded && item.userAdditionalAttributes.length !== 0 && blockToShow === 'attributes'">
+                    <ion-item-group class="ion-text-left ion-padding-horizontal ion-margin-bottom">
+                        <ion-card class="ion-no-margin ion-margin-top relative" v-for="item in item.userAdditionalAttributes" :key="item.id" @click.stop="openSaleProductInfo(item)">
+                            <ion-card-content class="ion-no-padding">
+                                <!-- Кнопка удалить конкретный атрибут продукта -->
+                                <ion-icon @click.stop="openDeleteAttributeModal(item.uid)" class="icon_size icon_del absolute" :icon="closeCircleOutline"></ion-icon>
+                                <!-- User Product -->
+                                <ion-grid>
+                                    <ion-row class="ion-justify-content-between ion-align-items-center ion-padding">
+                                        <div>
+                                            <ion-thumbnail style="height: 4rem; width: 4rem; margin: 0 auto">
+                                                <ion-img  style="height: 100%" :src="`../img/subjects/sale/${item.value}.webp`"></ion-img>
+                                            </ion-thumbnail>
+                                        </div>
+                                        <div class="ion-text-end">
+                                            <ion-label>
+                                                {{item.name}}
+                                            </ion-label>
+                                            <ion-text color="primary" style="font-size: 1.5rem">
+                                                {{item.price}} {{currency}}
+                                            </ion-text>
+                                            <ion-label>
+                                                {{ setRentType(item.isRent) }}
+                                            </ion-label>
+                                        </div>
+                                    </ion-row>
+                                </ion-grid>
+                            </ion-card-content>
+                        </ion-card>
+                    </ion-item-group>
+                    <br>
+                    <br>
+                </div>
+
+                <!-- No data in current chip -->
+                <div class="no-status-deal">
+                    <div v-if="item.userAdditionalAttributes.length === 0 && blockToShow === 'attributes' && item.userPriceList.length !== 0">
+                        Добавьте доп атрибуты в прайс
+                    </div>
+                    <div v-if="item.userAdditionalAttributes.length !== 0 && blockToShow === 'products' && item.userPriceList.length === 0">
+                        Добавьте продукт в прайс
+            
+                    </div>
+                </div>
             </div>
 
             <!-- Всплывашка подтверждение удаления продукта из прайса листа пользователя -->
@@ -95,6 +146,13 @@
                 header="Точно удалить?"
                 :buttons="deleteProductButtons"
                 @didDismiss="deleteProductAction = false"
+            ></ion-action-sheet>
+            <!-- Всплывашка подтверждение удаления атрибутов к продуктам из прайса листа пользователя -->
+            <ion-action-sheet
+                :is-open="deleteAttributeAction"
+                header="Точно удалить?"
+                :buttons="deleteAttributeButtons"
+                @didDismiss="deleteAttributeAction = false"
             ></ion-action-sheet>
 
         </ion-content>
@@ -142,12 +200,15 @@
         IonModal,
         IonButtons,
         IonImg,
-        IonThumbnail
+        IonThumbnail,
+        IonChip
     } from '@ionic/vue';
     import { menu, trashOutline } from 'ionicons/icons';
     import { computed } from 'vue';
     import { supabase } from '../supabase/init';
     import { useRouter } from 'vue-router';
+    //
+    import { setChipOutline } from '../helpers/setChip';
     //
     export default defineComponent({
         name: 'MyPrice',
@@ -184,9 +245,14 @@
             ViewPriceProduct,
             CreateButton,
             IonImg,
-            IonThumbnail
+            IonThumbnail,
+            IonChip
         },
         setup(props, { emit }) {
+            //
+            const priceChipList = ref(store.state.priceChipList);
+            //
+            const blockToShow = ref('products');
             // Currency
             const currency = ref(store.state.systemCurrency.name);
             // Get user from store
@@ -210,7 +276,6 @@
                 userSettings.value = store.state.userSettings
                 spinner.value = false;
                 dataLoaded.value = true;
-                // console.log(userSettings.value[0].id)
             })
 
             // ==========================Управление current price product ================================================
@@ -226,11 +291,17 @@
             // ======================== Удаление конкретного продукта из прайса ===========================================
             // Вызываем action sheet уведомление в качестве подтверждения
             const deleteProductAction = ref(false);
+            const deleteAttributeAction = ref(false)
             // Храним айди продукта к удалению
             const productToDelete = ref();
             const openDeleteProductModal = (id) => {
                 productToDelete.value = id
                 deleteProductAction.value = true;
+            }
+            const attributeToDelete = ref();
+            const openDeleteAttributeModal = (id) => {
+                attributeToDelete.value = id;
+                deleteAttributeAction.value = true;
             }
             // Кнопка action sheet для подтверждения удаления
             const deleteProductButtons = [
@@ -252,14 +323,40 @@
                     },
                 }
             ]
-            //
+            // Кнопка action sheet для подверждения удаления атрибута
+            const deleteAttributeButtons = [
+                {
+                    text: 'Удалить',
+                    role: 'destructive',
+                    data: {
+                        type: 'delete'
+                    },
+                    handler: () => {
+                        deleteAdditionalAttribute(attributeToDelete.value);
+                    },
+                },
+                {
+                    text: 'Отменить',
+                    role: 'cancel',
+                    handler: () => {
+                        console.log('Cancel clicked')
+                    },
+                }
+            ]
+            // delete product
             const deleteProduct = (id) => {
                 // console.log(id)
                 userSettings.value[0].userPriceList = userSettings.value[0].userPriceList.filter(product => product.uid !== id);
                 updateUserPriceListDB();
             }
+            // delete additional attribute
+            const deleteAdditionalAttribute = (id) => {
+                // console.log(id)
+                userSettings.value[0].userAdditionalAttributes = userSettings.value[0].userAdditionalAttributes.filter(attribute => attribute.uid !== id);
+                updateUserPriceListDB();
+            }
             // =============================== Добавление / Создание нового продукта к прайсу =================================
-            const isModalNewPriceProductOpened = ref(false);
+            const isModalNewPriceItemOpened = ref(false);
             // Изменяемый шаблон нового рецепты
             const newPriceProductData = ref({
                 uid: uid(),
@@ -268,9 +365,19 @@
                 price: '',
                 costEstimation: ''
             })
+            // Изменяемый шаблон нового доп атрибута
+            const newPriceAdditionalAttributeData = ref({
+                uid: uid(),
+                value: '',
+                name: '',
+                price: '',
+                isRent: '', // true/false
+                isReturned: '' // true/false
+            })
             //
             const toggleNewPriceProductModal = () => {
-                isModalNewPriceProductOpened.value = !isModalNewPriceProductOpened.value;
+                isModalNewPriceItemOpened.value = !isModalNewPriceItemOpened.value;
+                // Если выбрано добавить атриб - одно, если продукт - вот это:
                 newPriceProductData.value = {
                     uid: uid(),
                     value: '',
@@ -300,7 +407,7 @@
                         price: newProductData.price,
                         costEstimation: newProductData.costEstimation
                     })
-                    isModalNewPriceProductOpened.value = false
+                    isModalNewPriceItemOpened.value = false
                     updateUserPriceListDB()
                 }
             } 
@@ -312,7 +419,8 @@
                     console.log('DB is updated')
                     //
                     const { error } = await supabase.from('accountSettings').update({
-                        userPriceList: userSettings.value[0].userPriceList
+                        userPriceList: userSettings.value[0].userPriceList,
+                        userAdditionalAttributes: userSettings.value[0].userAdditionalAttributes
                     }).eq('id', userSettings.value[0].id)
                     if(error) throw error;
                 } catch (error) {
@@ -340,15 +448,42 @@
                 currentProduct.value.price = price
                 updateUserPriceListDB()
             }
+            //
+            const setBlockToShow = (to) => {
+                if(to === 'products') {
+                    blockToShow.value = 'products'
+                } else if (to === 'attributes') {
+                    blockToShow.value = 'attributes'
+                }
+            }
+            // Счетчик количества items по конкретному разделу прайса
+            const countItemChip = (chipValue) => {
+                if(chipValue === 'products') {
+                    return userSettings.value[0].userPriceList.length
+                } else if (chipValue === 'attributes') {
+                    return userSettings.value[0].userAdditionalAttributes.length
+                }
+            }
+            //
+            const setRentType = (isRent) => {
+                if(isRent === true) {
+                    return 'Сдаю в аренду'
+                } else if (isRent === false) {
+                    return 'Продаю'
+                }
+            }
 
             return {
-                menu, user, userEmail, router, pageTitle, userSettings, spinner, dataLoaded, trashOutline, deleteProductAction, openDeleteProductModal, deleteProductButtons, productToDelete, deleteProduct, openSaleProductInfo, updateUserPriceListDB, isViewCurrentProductOpened, currentProduct, isModalNewPriceProductOpened, addNewPriceProduct, toggleNewPriceProductModal, newPriceProductData, closeCircleOutline, currency, priceCalcType, costEstimation, setCostEstimation, setProductPrice
+                priceChipList, blockToShow, menu, user, userEmail, router, pageTitle, userSettings, spinner, dataLoaded, trashOutline, deleteProductAction, openDeleteProductModal, openDeleteAttributeModal, deleteProductButtons, deleteAttributeButtons, productToDelete, attributeToDelete, deleteProduct, openSaleProductInfo, updateUserPriceListDB, isViewCurrentProductOpened, currentProduct, isModalNewPriceItemOpened, addNewPriceProduct, toggleNewPriceProductModal, newPriceProductData, closeCircleOutline, currency, priceCalcType, costEstimation, setCostEstimation, setProductPrice, newPriceAdditionalAttributeData, deleteAdditionalAttribute, setBlockToShow, countItemChip, setChipOutline, setRentType, deleteAttributeAction
             }
         }
     })
 </script>
 
 <style scoped>
+    ion-img {
+        height: 50vh;
+    }
     .no-status-deal {
         height: 60vh; 
         display: flex; 
@@ -368,5 +503,14 @@
     }
     .absolute {
         position: absolute;
+    }
+    ::-webkit-scrollbar, *::-webkit-scrollbar {
+        display: none;
+        overflow: hidden;
+    }
+    .horizontal-scroll {
+        overflow: scroll;
+        --overflow: scroll;
+        white-space: nowrap;
     }
 </style>

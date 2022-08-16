@@ -9,6 +9,7 @@
             </ion-toolbar>
         </ion-header>
         <ion-content class="ion-padding">
+            {{blockToShow}}
             <!-- ============================= Добавленный продукт ===================================== -->
             <ion-item-group>
                 <!-- Заголовок -->
@@ -42,13 +43,23 @@
                         <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
                             Тип расчета
                         </ion-button>
-                        <!-- Кнопка изменить тип расчета цены -->
-                        <ion-button color="primary" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                                <Select
-                                    :data="priceEstimationType" 
-                                    :placeholder="priceCalcType(productData.costEstimation)"
-                                    @date-updated="(selected) => costEstimation = selected.currentValue"
-                                />
+                        <!-- Кнопка изменить тип расчета -->
+                        <!-- Для products -->
+                        <ion-button v-if="blockToShow === 'products'" color="primary" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                            <Select
+                                :data="priceEstimationType" 
+                                :placeholder="priceCalcType(productData.costEstimation)"
+                                @date-updated="(selected) => costEstimation = selected.currentValue"
+                            />
+                        </ion-button>
+                        <!-- Для attributes -->
+                        <!-- priceAttributeType -->
+                        <ion-button v-if="blockToShow === 'attributes'" color="primary" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                            <Select
+                                :data="priceAttributeType" 
+                                :placeholder="productData.rentType"
+                                @date-updated="(selected) => costEstimation = selected.currentValue"
+                            />
                         </ion-button>
                     </ion-row>
                     <!-- Стоимость -->
@@ -80,7 +91,8 @@
         name: 'ViewPriceProduct',
         emits: ['getCostEstimation', 'getProductPrice', 'closeModal'],
         props: {
-            productData: Object
+            productData: Object,
+            blockToShow: String
         },
         components: {
             IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonThumbnail, IonImg, Select, IonInput
@@ -94,6 +106,7 @@
             const productPrice = ref();
             //
             const priceEstimationType = ref(store.state.priceEstimataionType)
+            const priceAttributeType = ref(store.state.priceAttributeType)
             // Переводчик типа расчета цены
             const priceCalcType = (type) => {
                 if (type === 'perKilogram') {
@@ -118,7 +131,7 @@
             })
 
             return {
-                productData, priceEstimationType, priceCalcType, costEstimation, currency, productPrice
+                productData, priceEstimationType, priceAttributeType, priceCalcType, costEstimation, currency, productPrice
             }
         }
     })
