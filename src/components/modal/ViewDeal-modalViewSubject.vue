@@ -17,7 +17,7 @@
             <ion-item-group v-if="currentDealType === 'sale'">
                 <!-- Подбираем рецепт к делу -->
                 <ion-text>
-                    <h4>Рецепт</h4>
+                    <h4 class="ion-no-margin ion-margin-top">Рецепт</h4>
                 </ion-text>
                 <!-- Показ и кнопка изменения рецепта к предмету -->
                 <ion-grid class="ion-no-padding">

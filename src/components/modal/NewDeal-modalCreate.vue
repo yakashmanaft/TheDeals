@@ -145,6 +145,7 @@
                             :is-open="isViewDealSubjectOpened"
                             @closeModal="isViewDealSubjectOpened = false"
                             :subjectData="currentDealSubject"
+                            :currentDealType="dealData.dealType"
                         />
                     </ion-row>
                 </ion-grid>
@@ -262,6 +263,8 @@
                 currentSubject.value = {
                     id: uid(),
                     selectedProduct: '',
+                    price: '',
+                    costEstimation: '',
                     recipe: '',
                     productQuantity: 1,
                     additionalAttributes: [],
@@ -304,6 +307,8 @@
             const currentSubject = ref({
                 id: uid(),
                 selectedProduct: '',
+                price: '',
+                costEstimation: '',
                 recipe: '',
                 productQuantity: 1,
                 additionalAttributes: [],

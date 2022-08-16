@@ -288,6 +288,10 @@
                     alert('My price: Вы не выбрали продукт')
                 } else if (isItemAlreadyHave !== undefined) {
                     alert('My Price: Продукт уже добавлен в прайс')
+                } else if (newProductData.costEstimation === '') {
+                    alert('My price: Вы не указали тип расчета стоимости')
+                } else if (newProductData.price === '') {
+                    alert('My price: Вы не указали стоимость')
                 } else {
                     userSettings.value[0].userPriceList.push({
                         uid: uid(),
@@ -319,9 +323,11 @@
             // Переводчик типа расчета цены
             const priceCalcType = (type) => {
                 if (type === 'perKilogram') {
-                    return 'Цена за кг.'
+                    return 'Цена за 1кг.'
                 } else if (type === 'perUnit') {
                     return 'Цена за шт.'
+                } else if (type === 'per100gram') {
+                    return 'Цена за 100г.'
                 }
             }
             // 

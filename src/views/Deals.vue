@@ -493,6 +493,8 @@
                 dealData.value.dealsList.push({
                     id: uid(),
                     selectedProduct: subjectData.selectedProduct,
+                    price: subjectData.price,
+                    costEstimation: subjectData.costEstimation,
                     recipe: subjectData.recipe,
                     productQuantity: subjectData.productQuantity,
                     // массив пока шаблоном, в modalCreateSubject задавать значения

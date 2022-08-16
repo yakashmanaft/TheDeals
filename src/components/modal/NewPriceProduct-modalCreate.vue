@@ -14,10 +14,9 @@
         <ion-content class="ion-padding">
             <!-- ============================= Основные данные ===================================== -->
             <ion-item-group>
-                {{newProductData}}
                 <!-- Заголовок -->
                 <ion-text>
-                    <h4>Продукт</h4>
+                    <h4 class="ion-no-margin">Продукт</h4>
                 </ion-text>
                 <!-- Показываем выбранный продукт -->
                 <ion-grid class="ion-no-padding">
@@ -63,16 +62,54 @@
                     </ion-content>
                 </ion-modal>
             </ion-item-group>
+            <!-- Выбор типа расчета и указание цены продукта -->
+            <ion-item-group>
+                <!-- Заголовок -->
+                <ion-text>
+                    <h4>Стоимость</h4>
+                </ion-text>
+                <!--  -->
+                <ion-grid class="ion-no-padding ion-margin-top">
+                    <!-- Типа расчета цены -->
+                    <ion-row class="ion-justify-content-between ion-align-items-center">
+                        <!-- тип расчета -->
+                        <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                            Тип расчета
+                        </ion-button>
+                        <!-- Кнопка изменить тип расчета цены -->
+                        <ion-button color="primary" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                            <Select
+                                :data="priceEstimationType" 
+                                placeholder="Не указан"
+                                @date-updated="(selected) => newProductData.costEstimation = selected.currentValue"
+                            />
+                        </ion-button>
+                    </ion-row>
+                    <!-- Цена -->
+                    <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
+                        <!-- Цена -->
+                        <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                            Цена ({{ currency }})
+                        </ion-button>
+                        <!-- Кнопка показа и изменения цены -->
+                        <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                            <ion-input type="number" v-model="newProductData.price" placeholder="0.00" inputmode="decimal" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
+                        </ion-button>
+                    </ion-row>
+                </ion-grid>
+            </ion-item-group>
         </ion-content>
     </ion-modal>
 </template>
 
 <script>
     import { defineComponent, ref, watchEffect, computed } from 'vue';
-    import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonThumbnail, IonImg, IonIcon, IonSearchbar, IonItem } from '@ionic/vue';
+    import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonThumbnail, IonImg, IonIcon, IonSearchbar, IonItem, IonInput } from '@ionic/vue';
     import { helpOutline } from 'ionicons/icons';
     //
     import store from '../../store/index';
+    //
+    import Select from '../Select.vue';
     //
     import { translateValue } from '@/helpers/translateValue';
     import { sortAlphabetically } from '../../helpers/sortDealSubject';
@@ -84,16 +121,19 @@
             newProductData: Object
         },
         components: {
-            IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonThumbnail, IonImg, IonIcon, IonSearchbar, IonItem
+            IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonThumbnail, IonImg, IonIcon, IonSearchbar, IonItem, Select, IonInput
         },
         setup(props, { emit }) {
+            // Currency
+            const currency = ref(store.state.systemCurrency.name);
             //
             const searchProductMenu = ref(false);
             const searchSelectedProduct = ref('');
             const newProductData = ref();
             // массив ПОЛЬЗОВАТЕЛЯ с вариантами предмета ПРОДАЖИ
             const dealSaleSubjectArray = ref(store.state.dealSaleSubjectArray)
-
+            //
+            const priceEstimationType = ref(store.state.priceEstimataionType)
             //
             const showSelectedProduct = (selectedProduct) => {
                 if(newProductData.value.value !== '') {
@@ -109,7 +149,6 @@
             })
             //
             const chooseProduct = (product) => {
-                // console.log(product)
                 newProductData.value.value = product.value
                 newProductData.value.name = product.name
                 searchProductMenu.value = false;
@@ -120,7 +159,7 @@
             })
 
             return {
-                helpOutline, dealSaleSubjectArray, showSelectedProduct, searchSelectedProduct, searchProductMenu, translateValue, searchedProduct, sortAlphabetically, searchDealSubjectFilter, chooseProduct
+                helpOutline, dealSaleSubjectArray, showSelectedProduct, searchSelectedProduct, searchProductMenu, translateValue, searchedProduct, sortAlphabetically, searchDealSubjectFilter, chooseProduct, priceEstimationType, currency
             }
         }
     })
@@ -142,5 +181,8 @@
         background-color: var(--ion-color-light);
         border-radius: 50%;
         padding: 0.5rem;
+    }
+    .flex_nowrap {
+        flex-wrap: nowrap;
     }
 </style>

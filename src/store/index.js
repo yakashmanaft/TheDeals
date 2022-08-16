@@ -151,12 +151,17 @@ const state = reactive({
   priceEstimataionType: [
     {
       value: 'perKilogram',
-      name: 'Цена за кг.'
+      name: 'Цена за 1кг.'
+    },
+    {
+      value: 'per100gram',
+      name: 'Цена за 100г.'
     },
     {
       value: 'perUnit',
       name: 'Цена за шт.'
-    }
+    },
+
   ],
   //User recipes list
   userRecipeArray: [

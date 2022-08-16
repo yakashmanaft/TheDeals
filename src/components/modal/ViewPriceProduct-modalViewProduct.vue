@@ -97,9 +97,11 @@
             // Переводчик типа расчета цены
             const priceCalcType = (type) => {
                 if (type === 'perKilogram') {
-                    return 'Цена за кг.'
+                    return 'Цена за 1кг.'
                 } else if (type === 'perUnit') {
                     return 'Цена за шт.'
+                } else if (type === 'per100gram') {
+                    return 'Цена за 100г.'
                 }
             }
             //

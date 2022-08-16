@@ -234,9 +234,11 @@
             })
             // Задаем из выбранному списка значение для selectedProduct
             const choose = (subject) => {
-                subjectData.value.selectedProduct = subject.value
+                subjectData.value.selectedProduct = subject.value;
+                subjectData.value.price = subject.price;
+                subjectData.value.costEstimation = subject.costEstimation;
+                //
                 searchSubjectMenu.value = false
-                // console.log(subject)
             }
             // Задаем из выбранного списка значение для recipe
             const chooseRecipe = (recipe) => {

@@ -461,6 +461,8 @@
                 currentSubject.value  = {
                     id: uid(),
                     selectedProduct: '',
+                    price: '',
+                    costEstimation: '',
                     recipe:'',
                     productQuantity: 1,
                     additionalAttributes: [],
