@@ -53,7 +53,6 @@
                             />
                         </ion-button>
                         <!-- Для attributes -->
-                        <!-- priceAttributeType -->
                         <ion-button v-if="blockToShow === 'attributes'" color="primary" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
                             <Select
                                 :data="priceAttributeType" 

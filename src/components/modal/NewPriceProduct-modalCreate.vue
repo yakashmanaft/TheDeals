@@ -12,6 +12,8 @@
             </ion-toolbar>
         </ion-header>
         <ion-content class="ion-padding">
+            {{blockToShow}}
+            {{newProductData}}
             <!-- ============================= Основные данные ===================================== -->
             <ion-item-group>
                 <!-- Заголовок -->
@@ -77,13 +79,16 @@
                             Тип расчета
                         </ion-button>
                         <!-- Кнопка изменить тип расчета цены -->
-                        <ion-button color="primary" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                        <!-- Для products -->
+                        <ion-button v-if="blockToShow === 'products'" color="primary" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
                             <Select
                                 :data="priceEstimationType" 
                                 placeholder="Не указан"
                                 @date-updated="(selected) => newProductData.costEstimation = selected.currentValue"
                             />
                         </ion-button>
+                        <!-- Для attributes -->
+
                     </ion-row>
                     <!-- Цена -->
                     <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
@@ -118,12 +123,15 @@
     export default defineComponent({
         name: 'CreatePriceProduct',
         props: {
-            newProductData: Object
+            newProductData: Object,
+            blockToShow: String
         },
         components: {
             IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonThumbnail, IonImg, IonIcon, IonSearchbar, IonItem, Select, IonInput
         },
         setup(props, { emit }) {
+            //
+            const blockToShow = ref();
             // Currency
             const currency = ref(store.state.systemCurrency.name);
             //
@@ -132,6 +140,8 @@
             const newProductData = ref();
             // массив ПОЛЬЗОВАТЕЛЯ с вариантами предмета ПРОДАЖИ
             const dealSaleSubjectArray = ref(store.state.dealSaleSubjectArray)
+            // массив ПОЛЬЗОВТЕЛЯ с вариантами ДОП.АТРИБУТОВ к продукту
+            const subjectAttributeArray = ref(store.state.additionalAttributesList)
             //
             const priceEstimationType = ref(store.state.priceEstimataionType)
             //
@@ -144,8 +154,13 @@
             }
             //
             const searchedProduct = computed(() => {
-                const sortedDealSellSubjectArray = sortAlphabetically(dealSaleSubjectArray.value);
-                return searchDealSubjectFilter(sortedDealSellSubjectArray, searchSelectedProduct.value)
+                if (blockToShow.value === 'products') {
+                    const sortedDealSellSubjectArray = sortAlphabetically(dealSaleSubjectArray.value);
+                    return searchDealSubjectFilter(sortedDealSellSubjectArray, searchSelectedProduct.value)
+                } else if (blockToShow.value = 'attributes') {
+                    const sortedDealSellSubjectArray = sortAlphabetically(subjectAttributeArray.value);
+                    return searchDealSubjectFilter(sortedDealSellSubjectArray, searchSelectedProduct.value)
+                }
             })
             //
             const chooseProduct = (product) => {
@@ -156,10 +171,11 @@
             //
             watchEffect(() => {
                 newProductData.value = props.newProductData
+                blockToShow.value = props.blockToShow
             })
 
             return {
-                helpOutline, dealSaleSubjectArray, showSelectedProduct, searchSelectedProduct, searchProductMenu, translateValue, searchedProduct, sortAlphabetically, searchDealSubjectFilter, chooseProduct, priceEstimationType, currency
+                helpOutline, dealSaleSubjectArray, subjectAttributeArray, showSelectedProduct, searchSelectedProduct, searchProductMenu, translateValue, searchedProduct, sortAlphabetically, searchDealSubjectFilter, chooseProduct, priceEstimationType, currency, blockToShow
             }
         }
     })

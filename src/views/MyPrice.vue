@@ -28,6 +28,7 @@
             @closeModal="isModalNewPriceItemOpened = false"   
             :newProductData="newPriceProductData"
             @addPriceProduct="addNewPriceProduct"
+            :blockToShow="blockToShow"
         />
         
         <!-- Page content -->
@@ -371,19 +372,30 @@
                 value: '',
                 name: '',
                 price: '',
-                isRent: '', // true/false
+                rentType: '',
                 isReturned: '' // true/false
             })
             //
             const toggleNewPriceProductModal = () => {
                 isModalNewPriceItemOpened.value = !isModalNewPriceItemOpened.value;
                 // Если выбрано добавить атриб - одно, если продукт - вот это:
-                newPriceProductData.value = {
-                    uid: uid(),
-                    value: '',
-                    name: '',
-                    price: '',
-                    costEstimation: ''
+                if(blockToShow.value === 'products') {
+                    newPriceProductData.value = {
+                        uid: uid(),
+                        value: '',
+                        name: '',
+                        price: '',
+                        costEstimation: ''
+                    }
+                } else if (blockToShow.value === 'attributes') {
+                    newPriceProductData.value = {
+                        uid: uid(),
+                        value: '',
+                        name: '',
+                        price: '',
+                        rentType: '',
+                        isReturned: '' 
+                    }
                 }
             }
             // Добавляем новый продукт к прайсу
@@ -399,7 +411,7 @@
                     alert('My price: Вы не указали тип расчета стоимости')
                 } else if (newProductData.price === '') {
                     alert('My price: Вы не указали стоимость')
-                } else {
+                } else if (blockToShow.value === 'products') {
                     userSettings.value[0].userPriceList.push({
                         uid: uid(),
                         value: newProductData.value,
@@ -408,6 +420,17 @@
                         costEstimation: newProductData.costEstimation
                     })
                     isModalNewPriceItemOpened.value = false
+                    updateUserPriceListDB()
+                } else if (blockToShow.value === 'attributes') {
+                    userSettings.value[0].userAdditionalAttributes.push({
+                        uid: uid(),
+                        value: newProductData.value,
+                        name: newProductData.name,
+                        price: newProductData.price,
+                        rentType: newProductData.rentType,
+                        isReturned: newProductData.isReturned 
+                    })
+                    isModalNewPriceItemOpened.value = false;
                     updateUserPriceListDB()
                 }
             } 
