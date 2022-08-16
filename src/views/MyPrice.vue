@@ -18,6 +18,7 @@
             @closeModal="isViewCurrentProductOpened = false"   
             :productData="currentProduct"
             @getCostEstimation="setCostEstimation"
+            @getProductPrice="setProductPrice"
         />
 
         <!-- Модалка создания нового продукта к прайсу -->
@@ -328,9 +329,14 @@
                 currentProduct.value.costEstimation = costEstimation;
                 updateUserPriceListDB()
             }
+            //
+            const setProductPrice = (price) => {
+                currentProduct.value.price = price
+                updateUserPriceListDB()
+            }
 
             return {
-                menu, user, userEmail, router, pageTitle, userSettings, spinner, dataLoaded, trashOutline, deleteProductAction, openDeleteProductModal, deleteProductButtons, productToDelete, deleteProduct, openSaleProductInfo, updateUserPriceListDB, isViewCurrentProductOpened, currentProduct, isModalNewPriceProductOpened, addNewPriceProduct, toggleNewPriceProductModal, newPriceProductData, closeCircleOutline, currency, priceCalcType, costEstimation, setCostEstimation
+                menu, user, userEmail, router, pageTitle, userSettings, spinner, dataLoaded, trashOutline, deleteProductAction, openDeleteProductModal, deleteProductButtons, productToDelete, deleteProduct, openSaleProductInfo, updateUserPriceListDB, isViewCurrentProductOpened, currentProduct, isModalNewPriceProductOpened, addNewPriceProduct, toggleNewPriceProductModal, newPriceProductData, closeCircleOutline, currency, priceCalcType, costEstimation, setCostEstimation, setProductPrice
             }
         }
     })

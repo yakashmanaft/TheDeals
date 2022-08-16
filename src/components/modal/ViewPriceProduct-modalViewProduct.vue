@@ -11,10 +11,9 @@
         <ion-content class="ion-padding">
             <!-- ============================= Добавленный продукт ===================================== -->
             <ion-item-group>
-                {{productData}}
                 <!-- Заголовок -->
                 <ion-text>
-                    <h4 class="ion-no-margin ion-margin-top">Продукт</h4>
+                    <h4 class="ion-no-margin">Продукт</h4>
                 </ion-text>
                 <!-- Показываем текущий продукт -->
                 <ion-grid class="ion-no-padding">
@@ -41,7 +40,7 @@
                     <ion-row class="ion-justify-content-between ion-align-items-center">
                         <!-- Тип расчета -->
                         <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                            Типа расчета
+                            Тип расчета
                         </ion-button>
                         <!-- Кнопка изменить тип расчета цены -->
                         <ion-button color="primary" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
@@ -53,16 +52,14 @@
                         </ion-button>
                     </ion-row>
                     <!-- Стоимость -->
-                    <ion-row class="ion-justify-content-between ion-align-items-center">
+                    <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
                         <!-- Цена -->
                         <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                            Цена
+                            Цена ({{ currency }})
                         </ion-button>
                         <!-- Кнопка показа и изменения цены -->
                         <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                            <ion-text color="primary">
-                                {{productData.price}} {{ currency }}
-                            </ion-text>
+                            <ion-input type="number" v-model="productPrice" inputmode="decimal" :value="productData.price" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
                         </ion-button>
                     </ion-row>
                 </ion-grid>
@@ -73,7 +70,7 @@
 
 <script>
     import { defineComponent, ref, watch, watchEffect } from 'vue';
-    import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonThumbnail, IonImg } from '@ionic/vue';
+    import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonThumbnail, IonImg, IonInput } from '@ionic/vue';
     //
     import Select from '../Select.vue';
     //
@@ -81,12 +78,12 @@
     //
     export default defineComponent({
         name: 'ViewPriceProduct',
-        emits: ['getCostEstimation', 'closeModal'],
+        emits: ['getCostEstimation', 'getProductPrice', 'closeModal'],
         props: {
             productData: Object
         },
         components: {
-            IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonThumbnail, IonImg, Select
+            IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonThumbnail, IonImg, Select, IonInput
         },
         setup(props, { emit }) {
             // Currency
@@ -94,6 +91,7 @@
             //
             const productData = ref({});
             const costEstimation = ref();
+            const productPrice = ref();
             //
             const priceEstimationType = ref(store.state.priceEstimataionType)
             // Переводчик типа расчета цены
@@ -112,9 +110,13 @@
             watch (costEstimation, (costEstimationType) => {
                 emit('getCostEstimation', costEstimationType)
             })
+            watch(productPrice, (price) => {
+                console.log(price)
+                emit('getProductPrice', price)
+            })
 
             return {
-                productData, priceEstimationType, priceCalcType, costEstimation, currency
+                productData, priceEstimationType, priceCalcType, costEstimation, currency, productPrice
             }
         }
     })
@@ -136,5 +138,8 @@
         background-color: var(--ion-color-light);
         border-radius: 50%;
         padding: 0.5rem;
+    }
+    .flex_nowrap {
+        flex-wrap: nowrap;
     }
 </style>
