@@ -170,7 +170,7 @@ const state = reactive({
     },
     {
       value: 'perUnit',
-      name: 'Цена за шт.'
+      name: 'Цена за 1шт.'
     },
 
   ],

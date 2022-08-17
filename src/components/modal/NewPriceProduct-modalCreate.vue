@@ -87,7 +87,15 @@
                                 @date-updated="(selected) => newProductData.costEstimation = selected.currentValue"
                             />
                         </ion-button>
+                        <!-- priceAttributeType -->
                         <!-- Для attributes -->
+                        <ion-button v-if="blockToShow === 'attributes'" color="primary" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                            <Select
+                                :data="priceAttributeType" 
+                                placeholder="Не указан"
+                                @date-updated="(selected) => newProductData.rentType = selected.currentValue"
+                            />
+                        </ion-button>
 
                     </ion-row>
                     <!-- Цена -->
@@ -145,9 +153,15 @@
             //
             const priceEstimationType = ref(store.state.priceEstimataionType)
             //
+            const priceAttributeType = ref(store.state.priceAttributeType)
+            //
             const showSelectedProduct = (selectedProduct) => {
                 if(newProductData.value.value !== '') {
-                    return translateValue(selectedProduct, dealSaleSubjectArray.value)
+                    if(blockToShow.value === 'products') {
+                        return translateValue(selectedProduct, dealSaleSubjectArray.value)
+                    } else if (blockToShow.value === 'attributes') {
+                        return translateValue(selectedProduct, subjectAttributeArray.value)
+                    }
                 } else {
                     return 'Не выбран'
                 }
@@ -175,7 +189,7 @@
             })
 
             return {
-                helpOutline, dealSaleSubjectArray, subjectAttributeArray, showSelectedProduct, searchSelectedProduct, searchProductMenu, translateValue, searchedProduct, sortAlphabetically, searchDealSubjectFilter, chooseProduct, priceEstimationType, currency, blockToShow
+                helpOutline, dealSaleSubjectArray, subjectAttributeArray, showSelectedProduct, searchSelectedProduct, searchProductMenu, translateValue, searchedProduct, sortAlphabetically, searchDealSubjectFilter, chooseProduct, priceEstimationType, priceAttributeType, currency, blockToShow
             }
         }
     })

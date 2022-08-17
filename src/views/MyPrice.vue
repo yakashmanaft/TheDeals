@@ -117,7 +117,7 @@
                                                 {{item.price}} {{currency}}
                                             </ion-text>
                                             <ion-label>
-                                                {{ setRentType(item.isRent) }}
+                                                {{ setRentType(item.rentType) }}
                                             </ion-label>
                                         </div>
                                     </ion-row>
@@ -373,7 +373,7 @@
                 name: '',
                 price: '',
                 rentType: '',
-                isReturned: '' // true/false
+                isReturned: false 
             })
             //
             const toggleNewPriceProductModal = () => {
@@ -394,25 +394,32 @@
                         name: '',
                         price: '',
                         rentType: '',
-                        isReturned: '' 
+                        isReturned: false 
                     }
                 }
             }
+            const isItemAlreadyHave = ref();
             // Добавляем новый продукт к прайсу
             const addNewPriceProduct = (newProductData) => {
                 // ищем в массиве продуктов в прайсе сходства
-                const isItemAlreadyHave = ''
+                //
+                if(blockToShow.value === 'products') {
+                    isItemAlreadyHave.value = userSettings.value[0].userPriceList.find(item => item.value === newProductData.value)
+                } else if (blockToShow.value === 'attributes') {
+                    isItemAlreadyHave.value = userSettings.value[0].userAdditionalAttributes.find(item => item.value === newProductData.value)
+                }
                 //
                 if(newProductData.value === '') {
                     alert('My price: Вы не выбрали продукт')
-                } else if (isItemAlreadyHave !== undefined) {
+                } else if (isItemAlreadyHave.value !== undefined) {
                     alert('My Price: Продукт уже добавлен в прайс')
-                } else if (newProductData.costEstimation === '') {
-                    alert('My price: Вы не указали тип расчета стоимости')
+                } else if (blockToShow.value === 'products' && newProductData.costEstimation === '') {
+                    alert('My price: Вы не указали тип расчета')
+                } else if (blockToShow.value === 'attributes' && newProductData.rentType === '') {
+                    alert('My price: Вы не указали тип расчета')
                 } else if (newProductData.price === '') {
                     alert('My price: Вы не указали стоимость')
                 } else if (blockToShow.value === 'products') {
-                    isItemAlreadyHave = userSettings.value[0].userPriceList.find(item => item.value === newProductData.value)
                     userSettings.value[0].userPriceList.push({
                         uid: uid(),
                         value: newProductData.value,
@@ -423,7 +430,7 @@
                     isModalNewPriceItemOpened.value = false
                     updateUserPriceListDB()
                 } else if (blockToShow.value === 'attributes') {
-                    isItemAlreadyHave = userSettings.value[0].userAdditionalAttributes.find(item => item.value === newProductData.value)
+                    // isItemAlreadyHave = userSettings.value[0].userAdditionalAttributes.find(item => item.value === newProductData.value)
                     userSettings.value[0].userAdditionalAttributes.push({
                         uid: uid(),
                         value: newProductData.value,
@@ -458,7 +465,7 @@
                 if (type === 'perKilogram') {
                     return 'Цена за 1кг.'
                 } else if (type === 'perUnit') {
-                    return 'Цена за шт.'
+                    return 'Цена за 1шт.'
                 } else if (type === 'per100gram') {
                     return 'Цена за 100г.'
                 }
@@ -490,16 +497,16 @@
                 }
             }
             //
-            const setRentType = (isRent) => {
-                if(isRent === true) {
+            const setRentType = (rentType) => {
+                if(rentType === 'rent') {
                     return 'Сдаю в аренду'
-                } else if (isRent === false) {
+                } else if (rentType === 'sale') {
                     return 'Продаю'
                 }
             }
 
             return {
-                priceChipList, blockToShow, menu, user, userEmail, router, pageTitle, userSettings, spinner, dataLoaded, trashOutline, deleteProductAction, openDeleteProductModal, openDeleteAttributeModal, deleteProductButtons, deleteAttributeButtons, productToDelete, attributeToDelete, deleteProduct, openSaleProductInfo, updateUserPriceListDB, isViewCurrentProductOpened, currentProduct, isModalNewPriceItemOpened, addNewPriceProduct, toggleNewPriceProductModal, newPriceProductData, closeCircleOutline, currency, priceCalcType, costEstimation, setCostEstimation, setProductPrice, newPriceAdditionalAttributeData, deleteAdditionalAttribute, setBlockToShow, countItemChip, setChipOutline, setRentType, deleteAttributeAction
+                priceChipList, blockToShow, menu, user, userEmail, router, pageTitle, userSettings, spinner, dataLoaded, trashOutline, deleteProductAction, openDeleteProductModal, openDeleteAttributeModal, deleteProductButtons, deleteAttributeButtons, productToDelete, attributeToDelete, deleteProduct, openSaleProductInfo, updateUserPriceListDB, isViewCurrentProductOpened, currentProduct, isModalNewPriceItemOpened, addNewPriceProduct, toggleNewPriceProductModal, newPriceProductData, closeCircleOutline, currency, priceCalcType, costEstimation, setCostEstimation, setProductPrice, newPriceAdditionalAttributeData, deleteAdditionalAttribute, setBlockToShow, countItemChip, setChipOutline, setRentType, deleteAttributeAction, isItemAlreadyHave
             }
         }
     })

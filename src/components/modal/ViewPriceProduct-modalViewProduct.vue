@@ -10,6 +10,7 @@
         </ion-header>
         <ion-content class="ion-padding">
             {{blockToShow}}
+            {{productData}}
             <!-- ============================= Добавленный продукт ===================================== -->
             <ion-item-group>
                 <!-- Заголовок -->
@@ -111,7 +112,7 @@
                 if (type === 'perKilogram') {
                     return 'Цена за 1кг.'
                 } else if (type === 'perUnit') {
-                    return 'Цена за шт.'
+                    return 'Цена за 1шт.'
                 } else if (type === 'per100gram') {
                     return 'Цена за 100г.'
                 }
