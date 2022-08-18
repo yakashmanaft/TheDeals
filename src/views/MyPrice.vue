@@ -25,10 +25,11 @@
         <!-- Модалка создания нового продукта к прайсу -->
         <CreatePriceProduct
             :is-open="isModalNewPriceItemOpened" 
-            @closeModal="isModalNewPriceItemOpened = false"   
+            @closeModal="closeModalCreatePriceProduct"   
             :newProductData="newPriceProductData"
             @addPriceProduct="addNewPriceProduct"
             :blockToShow="blockToShow"
+            @blockToShowIsChanged="changeBlockToShow"
         />
         
         <!-- Page content -->
@@ -378,7 +379,7 @@
             //
             const toggleNewPriceProductModal = () => {
                 isModalNewPriceItemOpened.value = !isModalNewPriceItemOpened.value;
-                // Если выбрано добавить атриб - одно, если продукт - вот это:
+                // Если выбрано
                 if(blockToShow.value === 'products') {
                     newPriceProductData.value = {
                         uid: uid(),
@@ -504,9 +505,38 @@
                     return 'Продаю'
                 }
             }
+            //
+            const changeBlockToShow = (blockToShow) => {
+                // console.log(blockToShow)
+                if (blockToShow === 'products') {
+                    console.log('products')
+                    // newPriceProductData.value = {
+                    //     uid: uid(),
+                    //     value: '',
+                    //     name: '',
+                    //     price: '',
+                    //     costEstimation: ''
+                    // }
+                } else if (blockToShow === 'attributes') {
+                    console.log('attributes')
+                    // newPriceProductData.value = {
+                    //     uid: uid(),
+                    //     value: '',
+                    //     name: '',
+                    //     price: '',
+                    //     rentType: '',
+                    //     isReturned: false 
+                    // }
+                }
+            }
+
+            const closeModalCreatePriceProduct = (value) => {
+                isModalNewPriceItemOpened.value = false
+                blockToShow.value = value
+            }
 
             return {
-                priceChipList, blockToShow, menu, user, userEmail, router, pageTitle, userSettings, spinner, dataLoaded, trashOutline, deleteProductAction, openDeleteProductModal, openDeleteAttributeModal, deleteProductButtons, deleteAttributeButtons, productToDelete, attributeToDelete, deleteProduct, openSaleProductInfo, updateUserPriceListDB, isViewCurrentProductOpened, currentProduct, isModalNewPriceItemOpened, addNewPriceProduct, toggleNewPriceProductModal, newPriceProductData, closeCircleOutline, currency, priceCalcType, costEstimation, setCostEstimation, setProductPrice, newPriceAdditionalAttributeData, deleteAdditionalAttribute, setBlockToShow, countItemChip, setChipOutline, setRentType, deleteAttributeAction, isItemAlreadyHave
+                priceChipList, blockToShow, menu, user, userEmail, router, pageTitle, userSettings, spinner, dataLoaded, trashOutline, deleteProductAction, openDeleteProductModal, openDeleteAttributeModal, deleteProductButtons, deleteAttributeButtons, productToDelete, attributeToDelete, deleteProduct, openSaleProductInfo, updateUserPriceListDB, isViewCurrentProductOpened, currentProduct, isModalNewPriceItemOpened, addNewPriceProduct, toggleNewPriceProductModal, newPriceProductData, closeCircleOutline, currency, priceCalcType, costEstimation, setCostEstimation, setProductPrice, newPriceAdditionalAttributeData, deleteAdditionalAttribute, setBlockToShow, countItemChip, setChipOutline, setRentType, deleteAttributeAction, isItemAlreadyHave, changeBlockToShow, closeModalCreatePriceProduct
             }
         }
     })

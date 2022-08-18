@@ -3,7 +3,7 @@
         <ion-header translucent="true">
             <ion-toolbar>
                 <ion-buttons slot="start">
-                    <ion-button @click="$emit('closeModal')">Отменить</ion-button>
+                    <ion-button @click="$emit('closeModal', blockToShow)">Отменить</ion-button>
                 </ion-buttons>
                 <ion-title class="ion-text-center">Новый</ion-title>
                 <ion-buttons slot="end">
@@ -15,6 +15,19 @@
             {{blockToShow}}
             {{newProductData}}
             <!-- ============================= Основные данные ===================================== -->
+            <!-- Выбор что добавляем в прайс: атрибут или продукт -->
+            <ion-item-group>
+                <!-- Что добавляем -->
+                <ion-text>
+                    <h4 class="ion-no-margin">Что добавляем?</h4>
+                </ion-text>
+                <!-- Выбор -->
+                <ion-chip>
+                    <ion-label>
+                        <Select :data="priceChipList" :placeholder="blockToShow" @date-updated="(selected) => blockToShow = selected.currentValue"/>
+                    </ion-label>
+                </ion-chip>
+            </ion-item-group>
             <ion-item-group>
                 <!-- Заголовок -->
                 <ion-text>
@@ -116,8 +129,8 @@
 </template>
 
 <script>
-    import { defineComponent, ref, watchEffect, computed } from 'vue';
-    import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonThumbnail, IonImg, IonIcon, IonSearchbar, IonItem, IonInput } from '@ionic/vue';
+    import { defineComponent, ref, watchEffect, computed, watch } from 'vue';
+    import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonThumbnail, IonImg, IonIcon, IonSearchbar, IonItem, IonInput, IonChip, IonLabel } from '@ionic/vue';
     import { helpOutline } from 'ionicons/icons';
     //
     import store from '../../store/index';
@@ -130,14 +143,17 @@
     //
     export default defineComponent({
         name: 'CreatePriceProduct',
+        emits: ['blockToShowIsChanged', 'closeModal', 'addPriceProduct'],
         props: {
             newProductData: Object,
             blockToShow: String
         },
         components: {
-            IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonThumbnail, IonImg, IonIcon, IonSearchbar, IonItem, Select, IonInput
+            IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonThumbnail, IonImg, IonIcon, IonSearchbar, IonItem, Select, IonInput, IonChip, IonLabel
         },
         setup(props, { emit }) {
+            // priceChipList
+            const priceChipList = ref(store.state.priceChipList)
             //
             const blockToShow = ref();
             // Currency
@@ -187,9 +203,14 @@
                 newProductData.value = props.newProductData
                 blockToShow.value = props.blockToShow
             })
+            //
+            watch(blockToShow, () => {
+                // console.log(blockToShow.value)
+                emit('blockToShowIsChanged', blockToShow.value)
+            })
 
             return {
-                helpOutline, dealSaleSubjectArray, subjectAttributeArray, showSelectedProduct, searchSelectedProduct, searchProductMenu, translateValue, searchedProduct, sortAlphabetically, searchDealSubjectFilter, chooseProduct, priceEstimationType, priceAttributeType, currency, blockToShow
+                helpOutline, dealSaleSubjectArray, subjectAttributeArray, showSelectedProduct, searchSelectedProduct, searchProductMenu, translateValue, searchedProduct, sortAlphabetically, searchDealSubjectFilter, chooseProduct, priceEstimationType, priceAttributeType, currency, blockToShow, priceChipList
             }
         }
     })
