@@ -188,7 +188,7 @@
     //
     import { searchFilter } from '../../helpers/filterMyContacts'; 
     import { setColorByDealType } from '../../helpers/setColorByDealType';
-    import { setIconByDealType } from '../../helpers/setIconByDealType';
+    import { setIconByDealType } from '../../helpers/setIconBy';
     import { translateValue } from '../../helpers/translateValue';
     //
     export default defineComponent({

@@ -9,13 +9,18 @@
             </ion-toolbar>
         </ion-header>
         <ion-content class="ion-padding">
-            {{blockToShow}}
-            {{productData}}
+            <!-- Вариант типа выбранного блока -->
+            <ion-item-group class="ion-margin-bottom">
+                <ion-chip color="primary" class="ion-no-margin ion-margin-bottom">
+                    <ion-icon :icon="setIconByBlockToShow(blockToShow)"></ion-icon>
+                    <ion-label>{{translateValue(blockToShow, priceChipList)}}</ion-label>
+                </ion-chip>
+            </ion-item-group>
             <!-- ============================= Добавленный продукт ===================================== -->
             <ion-item-group>
                 <!-- Заголовок -->
                 <ion-text>
-                    <h4 class="ion-no-margin">Продукт</h4>
+                    <h4 class="ion-no-margin">{{setNameByBlockToShow(blockToShow)}}</h4>
                 </ion-text>
                 <!-- Показываем текущий продукт -->
                 <ion-grid class="ion-no-padding">
@@ -57,8 +62,8 @@
                         <ion-button v-if="blockToShow === 'attributes'" color="primary" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
                             <Select
                                 :data="priceAttributeType" 
-                                :placeholder="productData.rentType"
-                                @date-updated="(selected) => costEstimation = selected.currentValue"
+                                :placeholder="priceCalcType(productData.rentType)"
+                                @date-updated="(selected) => rentType = selected.currentValue"
                             />
                         </ion-button>
                     </ion-row>
@@ -81,29 +86,37 @@
 
 <script>
     import { defineComponent, ref, watch, watchEffect } from 'vue';
-    import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonThumbnail, IonImg, IonInput } from '@ionic/vue';
+    import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonThumbnail, IonImg, IonInput, IonChip, IonLabel, IonIcon } from '@ionic/vue';
+    //
+    import {  } from 'ionicons/icons';
     //
     import Select from '../Select.vue';
     //
     import store from '../../store/index';
     //
+    import { setIconByBlockToShow } from '../../helpers/setIconBy';
+    import { translateValue } from '@/helpers/translateValue';
+    //
     export default defineComponent({
         name: 'ViewPriceProduct',
-        emits: ['getCostEstimation', 'getProductPrice', 'closeModal'],
+        emits: ['getCostEstimation', 'getProductPrice', 'getRentType', 'closeModal'],
         props: {
             productData: Object,
             blockToShow: String
         },
         components: {
-            IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonThumbnail, IonImg, Select, IonInput
+            IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonThumbnail, IonImg, Select, IonInput, IonChip, IonLabel, IonIcon
         },
         setup(props, { emit }) {
+            // priceChipList
+            const priceChipList = ref(store.state.priceChipList)
             // Currency
             const currency = ref(store.state.systemCurrency.name);
             //
             const productData = ref({});
             const costEstimation = ref();
             const productPrice = ref();
+            const rentType = ref();
             //
             const priceEstimationType = ref(store.state.priceEstimataionType)
             const priceAttributeType = ref(store.state.priceAttributeType)
@@ -115,23 +128,39 @@
                     return 'Цена за 1шт.'
                 } else if (type === 'per100gram') {
                     return 'Цена за 100г.'
+                } else if (type === 'sale') {
+                    return 'Продажа'
+                } else if (type === 'rent') {
+                    return 'Аренда'
                 }
             }
             //
             watchEffect(() => {
                 productData.value = props.productData;
             });
-            // следим за изменениями значения costEstimation у текущего продукта в прайсе и emit наверх
+            // следим за изменениями значения costEstimation, price, rentType у текущего предмета в прайсе и emit наверх
             watch (costEstimation, (costEstimationType) => {
                 emit('getCostEstimation', costEstimationType)
             })
             watch(productPrice, (price) => {
-                console.log(price)
+                // console.log(price)
                 emit('getProductPrice', price)
             })
+            watch(rentType, (type) => {
+                // console.log(type)
+                emit('getRentType', type)
+            })
+            //
+            const setNameByBlockToShow = (blockToShow) => {
+                if(blockToShow === 'products') {
+                    return 'Продукт'
+                } else if (blockToShow === 'attributes') {
+                    return 'Атрибут к продукту'
+                }
+            }
 
             return {
-                productData, priceEstimationType, priceAttributeType, priceCalcType, costEstimation, currency, productPrice
+                productData, priceEstimationType, priceAttributeType, priceCalcType, costEstimation, rentType, currency, productPrice, setIconByBlockToShow, translateValue, priceChipList, setNameByBlockToShow
             }
         }
     })

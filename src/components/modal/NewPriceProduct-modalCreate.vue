@@ -3,7 +3,7 @@
         <ion-header translucent="true">
             <ion-toolbar>
                 <ion-buttons slot="start">
-                    <ion-button @click="$emit('closeModal', blockToShow)">Отменить</ion-button>
+                    <ion-button @click="$emit('closeModal', showBlockName)">Отменить</ion-button>
                 </ion-buttons>
                 <ion-title class="ion-text-center">Новый</ion-title>
                 <ion-buttons slot="end">
@@ -12,26 +12,25 @@
             </ion-toolbar>
         </ion-header>
         <ion-content class="ion-padding">
-            {{blockToShow}}
-            {{newProductData}}
             <!-- ============================= Основные данные ===================================== -->
             <!-- Выбор что добавляем в прайс: атрибут или продукт -->
             <ion-item-group>
                 <!-- Что добавляем -->
                 <ion-text>
-                    <h4 class="ion-no-margin">Что добавляем?</h4>
+                    <h4 class="ion-no-margin ion-margin-bottom">Что добавить в прайс</h4>
                 </ion-text>
                 <!-- Выбор -->
-                <ion-chip>
+                <ion-chip color="primary" class="ion-no-margin ion-margin-bottom">
+                    <ion-icon :icon="setIconByBlockToShow(showBlockName)"></ion-icon>
                     <ion-label>
-                        <Select :data="priceChipList" :placeholder="blockToShow" @date-updated="(selected) => blockToShow = selected.currentValue"/>
+                        <Select :data="priceChipList" :placeholder="translateValue(showBlockName, priceChipList)" @date-updated="(selected) => showBlockName = selected.currentValue"/>
                     </ion-label>
                 </ion-chip>
             </ion-item-group>
             <ion-item-group>
                 <!-- Заголовок -->
                 <ion-text>
-                    <h4 class="ion-no-margin">Продукт</h4>
+                    <h4 class="ion-no-margin ion-margin-top">{{setNameByBlockToShow(showBlockName)}}</h4>
                 </ion-text>
                 <!-- Показываем выбранный продукт -->
                 <ion-grid class="ion-no-padding">
@@ -93,7 +92,7 @@
                         </ion-button>
                         <!-- Кнопка изменить тип расчета цены -->
                         <!-- Для products -->
-                        <ion-button v-if="blockToShow === 'products'" color="primary" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                        <ion-button v-if="showBlockName === 'products'" color="primary" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
                             <Select
                                 :data="priceEstimationType" 
                                 placeholder="Не указан"
@@ -102,7 +101,7 @@
                         </ion-button>
                         <!-- priceAttributeType -->
                         <!-- Для attributes -->
-                        <ion-button v-if="blockToShow === 'attributes'" color="primary" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                        <ion-button v-if="showBlockName === 'attributes'" color="primary" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
                             <Select
                                 :data="priceAttributeType" 
                                 placeholder="Не указан"
@@ -140,6 +139,7 @@
     import { translateValue } from '@/helpers/translateValue';
     import { sortAlphabetically } from '../../helpers/sortDealSubject';
     import { searchDealSubjectFilter } from '../../helpers/filterDealSubject';
+    import { setIconByBlockToShow } from '../../helpers/setIconBy';
     //
     export default defineComponent({
         name: 'CreatePriceProduct',
@@ -155,7 +155,7 @@
             // priceChipList
             const priceChipList = ref(store.state.priceChipList)
             //
-            const blockToShow = ref();
+            const showBlockName = ref();
             // Currency
             const currency = ref(store.state.systemCurrency.name);
             //
@@ -173,9 +173,9 @@
             //
             const showSelectedProduct = (selectedProduct) => {
                 if(newProductData.value.value !== '') {
-                    if(blockToShow.value === 'products') {
+                    if(showBlockName.value === 'products') {
                         return translateValue(selectedProduct, dealSaleSubjectArray.value)
-                    } else if (blockToShow.value === 'attributes') {
+                    } else if (showBlockName.value === 'attributes') {
                         return translateValue(selectedProduct, subjectAttributeArray.value)
                     }
                 } else {
@@ -184,10 +184,10 @@
             }
             //
             const searchedProduct = computed(() => {
-                if (blockToShow.value === 'products') {
+                if (showBlockName.value === 'products') {
                     const sortedDealSellSubjectArray = sortAlphabetically(dealSaleSubjectArray.value);
                     return searchDealSubjectFilter(sortedDealSellSubjectArray, searchSelectedProduct.value)
-                } else if (blockToShow.value = 'attributes') {
+                } else if (showBlockName.value = 'attributes') {
                     const sortedDealSellSubjectArray = sortAlphabetically(subjectAttributeArray.value);
                     return searchDealSubjectFilter(sortedDealSellSubjectArray, searchSelectedProduct.value)
                 }
@@ -201,16 +201,25 @@
             //
             watchEffect(() => {
                 newProductData.value = props.newProductData
-                blockToShow.value = props.blockToShow
+                showBlockName.value = props.blockToShow
             })
             //
-            watch(blockToShow, () => {
-                // console.log(blockToShow.value)
-                emit('blockToShowIsChanged', blockToShow.value)
+            watch(showBlockName, () => {
+                // console.log(showBlockName.value)
+                
+                emit('blockToShowIsChanged', showBlockName.value)
             })
+            //
+            const setNameByBlockToShow = (blockToShow) => {
+                if(blockToShow === 'products') {
+                    return 'Продукт'
+                } else if (blockToShow === 'attributes') {
+                    return 'Атрибут к продукту'
+                }
+            }
 
             return {
-                helpOutline, dealSaleSubjectArray, subjectAttributeArray, showSelectedProduct, searchSelectedProduct, searchProductMenu, translateValue, searchedProduct, sortAlphabetically, searchDealSubjectFilter, chooseProduct, priceEstimationType, priceAttributeType, currency, blockToShow, priceChipList
+                helpOutline, dealSaleSubjectArray, subjectAttributeArray, showSelectedProduct, searchSelectedProduct, searchProductMenu, translateValue, searchedProduct, sortAlphabetically, searchDealSubjectFilter, chooseProduct, priceEstimationType, priceAttributeType, currency, showBlockName, priceChipList, setIconByBlockToShow, setNameByBlockToShow
             }
         }
     })

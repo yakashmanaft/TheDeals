@@ -31,6 +31,7 @@
         >
             <br>
             <br>
+            <br>
             <!-- page content -->
             <!-- No data -->
             <div v-if="(!dataLoaded || myDeals.length === 0) && !spinner" class="no-status-deal ion-padding-horizontal">
@@ -192,7 +193,7 @@
         IonThumbnail,
         IonItemGroup
     } from '@ionic/vue';
-    import { helpOutline, bagHandleOutline, cubeOutline } from 'ionicons/icons';
+    import { helpOutline } from 'ionicons/icons';
     import { defineComponent, ref, computed, onMounted, watch } from 'vue';
     import store from '../store/index';
     import { supabase } from '../supabase/init';
@@ -201,7 +202,7 @@
     import { format, parseISO, formatISO  } from 'date-fns';
     import { ru } from 'date-fns/locale';
     //
-    import { setIconByDealType } from '../helpers/setIconByDealType';
+    import { setIconByDealType } from '../helpers/setIconBy';
     import { translateValue } from '@/helpers/translateValue';
     import { setChipOutline } from '@/helpers/setChip';
     //

@@ -19,6 +19,17 @@ const routes = [
     },
   },
   {
+    path: '/wallet',
+    name: "Wallet",
+    component: () => import('../views/Wallet.vue'),
+    meta: {
+      title: 'Wallet',
+      auth: true,
+      translation: 'Кошелек',
+      type: 'View'
+    }
+  },
+  {
     path: '/deals',
     name: 'Deals',
     component: () => import('../views/Deals.vue'),

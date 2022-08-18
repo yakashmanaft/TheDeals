@@ -19,6 +19,7 @@
             :productData="currentProduct"
             @getCostEstimation="setCostEstimation"
             @getProductPrice="setProductPrice"
+            @getRentType="setAttributeRentType"
             :blockToShow="blockToShow"
         />
 
@@ -39,6 +40,7 @@
             id="main"
             type="push" 
         >
+            <br>
             <br>
             <br>
             <!-- page content -->
@@ -482,6 +484,11 @@
                 updateUserPriceListDB()
             }
             //
+            const setAttributeRentType = (type) => {
+                currentProduct.value.rentType = type;
+                updateUserPriceListDB()
+            }
+            //
             const setBlockToShow = (to) => {
                 if(to === 'products') {
                     blockToShow.value = 'products'
@@ -506,27 +513,22 @@
                 }
             }
             //
-            const changeBlockToShow = (blockToShow) => {
+            const changeBlockToShow = (block) => {
                 // console.log(blockToShow)
-                if (blockToShow === 'products') {
-                    console.log('products')
-                    // newPriceProductData.value = {
-                    //     uid: uid(),
-                    //     value: '',
-                    //     name: '',
-                    //     price: '',
-                    //     costEstimation: ''
-                    // }
-                } else if (blockToShow === 'attributes') {
-                    console.log('attributes')
-                    // newPriceProductData.value = {
-                    //     uid: uid(),
-                    //     value: '',
-                    //     name: '',
-                    //     price: '',
-                    //     rentType: '',
-                    //     isReturned: false 
-                    // }
+                if (block === 'products') {
+                    // console.log(block)
+                    blockToShow.value = 'products'
+                    newPriceProductData.value = {
+                        uid: uid(),
+                        value: '',
+                        name: '',
+                        price: '',
+                        costEstimation: ''
+                    }
+                } else if (block === 'attributes') {
+                    // console.log(block)
+                    blockToShow.value = 'attributes'
+                    newPriceProductData.value = newPriceAdditionalAttributeData.value
                 }
             }
 
@@ -536,7 +538,7 @@
             }
 
             return {
-                priceChipList, blockToShow, menu, user, userEmail, router, pageTitle, userSettings, spinner, dataLoaded, trashOutline, deleteProductAction, openDeleteProductModal, openDeleteAttributeModal, deleteProductButtons, deleteAttributeButtons, productToDelete, attributeToDelete, deleteProduct, openSaleProductInfo, updateUserPriceListDB, isViewCurrentProductOpened, currentProduct, isModalNewPriceItemOpened, addNewPriceProduct, toggleNewPriceProductModal, newPriceProductData, closeCircleOutline, currency, priceCalcType, costEstimation, setCostEstimation, setProductPrice, newPriceAdditionalAttributeData, deleteAdditionalAttribute, setBlockToShow, countItemChip, setChipOutline, setRentType, deleteAttributeAction, isItemAlreadyHave, changeBlockToShow, closeModalCreatePriceProduct
+                priceChipList, blockToShow, menu, user, userEmail, router, pageTitle, userSettings, spinner, dataLoaded, trashOutline, deleteProductAction, openDeleteProductModal, openDeleteAttributeModal, deleteProductButtons, deleteAttributeButtons, productToDelete, attributeToDelete, deleteProduct, openSaleProductInfo, updateUserPriceListDB, isViewCurrentProductOpened, currentProduct, isModalNewPriceItemOpened, addNewPriceProduct, toggleNewPriceProductModal, newPriceProductData, closeCircleOutline, currency, priceCalcType, costEstimation, setCostEstimation, setProductPrice, newPriceAdditionalAttributeData, deleteAdditionalAttribute, setBlockToShow, countItemChip, setChipOutline, setRentType, deleteAttributeAction, isItemAlreadyHave, changeBlockToShow, closeModalCreatePriceProduct, setAttributeRentType
             }
         }
     })

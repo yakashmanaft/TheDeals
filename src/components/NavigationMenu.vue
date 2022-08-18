@@ -1,5 +1,5 @@
 <template>
-    <ion-menu side="end" menu-id="first" content-id="main">
+    <ion-menu side="start" menu-id="first" content-id="main">
         <!-- menu header -->
         <ion-list-header class="ion-padding-top" lines="full">
             <ion-grid class="ion-no-margin ion-no-padding">
