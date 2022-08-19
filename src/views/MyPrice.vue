@@ -133,14 +133,12 @@
                 </div>
 
                 <!-- No data in current chip -->
-                <div class="no-status-deal">
-                    <div v-if="item.userAdditionalAttributes.length === 0 && blockToShow === 'attributes' && item.userPriceList.length !== 0">
-                        Добавьте доп атрибуты в прайс
-                    </div>
-                    <div v-if="item.userAdditionalAttributes.length !== 0 && blockToShow === 'products' && item.userPriceList.length === 0">
-                        Добавьте продукт в прайс
-            
-                    </div>
+                <div class="no-status-deal" v-if="item.userAdditionalAttributes.length === 0 && blockToShow === 'attributes' && item.userPriceList.length !== 0">
+                    Добавьте доп атрибуты в прайс
+                </div>
+                <div class="no-status-deal" v-if="item.userAdditionalAttributes.length !== 0 && blockToShow === 'products' && item.userPriceList.length === 0">
+                    Добавьте продукт в прайс
+        
                 </div>
             </div>
 
