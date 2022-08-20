@@ -137,7 +137,7 @@
                                                         x{{item.productQuantity}}
                                                     </ion-label>
                                                     <!-- mark where subject has attribute -->
-                                                    <div v-if="checkRentAttr(item)" class="absolute mark-atribute"></div>
+                                                    <div v-if="checkRentAttr(item, deal.dealType)" class="absolute mark-atribute"></div>
                                                 </div>
                                                 <div v-if="deal.dealsList.length" class="empty-item"></div>
                                                 <!-- deal.dealsList is empty array -->
@@ -205,6 +205,7 @@
     import { setIconByDealType } from '../helpers/setIconBy';
     import { translateValue } from '@/helpers/translateValue';
     import { setChipOutline } from '@/helpers/setChip';
+    import { checkRentAttr } from '@/helpers/checkRentAttr'; 
     //
     export default defineComponent({
         name: 'Deals',
@@ -381,7 +382,7 @@
                 contactID: '000',
                 dealsList: [],
                 shipping: '',
-                totalDealValue: '',
+                totalDealPrice: '',
                 executionDate: '',
                 dealPaid: '',
                 cancelledReason: ''
@@ -397,7 +398,7 @@
                     contactID: '000',
                     dealsList: [],
                     shipping: '',
-                    totalDealValue: '',
+                    totalDealPrice: '',
                     executionDate: '',
                     dealPaid: '',
                     cancelledReason: ''
@@ -453,17 +454,6 @@
                     } 
                 })
             }
-            // Проверяем выбрани ли атрибуты у предмета заказа
-            const checkRentAttr = (item) => {
-                if(item.additionalAttributes.length > 0) {
-                    // Если атрибут выбран
-                    return true
-                } else if (item.additionalAttributes.length === 0 ){
-                    // Если атрибутов в принципе не выбрано
-                    // console.log('без атрибутов')
-                    return false;
-                }
-            }
             // ============================ Фильтр для отображения на доске сделок по конкретному типу =====================
             // Типы дел
             const dealTypesList = ref(store.state.dealTypes)
@@ -485,9 +475,10 @@
             })
             // 
             const addSubject = (subjectData) => {
-                // console.log(subjectData)
+                // console.log(dealData.value.dealType)
                 dealData.value.dealsList.push({
-                    id: uid(),
+                    // id: uid(),
+                    id: subjectData.id,
                     selectedProduct: subjectData.selectedProduct,
                     price: subjectData.price,
                     costEstimation: subjectData.costEstimation,
@@ -495,8 +486,8 @@
                     productQuantity: subjectData.productQuantity,
                     // массив пока шаблоном, в modalCreateSubject задавать значения
                     additionalAttributes: [],
-                    productNote: '',
-                })
+                    productNote: subjectData.productNote,
+                })  
             }
             const deleteSubject = (id) => {
                 dealData.value.dealsList = dealData.value.dealsList.filter(subject => subject.id !== id);

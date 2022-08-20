@@ -253,6 +253,32 @@
             const openCreateSubjectModal = () => {
                 if(dealData.value.dealType !== '') {
                     isCreateNewSubjectOpened.value = true
+                    if (dealData.value.dealType === 'sale') {
+                        currentSubject.value = {
+                            id: uid(),
+                            selectedProduct: '',
+                            price: '',
+                            costEstimation: '',
+                            personQuantity: 1,
+                            gramPerPerson: 120,
+                            subjectDiscount: 0,
+                            subjectPrice: '',
+                            recipe: '',
+                            productQuantity: 1,
+                            additionalAttributes: [],
+                            productNote: '',
+                        }
+                    } else if (dealData.value.dealType === 'buy') {
+                        currentSubject.value = {
+                            id: uid(),
+                            selectedProduct: '',
+                            price: '',
+                            subjectPrice: '',
+                            // costEstimation: '',
+                            productQuantity: 1,
+                            productNote: '',
+                        }
+                    }
                 } else {
                     alert('NewDeal-modalCreate: Вы не указали тип дела')
                 }
@@ -260,15 +286,32 @@
             // Закрываем модалку создания нового предмета к текущему делу
             const closeCreateSubjectModal = () => {
                 isCreateNewSubjectOpened.value = false
-                currentSubject.value = {
-                    id: uid(),
-                    selectedProduct: '',
-                    price: '',
-                    costEstimation: '',
-                    recipe: '',
-                    productQuantity: 1,
-                    additionalAttributes: [],
-                    productNote: '',
+                // Обнуляем шаблон нового предмета у дела согласно dealType
+                if (dealData.value.dealType === 'sale') {
+                    currentSubject.value = {
+                        id: uid(),
+                        selectedProduct: '',
+                        price: '',
+                        costEstimation: '',
+                        personQuantity: 1,
+                        gramPerPerson: 120,
+                        subjectDiscount: 0,
+                        subjectPrice: '',
+                        recipe: '',
+                        productQuantity: 1,
+                        additionalAttributes: [],
+                        productNote: '',
+                    }
+                } else if (dealData.value.dealType === 'buy') {
+                    currentSubject.value = {
+                        id: uid(),
+                        selectedProduct: '',
+                        price: '',
+                        subjectPrice: '',
+                        // costEstimation: '',
+                        productQuantity: 1,
+                        productNote: '',
+                    }
                 }
             }
             
@@ -303,17 +346,8 @@
                 subjectToDelete.value = id;
                 deleteSubject.value = true;
             }
-            // Щаблон нового предмета к текущему делу
-            const currentSubject = ref({
-                id: uid(),
-                selectedProduct: '',
-                price: '',
-                costEstimation: '',
-                recipe: '',
-                productQuantity: 1,
-                additionalAttributes: [],
-                productNote: '',
-            })
+            // Заготовка под шаблон нового предмета к делу
+            const currentSubject = ref({})
             //
             const dealData = ref();
 
@@ -369,6 +403,7 @@
                 dealData.value = props.dealData;
 
             });
+
             return {
                 dealContact, dealContactID , searchContactMenu, choose, isCalendarOpened, closeModalCalendar, updateExecutionDate, datepicker, myContactsArray, searchDealContact, searchedContacts, dealTypes, addCircleOutline, closeCircleOutline, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, openDeleteSubjectModal, subjectToDelete, deleteDealSubjectButtons, addNewSubject, deleteSubject, dealData, currentDealSubject, isViewDealSubjectOpened, openCurrentDealSubject, checkRentAttr, setColorByDealType, setIconByDealType, translateDealSubjectRecipe, userRecipeArray
             }

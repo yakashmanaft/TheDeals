@@ -11,11 +11,11 @@
                 </ion-buttons>
             </ion-toolbar>
         </ion-header>
-        <ion-content class="ion-padding">
+        <ion-content>
             {{currentDealType}}
             {{subjectData}}
             <!-- Выбор предмета к делу -->
-            <ion-item-group>
+            <ion-item-group class="ion-padding-horizontal">
                 <!-- заголовок -->
                 <ion-text>
                     <h4 class="ion-no-margin ion-margin-top">Предмет</h4>
@@ -65,60 +65,160 @@
                     </ion-content>
                 </ion-modal>
             </ion-item-group>
+
             <!-- ================  Показываем в зависимости от выбранного типа дела ==============-->
             <!-- Если ПРОДАЖА -->
-            <ion-item-group v-if="currentDealType === 'sale'" class="ion-text-left">
-                <!-- Подбираем рецепт к делу -->
-                <ion-text>
-                    <h4>Рецепт</h4>
-                </ion-text>
-                <!-- Кнопка выбора рецепта к предмету -->
-                <ion-button color="primary" size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click="searchRecipeMenu = true">
-                    {{ showSelectedRecipe(subjectData.recipe) }}
-                </ion-button>
-                <!-- Модалка для выбор (Выбор / поиск рецепта для предмета) -->
-                <ion-modal :isOpen="searchRecipeMenu">
-                    <ion-searchbar class="ion-text-left" placeholder="Поиск..." v-model="searchRecipe" show-cancel-button="always" cancelButtonText="Отменить" @ionCancel="searchRecipeMenu = false">
-                    </ion-searchbar>
-                    <ion-content style="height: 90vh">
-                        <!-- Если не хотим указывать рецепт -->
-                        <ion-item v-if="searchedRecipe.length > 0" @click="chooseRecipe(noRecipe)">Без рецепта</ion-item>
-                        <!-- Выбираем из списка рецептов ПОЛЬЗОВАТЕЛЯ -->
-                        <ion-item v-for="recipe in searchedRecipe" :key="recipe.id" @click="chooseRecipe(recipe)">
-                            {{ recipe.name }}
-                        </ion-item>
-                        <!-- Если ничего подходящего нету -->
-                        <!-- Создать свой или купить на маркете -->
-                        <div v-if="searchedRecipe.length <= 0">
-                            <ion-item lines="none">
-                                <ion-grid>
-                                    <ion-row class="ion-justify-content-between ion-align-items-center">
-                                        <ion-text color="medium">
-                                            Ничего не найдено
-                                        </ion-text>
-                                        <ion-text color="primary">
-                                            Добавить
-                                        </ion-text>
-                                        <ion-text>
-                                            Купить рецепт
-                                        </ion-text>
-                                    </ion-row>
-                                </ion-grid>
+            <div v-if="currentDealType === 'sale'">
+                <ion-item-group  class="ion-text-left ion-padding-horizontal">
+                    <!-- Подбираем рецепт к делу -->
+                    <ion-text>
+                        <h4>Рецепт</h4>
+                    </ion-text>
+                    <!-- Кнопка выбора рецепта к предмету -->
+                    <ion-button color="primary" size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click="searchRecipeMenu = true">
+                        {{ showSelectedRecipe(subjectData.recipe) }}
+                    </ion-button>
+                    <!-- Модалка для выбор (Выбор / поиск рецепта для предмета) -->
+                    <ion-modal :isOpen="searchRecipeMenu">
+                        <ion-searchbar class="ion-text-left" placeholder="Поиск..." v-model="searchRecipe" show-cancel-button="always" cancelButtonText="Отменить" @ionCancel="searchRecipeMenu = false">
+                        </ion-searchbar>
+                        <ion-content style="height: 90vh">
+                            <!-- Если не хотим указывать рецепт -->
+                            <ion-item v-if="searchedRecipe.length > 0" @click="chooseRecipe(noRecipe)">Без рецепта</ion-item>
+                            <!-- Выбираем из списка рецептов ПОЛЬЗОВАТЕЛЯ -->
+                            <ion-item v-for="recipe in searchedRecipe" :key="recipe.id" @click="chooseRecipe(recipe)">
+                                {{ recipe.name }}
                             </ion-item>
-                        </div>
-                    </ion-content>
-                </ion-modal>
+                            <!-- Если ничего подходящего нету -->
+                            <!-- Создать свой или купить на маркете -->
+                            <div v-if="searchedRecipe.length <= 0">
+                                <ion-item lines="none">
+                                    <ion-text color="medium">
+                                        Ничего не найдено
+                                    </ion-text>
+                                </ion-item>
+                                <br>
+                                <br>
+                                <ion-item lines="none">
+                                    <ion-text class="ion-padding-horizontal">
+                                        Если вы хотите добавить рецепт, которого нет в вашей книге десертов - ищите в магазине рецептов :) 
+                                    </ion-text>
+                                </ion-item>
+                            </div>
+                        </ion-content>
+                    </ion-modal>
+                </ion-item-group>
+
+                <ion-item-group>
+                    <!-- ================== Считаем Subject Price ==================================== -->
+                    <!-- per Kilogram -->
+                    <div v-if="subjectData.costEstimation === 'perKilogram'">
+                        <!-- Заголовок -->
+                        <ion-text>
+                            <h4>Калькулятор цены</h4>
+                        </ion-text>
+                        <!--  -->
+                        <ion-grid class="ion-no-padding">
+                            <ion-row>
+                                Цена за 1 кг.: {{ subjectData.price }}
+                            </ion-row>
+                            <ion-row>
+                                Количество гостей (чел.): {{ subjectData.personQuantity }}
+                            </ion-row>
+                            <ion-row>
+                                Вес одной порции (гр.): {{ subjectData.gramPerPerson }}
+                            </ion-row>
+                            <ion-row>
+                                Количество предмета (шт.): {{ subjectData.productQuantity }}
+                            </ion-row>
+                            <ion-row>
+                                Скидка на предмет: (%): {{ subjectData.subjectDiscount }}
+                            </ion-row>
+                            <ion-row class="ion-align-items-center ion-justify-content-between">
+                                <ion-text>
+                                    Дополнительные атрибуты
+                                </ion-text>  
+                                <ion-toggle color="success" @ionChange="toggleAttributesMenu"></ion-toggle>  
+                            </ion-row>
+                            <ion-row>
+                                Цена продукта: {{ subjectData.subjectPrice }}
+                            </ion-row>
+                        </ion-grid>
+                        <ion-grid class="ion-no-padding" v-if="isAttributesMenuOpened">
+                            <ion-row class="ion-nowrap horizontal-scroll">
+                                <ion-card class="thumbnail_deal-subject">
+                                    <ion-icon style="height: 100%; width: 100%;" color="medium" :icon="helpOutline"></ion-icon>
+                                </ion-card>
+                                <ion-card class="thumbnail_deal-subject">
+                                    <ion-icon style="height: 100%; width: 100%;" color="medium" :icon="helpOutline"></ion-icon>
+                                </ion-card>
+                                <ion-card class="thumbnail_deal-subject">
+                                    <ion-icon style="height: 100%; width: 100%;" color="medium" :icon="helpOutline"></ion-icon>
+                                </ion-card>
+                                <ion-card class="thumbnail_deal-subject">
+                                    <ion-icon style="height: 100%; width: 100%;" color="medium" :icon="helpOutline"></ion-icon>
+                                </ion-card>
+                                <ion-card class="thumbnail_deal-subject">
+                                    <ion-icon style="height: 100%; width: 100%;" color="medium" :icon="helpOutline"></ion-icon>
+                                </ion-card>
+                                <ion-card class="thumbnail_deal-subject">
+                                    <ion-icon style="height: 100%; width: 100%;" color="medium" :icon="helpOutline"></ion-icon>
+                                </ion-card>
+                                <ion-card class="thumbnail_deal-subject">
+                                    <ion-icon style="height: 100%; width: 100%;" color="medium" :icon="helpOutline"></ion-icon>
+                                </ion-card>
+                                <ion-card class="thumbnail_deal-subject">
+                                    <ion-icon style="height: 100%; width: 100%;" color="medium" :icon="helpOutline"></ion-icon>
+                                </ion-card>
+
+                            </ion-row>
+                        </ion-grid>
+                    </div>
+                    <!-- per 100gram -->
+                    <div v-if="subjectData.costEstimation === 'per100gram'">
+                    <!-- Заголовок -->
+                    <ion-text>
+                        <h4>Калькулятор цены</h4>
+                    </ion-text>
+                        Цена за 100 гр. {{ subjectData.price }} <br>
+
+                    </div>
+                    <!-- per Unit -->
+                    <div v-if="subjectData.costEstimation === 'perUnit'">
+                    <!-- Заголовок -->
+                    <ion-text>
+                        <h4>Калькулятор цены</h4>
+                    </ion-text>
+                        Цена за 1 шт. {{ subjectData.price }} <br>
+                    </div>
 
 
-                <p>Выберите рецепт предмета</p>
-                <input type="text" v-model="subjectData.recipe">
-            </ion-item-group>
+                    <!-- 
+                        
+                     -->
+                    <!-- модалка для выбора (Поиск атрибута к предмету) -->
+
+
+                    <!-- ================== Считаем Total Subject Price ============================== -->
+                </ion-item-group>
+            </div>
 
             <!-- Если ЗАКУПКА -->
-            <ion-item-group v-if="currentDealType === 'buy'">
-                Это добавление предмета для Закупа
-                <input type="text" v-model="subjectData.selectedProduct"/>
-                <textarea name="" id="" cols="30" rows="10" v-model="subjectData.productNote"></textarea>
+            <div v-if="currentDealType === 'buy'" >
+                <!-- product price -->
+                <ion-item-group >
+                    <ion-text>
+                        <h4>Стоимость приобретения</h4>
+                    </ion-text>
+                </ion-item-group>
+            </div>
+
+            <!-- product note -->
+            <ion-item-group>
+                <ion-text>
+                    <h4>Заметки по предмету</h4>
+                </ion-text>
+                <ion-textarea autocapitalize="on" v-model="subjectData.productNote" placeholder="Написать..."></ion-textarea>
             </ion-item-group>
         </ion-content>
     </ion-modal>
@@ -126,7 +226,7 @@
 
 <script>
     import { defineComponent, ref, onMounted, computed, watchEffect } from 'vue';
-    import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonImg, IonThumbnail, IonIcon, IonGrid, IonRow, IonSearchbar, IonItem } from '@ionic/vue';
+    import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonImg, IonThumbnail, IonIcon, IonGrid, IonRow, IonSearchbar, IonItem, IonTextarea, IonToggle, IonCard } from '@ionic/vue';
     import { helpOutline } from 'ionicons/icons';
     //
     import { searchDealSubjectFilter } from '../../helpers/filterDealSubject';
@@ -159,7 +259,10 @@
             IonGrid,
             IonRow,
             IonSearchbar,
-            IonItem
+            IonItem,
+            IonTextarea,
+            IonToggle,
+            IonCard
         },
         setup(props, {emit}) {
             // массив ПОЛЬЗОВАТЕЛЯ с вариантами рецептов (Временно в сторе)
@@ -251,15 +354,36 @@
                 value: 'no-recipe',
                 name: 'Без рецепта'
             })
+            // ==================== Рассчет subjectPrice цены при условии за килограмм
+
+            // ==================== Работа с доп. атрибутами
+            const isAttributesMenuOpened = ref(false);
+            const toggleAttributesMenu = () => {
+                isAttributesMenuOpened.value = !isAttributesMenuOpened.value;
+                // при закрытии - узатираем выбранные атрибуты
+            }
+
 
             return {
-                dealSaleSubjectArray, dealBuySubjectArray, helpOutline, showSelectedProduct, searchSubjectMenu, searchSelectedProduct, currentDealType, translateValue, searchedSubject, choose, searchRecipeMenu, searchRecipe, userRecipeArray, chooseRecipe, showSelectedRecipe, searchedRecipe, noRecipe
+                dealSaleSubjectArray, dealBuySubjectArray, helpOutline, showSelectedProduct, searchSubjectMenu, searchSelectedProduct, currentDealType, translateValue, searchedSubject, choose, searchRecipeMenu, searchRecipe, userRecipeArray, chooseRecipe, showSelectedRecipe, searchedRecipe, noRecipe, isAttributesMenuOpened, toggleAttributesMenu
             }
         }
     })
 </script>
 
-<style scoped>
+<style scoped>    
+    .horizontal-scroll {
+        overflow: scroll;
+        --overflow: scroll;
+        white-space: nowrap;
+    }
+    /* ::-webkit-scrollbar, *::-webkit-scrollbar {
+        display: none;
+        overflow: hidden;
+    } */
+    ion-card {
+        overflow: visible;
+    }
     .relative {
         position: relative;
     }

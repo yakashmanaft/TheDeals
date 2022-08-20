@@ -394,8 +394,16 @@ const state = reactive({
       name: 'Аренда столовых приборов',
     },
     {
-      value: 'packing-box',
-      name: 'Упаковочная коробка',
+      value: 'cake-packing-box',
+      name: 'Коробка для торта',
+    },
+    {
+      value: 'cupcake-packing-box',
+      name: 'Коробка для капкейков',
+    },
+    {
+      value: 'dessert-packing-box',
+      name: 'Коробка для десертов',
     },
     {
       value: 'drink',

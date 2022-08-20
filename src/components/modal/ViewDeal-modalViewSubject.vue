@@ -85,6 +85,10 @@
                     </ion-content>
                 </ion-modal>
             </ion-item-group>
+            <!-- Если ЗАКУП -->
+            <ion-item-group v-if="currentDealType === 'buy'">
+                123
+            </ion-item-group>
             {{currentDealType}}
             {{subjectData}}
         </ion-content>

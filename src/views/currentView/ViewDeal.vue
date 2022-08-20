@@ -156,7 +156,7 @@
                                         <ion-img  style="height: 100%" :src="`../img/subjects/buy/${item.selectedProduct}.webp`"></ion-img>
                                     </div>
                                     <!-- mark where subject has attribute -->
-                                    <div v-if="checkRentAttr(item)" class="absolute mark-atribute"></div>
+                                    <div v-if="checkRentAttr(item, currentDeal.dealType)" class="absolute mark-atribute"></div>
                                 </ion-thumbnail>
                                 <!--  -->
                                 <!-- <ion-thumbnail v-if="item.selectedProduct === ''" class="empty-deal-list_thumbnail">
@@ -216,9 +216,10 @@
     import { addCircleOutline, closeCircleOutline, helpOutline } from 'ionicons/icons';
     //
     import { searchFilter } from '../../helpers/filterMyContacts'; 
-    import { setColorByDealType } from '../../helpers/setColorByDealType';
-    import { setIconByDealType } from '../../helpers/setIconBy';
+    import { setColorByDealType } from '@/helpers/setColorByDealType';
+    import { setIconByDealType } from '@/helpers/setIconBy';
     import { translateValue } from '@/helpers/translateValue';
+    import { checkRentAttr } from '@/helpers/checkRentAttr';
     //
     import Spinner from '../../components/Spinner.vue';
     import ViewHeader from '../../components/headers/HeaderViewCurrent.vue';
@@ -269,6 +270,8 @@
             const spinner = ref(null);
             // Статусы дел
             const dealStatusList = ref(store.state.dealStatusList)
+            // Заготовка под шаблон нового предмета к делу
+            const currentSubject = ref({})
             //
             const myContacts = ref([])
             myContacts.value = store.state.myContactsArray; 
@@ -457,24 +460,35 @@
             // Открывает модалку создания нового предмета к текущему делу
             const openCreateSubjectModal = () => {
                 isCreateNewSubjectOpened.value = true;
-                // Обнуляем шаблон нового предмета у дела
-                currentSubject.value  = {
-                    id: uid(),
-                    selectedProduct: '',
-                    price: '',
-                    costEstimation: '',
-                    recipe:'',
-                    productQuantity: 1,
-                    additionalAttributes: [],
-                    productNote: ''
+                // Обнуляем шаблон нового предмета у дела согласно dealType
+                if (currentDeal.value.dealType === 'sale') {
+                    currentSubject.value = {
+                        id: uid(),
+                        selectedProduct: '',
+                        price: '',
+                        costEstimation: '',
+                        subjectPrice: '',
+                        recipe: '',
+                        productQuantity: 1,
+                        additionalAttributes: [],
+                        productNote: '',
+                    }
+                } else if (currentDeal.value.dealType === 'buy') {
+                    currentSubject.value = {
+                        id: uid(),
+                        selectedProduct: '',
+                        price: '',
+                        subjectPrice: '',
+                        // costEstimation: '',
+                        productQuantity: 1,
+                        productNote: '',
+                    }
                 }
             }
             // Закрываем модалку создания нового предмета к текущему делу
             const closeCreateSubjectModal = () => {
                 isCreateNewSubjectOpened.value = false;
             }
-            // Заготовка под шаблон нового предмета к делу
-            const currentSubject = ref({})
             // Добавляем новый предмет к текущему делу и делаем запись в БД
             const addNewSubject = () => {
                 //Выдумать варианты валидации
@@ -486,18 +500,6 @@
                     currentDeal.value.dealsList.push(currentSubject.value); 
                     isCreateNewSubjectOpened.value = false;
                     update();
-                }
-            }
-
-            // Проверяем выбрани ли атрибуты у предмета заказа
-            const checkRentAttr = (item) => {
-                if(item.additionalAttributes.length > 0) {
-                    // Если атрибут выбран
-                    return true
-                } else if (item.additionalAttributes.length === 0 ){
-                    // Если атрибутов в принципе не выбрано
-                    // console.log('без атрибутов')
-                    return false;
                 }
             }
             // Переводчик названий рецептов
