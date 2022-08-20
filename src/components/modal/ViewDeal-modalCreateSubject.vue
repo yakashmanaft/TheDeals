@@ -114,8 +114,8 @@
                     <!-- per Kilogram -->
                     <div v-if="subjectData.costEstimation === 'perKilogram'">
                         <!-- Заголовок -->
-                        <ion-text>
-                            <h4>Калькулятор цены</h4>
+                        <ion-text >
+                            <h4 class="ion-padding-horizontal">Калькулятор цены</h4>
                         </ion-text>
                         <!--  -->
                         <ion-grid class="ion-no-padding">
@@ -134,43 +134,49 @@
                             <ion-row>
                                 Скидка на предмет: (%): {{ subjectData.subjectDiscount }}
                             </ion-row>
-                            <ion-row class="ion-align-items-center ion-justify-content-between">
+                            <ion-row class="ion-align-items-center ion-justify-content-between ion-padding">
                                 <ion-text>
                                     Дополнительные атрибуты
                                 </ion-text>  
-                                <ion-toggle color="success" @ionChange="toggleAttributesMenu"></ion-toggle>  
-                            </ion-row>
-                            <ion-row>
-                                Цена продукта: {{ subjectData.subjectPrice }}
+                                <ion-toggle color="success" @ionChange="toggleAttributesMenu"></ion-toggle>
                             </ion-row>
                         </ion-grid>
-                        <ion-grid class="ion-no-padding" v-if="isAttributesMenuOpened">
-                            <ion-row class="ion-nowrap horizontal-scroll">
-                                <ion-card class="thumbnail_deal-subject">
-                                    <ion-icon style="height: 100%; width: 100%;" color="medium" :icon="helpOutline"></ion-icon>
-                                </ion-card>
-                                <ion-card class="thumbnail_deal-subject">
-                                    <ion-icon style="height: 100%; width: 100%;" color="medium" :icon="helpOutline"></ion-icon>
-                                </ion-card>
-                                <ion-card class="thumbnail_deal-subject">
-                                    <ion-icon style="height: 100%; width: 100%;" color="medium" :icon="helpOutline"></ion-icon>
-                                </ion-card>
-                                <ion-card class="thumbnail_deal-subject">
-                                    <ion-icon style="height: 100%; width: 100%;" color="medium" :icon="helpOutline"></ion-icon>
-                                </ion-card>
-                                <ion-card class="thumbnail_deal-subject">
-                                    <ion-icon style="height: 100%; width: 100%;" color="medium" :icon="helpOutline"></ion-icon>
-                                </ion-card>
-                                <ion-card class="thumbnail_deal-subject">
-                                    <ion-icon style="height: 100%; width: 100%;" color="medium" :icon="helpOutline"></ion-icon>
-                                </ion-card>
-                                <ion-card class="thumbnail_deal-subject">
-                                    <ion-icon style="height: 100%; width: 100%;" color="medium" :icon="helpOutline"></ion-icon>
-                                </ion-card>
-                                <ion-card class="thumbnail_deal-subject">
-                                    <ion-icon style="height: 100%; width: 100%;" color="medium" :icon="helpOutline"></ion-icon>
-                                </ion-card>
-
+                        <!--  -->
+                        <ion-grid class="ion-no-padding ion-padding-horizontal" style="margin: 0 auto" v-if="isAttributesMenuOpened">
+                            <ion-row style="gap: 1.6rem" class="ion-justify-between">
+                                <ion-thumbnail class="thumbnail_deal-subject">
+                                    <ion-icon style="font-size: 32px" color="medium" :icon="addOutline"></ion-icon>
+                                </ion-thumbnail>
+                                <ion-thumbnail class="thumbnail_deal-subject">
+                                    <ion-img style="height: 100%" :src="`img/subjects/sale/${subjectData.selectedProduct}.webp`"></ion-img>
+                                </ion-thumbnail>
+                                <ion-thumbnail class="thumbnail_deal-subject">
+                                    <ion-img style="height: 100%" :src="`img/subjects/sale/${subjectData.selectedProduct}.webp`"></ion-img>
+                                </ion-thumbnail>
+                                <ion-thumbnail class="thumbnail_deal-subject">
+                                    <ion-img style="height: 100%" :src="`img/subjects/sale/${subjectData.selectedProduct}.webp`"></ion-img>
+                                </ion-thumbnail>
+                                <ion-thumbnail class="thumbnail_deal-subject">
+                                    <ion-img style="height: 100%" :src="`img/subjects/sale/${subjectData.selectedProduct}.webp`"></ion-img>
+                                </ion-thumbnail>
+                                <ion-thumbnail class="thumbnail_deal-subject">
+                                    <ion-img style="height: 100%" :src="`img/subjects/sale/${subjectData.selectedProduct}.webp`"></ion-img>
+                                </ion-thumbnail>
+                                <ion-thumbnail class="thumbnail_deal-subject">
+                                    <ion-img style="height: 100%" :src="`img/subjects/sale/${subjectData.selectedProduct}.webp`"></ion-img>
+                                </ion-thumbnail>
+                                <ion-thumbnail class="thumbnail_deal-subject">
+                                    <ion-img style="height: 100%" :src="`img/subjects/sale/${subjectData.selectedProduct}.webp`"></ion-img>
+                                </ion-thumbnail>
+                                <ion-thumbnail class="thumbnail_deal-subject">
+                                    <ion-img style="height: 100%" :src="`img/subjects/sale/${subjectData.selectedProduct}.webp`"></ion-img>
+                                </ion-thumbnail>
+                            </ion-row>
+                        </ion-grid>
+                        <!--  -->
+                        <ion-grid>
+                            <ion-row>
+                                Цена продукта: {{ subjectData.subjectPrice }}
                             </ion-row>
                         </ion-grid>
                     </div>
@@ -227,7 +233,7 @@
 <script>
     import { defineComponent, ref, onMounted, computed, watchEffect } from 'vue';
     import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonImg, IonThumbnail, IonIcon, IonGrid, IonRow, IonSearchbar, IonItem, IonTextarea, IonToggle, IonCard } from '@ionic/vue';
-    import { helpOutline } from 'ionicons/icons';
+    import { helpOutline, addOutline } from 'ionicons/icons';
     //
     import { searchDealSubjectFilter } from '../../helpers/filterDealSubject';
     import { searchUserRecipeFilter } from '../../helpers/filterUserRecipe';
@@ -365,7 +371,7 @@
 
 
             return {
-                dealSaleSubjectArray, dealBuySubjectArray, helpOutline, showSelectedProduct, searchSubjectMenu, searchSelectedProduct, currentDealType, translateValue, searchedSubject, choose, searchRecipeMenu, searchRecipe, userRecipeArray, chooseRecipe, showSelectedRecipe, searchedRecipe, noRecipe, isAttributesMenuOpened, toggleAttributesMenu
+                dealSaleSubjectArray, dealBuySubjectArray, helpOutline, addOutline, showSelectedProduct, searchSubjectMenu, searchSelectedProduct, currentDealType, translateValue, searchedSubject, choose, searchRecipeMenu, searchRecipe, userRecipeArray, chooseRecipe, showSelectedRecipe, searchedRecipe, noRecipe, isAttributesMenuOpened, toggleAttributesMenu
             }
         }
     })
