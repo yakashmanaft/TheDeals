@@ -31,7 +31,7 @@
                 <ion-chip :color="setColorByDealType(dealData.dealType)" class="ion-no-margin">
                     <ion-icon class="ion-no-margin" v-if="dealData.dealType !== ''" :icon="setIconByDealType(dealData.dealType)"></ion-icon>
                     <ion-label>
-                        <Select :data="dealTypes" :placeholder="`Укажите тип дела`" @date-updated="(selected) => dealData.dealType = selected.currentValue"/>
+                        <Select :data="dealTypes" :placeholder="`Укажите тип дела`" @date-updated="(selected) => currentDealType = selected.currentValue"/>
                     </ion-label>
                 </ion-chip>
             </ion-item-group>
@@ -245,8 +245,6 @@
             const searchedContacts = computed(() => {
                 return searchFilter(myContactsArray.value, searchDealContact.value)
             })
-            // console.log(myContactsArray.value)
-
             // ============================ управление current deal subject ================================
             const isCreateNewSubjectOpened = ref(false);
             // Открывает модалку создания нового предмета к текущему делу
@@ -350,7 +348,7 @@
             const currentSubject = ref({})
             //
             const dealData = ref();
-
+            //
             const addNewSubject = (subjectData) => {
                 // Выдумать варианты валидации
                 if (currentSubject.value.selectedProduct === '' ) {
@@ -367,13 +365,17 @@
 
             // Проверяем выбрани ли атрибуты у предмета заказа
             const checkRentAttr = (item) => {
-                if(item.additionalAttributes.length > 0) {
-                    // Если атрибут выбран
-                    return true
-                } else if (item.additionalAttributes.length === 0 ){
-                    // Если атрибутов в принципе не выбрано
-                    // console.log('без атрибутов')
-                    return false;
+                if(dealData.value.dealType === 'sale') {
+                    if(item.additionalAttributes.length > 0) {
+                        // Если атрибут выбран
+                        return true
+                    } else if (item.additionalAttributes.length === 0 ){
+                        // Если атрибутов в принципе не выбрано
+                        // console.log('без атрибутов')
+                        return false;
+                    }
+                } else if (dealData.value.dealType === 'buy') {
+                    return
                 }
             }
 
@@ -401,11 +403,27 @@
             watchEffect(() => {
                 myContactsArray.value = props.myContacts;
                 dealData.value = props.dealData;
-
             });
 
+            const currentDealType = ref();    
+            watch(currentDealType, () => {
+                // При случайном или намеренном изменении типа дела - очищаем объект дела
+                console.log(currentDealType.value)
+                dealData.value.dealType = currentDealType.value
+                dealData.value.contactID = '000'
+                dealData.value.dealsList = []
+                dealData.value.shipping = ''
+                dealData.value.totalDealPrice = ''
+                dealData.value.executionDate = ''
+                dealData.value.dealPaid = ''
+                dealData.value.cancelledReason = ''
+            })
+
+
+            // dealData.dealType
+
             return {
-                dealContact, dealContactID , searchContactMenu, choose, isCalendarOpened, closeModalCalendar, updateExecutionDate, datepicker, myContactsArray, searchDealContact, searchedContacts, dealTypes, addCircleOutline, closeCircleOutline, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, openDeleteSubjectModal, subjectToDelete, deleteDealSubjectButtons, addNewSubject, deleteSubject, dealData, currentDealSubject, isViewDealSubjectOpened, openCurrentDealSubject, checkRentAttr, setColorByDealType, setIconByDealType, translateDealSubjectRecipe, userRecipeArray
+                dealContact, dealContactID , searchContactMenu, choose, isCalendarOpened, closeModalCalendar, updateExecutionDate, datepicker, myContactsArray, searchDealContact, searchedContacts, dealTypes, addCircleOutline, closeCircleOutline, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, openDeleteSubjectModal, subjectToDelete, deleteDealSubjectButtons, addNewSubject, deleteSubject, dealData, currentDealSubject, isViewDealSubjectOpened, openCurrentDealSubject, checkRentAttr, setColorByDealType, setIconByDealType, translateDealSubjectRecipe, userRecipeArray, currentDealType
             }
         }
     })
