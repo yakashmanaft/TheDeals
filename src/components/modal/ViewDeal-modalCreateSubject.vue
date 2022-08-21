@@ -11,6 +11,13 @@
                 </ion-buttons>
             </ion-toolbar>
         </ion-header>
+        <!--  -->
+        <ion-grid>
+            <ion-row>
+                <ion-text v-if="subjectData.selectedProduct !== ''">Общая сумма предмета: {{ subjectData.subjectPrice }}</ion-text>
+            </ion-row>
+        </ion-grid>
+        <!--  -->
         <ion-content>
             {{currentDealType}}
             {{subjectData}}
@@ -134,51 +141,76 @@
                             <ion-row>
                                 Скидка на предмет: (%): {{ subjectData.subjectDiscount }}
                             </ion-row>
-                            <ion-row class="ion-align-items-center ion-justify-content-between ion-padding">
-                                <ion-text>
-                                    Дополнительные атрибуты
-                                </ion-text>  
-                                <ion-toggle color="success" @ionChange="toggleAttributesMenu"></ion-toggle>
-                            </ion-row>
                         </ion-grid>
-                        <!--  -->
-                        <ion-grid class="ion-no-padding ion-padding-horizontal" style="margin: 0 auto" v-if="isAttributesMenuOpened">
-                            <ion-row style="gap: 1.6rem" class="ion-justify-between">
-                                <ion-thumbnail class="thumbnail_deal-subject">
-                                    <ion-icon style="font-size: 32px" color="medium" :icon="addOutline"></ion-icon>
-                                </ion-thumbnail>
-                                <ion-thumbnail class="thumbnail_deal-subject">
-                                    <ion-img style="height: 100%" :src="`img/subjects/sale/${subjectData.selectedProduct}.webp`"></ion-img>
-                                </ion-thumbnail>
-                                <ion-thumbnail class="thumbnail_deal-subject">
-                                    <ion-img style="height: 100%" :src="`img/subjects/sale/${subjectData.selectedProduct}.webp`"></ion-img>
-                                </ion-thumbnail>
-                                <ion-thumbnail class="thumbnail_deal-subject">
-                                    <ion-img style="height: 100%" :src="`img/subjects/sale/${subjectData.selectedProduct}.webp`"></ion-img>
-                                </ion-thumbnail>
-                                <ion-thumbnail class="thumbnail_deal-subject">
-                                    <ion-img style="height: 100%" :src="`img/subjects/sale/${subjectData.selectedProduct}.webp`"></ion-img>
-                                </ion-thumbnail>
-                                <ion-thumbnail class="thumbnail_deal-subject">
-                                    <ion-img style="height: 100%" :src="`img/subjects/sale/${subjectData.selectedProduct}.webp`"></ion-img>
-                                </ion-thumbnail>
-                                <ion-thumbnail class="thumbnail_deal-subject">
-                                    <ion-img style="height: 100%" :src="`img/subjects/sale/${subjectData.selectedProduct}.webp`"></ion-img>
-                                </ion-thumbnail>
-                                <ion-thumbnail class="thumbnail_deal-subject">
-                                    <ion-img style="height: 100%" :src="`img/subjects/sale/${subjectData.selectedProduct}.webp`"></ion-img>
-                                </ion-thumbnail>
-                                <ion-thumbnail class="thumbnail_deal-subject">
-                                    <ion-img style="height: 100%" :src="`img/subjects/sale/${subjectData.selectedProduct}.webp`"></ion-img>
-                                </ion-thumbnail>
-                            </ion-row>
-                        </ion-grid>
-                        <!--  -->
-                        <ion-grid>
-                            <ion-row>
-                                Цена продукта: {{ subjectData.subjectPrice }}
-                            </ion-row>
-                        </ion-grid>
+
+                        <!-- Модалка по выбору дополнительных атрибутов из прайса пользователя -->
+                        <ion-modal :isOpen="searchAttributeMenu">
+                            <ion-searchbar class="ion-text-left" placeholder="Поиск..." v-model="searchAdditionalAttributes" show-cancel-button="always" cancelButtonText="Отменить" @ionCancel="searchAttributeMenu = false"></ion-searchbar>
+                            <!--  -->
+                            <ion-content style="height: 90vh">
+                                <ion-item v-for="attribute in searchedAdditionalAttributes" :key="attribute.id" @click="chooseAttribute(attribute)">
+                                    {{ attribute.name }}
+                                </ion-item>
+                                <!-- Если ничего подхлдящего нет, создать свое надо -->
+                                <div v-if="searchedAdditionalAttributes.length <= 0">
+                                    <ion-item lines="none">
+                                        <ion-grid>
+                                            <ion-row class="ion-justify-content-between ion-align-items-center">
+                                                <ion-text color="medium">
+                                                    Ничего не найдено
+                                                </ion-text>
+                                                <ion-text color="primary">
+                                                    Добавить
+                                                </ion-text>
+                                            </ion-row>
+                                        </ion-grid>
+                                    </ion-item>
+                                </div>
+                            </ion-content>
+                        </ion-modal>
+
+                        <!-- ============================ Добавить атрибут к предмету =================================== -->
+                        <ion-item-group class="ion-margin-top">
+                            <!-- Заголовок -->
+                            <ion-text>
+                                <ion-grid class="ion-no-padding ion-padding-horizontal">
+                                    <ion-row class="ion-align-items-center ion-justify-content-between">
+                                        <div>
+                                            <h4 class="ion-no-margin">Атрибуты к предмету</h4>
+                                            <ion-text color="primary">Всего {{ subjectData.additionalAttributes.length }}</ion-text>
+                                        </div>
+                                        <ion-toggle color="success" @ionChange="toggleAttributesMenu"></ion-toggle>
+                                    </ion-row>
+                                </ion-grid>
+                            </ion-text>
+                            <!--  -->
+                            <ion-grid class="ion-no-padding" v-if="isAttributesMenuOpened">
+                                <ion-row class="ion-nowrap horizontal-scroll">
+                                    <!-- Карточки attribute -->
+                                    <ion-card @click.stop="openCurrentDealSubject(index)" class="ion-padding ion-text-center card-center relative" v-for="(attribute, index) in subjectData.additionalAttributes" :key="attribute.id">
+                                        <!-- Кнопка удалить конкретный атрибут у предмета -->
+                                        <ion-icon class="icon_size icon_del absolute" :icon="closeCircleOutline" @click.stop="openDeleteAttributeModal(attribute)"></ion-icon>
+                                        <!-- attribute img-->
+                                        <ion-thumbnail class="relative">
+                                            <ion-img style="height: 100%" :src="`../img/subjects/sale/${attribute.value}.webp`"></ion-img>
+                                        </ion-thumbnail>
+                                    </ion-card>
+                                    <!-- Открываем меню создания предмета к делу -->
+                                    <ion-card class="ion-padding card-center card-add" @click.stop="searchAttributeMenu = true">
+                                        <ion-icon :icon="addOutline" color="primary" class="icon_size"></ion-icon>
+                                    </ion-card>
+
+                                </ion-row>
+                            </ion-grid>
+                            <!-- Всплывашка подтверждение удаления предмета заказа -->
+                            <ion-action-sheet
+                                :is-open="deleteAttribute"
+                                header="Точно удалить?"
+                                :buttons="deleteSubjectAttributeButtons"
+                                @didDismiss="deleteAttribute = false"
+                            >
+                            </ion-action-sheet>
+                        </ion-item-group>
                     </div>
                     <!-- per 100gram -->
                     <div v-if="subjectData.costEstimation === 'per100gram'">
@@ -220,20 +252,23 @@
             </div>
 
             <!-- product note -->
-            <ion-item-group>
+            <ion-item-group class="ion-padding-horizontal ion-margin-bottom">
                 <ion-text>
                     <h4>Заметки по предмету</h4>
                 </ion-text>
-                <ion-textarea autocapitalize="on" v-model="subjectData.productNote" placeholder="Написать..."></ion-textarea>
+                <ion-textarea class="ion-margin-bottom" autocapitalize="on" v-model="subjectData.productNote" placeholder="Написать..."></ion-textarea>
             </ion-item-group>
+            <br>
+            <br>
+            <br>
         </ion-content>
     </ion-modal>
 </template>
 
 <script>
-    import { defineComponent, ref, onMounted, computed, watchEffect } from 'vue';
-    import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonImg, IonThumbnail, IonIcon, IonGrid, IonRow, IonSearchbar, IonItem, IonTextarea, IonToggle, IonCard } from '@ionic/vue';
-    import { helpOutline, addOutline } from 'ionicons/icons';
+    import { defineComponent, ref, onMounted, computed, watch, watchEffect } from 'vue';
+    import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonImg, IonThumbnail, IonIcon, IonGrid, IonRow, IonSearchbar, IonItem, IonTextarea, IonToggle, IonCard, IonLabel, IonActionSheet } from '@ionic/vue';
+    import { helpOutline, addOutline, closeCircleOutline } from 'ionicons/icons';
     //
     import { searchDealSubjectFilter } from '../../helpers/filterDealSubject';
     import { searchUserRecipeFilter } from '../../helpers/filterUserRecipe';
@@ -268,13 +303,17 @@
             IonItem,
             IonTextarea,
             IonToggle,
-            IonCard
+            IonCard, 
+            IonLabel,
+            IonActionSheet
         },
         setup(props, {emit}) {
             // массив ПОЛЬЗОВАТЕЛЯ с вариантами рецептов (Временно в сторе)
             const userRecipeArray = ref(store.state.userRecipeArray)
             // массив ПОЛЬЗОВАТЕЛЯ с вариантами предмета ПРОДАЖИ
             const dealSaleSubjectArray = ref();
+            // массив ПОЛЬЗОВАТЕЛЯ с вариантами дополнительных атрибутов к предметам дела
+            const dealAdditionalAttributesArray = ref();
             // массив ПОЛЬЗОВАТЕЛЯ с вариантами предмета ЗАКУПКИ
             const dealBuySubjectArray = ref(store.state.dealBuySubjectArray)
             //
@@ -282,11 +321,13 @@
             const currentDealType = ref();
             //
             const userSettings = ref(store.state.userSettings)
+            //
             onMounted( async() => {
                 await store.methods.getUserSettingsfromDB();
                 userSettings.value = store.state.userSettings
                 console.log(userSettings.value[0].userPriceList)
                 dealSaleSubjectArray.value = userSettings.value[0].userPriceList
+                dealAdditionalAttributesArray.value = userSettings.value[0].userAdditionalAttributes
             })
             //
             const showSelectedProduct = (selectedProduct) => {
@@ -314,12 +355,21 @@
                     return 'Не выбрано'
                 }
             }
-            // 
+            //  =================== Работы с предметами дела
             const searchSubjectMenu = ref(false);
             const searchSelectedProduct = ref('');
-            //
+            // =================== Работы с рецептами
             const searchRecipeMenu = ref(false);
             const searchRecipe = ref('');
+            // ==================== Работа с доп. атрибутами
+            const isAttributesMenuOpened = ref(false);
+            const toggleAttributesMenu = () => {
+                isAttributesMenuOpened.value = !isAttributesMenuOpened.value;
+                // при закрытии - узатираем выбранные атрибуты
+                subjectData.value.additionalAttributes = []
+            }
+            const searchAttributeMenu = ref(false)
+            const searchAdditionalAttributes = ref('')
             //
             watchEffect(() => {
                 subjectData.value = props.subjectData;
@@ -341,6 +391,12 @@
                 const sortedUserRecipeArray = sortAlphabetically(userRecipeArray.value);
                 return searchUserRecipeFilter(sortedUserRecipeArray, searchRecipe.value)
             })
+            // ПОЛЬЗВОАТЕЛЬСКИЕ ДОП АТРИБУТЫ К ПРОДУКТУ ПРОДАЖИ
+            const searchedAdditionalAttributes = computed(() => {
+                const sortedDealAdditionalAttributesArray = sortAlphabetically(dealAdditionalAttributesArray.value);
+                // используем фнукцию фильтрации из предметов заказа
+                return searchDealSubjectFilter(sortedDealAdditionalAttributesArray, searchAdditionalAttributes.value);
+            })
             // Задаем из выбранному списка значение для selectedProduct
             const choose = (subject) => {
                 subjectData.value.selectedProduct = subject.value;
@@ -355,23 +411,58 @@
                 searchRecipeMenu.value = false;
                 // console.log(recipe)
             }
+            // Выбираем из списка объект для массива атрибутов
+            const chooseAttribute = (attribute) => {
+                searchAttributeMenu.value = false;
+                subjectData.value.additionalAttributes.push(attribute)
+                console.log(attribute)
+                // 
+                subjectData.value.subjectPrice += +attribute.price
+            }
             // Заглушка под предмет продажи "БЕЗ РЕЦЕПТА"
             const noRecipe = ref({
                 value: 'no-recipe',
                 name: 'Без рецепта'
             })
-            // ==================== Рассчет subjectPrice цены при условии за килограмм
-
-            // ==================== Работа с доп. атрибутами
-            const isAttributesMenuOpened = ref(false);
-            const toggleAttributesMenu = () => {
-                isAttributesMenuOpened.value = !isAttributesMenuOpened.value;
-                // при закрытии - узатираем выбранные атрибуты
+            // ======================================== Удаление конкретного атрибута у предмета ==========================================
+            // Вызываем action sheet уведомление в качестве подтверждения
+            const deleteAttribute = ref(false);
+            // Храним айди предмета к удалению
+            const attributeToDelete = ref();
+            // Кнопка action sheet для подтверждения удаления
+            const deleteSubjectAttributeButtons = [
+                {
+                    text: 'Удалить',
+                    role: 'destructive',
+                    data: {
+                        type: 'delete'
+                    },
+                    handler: () => {
+                        deleteAttributeFunc(attributeToDelete.value)
+                    },
+                },
+                {
+                    text: 'Отменить',
+                    role: 'cancel',
+                    handler: () => {
+                        console.log('Cancel clicked')
+                    },
+                }
+            ]
+            //удаляем current attribute в предмете (обнолвений в БД здесь не производится)
+            const openDeleteAttributeModal = (attribute) => {
+                attributeToDelete.value = attribute;
+                deleteAttribute.value = true
             }
-
+            const deleteAttributeFunc = (attribute) => {
+                subjectData.value.additionalAttributes = subjectData.value.additionalAttributes.filter(item => item.uid !== attribute.uid);
+                // и вычитаем из общей стоимости
+                subjectData.value.subjectPrice -= +attribute.price
+            }
+            
 
             return {
-                dealSaleSubjectArray, dealBuySubjectArray, helpOutline, addOutline, showSelectedProduct, searchSubjectMenu, searchSelectedProduct, currentDealType, translateValue, searchedSubject, choose, searchRecipeMenu, searchRecipe, userRecipeArray, chooseRecipe, showSelectedRecipe, searchedRecipe, noRecipe, isAttributesMenuOpened, toggleAttributesMenu
+                dealSaleSubjectArray, dealBuySubjectArray, helpOutline, addOutline, showSelectedProduct, searchSubjectMenu, searchSelectedProduct, currentDealType, translateValue, searchedSubject, choose, searchRecipeMenu, searchRecipe, userRecipeArray, chooseRecipe, showSelectedRecipe, searchedRecipe, noRecipe, searchAttributeMenu, searchAdditionalAttributes, dealAdditionalAttributesArray, searchedAdditionalAttributes, chooseAttribute, closeCircleOutline, isAttributesMenuOpened, toggleAttributesMenu, openDeleteAttributeModal, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons
             }
         }
     })
@@ -383,10 +474,10 @@
         --overflow: scroll;
         white-space: nowrap;
     }
-    /* ::-webkit-scrollbar, *::-webkit-scrollbar {
+    ::-webkit-scrollbar, *::-webkit-scrollbar {
         display: none;
         overflow: hidden;
-    } */
+    }
     ion-card {
         overflow: visible;
     }
@@ -405,6 +496,29 @@
         background-color: var(--ion-color-light);
         border-radius: 50%;
         padding: 0.5rem;
+    }
+    .card-center {
+        display: flex; 
+        flex-direction: column; 
+        justify-content: center; 
+        align-items: center; 
+        min-width: 64px; 
+        max-width: 64px;
+        padding: 0.5rem;
+        background-color: var(--ion-color-light);
+        box-shadow: none;
+        border-radius: 50%;
+    }
+    .card-add {
+        min-height: 64px;
+    }
+    .icon_size {
+        font-size: 25px;
+    }
+    .icon_del {
+        top: -0.4rem;
+        left: -0.4rem;
+        z-index: 20;
     }
 
 </style>

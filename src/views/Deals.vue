@@ -485,7 +485,7 @@
                     recipe: subjectData.recipe,
                     productQuantity: subjectData.productQuantity,
                     // массив пока шаблоном, в modalCreateSubject задавать значения
-                    additionalAttributes: [],
+                    additionalAttributes: subjectData.additionalAttributes,
                     productNote: subjectData.productNote,
                 })  
             }
