@@ -12,8 +12,11 @@
             </ion-toolbar>
         </ion-header>
         <ion-content class="ion-padding">
+
             <!-- ================ Добавленный продукт ======================== -->
-            <ion-item-group>
+
+            <!-- Если продукт есть (продажа, закуп) -->
+            <ion-item-group v-if="subjectData.selectedProduct">
                 <!-- Заголовок -->
                 <ion-text>
                     <h4 class="ion-no-margin ion-margin-top">Продукт</h4>
@@ -31,6 +34,28 @@
                         </ion-thumbnail>
                         <ion-thumbnail v-if="subjectData.selectedProduct !== '' && currentDealType === 'buy'" class="thumbnail_deal-subject">
                             <ion-img :src="`../img/subjects/buy/${subjectData.selectedProduct}.webp`"></ion-img>
+                        </ion-thumbnail>
+                    </ion-row>
+                </ion-grid>
+            </ion-item-group>
+
+            <!-- Если продукта нет (Атрибут) -->
+            <ion-item-group v-else>
+                {{subjectData}}
+                <!-- Заголовок -->
+                <ion-text>
+                    <h4 class="ion-no-margin ion-margin-top">Доп. Атрибут</h4>
+                </ion-text>
+                <!-- Показываем текущий доп. атрибут -->
+                <ion-grid class="ion-no-padding">
+                    <ion-row class="ion-justify-content-between ion-align-items-center">
+                        <!-- Название текущего доп. атрибуту -->
+                        <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                            {{ subjectData.name }}
+                        </ion-button>
+                        <!-- Иконка к текущему доп. атрибуту -->
+                        <ion-thumbnail class="thumbnail_deal-subject">
+                            <ion-img :src="`../img/subjects/sale/${subjectData.value}.webp`"></ion-img>
                         </ion-thumbnail>
                     </ion-row>
                 </ion-grid>
@@ -160,16 +185,18 @@
                 currentDealType.value = props.currentDealType;
             })
             //
-            const translateProductValue = (selectedProduct) => {
-                if (subjectData.selectedProduct !== '') {
+            const translateProductValue = (selected) => {
+                if (subjectData.value.selectedProduct !== '') {
                     // Если currentDealType - Продажи
                     if(currentDealType.value === 'sale') {
-                        return translateValue(selectedProduct, dealSaleSubjectArray.value)
+                        return translateValue(selected, dealSaleSubjectArray.value)
                     }
                     // Если currentDealType - Закупки
                     if (currentDealType.value === 'buy') {
-                        return translateValue(selectedProduct, dealBuySubjectArray.value)
+                        return translateValue(selected, dealBuySubjectArray.value)
                     }
+                } else if (!subjectData.value.selectedProduct) {
+                    console.log(selected)
                 } else {
                     return
                 }

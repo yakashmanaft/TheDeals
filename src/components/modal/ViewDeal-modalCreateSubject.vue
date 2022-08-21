@@ -7,7 +7,7 @@
                 </ion-buttons>
                 <ion-title class="ion-text-center">Новый предмет</ion-title>
                 <ion-buttons slot="end">
-                    <ion-button @click="$emit('createSubject', subjectData)">Добавить</ion-button>
+                    <ion-button @click="$emit('createSubject', subjectData); isAttributesMenuOpened = false">Добавить</ion-button>
                 </ion-buttons>
             </ion-toolbar>
         </ion-header>
@@ -116,6 +116,14 @@
                     </ion-modal>
                 </ion-item-group>
 
+                <!-- view deal subject -->
+                <ViewDealSubject 
+                    :isOpen="isViewSubjectAttributeOpened"
+                    @closeModal="isViewSubjectAttributeOpened = false"
+                    :subjectData="currentSubjectAttribute"
+                    :currentDealType="currentDealType"
+                />
+
                 <ion-item-group>
                     <!-- ================== Считаем Subject Price ==================================== -->
                     <!-- per Kilogram -->
@@ -189,7 +197,7 @@
                             <ion-grid class="ion-no-padding" v-if="isAttributesMenuOpened">
                                 <ion-row class="ion-nowrap horizontal-scroll">
                                     <!-- Карточки attribute -->
-                                    <ion-card @click.stop="openCurrentDealSubject(index)" class="ion-padding ion-text-center card-center relative" v-for="(attribute, index) in subjectData.additionalAttributes" :key="attribute.id">
+                                    <ion-card @click.stop="openCurrentSubjectAttribute(index)" class="ion-padding ion-text-center card-center relative" v-for="(attribute, index) in subjectData.additionalAttributes" :key="attribute.id">
                                         <!-- Кнопка удалить конкретный атрибут у предмета -->
                                         <ion-icon class="icon_size icon_del absolute" :icon="closeCircleOutline" @click.stop="openDeleteAttributeModal(attribute)"></ion-icon>
                                         <!-- attribute img-->
@@ -268,6 +276,8 @@
 </template>
 
 <script>
+    import ViewDealSubject from '../modal/ViewDeal-modalViewSubject.vue'
+    //
     import { defineComponent, ref, onMounted, computed, watch, watchEffect } from 'vue';
     import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonImg, IonThumbnail, IonIcon, IonGrid, IonRow, IonSearchbar, IonItem, IonTextarea, IonToggle, IonCard, IonLabel, IonActionSheet } from '@ionic/vue';
     import { helpOutline, addOutline, closeCircleOutline } from 'ionicons/icons';
@@ -307,7 +317,8 @@
             IonToggle,
             IonCard, 
             IonLabel,
-            IonActionSheet
+            IonActionSheet,
+            ViewDealSubject
         },
         setup(props, {emit}) {
             // Валюта отображения
@@ -463,10 +474,20 @@
                 // и вычитаем из общей стоимости
                 subjectData.value.subjectPrice -= +attribute.price
             }
-            
+
+            // ======================================== Просмотр конкретного атрибута =====================================================
+            const currentSubjectAttribute = ref()
+            // открываем view current attribute item
+            const isViewSubjectAttributeOpened = ref(false);
+            const openCurrentSubjectAttribute = (index) => {
+                isViewSubjectAttributeOpened.value = true;
+                // console.log(subjectData.value.additionalAttributes[index])
+                currentSubjectAttribute.value = subjectData.value.additionalAttributes[index];
+                console.log(currentSubjectAttribute.value)
+            }
 
             return {
-                dealSaleSubjectArray, dealBuySubjectArray, helpOutline, addOutline, showSelectedProduct, searchSubjectMenu, searchSelectedProduct, currentDealType, translateValue, searchedSubject, choose, searchRecipeMenu, searchRecipe, userRecipeArray, chooseRecipe, showSelectedRecipe, searchedRecipe, noRecipe, searchAttributeMenu, searchAdditionalAttributes, dealAdditionalAttributesArray, searchedAdditionalAttributes, chooseAttribute, closeCircleOutline, isAttributesMenuOpened, toggleAttributesMenu, openDeleteAttributeModal, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, systemCurrency
+                dealSaleSubjectArray, dealBuySubjectArray, helpOutline, addOutline, showSelectedProduct, searchSubjectMenu, searchSelectedProduct, currentDealType, translateValue, searchedSubject, choose, searchRecipeMenu, searchRecipe, userRecipeArray, chooseRecipe, showSelectedRecipe, searchedRecipe, noRecipe, searchAttributeMenu, searchAdditionalAttributes, dealAdditionalAttributesArray, searchedAdditionalAttributes, chooseAttribute, closeCircleOutline, isAttributesMenuOpened, toggleAttributesMenu, openDeleteAttributeModal, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, systemCurrency, currentSubjectAttribute, isViewSubjectAttributeOpened, openCurrentSubjectAttribute
             }
         }
     })
