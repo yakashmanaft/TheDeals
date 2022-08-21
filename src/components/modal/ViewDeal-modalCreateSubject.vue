@@ -150,6 +150,8 @@
                             <ion-content style="height: 90vh">
                                 <ion-item v-for="attribute in searchedAdditionalAttributes" :key="attribute.id" @click="chooseAttribute(attribute)">
                                     {{ attribute.name }}
+                                    {{ attribute.price }}
+                                    ({{ systemCurrency.name }})
                                 </ion-item>
                                 <!-- Если ничего подхлдящего нет, создать свое надо -->
                                 <div v-if="searchedAdditionalAttributes.length <= 0">
@@ -308,6 +310,8 @@
             IonActionSheet
         },
         setup(props, {emit}) {
+            // Валюта отображения
+            const systemCurrency = ref(store.state.systemCurrency)
             // массив ПОЛЬЗОВАТЕЛЯ с вариантами рецептов (Временно в сторе)
             const userRecipeArray = ref(store.state.userRecipeArray)
             // массив ПОЛЬЗОВАТЕЛЯ с вариантами предмета ПРОДАЖИ
@@ -462,7 +466,7 @@
             
 
             return {
-                dealSaleSubjectArray, dealBuySubjectArray, helpOutline, addOutline, showSelectedProduct, searchSubjectMenu, searchSelectedProduct, currentDealType, translateValue, searchedSubject, choose, searchRecipeMenu, searchRecipe, userRecipeArray, chooseRecipe, showSelectedRecipe, searchedRecipe, noRecipe, searchAttributeMenu, searchAdditionalAttributes, dealAdditionalAttributesArray, searchedAdditionalAttributes, chooseAttribute, closeCircleOutline, isAttributesMenuOpened, toggleAttributesMenu, openDeleteAttributeModal, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons
+                dealSaleSubjectArray, dealBuySubjectArray, helpOutline, addOutline, showSelectedProduct, searchSubjectMenu, searchSelectedProduct, currentDealType, translateValue, searchedSubject, choose, searchRecipeMenu, searchRecipe, userRecipeArray, chooseRecipe, showSelectedRecipe, searchedRecipe, noRecipe, searchAttributeMenu, searchAdditionalAttributes, dealAdditionalAttributesArray, searchedAdditionalAttributes, chooseAttribute, closeCircleOutline, isAttributesMenuOpened, toggleAttributesMenu, openDeleteAttributeModal, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, systemCurrency
             }
         }
     })
