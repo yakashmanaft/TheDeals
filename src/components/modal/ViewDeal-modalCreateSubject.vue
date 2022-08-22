@@ -3,11 +3,11 @@
         <ion-header translucent="true">
             <ion-toolbar>
                 <ion-buttons slot="start">
-                    <ion-button @click="$emit('closeModal')">Отменить</ion-button>
+                    <ion-button @click="$emit('closeModal'); isAttributesMenuOpened = false">Отменить</ion-button>
                 </ion-buttons>
                 <ion-title class="ion-text-center">Новый предмет</ion-title>
                 <ion-buttons slot="end">
-                    <ion-button @click="$emit('createSubject', subjectData); isAttributesMenuOpened = false">Добавить</ion-button>
+                    <ion-button @click="$emit('createSubject', subjectData, isAttributesMenuOpened)">Добавить</ion-button>
                 </ion-buttons>
             </ion-toolbar>
         </ion-header>
@@ -76,6 +76,8 @@
             <!-- ================  Показываем в зависимости от выбранного типа дела ==============-->
             <!-- Если ПРОДАЖА -->
             <div v-if="currentDealType === 'sale'">
+
+                <!-- РЕЦЕПТ -->
                 <ion-item-group  class="ion-text-left ion-padding-horizontal">
                     <!-- Подбираем рецепт к делу -->
                     <ion-text>
@@ -116,7 +118,50 @@
                     </ion-modal>
                 </ion-item-group>
 
-                <!-- view deal subject -->
+                <!-- АТРИБУТЫ -->
+                <ion-item-group class="ion-margin-top">
+                    <!-- Заголовок -->
+                    <ion-text>
+                        <ion-grid class="ion-no-padding ion-padding-horizontal">
+                            <ion-row class="ion-align-items-center ion-justify-content-between">
+                                <div>
+                                    <h4 class="ion-no-margin">Атрибуты к предмету</h4>
+                                    <ion-text color="primary">Всего {{ subjectData.additionalAttributes.length }}</ion-text>
+                                </div>
+                                <ion-toggle color="success" @ionChange="toggleAttributesMenu"></ion-toggle>
+                            </ion-row>
+                        </ion-grid>
+                    </ion-text>
+                    <!--  -->
+                    <ion-grid class="ion-no-padding" v-if="isAttributesMenuOpened">
+                        <ion-row class="ion-nowrap horizontal-scroll">
+                            <!-- Карточки attribute -->
+                            <ion-card @click.stop="openCurrentSubjectAttribute(index)" class="ion-padding ion-text-center card-center relative" v-for="(attribute, index) in subjectData.additionalAttributes" :key="attribute.id">
+                                <!-- Кнопка удалить конкретный атрибут у предмета -->
+                                <ion-icon class="icon_size icon_del absolute" :icon="closeCircleOutline" @click.stop="openDeleteAttributeModal(attribute)"></ion-icon>
+                                <!-- attribute img-->
+                                <ion-thumbnail class="relative">
+                                    <ion-img style="height: 100%" :src="`../img/subjects/sale/${attribute.value}.webp`"></ion-img>
+                                </ion-thumbnail>
+                            </ion-card>
+                            <!-- Открываем меню создания предмета к делу -->
+                            <ion-card class="ion-padding card-center card-add" @click.stop="searchAttributeMenu = true">
+                                <ion-icon :icon="addOutline" color="primary" class="icon_size"></ion-icon>
+                            </ion-card>
+
+                        </ion-row>
+                    </ion-grid>
+                    <!-- Всплывашка подтверждение удаления предмета заказа -->
+                    <ion-action-sheet
+                        :is-open="deleteAttribute"
+                        header="Точно удалить?"
+                        :buttons="deleteSubjectAttributeButtons"
+                        @didDismiss="deleteAttribute = false"
+                    >
+                    </ion-action-sheet>
+                </ion-item-group>
+
+                <!-- модалка просмотра уже добавленного атрибута -->
                 <ViewDealSubject 
                     :isOpen="isViewSubjectAttributeOpened"
                     @closeModal="isViewSubjectAttributeOpened = false"
@@ -124,8 +169,36 @@
                     :currentDealType="currentDealType"
                 />
 
+                <!-- Модалка по выбору / поиску атрибутов в прайсе пользователя -->
+                <ion-modal :isOpen="searchAttributeMenu">
+                    <ion-searchbar class="ion-text-left" placeholder="Поиск..." v-model="searchAdditionalAttributes" show-cancel-button="always" cancelButtonText="Отменить" @ionCancel="searchAttributeMenu = false"></ion-searchbar>
+                    <!--  -->
+                    <ion-content style="height: 90vh">
+                        <ion-item v-for="attribute in searchedAdditionalAttributes" :key="attribute.id" @click="chooseAttribute(attribute)">
+                            {{ attribute.name }}
+                            {{ attribute.price }}
+                            ({{ systemCurrency.name }})
+                        </ion-item>
+                        <!-- Если ничего подхлдящего нет, создать свое надо -->
+                        <div v-if="searchedAdditionalAttributes.length <= 0">
+                            <ion-item lines="none">
+                                <ion-grid>
+                                    <ion-row class="ion-justify-content-between ion-align-items-center">
+                                        <ion-text color="medium">
+                                            Ничего не найдено
+                                        </ion-text>
+                                        <ion-text color="primary">
+                                            Добавить
+                                        </ion-text>
+                                    </ion-row>
+                                </ion-grid>
+                            </ion-item>
+                        </div>
+                    </ion-content>
+                </ion-modal>
+
+                <!-- ================== Считаем Subject Price ==================================== -->
                 <ion-item-group>
-                    <!-- ================== Считаем Subject Price ==================================== -->
                     <!-- per Kilogram -->
                     <div v-if="subjectData.costEstimation === 'perKilogram'">
                         <!-- Заголовок -->
@@ -150,77 +223,6 @@
                                 Скидка на предмет: (%): {{ subjectData.subjectDiscount }}
                             </ion-row>
                         </ion-grid>
-
-                        <!-- Модалка по выбору дополнительных атрибутов из прайса пользователя -->
-                        <ion-modal :isOpen="searchAttributeMenu">
-                            <ion-searchbar class="ion-text-left" placeholder="Поиск..." v-model="searchAdditionalAttributes" show-cancel-button="always" cancelButtonText="Отменить" @ionCancel="searchAttributeMenu = false"></ion-searchbar>
-                            <!--  -->
-                            <ion-content style="height: 90vh">
-                                <ion-item v-for="attribute in searchedAdditionalAttributes" :key="attribute.id" @click="chooseAttribute(attribute)">
-                                    {{ attribute.name }}
-                                    {{ attribute.price }}
-                                    ({{ systemCurrency.name }})
-                                </ion-item>
-                                <!-- Если ничего подхлдящего нет, создать свое надо -->
-                                <div v-if="searchedAdditionalAttributes.length <= 0">
-                                    <ion-item lines="none">
-                                        <ion-grid>
-                                            <ion-row class="ion-justify-content-between ion-align-items-center">
-                                                <ion-text color="medium">
-                                                    Ничего не найдено
-                                                </ion-text>
-                                                <ion-text color="primary">
-                                                    Добавить
-                                                </ion-text>
-                                            </ion-row>
-                                        </ion-grid>
-                                    </ion-item>
-                                </div>
-                            </ion-content>
-                        </ion-modal>
-
-                        <!-- ============================ Добавить атрибут к предмету =================================== -->
-                        <ion-item-group class="ion-margin-top">
-                            <!-- Заголовок -->
-                            <ion-text>
-                                <ion-grid class="ion-no-padding ion-padding-horizontal">
-                                    <ion-row class="ion-align-items-center ion-justify-content-between">
-                                        <div>
-                                            <h4 class="ion-no-margin">Атрибуты к предмету</h4>
-                                            <ion-text color="primary">Всего {{ subjectData.additionalAttributes.length }}</ion-text>
-                                        </div>
-                                        <ion-toggle color="success" @ionChange="toggleAttributesMenu"></ion-toggle>
-                                    </ion-row>
-                                </ion-grid>
-                            </ion-text>
-                            <!--  -->
-                            <ion-grid class="ion-no-padding" v-if="isAttributesMenuOpened">
-                                <ion-row class="ion-nowrap horizontal-scroll">
-                                    <!-- Карточки attribute -->
-                                    <ion-card @click.stop="openCurrentSubjectAttribute(index)" class="ion-padding ion-text-center card-center relative" v-for="(attribute, index) in subjectData.additionalAttributes" :key="attribute.id">
-                                        <!-- Кнопка удалить конкретный атрибут у предмета -->
-                                        <ion-icon class="icon_size icon_del absolute" :icon="closeCircleOutline" @click.stop="openDeleteAttributeModal(attribute)"></ion-icon>
-                                        <!-- attribute img-->
-                                        <ion-thumbnail class="relative">
-                                            <ion-img style="height: 100%" :src="`../img/subjects/sale/${attribute.value}.webp`"></ion-img>
-                                        </ion-thumbnail>
-                                    </ion-card>
-                                    <!-- Открываем меню создания предмета к делу -->
-                                    <ion-card class="ion-padding card-center card-add" @click.stop="searchAttributeMenu = true">
-                                        <ion-icon :icon="addOutline" color="primary" class="icon_size"></ion-icon>
-                                    </ion-card>
-
-                                </ion-row>
-                            </ion-grid>
-                            <!-- Всплывашка подтверждение удаления предмета заказа -->
-                            <ion-action-sheet
-                                :is-open="deleteAttribute"
-                                header="Точно удалить?"
-                                :buttons="deleteSubjectAttributeButtons"
-                                @didDismiss="deleteAttribute = false"
-                            >
-                            </ion-action-sheet>
-                        </ion-item-group>
                     </div>
                     <!-- per 100gram -->
                     <div v-if="subjectData.costEstimation === 'per100gram'">
@@ -294,7 +296,8 @@
         emits: ['closeModal', 'createSubject'],
         props: {
             subjectData: Object,
-            currentDealType: String
+            currentDealType: String,
+            isAttributesMenuOpened: Boolean
         },
         components: {
             IonModal,
@@ -340,7 +343,7 @@
             onMounted( async() => {
                 await store.methods.getUserSettingsfromDB();
                 userSettings.value = store.state.userSettings
-                console.log(userSettings.value[0].userPriceList)
+                // console.log(userSettings.value[0].userPriceList)
                 dealSaleSubjectArray.value = userSettings.value[0].userPriceList
                 dealAdditionalAttributesArray.value = userSettings.value[0].userAdditionalAttributes
             })
@@ -380,7 +383,7 @@
             const isAttributesMenuOpened = ref(false);
             const toggleAttributesMenu = () => {
                 isAttributesMenuOpened.value = !isAttributesMenuOpened.value;
-                // при закрытии - узатираем выбранные атрибуты
+                // при закрытии - затираем выбранные атрибуты
                 subjectData.value.additionalAttributes = []
             }
             const searchAttributeMenu = ref(false)
@@ -389,6 +392,7 @@
             watchEffect(() => {
                 subjectData.value = props.subjectData;
                 currentDealType.value = props.currentDealType
+                isAttributesMenuOpened.value = props.isAttributesMenuOpened
 
             })
             // ПРЕДМЕТ ДЕЛА (фильтр для поиска и сортировка по алфавиту)
@@ -406,7 +410,7 @@
                 const sortedUserRecipeArray = sortAlphabetically(userRecipeArray.value);
                 return searchUserRecipeFilter(sortedUserRecipeArray, searchRecipe.value)
             })
-            // ПОЛЬЗВОАТЕЛЬСКИЕ ДОП АТРИБУТЫ К ПРОДУКТУ ПРОДАЖИ
+            // ПОЛЬЗОВАТЕЛЬСКИЕ ДОП АТРИБУТЫ К ПРОДУКТУ ПРОДАЖИ
             const searchedAdditionalAttributes = computed(() => {
                 const sortedDealAdditionalAttributesArray = sortAlphabetically(dealAdditionalAttributesArray.value);
                 // используем фнукцию фильтрации из предметов заказа
@@ -424,15 +428,18 @@
             const chooseRecipe = (recipe) => {
                 subjectData.value.recipe = recipe.value;
                 searchRecipeMenu.value = false;
-                // console.log(recipe)
             }
             // Выбираем из списка объект для массива атрибутов
             const chooseAttribute = (attribute) => {
-                searchAttributeMenu.value = false;
-                subjectData.value.additionalAttributes.push(attribute)
-                console.log(attribute)
-                // 
-                subjectData.value.subjectPrice += +attribute.price
+                isItemAlreadyHave.value = subjectData.value.additionalAttributes.find(item => item.value === attribute.value)
+                if(isItemAlreadyHave.value !== undefined) {
+                    alert('Modal Create Subject: атрибут уже добавлен к предмету')
+                } else {
+                    searchAttributeMenu.value = false;
+                    subjectData.value.additionalAttributes.push(attribute)
+                    // 
+                    subjectData.value.subjectPrice += +attribute.price
+                }
             }
             // Заглушка под предмет продажи "БЕЗ РЕЦЕПТА"
             const noRecipe = ref({
@@ -485,9 +492,11 @@
                 currentSubjectAttribute.value = subjectData.value.additionalAttributes[index];
                 console.log(currentSubjectAttribute.value)
             }
+            // ============================ Проверяем добавлен ли уже атрибут к продукту
+            const isItemAlreadyHave = ref();
 
             return {
-                dealSaleSubjectArray, dealBuySubjectArray, helpOutline, addOutline, showSelectedProduct, searchSubjectMenu, searchSelectedProduct, currentDealType, translateValue, searchedSubject, choose, searchRecipeMenu, searchRecipe, userRecipeArray, chooseRecipe, showSelectedRecipe, searchedRecipe, noRecipe, searchAttributeMenu, searchAdditionalAttributes, dealAdditionalAttributesArray, searchedAdditionalAttributes, chooseAttribute, closeCircleOutline, isAttributesMenuOpened, toggleAttributesMenu, openDeleteAttributeModal, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, systemCurrency, currentSubjectAttribute, isViewSubjectAttributeOpened, openCurrentSubjectAttribute
+                dealSaleSubjectArray, dealBuySubjectArray, helpOutline, addOutline, showSelectedProduct, searchSubjectMenu, searchSelectedProduct, currentDealType, translateValue, searchedSubject, choose, searchRecipeMenu, searchRecipe, userRecipeArray, chooseRecipe, showSelectedRecipe, searchedRecipe, noRecipe, searchAttributeMenu, searchAdditionalAttributes, dealAdditionalAttributesArray, searchedAdditionalAttributes, chooseAttribute, closeCircleOutline, isAttributesMenuOpened, toggleAttributesMenu, openDeleteAttributeModal, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, systemCurrency, currentSubjectAttribute, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, isItemAlreadyHave
             }
         }
     })

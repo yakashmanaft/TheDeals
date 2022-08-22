@@ -399,6 +399,7 @@
                     }
                 }
             }
+            // Уже добавлено
             const isItemAlreadyHave = ref();
             // Добавляем новый продукт к прайсу
             const addNewPriceProduct = (newProductData) => {

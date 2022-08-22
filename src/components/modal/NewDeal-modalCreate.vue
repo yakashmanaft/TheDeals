@@ -137,6 +137,7 @@
                             :is-open="isCreateNewSubjectOpened"
                             @closeModal="closeCreateSubjectModal"
                             @createSubject="addNewSubject"
+                            :isAttributesMenuOpened="isAttributesMenuOpened"
                             :subjectData="currentSubject"
                             :currentDealType="dealData.dealType"
                         />
@@ -271,7 +272,7 @@
                             id: uid(),
                             selectedProduct: '',
                             price: '',
-                            subjectPrice: '',
+                            subjectPrice: 0,
                             // costEstimation: '',
                             productQuantity: 1,
                             productNote: '',
@@ -305,7 +306,7 @@
                         id: uid(),
                         selectedProduct: '',
                         price: '',
-                        subjectPrice: '',
+                        subjectPrice: 0,
                         // costEstimation: '',
                         productQuantity: 1,
                         productNote: '',
@@ -349,7 +350,9 @@
             //
             const dealData = ref();
             //
-            const addNewSubject = (subjectData) => {
+            const isAttributesMenuOpened = ref(false);
+            //
+            const addNewSubject = (subjectData, isMenuOpened) => {
                 // Выдумать варианты валидации
                 if (currentSubject.value.selectedProduct === '' ) {
                     alert('NewDeal-modalCreate: Вы не выбрали предмет дела')
@@ -360,6 +363,7 @@
                     emit('addSubject', currentSubject.value)
                     closeCreateSubjectModal()
                     console.log('new subject created')
+                    isAttributesMenuOpened.value = !isMenuOpened;
                 }
             }
 
@@ -423,7 +427,7 @@
             // dealData.dealType
 
             return {
-                dealContact, dealContactID , searchContactMenu, choose, isCalendarOpened, closeModalCalendar, updateExecutionDate, datepicker, myContactsArray, searchDealContact, searchedContacts, dealTypes, addCircleOutline, closeCircleOutline, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, openDeleteSubjectModal, subjectToDelete, deleteDealSubjectButtons, addNewSubject, deleteSubject, dealData, currentDealSubject, isViewDealSubjectOpened, openCurrentDealSubject, checkRentAttr, setColorByDealType, setIconByDealType, translateDealSubjectRecipe, userRecipeArray, currentDealType
+                dealContact, dealContactID , searchContactMenu, choose, isCalendarOpened, closeModalCalendar, updateExecutionDate, datepicker, myContactsArray, searchDealContact, searchedContacts, dealTypes, addCircleOutline, closeCircleOutline, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, openDeleteSubjectModal, subjectToDelete, deleteDealSubjectButtons, addNewSubject, deleteSubject, dealData, currentDealSubject, isViewDealSubjectOpened, openCurrentDealSubject, checkRentAttr, setColorByDealType, setIconByDealType, translateDealSubjectRecipe, userRecipeArray, currentDealType, isAttributesMenuOpened
             }
         }
     })
