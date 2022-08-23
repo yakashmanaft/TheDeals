@@ -9,6 +9,7 @@
             </ion-toolbar>
         </ion-header>
         <ion-content class="ion-padding">
+            {{productData}}
             <!-- Вариант типа выбранного блока -->
             <ion-item-group class="ion-margin-bottom">
                 <ion-chip color="primary" class="ion-no-margin ion-margin-bottom">
@@ -67,15 +68,38 @@
                             />
                         </ion-button>
                     </ion-row>
-                    <!-- Стоимость -->
+                    <!-- Цена на 1ед -->
                     <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
                         <!-- Цена -->
                         <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                            Цена ({{ currency }})
+                            Цена 1 ед. ({{ currency }})
                         </ion-button>
                         <!-- Кнопка показа и изменения цены -->
+                        <!-- для products -->
+                        <ion-button v-if="blockToShow === 'products'" color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                            <ion-input type="number" v-model="productPrice" inputmode="decimal" :value="productData.price" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
+                        </ion-button>
+                        <!-- для attributes -->
+                        <ion-button v-if="blockToShow === 'attributes'" color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                            <ion-input type="number" v-model="productPrice" inputmode="decimal" :value="productData.price" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
+                        </ion-button>
+                    </ion-row>
+                    <!-- Количество -->
+                    <ion-row v-if="blockToShow === 'attributes'" class="ion-justify-content-between ion-align-items-center flex_nowrap">
                         <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                            <ion-input type="number" v-model="productPrice" inputmode="decimal" :value="productData.totalPrice" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
+                            Количество
+                        </ion-button>
+                        <ion-button  color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                            <ion-input type="number" v-model="productQty" inputmode="decimal" :value="productData.qty" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
+                        </ion-button>
+                    </ion-row>
+                    <!-- Сумма -->
+                    <ion-row v-if="blockToShow === 'attributes'" class="ion-justify-content-between ion-align-items-center flex_nowrap">
+                        <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                            Сумма ({{ currency }})
+                        </ion-button>
+                        <ion-button  color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                            <ion-input type="number" v-model="productTotalPrice" inputmode="decimal" :value="productData.totalPrice" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
                         </ion-button>
                     </ion-row>
                 </ion-grid>
@@ -99,7 +123,7 @@
     //
     export default defineComponent({
         name: 'ViewPriceProduct',
-        emits: ['getCostEstimation', 'getProductPrice', 'getRentType', 'closeModal'],
+        emits: ['getCostEstimation', 'getProductPrice', 'getProductQty', 'getProductTotalPrice', 'getRentType', 'closeModal'],
         props: {
             productData: Object,
             blockToShow: String
@@ -116,6 +140,8 @@
             const productData = ref({});
             const costEstimation = ref();
             const productPrice = ref();
+            const productQty = ref();
+            const productTotalPrice = ref();
             const rentType = ref();
             //
             const priceEstimationType = ref(store.state.priceEstimataionType)
@@ -143,8 +169,16 @@
                 emit('getCostEstimation', costEstimationType)
             })
             watch(productPrice, (price) => {
-                // console.log(price)
-                emit('getProductPrice', price)
+                console.log(price)
+                emit('getProductPrice', +price)
+            })
+            watch(productQty, (qty) => {
+                console.log(qty)
+                emit('getProductQty', +qty)
+            })
+            watch(productTotalPrice, (totalPrice) => {
+                console.log(totalPrice)
+                emit('getProductTotalPrice', +totalPrice)
             })
             watch(rentType, (type) => {
                 // console.log(type)
@@ -160,7 +194,7 @@
             }
 
             return {
-                productData, priceEstimationType, priceAttributeType, priceCalcType, costEstimation, rentType, currency, productPrice, setIconByBlockToShow, translateValue, priceChipList, setNameByBlockToShow
+                productData, priceEstimationType, priceAttributeType, priceCalcType, costEstimation, rentType, currency, productPrice, productQty, productTotalPrice, setIconByBlockToShow, translateValue, priceChipList, setNameByBlockToShow
             }
         }
     })

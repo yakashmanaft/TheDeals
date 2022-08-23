@@ -19,6 +19,8 @@
             :productData="currentProduct"
             @getCostEstimation="setCostEstimation"
             @getProductPrice="setProductPrice"
+            @getProductQty="setProductQty"
+            @getProductTotalPrice="setProductTotalPrice"
             @getRentType="setAttributeRentType"
             :blockToShow="blockToShow"
         />
@@ -104,9 +106,29 @@
                             <ion-card-content class="ion-no-padding">
                                 <!-- Кнопка удалить конкретный атрибут продукта -->
                                 <ion-icon @click.stop="openDeleteAttributeModal(item.uid)" class="icon_size icon_del absolute" :icon="closeCircleOutline"></ion-icon>
-                                <!-- User Product -->
+                                <!--  -->
                                 <ion-grid>
-                                    <ion-row class="ion-justify-content-between ion-align-items-center ion-padding">
+                                    <!-- если products -->
+                                    <ion-row v-if="blockToShow === 'products'" class="ion-justify-content-between ion-align-items-center ion-padding">
+                                        <div>
+                                            <ion-thumbnail style="height: 4rem; width: 4rem; margin: 0 auto">
+                                                <ion-img  style="height: 100%" :src="`../img/subjects/sale/${item.value}.webp`"></ion-img>
+                                            </ion-thumbnail>
+                                        </div>
+                                        <div class="ion-text-end">
+                                            <ion-label>
+                                                {{item.name}}
+                                            </ion-label>
+                                            <ion-text color="primary" style="font-size: 1.5rem">
+                                                {{item.price}} {{currency}}
+                                            </ion-text>
+                                            <ion-label>
+                                                {{ setRentType(item.rentType) }}
+                                            </ion-label>
+                                        </div>
+                                    </ion-row>
+                                    <!-- если attributes -->
+                                    <ion-row v-if="blockToShow === 'attributes'" class="ion-justify-content-between ion-align-items-center ion-padding">
                                         <div>
                                             <ion-thumbnail style="height: 4rem; width: 4rem; margin: 0 auto">
                                                 <ion-img  style="height: 100%" :src="`../img/subjects/sale/${item.value}.webp`"></ion-img>
@@ -372,7 +394,7 @@
                 uid: uid(),
                 value: '',
                 name: '',
-                pricePerUnit: 0,
+                price: 0,
                 totalPrice: 0,
                 qty: 1,
                 rentType: '',
@@ -395,7 +417,7 @@
                         uid: uid(),
                         value: '',
                         name: '',
-                        pricePerUnit: 0,
+                        price: 0,
                         totalPrice: 0,
                         qty: 1,
                         rentType: '',
@@ -441,9 +463,9 @@
                         uid: uid(),
                         value: newProductData.value,
                         name: newProductData.name,
-                        pricePerUnit: newProductData.price,
+                        price: newProductData.price,
                         qty: newProductData.qty,
-                        totalPrice: newProductData.price * newProductData.qty,
+                        totalPrice: newProductData.totalPrice,
                         rentType: newProductData.rentType,
                         isReturned: newProductData.isReturned 
                     })
@@ -485,8 +507,29 @@
             }
             //
             const setProductPrice = (price) => {
-                currentProduct.value.pricePerUnit = price
-                updateUserPriceListDB()
+                if(blockToShow.value === 'products') {
+                    currentProduct.value.price = price
+                    updateUserPriceListDB()
+                } else if (blockToShow.value === 'attributes') {
+                    currentProduct.value.price = price
+                    currentProduct.value.totalPrice = currentProduct.value.price * currentProduct.value.qty
+                    updateUserPriceListDB()
+                }
+            }
+            //
+            const setProductQty = (qty) => {
+                if(blockToShow.value === 'attributes') {
+                    currentProduct.value.qty = qty
+                    currentProduct.value.totalPrice = currentProduct.value.price * currentProduct.value.qty
+                    updateUserPriceListDB()
+                }
+            }
+            //
+            const setProductTotalPrice = (totalPrice) => {
+                if(blockToShow.value === 'attributes') {
+                    currentProduct.value.totalPrice = totalPrice
+                    updateUserPriceListDB()
+                }
             }
             //
             const setAttributeRentType = (type) => {
@@ -543,7 +586,7 @@
             }
 
             return {
-                priceChipList, blockToShow, menu, user, userEmail, router, pageTitle, userSettings, spinner, dataLoaded, trashOutline, deleteProductAction, openDeleteProductModal, openDeleteAttributeModal, deleteProductButtons, deleteAttributeButtons, productToDelete, attributeToDelete, deleteProduct, openSaleProductInfo, updateUserPriceListDB, isViewCurrentProductOpened, currentProduct, isModalNewPriceItemOpened, addNewPriceProduct, toggleNewPriceProductModal, newPriceProductData, closeCircleOutline, currency, priceCalcType, costEstimation, setCostEstimation, setProductPrice, newPriceAdditionalAttributeData, deleteAdditionalAttribute, setBlockToShow, countItemChip, setChipOutline, setRentType, deleteAttributeAction, isItemAlreadyHave, changeBlockToShow, closeModalCreatePriceProduct, setAttributeRentType
+                priceChipList, blockToShow, menu, user, userEmail, router, pageTitle, userSettings, spinner, dataLoaded, trashOutline, deleteProductAction, openDeleteProductModal, openDeleteAttributeModal, deleteProductButtons, deleteAttributeButtons, productToDelete, attributeToDelete, deleteProduct, openSaleProductInfo, updateUserPriceListDB, isViewCurrentProductOpened, currentProduct, isModalNewPriceItemOpened, addNewPriceProduct, toggleNewPriceProductModal, newPriceProductData, closeCircleOutline, currency, priceCalcType, costEstimation, setCostEstimation, setProductPrice, setProductQty, setProductTotalPrice, newPriceAdditionalAttributeData, deleteAdditionalAttribute, setBlockToShow, countItemChip, setChipOutline, setRentType, deleteAttributeAction, isItemAlreadyHave, changeBlockToShow, closeModalCreatePriceProduct, setAttributeRentType
             }
         }
     })
