@@ -9,7 +9,7 @@
         <!-- view deal subject -->
         <ViewDealSubject 
             :isOpen="isViewDealSubjectOpened"
-            @closeModal="isViewDealSubjectOpened = false"
+            @closeModal="isViewDealSubjectOpened = false;"
             :subjectData="currentDealSubject"
             :currentDealType="currentDeal.dealType"
             @updateBD="updateBD"
@@ -513,7 +513,6 @@
                     }
                 }
             }
-
 
             return {
                 spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, translateDealSubjectRecipe, userRecipeArray, updateBD

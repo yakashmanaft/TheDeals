@@ -143,6 +143,8 @@
                                 <ion-thumbnail class="relative">
                                     <ion-img style="height: 100%" :src="`../img/subjects/sale/${attribute.value}.webp`"></ion-img>
                                 </ion-thumbnail>
+                                <!--  -->
+                                <ion-text class="absolute" style="bottom: -1rem;">х{{attribute.qty}}</ion-text>
                             </ion-card>
                             <!-- Открываем меню создания предмета к делу -->
                             <ion-card class="ion-padding card-center card-add" @click.stop="searchAttributeMenu = true">
@@ -161,13 +163,73 @@
                     </ion-action-sheet>
                 </ion-item-group>
 
+                <!-- ===================================================================== -->
                 <!-- модалка просмотра уже добавленного атрибута -->
-                <ViewDealSubject 
+                <!-- <ViewDealSubject 
                     :isOpen="isViewSubjectAttributeOpened"
                     @closeModal="isViewSubjectAttributeOpened = false"
-                    :subjectData="currentSubjectAttribute"
+                    :subjectData="currentDealSubject"
                     :currentDealType="currentDealType"
-                />
+                /> -->
+                <ion-modal :isOpen="isViewSubjectAttributeOpened">
+                    <ion-header translucent="true">
+                        <ion-toolbar>
+                            <ion-buttons slot="start">
+                                <ion-button @click="isViewSubjectAttributeOpened = false">Закрыть</ion-button>
+                            </ion-buttons>
+                            <ion-title class="ion-text-center">Просмотр</ion-title>
+                            <!-- <ion-buttons slot="end">
+                                <ion-button>Готово</ion-button>
+                            </ion-buttons> -->
+                        </ion-toolbar>
+                    </ion-header>
+                    <ion-content>
+                        <br>
+                        {{currentDealType}}
+                        {{currentSubjectAttribute}}
+                        <ion-item-group class="ion-padding-horizontal">
+                            <!-- Заголовок -->
+                            <ion-text>
+                                <h4 class="ion-no-margin ion-margin-top">Доп. Атрибут</h4>
+                            </ion-text>
+                            <!-- Показываем текущий доп. атрибут -->
+                            <ion-grid class="ion-no-padding border-bottom ion-padding-bottom">
+                                <ion-row class="ion-justify-content-between ion-align-items-center">
+                                    <!-- Название текущего доп. атрибуту -->
+                                    <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                        {{ currentSubjectAttribute.name }}
+                                    </ion-button>
+                                    <!-- Иконка к текущему доп. атрибуту -->
+                                    <ion-thumbnail class="thumbnail_deal-subject">
+                                        <ion-img :src="`../img/subjects/sale/${currentSubjectAttribute.value}.webp`"></ion-img>
+                                    </ion-thumbnail>
+                                </ion-row>
+                            </ion-grid>
+                        </ion-item-group>
+                        <!--  -->
+                        <ion-item-group>
+                            Кол-во
+                            <input type="number" v-model="currentSubjectAttribute.qty">
+                            Цена за 1 ед.
+                            <input type="number" v-model="currentSubjectAttribute.pricePerUnit">
+                        </ion-item-group>
+                        <!--  -->
+                        <ion-item-group class="ion-padding-horizontal">
+                            <ion-text>
+                                <h4 class="ion-no-margin">Стоимость атрибута</h4>
+                            </ion-text>
+                            <!--  -->
+                            <ion-grid>
+                                <ion-row>
+                                    <div>
+                                        Всего: {{currentSubjectAttribute.totalPrice}} {{systemCurrency.name}}
+                                        {{attributeTotalPrice(currentSubjectAttribute.pricePerUnit, currentSubjectAttribute.qty)}}
+                                    </div>
+                                </ion-row>
+                            </ion-grid>
+                        </ion-item-group>
+                    </ion-content>
+                </ion-modal>
 
                 <!-- Модалка по выбору / поиску атрибутов в прайсе пользователя -->
                 <ion-modal :isOpen="searchAttributeMenu">
@@ -176,7 +238,7 @@
                     <ion-content style="height: 90vh">
                         <ion-item v-for="attribute in searchedAdditionalAttributes" :key="attribute.id" @click="chooseAttribute(attribute)">
                             {{ attribute.name }}
-                            {{ attribute.price }}
+                            {{ attribute }}
                             ({{ systemCurrency.name }})
                         </ion-item>
                         <!-- Если ничего подхлдящего нет, создать свое надо -->
@@ -278,8 +340,6 @@
 </template>
 
 <script>
-    import ViewDealSubject from '../modal/ViewDeal-modalViewSubject.vue'
-    //
     import { defineComponent, ref, onMounted, computed, watch, watchEffect } from 'vue';
     import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonImg, IonThumbnail, IonIcon, IonGrid, IonRow, IonSearchbar, IonItem, IonTextarea, IonToggle, IonCard, IonLabel, IonActionSheet } from '@ionic/vue';
     import { helpOutline, addOutline, closeCircleOutline } from 'ionicons/icons';
@@ -321,7 +381,6 @@
             IonCard, 
             IonLabel,
             IonActionSheet,
-            ViewDealSubject
         },
         setup(props, {emit}) {
             // Валюта отображения
@@ -436,9 +495,11 @@
                     alert('Modal Create Subject: атрибут уже добавлен к предмету')
                 } else {
                     searchAttributeMenu.value = false;
-                    subjectData.value.additionalAttributes.push(attribute)
+                    const newAttribute = attribute;
+                    subjectData.value.additionalAttributes.push(newAttribute)
                     // 
-                    subjectData.value.subjectPrice += +attribute.price
+                    subjectData.value.subjectPrice += +attribute.totalPrice
+                    // emit('updateBD');
                 }
             }
             // Заглушка под предмет продажи "БЕЗ РЕЦЕПТА"
@@ -479,7 +540,7 @@
             const deleteAttributeFunc = (attribute) => {
                 subjectData.value.additionalAttributes = subjectData.value.additionalAttributes.filter(item => item.uid !== attribute.uid);
                 // и вычитаем из общей стоимости
-                subjectData.value.subjectPrice -= +attribute.price
+                subjectData.value.subjectPrice -= +attribute.totalPrice
             }
 
             // ======================================== Просмотр конкретного атрибута =====================================================
@@ -490,13 +551,36 @@
                 isViewSubjectAttributeOpened.value = true;
                 // console.log(subjectData.value.additionalAttributes[index])
                 currentSubjectAttribute.value = subjectData.value.additionalAttributes[index];
-                console.log(currentSubjectAttribute.value)
+                // console.log(currentSubjectAttribute.value)
             }
             // ============================ Проверяем добавлен ли уже атрибут к продукту
             const isItemAlreadyHave = ref();
+            //
+            const attributeTotalPriceValue = ref(0);
+            //
+            const attributeTotalPrice = (pricePerUnit, qty) => {
+                currentSubjectAttribute.value.totalPrice = +(pricePerUnit * qty)
+                attributeTotalPriceValue.value = currentSubjectAttribute.value.totalPrice
+                // if(!subjectData.value.selectedProduct) {
+                //     subjectData.value.totalPrice = pricePerUnit * qty
+                // }
+                // emit('updateBD');
+            }
+            // subjectData.value.subjectPrice -= attributeTotalPriceValue.value
+            watch(attributeTotalPriceValue, (newValue, oldValue) => {
+                // console.log(attributeTotalPriceValue.value)
+                // subjectData.value.subjectPrice = (subjectData.value.subjectPrice - +oldValue) +  attributeTotalPriceValue.value
+                // subjectData.value.subjectPrice += attributeTotalPriceValue.value
+                console.log(`oldValue: ${oldValue}`)
+                console.log(`newValue: ${newValue}`)
+                subjectData.value.subjectPrice = (subjectData.value.subjectPrice - +oldValue) + +newValue
+                // subjectData.value.subjectPrice += +newValue
+
+                console.log(subjectData.value.subjectPrice)
+            })
 
             return {
-                dealSaleSubjectArray, dealBuySubjectArray, helpOutline, addOutline, showSelectedProduct, searchSubjectMenu, searchSelectedProduct, currentDealType, translateValue, searchedSubject, choose, searchRecipeMenu, searchRecipe, userRecipeArray, chooseRecipe, showSelectedRecipe, searchedRecipe, noRecipe, searchAttributeMenu, searchAdditionalAttributes, dealAdditionalAttributesArray, searchedAdditionalAttributes, chooseAttribute, closeCircleOutline, isAttributesMenuOpened, toggleAttributesMenu, openDeleteAttributeModal, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, systemCurrency, currentSubjectAttribute, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, isItemAlreadyHave
+                dealSaleSubjectArray, dealBuySubjectArray, helpOutline, addOutline, showSelectedProduct, searchSubjectMenu, searchSelectedProduct, currentDealType, translateValue, searchedSubject, choose, searchRecipeMenu, searchRecipe, userRecipeArray, chooseRecipe, showSelectedRecipe, searchedRecipe, noRecipe, searchAttributeMenu, searchAdditionalAttributes, dealAdditionalAttributesArray, searchedAdditionalAttributes, chooseAttribute, closeCircleOutline, isAttributesMenuOpened, toggleAttributesMenu, openDeleteAttributeModal, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, systemCurrency, currentSubjectAttribute, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, isItemAlreadyHave, attributeTotalPrice, attributeTotalPriceValue
             }
         }
     })

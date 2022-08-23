@@ -75,7 +75,7 @@
                         </ion-button>
                         <!-- Кнопка показа и изменения цены -->
                         <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                            <ion-input type="number" v-model="productPrice" inputmode="decimal" :value="productData.price" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
+                            <ion-input type="number" v-model="productPrice" inputmode="decimal" :value="productData.totalPrice" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
                         </ion-button>
                     </ion-row>
                 </ion-grid>

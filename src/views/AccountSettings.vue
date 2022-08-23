@@ -26,7 +26,7 @@
             </div>
 
             <!-- Data -->
-            <div v-if="dataLoaded && userSettings.length !== 0">
+            <div v-if="dataLoaded && userSettings.length !== 0" class="ion-margin-top">
                 {{userSettings}}
                 <!-- Продуктовый прайс -->
 

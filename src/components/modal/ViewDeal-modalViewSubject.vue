@@ -11,19 +11,21 @@
                 </ion-buttons> -->
             </ion-toolbar>
         </ion-header>
-        <ion-content>
+        <ion-content class="ion-padding-vertical ion-page" :scroll-events="true">
+            <br>
+            <br>
             {{currentDealType}}
             {{subjectData}}
             <!-- ================ Добавленный продукт ======================== -->
 
-            <!-- Если продукт есть (продажа, закуп) -->
+            <!-- Если ПРОДУКТ (продажа, закуп) -->
             <ion-item-group v-if="subjectData.selectedProduct" class="ion-padding-horizontal">
                 <!-- Заголовок -->
                 <ion-text>
                     <h4 class="ion-no-margin ion-margin-top">Продукт</h4>
                 </ion-text>
                 <!-- Показываем текущий продукт -->
-                <ion-grid class="ion-no-padding">
+                <ion-grid class="ion-no-padding border-bottom ion-padding-bottom">
                     <ion-row class="ion-justify-content-between ion-align-items-center">
                         <!-- Название текущего продукта -->
                         <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
@@ -40,39 +42,19 @@
                 </ion-grid>
             </ion-item-group>
 
-            <!-- Если продукта нет (Атрибут) -->
-            <ion-item-group v-else>
-                <!-- Заголовок -->
-                <ion-text>
-                    <h4 class="ion-no-margin ion-margin-top">Доп. Атрибут</h4>
-                </ion-text>
-                <!-- Показываем текущий доп. атрибут -->
-                <ion-grid class="ion-no-padding">
-                    <ion-row class="ion-justify-content-between ion-align-items-center">
-                        <!-- Название текущего доп. атрибуту -->
-                        <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                            {{ subjectData.name }}
-                        </ion-button>
-                        <!-- Иконка к текущему доп. атрибуту -->
-                        <ion-thumbnail class="thumbnail_deal-subject">
-                            <ion-img :src="`../img/subjects/sale/${subjectData.value}.webp`"></ion-img>
-                        </ion-thumbnail>
-                    </ion-row>
-                </ion-grid>
-            </ion-item-group>
 
             <!-- ================  Показываем в зависимости от выбранного типа дела ==============-->
             <!-- Если ПРОДАЖА -->
             <div v-if="currentDealType === 'sale' && subjectData.additionalAttributes">
 
                 <!-- РЕЦЕПТ -->
-                <ion-item-group>
+                <ion-item-group class="ion-padding-horizontal">
                     <!-- Подбираем рецепт к делу -->
                     <ion-text>
                         <h4 class="ion-no-margin ion-margin-top">Рецепт</h4>
                     </ion-text>
                     <!-- Показ и кнопка изменения рецепта к предмету -->
-                    <ion-grid class="ion-no-padding">
+                    <ion-grid class="ion-no-padding border-bottom">
                         <ion-row class="ion-justify-content-between ion-align-items-center">
                             <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">{{ showSelectedRecipe(subjectData.recipe) }}</ion-button>
                             <ion-button color="primary" size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click="searchRecipeMenu = true">
@@ -118,15 +100,10 @@
                 <ion-item-group class="ion-margin-top">
                     <!-- Заголовок -->
                     <ion-text>
-                        <ion-grid class="ion-no-padding">
-                            <ion-row class="ion-align-items-center ion-justify-content-between ion-padding-horizontal">
-                                <h4 class="ion-no-margin">Атрибуты к предмету</h4>
-                                <ion-text color="primary">Всего {{ subjectData.additionalAttributes.length }}</ion-text>
-                            </ion-row>
-                        </ion-grid>
+                        <h4 class="ion-no-margin ion-padding-horizontal">Атрибуты к предмету</h4>
                     </ion-text>
                     <!--  -->
-                    <ion-grid class="ion-no-padding">
+                    <ion-grid class="ion-no-padding border-bottom ">
                         <ion-row class="ion-nowrap horizontal-scroll">
                             <!-- Карточки attribute -->
                             <ion-card @click.stop="openCurrentSubjectAttribute(index)" class="ion-padding ion-text-center card-center relative" v-for="(attribute, index) in subjectData.additionalAttributes" :key="attribute.id">
@@ -136,6 +113,8 @@
                                 <ion-thumbnail class="relative">
                                     <ion-img style="height: 100%" :src="`../img/subjects/sale/${attribute.value}.webp`"></ion-img>
                                 </ion-thumbnail>
+                                <!--  -->
+                                <ion-text class="absolute" style="bottom: -1rem;">х{{attribute.qty}}</ion-text>
                             </ion-card>
                             <!-- Открываем меню создания предмета к делу -->
                             <ion-card class="ion-padding card-center card-add" @click.stop="searchAttributeMenu = true">
@@ -154,12 +133,71 @@
                 </ion-item-group>
 
                 <!-- модалка просмотра уже добавленного атрибута -->
-                <ViewDealSubject 
+                <!-- <ViewDealSubject 
                     :isOpen="isViewSubjectAttributeOpened"
                     @closeModal="isViewSubjectAttributeOpened = false"
                     :subjectData="currentSubjectAttribute"
                     :currentDealType="currentDealType"
-                />
+                /> -->
+                <ion-modal :isOpen="isViewSubjectAttributeOpened">
+                    <ion-header translucent="true">
+                        <ion-toolbar>
+                            <ion-buttons slot="start">
+                                <ion-button @click="isViewSubjectAttributeOpened = false">Закрыть</ion-button>
+                            </ion-buttons>
+                            <ion-title class="ion-text-center">Просмотр</ion-title>
+                            <!-- <ion-buttons slot="end">
+                                <ion-button>Готово</ion-button>
+                            </ion-buttons> -->
+                        </ion-toolbar>
+                    </ion-header>
+                    <ion-content>
+                        <br>
+                        {{currentDealType}}
+                        {{currentSubjectAttribute}}
+                        <ion-item-group class="ion-padding-horizontal">
+                            <!-- Заголовок -->
+                            <ion-text>
+                                <h4 class="ion-no-margin ion-margin-top">Доп. Атрибут</h4>
+                            </ion-text>
+                            <!-- Показываем текущий доп. атрибут -->
+                            <ion-grid class="ion-no-padding border-bottom ion-padding-bottom">
+                                <ion-row class="ion-justify-content-between ion-align-items-center">
+                                    <!-- Название текущего доп. атрибуту -->
+                                    <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                        {{ currentSubjectAttribute.name }}
+                                    </ion-button>
+                                    <!-- Иконка к текущему доп. атрибуту -->
+                                    <ion-thumbnail class="thumbnail_deal-subject">
+                                        <ion-img :src="`../img/subjects/sale/${currentSubjectAttribute.value}.webp`"></ion-img>
+                                    </ion-thumbnail>
+                                </ion-row>
+                            </ion-grid>
+                        </ion-item-group>
+                        <!--  -->
+                        <ion-item-group>
+                            Кол-во
+                            <input type="number" v-model="currentSubjectAttribute.qty">
+                            Цена за 1 ед.
+                            <input type="number" v-model="currentSubjectAttribute.pricePerUnit">
+                        </ion-item-group>
+                        <!--  -->
+                        <ion-item-group class="ion-padding-horizontal">
+                            <ion-text>
+                                <h4 class="ion-no-margin">Стоимость атрибута</h4>
+                            </ion-text>
+                            <!--  -->
+                            <ion-grid>
+                                <ion-row>
+                                    <div>
+                                        Всего: {{currentSubjectAttribute.totalPrice}} {{systemCurrency.name}}
+                                        {{attributeTotalPrice(currentSubjectAttribute.pricePerUnit, currentSubjectAttribute.qty)}}
+                                    </div>
+                                </ion-row>
+                            </ion-grid>
+                        </ion-item-group>
+                    </ion-content>
+                </ion-modal>
 
                 <!-- Модалка по выбору / поиску атрибутов в прайсе пользователя -->
                 <ion-modal :isOpen="searchAttributeMenu">
@@ -168,7 +206,7 @@
                     <ion-content style="height: 90vh">
                         <ion-item v-for="attribute in searchedAdditionalAttributes" :key="attribute.id" @click="chooseAttribute(attribute)">
                             {{ attribute.name }}
-                            {{ attribute.price }}
+                            {{ attribute}}
                             ({{ systemCurrency.name }})
                         </ion-item>
                         <!-- Если ничего подхлдящего нет, создать свое надо -->
@@ -194,18 +232,37 @@
             <!-- Если ЗАКУП -->
             <div v-if="currentDealType === 'buy'">
                 <!-- product price -->
-                <ion-item-group >
+                <!-- <ion-item-group >
                     <ion-text>
                         <h4>Стоимость приобретения</h4>
                     </ion-text>
-                </ion-item-group>
+                </ion-item-group> -->
             </div>
+
+            <!-- ================= Стоимости показываем ======================-->
+            <!-- SUBJECT PRICE -->
+            <ion-item-group class="ion-padding-horizontal ion-margin-top">
+                <!-- Заголовок -->
+                <ion-text>
+                    <h4 v-if="currentDealType === 'sale' && subjectData.subjectPrice" class="ion-no-margin">Стоимость продукта</h4>
+                    <h4 v-if="currentDealType === 'buy'" class="ion-no-margin">Стоимость приобретения</h4>
+                </ion-text>
+                <!--  -->
+                <ion-grid class="ion-no-padding border-bottom ion-padding-bottom">
+                    <!--  -->
+                    <ion-row v-if="subjectData.selectedProduct">
+                        <div>
+                            Всего: {{subjectData.subjectPrice}} {{systemCurrency.name}}
+                        </div>
+                    </ion-row>
+                </ion-grid>
+            </ion-item-group>
         </ion-content>
     </ion-modal>
 </template>
 
 <script>
-    import { defineComponent, computed, ref, watchEffect, onMounted } from 'vue';
+    import { defineComponent, computed, ref, watchEffect, onMounted, watch } from 'vue';
     import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonSearchbar, IonItem, IonGrid, IonRow, IonThumbnail, IonImg, IonToggle, IonCard, IonIcon, IonActionSheet } from '@ionic/vue';
     //
     import { addOutline, closeCircleOutline } from 'ionicons/icons';
@@ -276,12 +333,13 @@
             const chooseAttribute = (attribute) => {
                 isItemAlreadyHave.value = subjectData.value.additionalAttributes.find(item => item.value === attribute.value)
                 if(isItemAlreadyHave.value !== undefined) {
-                    alert('Modal Create Subject: атрибут уже добавлен к предмету')
+                    alert('Modal View Subject: атрибут уже добавлен к предмету')
                 } else {
                     searchAttributeMenu.value = false;
-                    subjectData.value.additionalAttributes.push(attribute)
+                    const newAttribute = attribute;
+                    subjectData.value.additionalAttributes.push(newAttribute)
                     // 
-                    subjectData.value.subjectPrice += +attribute.price;
+                    subjectData.value.subjectPrice += +attribute.totalPrice;
                     emit('updateBD');
                 }
             }
@@ -323,7 +381,7 @@
             const deleteAttributeFunc = (attribute) => {
                 subjectData.value.additionalAttributes = subjectData.value.additionalAttributes.filter(item => item.uid !== attribute.uid);
                 // и вычитаем из общей стоимости
-                subjectData.value.subjectPrice -= +attribute.price
+                subjectData.value.subjectPrice -= +attribute.totalPrice
                 emit('updateBD');
             }
 
@@ -344,7 +402,7 @@
                 isViewSubjectAttributeOpened.value = true;
                 // console.log(subjectData.value.additionalAttributes[index])
                 currentSubjectAttribute.value = subjectData.value.additionalAttributes[index];
-                console.log(currentSubjectAttribute.value)
+                // console.log(currentSubjectAttribute.value)
             }
             // ============================ Проверяем добавлен ли уже атрибут к продукту
             const isItemAlreadyHave = ref();
@@ -371,9 +429,25 @@
                     return
                 }
             }
+            //
+            const attributeTotalPriceValue = ref();
+            //
+            const attributeTotalPrice = (pricePerUnit, qty) => {
+                // if(!subjectData.value.selectedProduct) {
+                //     subjectData.value.totalPrice = pricePerUnit * qty
+                //     attributeTotalPriceValue.value = subjectData.value.totalPrice
+                // }
+                currentSubjectAttribute.value.totalPrice = +(pricePerUnit * qty)
+                attributeTotalPriceValue.value = subjectData.value.totalPrice
+                // emit('updateBD');
+            }
+            watch(attributeTotalPriceValue, () => {
+                console.log(attributeTotalPriceValue.value)
+
+            })
 
             return {
-                systemCurrency, userSettings, subjectData, currentDealType, searchRecipeMenu, searchRecipe, chooseRecipe, noRecipe, searchedRecipe, userRecipeArray, showSelectedRecipe, translateProductValue, dealSaleSubjectArray, dealBuySubjectArray, addOutline, closeCircleOutline, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, openDeleteAttributeModal, deleteAttributeFunc, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, currentSubjectAttribute, isItemAlreadyHave, searchAttributeMenu, searchAdditionalAttributes, searchedAdditionalAttributes, dealAdditionalAttributesArray, chooseAttribute
+                systemCurrency, userSettings, subjectData, currentDealType, searchRecipeMenu, searchRecipe, chooseRecipe, noRecipe, searchedRecipe, userRecipeArray, showSelectedRecipe, translateProductValue, dealSaleSubjectArray, dealBuySubjectArray, addOutline, closeCircleOutline, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, openDeleteAttributeModal, deleteAttributeFunc, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, currentSubjectAttribute, isItemAlreadyHave, searchAttributeMenu, searchAdditionalAttributes, searchedAdditionalAttributes, dealAdditionalAttributesArray, chooseAttribute, attributeTotalPrice, attributeTotalPriceValue
             }
         }
     })
@@ -430,5 +504,8 @@
         top: -0.4rem;
         left: -0.4rem;
         z-index: 20;
+    }
+    .border-bottom {
+        border-bottom: 1px solid var(--ion-color-light);
     }
 </style>

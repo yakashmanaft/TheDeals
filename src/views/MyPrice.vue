@@ -117,7 +117,7 @@
                                                 {{item.name}}
                                             </ion-label>
                                             <ion-text color="primary" style="font-size: 1.5rem">
-                                                {{item.price}} {{currency}}
+                                                {{item.totalPrice}} {{currency}}
                                             </ion-text>
                                             <ion-label>
                                                 {{ setRentType(item.rentType) }}
@@ -372,7 +372,9 @@
                 uid: uid(),
                 value: '',
                 name: '',
-                price: '',
+                pricePerUnit: 0,
+                totalPrice: 0,
+                qty: 1,
                 rentType: '',
                 isReturned: false 
             })
@@ -393,7 +395,9 @@
                         uid: uid(),
                         value: '',
                         name: '',
-                        price: '',
+                        pricePerUnit: 0,
+                        totalPrice: 0,
+                        qty: 1,
                         rentType: '',
                         isReturned: false 
                     }
@@ -437,7 +441,9 @@
                         uid: uid(),
                         value: newProductData.value,
                         name: newProductData.name,
-                        price: newProductData.price,
+                        pricePerUnit: newProductData.price,
+                        qty: newProductData.qty,
+                        totalPrice: newProductData.price * newProductData.qty,
                         rentType: newProductData.rentType,
                         isReturned: newProductData.isReturned 
                     })
@@ -479,7 +485,7 @@
             }
             //
             const setProductPrice = (price) => {
-                currentProduct.value.price = price
+                currentProduct.value.pricePerUnit = price
                 updateUserPriceListDB()
             }
             //
