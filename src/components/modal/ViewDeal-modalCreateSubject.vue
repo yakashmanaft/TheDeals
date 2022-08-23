@@ -136,7 +136,7 @@
                     <ion-grid class="ion-no-padding" v-if="isAttributesMenuOpened">
                         <ion-row class="ion-nowrap horizontal-scroll">
                             <!-- Карточки attribute -->
-                            <ion-card @click.stop="openCurrentSubjectAttribute(index)" class="ion-padding ion-text-center card-center relative" v-for="(attribute, index) in subjectData.additionalAttributes" :key="attribute.id">
+                            <ion-card @click.stop="openCurrentSubjectAttribute(attribute)" class="ion-padding ion-text-center card-center relative" v-for="(attribute, index) in subjectData.additionalAttributes" :key="attribute.id">
                                 <!-- Кнопка удалить конкретный атрибут у предмета -->
                                 <ion-icon class="icon_size icon_del absolute" :icon="closeCircleOutline" @click.stop="openDeleteAttributeModal(attribute)"></ion-icon>
                                 <!-- attribute img-->
@@ -223,7 +223,6 @@
                                 <ion-row>
                                     <div>
                                         Всего: {{currentSubjectAttribute.totalPrice}} {{systemCurrency.name}}
-                                        {{attributeTotalPrice(currentSubjectAttribute.pricePerUnit, currentSubjectAttribute.qty)}}
                                     </div>
                                 </ion-row>
                             </ion-grid>
@@ -383,6 +382,8 @@
             IonActionSheet,
         },
         setup(props, {emit}) {
+            //
+            const currentSubjectAttribute = ref()
             // Валюта отображения
             const systemCurrency = ref(store.state.systemCurrency)
             // массив ПОЛЬЗОВАТЕЛЯ с вариантами рецептов (Временно в сторе)
@@ -452,6 +453,7 @@
                 subjectData.value = props.subjectData;
                 currentDealType.value = props.currentDealType
                 isAttributesMenuOpened.value = props.isAttributesMenuOpened
+                currentSubjectAttribute.value = props.currentSubjectAttribute
 
             })
             // ПРЕДМЕТ ДЕЛА (фильтр для поиска и сортировка по алфавиту)
@@ -544,43 +546,58 @@
             }
 
             // ======================================== Просмотр конкретного атрибута =====================================================
-            const currentSubjectAttribute = ref()
             // открываем view current attribute item
             const isViewSubjectAttributeOpened = ref(false);
-            const openCurrentSubjectAttribute = (index) => {
+            const openCurrentSubjectAttribute = (attribute) => {
                 isViewSubjectAttributeOpened.value = true;
                 // console.log(subjectData.value.additionalAttributes[index])
-                currentSubjectAttribute.value = subjectData.value.additionalAttributes[index];
+                // currentSubjectAttribute.value = subjectData.value.additionalAttributes[index];
+                currentSubjectAttribute.value = attribute
                 // console.log(currentSubjectAttribute.value)
             }
-            // ============================ Проверяем добавлен ли уже атрибут к продукту
+            // Проверяем добавлен ли уже атрибут к продукту
             const isItemAlreadyHave = ref();
-            //
-            const attributeTotalPriceValue = ref(0);
-            //
-            const attributeTotalPrice = (pricePerUnit, qty) => {
-                currentSubjectAttribute.value.totalPrice = +(pricePerUnit * qty)
-                attributeTotalPriceValue.value = currentSubjectAttribute.value.totalPrice
-                // if(!subjectData.value.selectedProduct) {
-                //     subjectData.value.totalPrice = pricePerUnit * qty
-                // }
-                // emit('updateBD');
-            }
-            // subjectData.value.subjectPrice -= attributeTotalPriceValue.value
-            watch(attributeTotalPriceValue, (newValue, oldValue) => {
-                // console.log(attributeTotalPriceValue.value)
-                // subjectData.value.subjectPrice = (subjectData.value.subjectPrice - +oldValue) +  attributeTotalPriceValue.value
-                // subjectData.value.subjectPrice += attributeTotalPriceValue.value
-                console.log(`oldValue: ${oldValue}`)
-                console.log(`newValue: ${newValue}`)
-                subjectData.value.subjectPrice = (subjectData.value.subjectPrice - +oldValue) + +newValue
-                // subjectData.value.subjectPrice += +newValue
 
-                console.log(subjectData.value.subjectPrice)
-            })
+
+
+
+        // // Берем массив данных
+        // let array = dealsList.value;
+        // // Выбираем из массива данных нужные значения
+        // let numbers = array.map(item => item.totalSubjectPrice)
+        // // Суммируем значения
+        // let sum = numbers.reduce( (accumulator, currentValue) => accumulator + currentValue)
+
+
+            // subjectData.value.subjectPrice = 1
+
+
+
+            //
+            // const attributeTotalPriceValue = ref(0);
+            // // attributeTotalPriceValue.value = currentSubjectAttribute.pricePerUnit
+            // console.log(currentSubjectAttribute.value)
+            //
+            // const attributeTotalPrice = (pricePerUnit, qty) => {
+            //     currentSubjectAttribute.value.totalPrice = pricePerUnit * qty
+            //     console.log(currentSubjectAttribute.value.totalPrice)
+            //     // attributeTotalPriceValue.value = currentSubjectAttribute.value.totalPrice
+            // }
+            // subjectData.value.subjectPrice -= attributeTotalPriceValue.value
+            // watch(attributeTotalPriceValue, (newValue, oldValue) => {
+            //     // attributeTotalPrice()
+            //     console.log(attributeTotalPriceValue.value)
+            //     // subjectData.value.subjectPrice = (subjectData.value.subjectPrice - +oldValue) +  attributeTotalPriceValue.value
+            //     // subjectData.value.subjectPrice += attributeTotalPriceValue.value
+            //     // console.log(`oldValue: ${oldValue}`)
+            //     // console.log(`newValue: ${newValue}`)
+            //     // subjectData.value.subjectPrice = (subjectData.value.subjectPrice - +oldValue) + +newValue
+            //     //subjectData.value.subjectPrice +=
+            //     // console.log(subjectData.value.subjectPrice)
+            // })
 
             return {
-                dealSaleSubjectArray, dealBuySubjectArray, helpOutline, addOutline, showSelectedProduct, searchSubjectMenu, searchSelectedProduct, currentDealType, translateValue, searchedSubject, choose, searchRecipeMenu, searchRecipe, userRecipeArray, chooseRecipe, showSelectedRecipe, searchedRecipe, noRecipe, searchAttributeMenu, searchAdditionalAttributes, dealAdditionalAttributesArray, searchedAdditionalAttributes, chooseAttribute, closeCircleOutline, isAttributesMenuOpened, toggleAttributesMenu, openDeleteAttributeModal, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, systemCurrency, currentSubjectAttribute, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, isItemAlreadyHave, attributeTotalPrice, attributeTotalPriceValue
+                dealSaleSubjectArray, dealBuySubjectArray, helpOutline, addOutline, showSelectedProduct, searchSubjectMenu, searchSelectedProduct, currentDealType, translateValue, searchedSubject, choose, searchRecipeMenu, searchRecipe, userRecipeArray, chooseRecipe, showSelectedRecipe, searchedRecipe, noRecipe, searchAttributeMenu, searchAdditionalAttributes, dealAdditionalAttributesArray, searchedAdditionalAttributes, chooseAttribute, closeCircleOutline, isAttributesMenuOpened, toggleAttributesMenu, openDeleteAttributeModal, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, systemCurrency, currentSubjectAttribute, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, isItemAlreadyHave
             }
         }
     })

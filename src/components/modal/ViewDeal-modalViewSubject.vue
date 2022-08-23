@@ -191,7 +191,6 @@
                                 <ion-row>
                                     <div>
                                         Всего: {{currentSubjectAttribute.totalPrice}} {{systemCurrency.name}}
-                                        {{attributeTotalPrice(currentSubjectAttribute.pricePerUnit, currentSubjectAttribute.qty)}}
                                     </div>
                                 </ion-row>
                             </ion-grid>
@@ -429,25 +428,9 @@
                     return
                 }
             }
-            //
-            const attributeTotalPriceValue = ref();
-            //
-            const attributeTotalPrice = (pricePerUnit, qty) => {
-                // if(!subjectData.value.selectedProduct) {
-                //     subjectData.value.totalPrice = pricePerUnit * qty
-                //     attributeTotalPriceValue.value = subjectData.value.totalPrice
-                // }
-                currentSubjectAttribute.value.totalPrice = +(pricePerUnit * qty)
-                attributeTotalPriceValue.value = subjectData.value.totalPrice
-                // emit('updateBD');
-            }
-            watch(attributeTotalPriceValue, () => {
-                console.log(attributeTotalPriceValue.value)
-
-            })
 
             return {
-                systemCurrency, userSettings, subjectData, currentDealType, searchRecipeMenu, searchRecipe, chooseRecipe, noRecipe, searchedRecipe, userRecipeArray, showSelectedRecipe, translateProductValue, dealSaleSubjectArray, dealBuySubjectArray, addOutline, closeCircleOutline, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, openDeleteAttributeModal, deleteAttributeFunc, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, currentSubjectAttribute, isItemAlreadyHave, searchAttributeMenu, searchAdditionalAttributes, searchedAdditionalAttributes, dealAdditionalAttributesArray, chooseAttribute, attributeTotalPrice, attributeTotalPriceValue
+                systemCurrency, userSettings, subjectData, currentDealType, searchRecipeMenu, searchRecipe, chooseRecipe, noRecipe, searchedRecipe, userRecipeArray, showSelectedRecipe, translateProductValue, dealSaleSubjectArray, dealBuySubjectArray, addOutline, closeCircleOutline, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, openDeleteAttributeModal, deleteAttributeFunc, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, currentSubjectAttribute, isItemAlreadyHave, searchAttributeMenu, searchAdditionalAttributes, searchedAdditionalAttributes, dealAdditionalAttributesArray, chooseAttribute
             }
         }
     })
