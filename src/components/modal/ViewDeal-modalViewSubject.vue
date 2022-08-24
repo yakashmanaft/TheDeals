@@ -147,18 +147,16 @@
                     :productData="currentSubjectAttribute"
                     :blockToShow="'attributes'"
                     @getRentType="setAttributeRentType"
+                    @getProductPrice="setProductPrice"
                 />
 
-                <ion-modal>
+                <!-- <ion-modal>
                     <ion-header translucent="true">
                         <ion-toolbar>
                             <ion-buttons slot="start">
                                 <ion-button @click="isViewSubjectAttributeOpened = false">Закрыть</ion-button>
                             </ion-buttons>
                             <ion-title class="ion-text-center">Просмотр</ion-title>
-                            <!-- <ion-buttons slot="end">
-                                <ion-button>Готово</ion-button>
-                            </ion-buttons> -->
                         </ion-toolbar>
                     </ion-header>
                     <ion-content>
@@ -166,37 +164,30 @@
                         {{currentDealType}}
                         {{currentSubjectAttribute}}
                         <ion-item-group class="ion-padding-horizontal">
-                            <!-- Заголовок -->
                             <ion-text>
                                 <h4 class="ion-no-margin ion-margin-top">Доп. Атрибут</h4>
                             </ion-text>
-                            <!-- Показываем текущий доп. атрибут -->
                             <ion-grid class="ion-no-padding border-bottom ion-padding-bottom">
                                 <ion-row class="ion-justify-content-between ion-align-items-center">
-                                    <!-- Название текущего доп. атрибуту -->
                                     <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
                                         {{ currentSubjectAttribute.name }}
                                     </ion-button>
-                                    <!-- Иконка к текущему доп. атрибуту -->
                                     <ion-thumbnail class="thumbnail_deal-subject">
                                         <ion-img :src="`../img/subjects/sale/${currentSubjectAttribute.value}.webp`"></ion-img>
                                     </ion-thumbnail>
                                 </ion-row>
                             </ion-grid>
                         </ion-item-group>
-                        <!--  -->
                         <ion-item-group>
                             Кол-во
                             <input type="number" v-model="currentSubjectAttribute.qty">
                             Цена за 1 ед.
                             <input type="number" v-model="currentSubjectAttribute.pricePerUnit">
                         </ion-item-group>
-                        <!--  -->
                         <ion-item-group class="ion-padding-horizontal">
                             <ion-text>
                                 <h4 class="ion-no-margin">Стоимость атрибута</h4>
                             </ion-text>
-                            <!--  -->
                             <ion-grid>
                                 <ion-row>
                                     <div>
@@ -206,7 +197,7 @@
                             </ion-grid>
                         </ion-item-group>
                     </ion-content>
-                </ion-modal>
+                </ion-modal> -->
 
                 <!-- Модалка по выбору / поиску атрибутов в прайсе пользователя -->
                 <ion-modal :isOpen="searchAttributeMenu">
@@ -445,9 +436,15 @@
                 currentSubjectAttribute.value.rentType = type
                 emit('updateBD');
             }
+            //
+            const setProductPrice = (price) => {
+                currentSubjectAttribute.value.price = price
+                currentSubjectAttribute.value.totalPrice = currentSubjectAttribute.value.price * currentSubjectAttribute.value.qty
+                // console.log(price)
+            }
 
             return {
-                systemCurrency, userSettings, subjectData, currentDealType, searchRecipeMenu, searchRecipe, chooseRecipe, noRecipe, searchedRecipe, userRecipeArray, showSelectedRecipe, translateProductValue, dealSaleSubjectArray, dealBuySubjectArray, addOutline, closeCircleOutline, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, openDeleteAttributeModal, deleteAttributeFunc, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, currentSubjectAttribute, isItemAlreadyHave, searchAttributeMenu, searchAdditionalAttributes, searchedAdditionalAttributes, dealAdditionalAttributesArray, chooseAttribute, setAttributeRentType
+                systemCurrency, userSettings, subjectData, currentDealType, searchRecipeMenu, searchRecipe, chooseRecipe, noRecipe, searchedRecipe, userRecipeArray, showSelectedRecipe, translateProductValue, dealSaleSubjectArray, dealBuySubjectArray, addOutline, closeCircleOutline, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, openDeleteAttributeModal, deleteAttributeFunc, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, currentSubjectAttribute, isItemAlreadyHave, searchAttributeMenu, searchAdditionalAttributes, searchedAdditionalAttributes, dealAdditionalAttributesArray, chooseAttribute, setAttributeRentType, setProductPrice
             }
         }
     })
