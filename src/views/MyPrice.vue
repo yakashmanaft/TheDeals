@@ -20,7 +20,6 @@
             @getCostEstimation="setCostEstimation"
             @getProductPrice="setProductPrice"
             @getProductQty="setProductQty"
-            @getProductTotalPrice="setProductTotalPrice"
             @getRentType="setAttributeRentType"
             :blockToShow="blockToShow"
         />
@@ -525,12 +524,12 @@
                 }
             }
             //
-            const setProductTotalPrice = (totalPrice) => {
-                if(blockToShow.value === 'attributes') {
-                    currentProduct.value.totalPrice = totalPrice
-                    updateUserPriceListDB()
-                }
-            }
+            // const setProductTotalPrice = (totalPrice) => {
+            //     if(blockToShow.value === 'attributes') {
+            //         currentProduct.value.totalPrice = totalPrice
+            //         updateUserPriceListDB()
+            //     }
+            // }
             //
             const setAttributeRentType = (type) => {
                 currentProduct.value.rentType = type;
@@ -586,7 +585,7 @@
             }
 
             return {
-                priceChipList, blockToShow, menu, user, userEmail, router, pageTitle, userSettings, spinner, dataLoaded, trashOutline, deleteProductAction, openDeleteProductModal, openDeleteAttributeModal, deleteProductButtons, deleteAttributeButtons, productToDelete, attributeToDelete, deleteProduct, openSaleProductInfo, updateUserPriceListDB, isViewCurrentProductOpened, currentProduct, isModalNewPriceItemOpened, addNewPriceProduct, toggleNewPriceProductModal, newPriceProductData, closeCircleOutline, currency, priceCalcType, costEstimation, setCostEstimation, setProductPrice, setProductQty, setProductTotalPrice, newPriceAdditionalAttributeData, deleteAdditionalAttribute, setBlockToShow, countItemChip, setChipOutline, setRentType, deleteAttributeAction, isItemAlreadyHave, changeBlockToShow, closeModalCreatePriceProduct, setAttributeRentType
+                priceChipList, blockToShow, menu, user, userEmail, router, pageTitle, userSettings, spinner, dataLoaded, trashOutline, deleteProductAction, openDeleteProductModal, openDeleteAttributeModal, deleteProductButtons, deleteAttributeButtons, productToDelete, attributeToDelete, deleteProduct, openSaleProductInfo, updateUserPriceListDB, isViewCurrentProductOpened, currentProduct, isModalNewPriceItemOpened, addNewPriceProduct, toggleNewPriceProductModal, newPriceProductData, closeCircleOutline, currency, priceCalcType, costEstimation, setCostEstimation, setProductPrice, setProductQty, newPriceAdditionalAttributeData, deleteAdditionalAttribute, setBlockToShow, countItemChip, setChipOutline, setRentType, deleteAttributeAction, isItemAlreadyHave, changeBlockToShow, closeModalCreatePriceProduct, setAttributeRentType
             }
         }
     })

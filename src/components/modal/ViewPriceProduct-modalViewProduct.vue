@@ -89,17 +89,27 @@
                         <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
                             Количество
                         </ion-button>
-                        <ion-button  color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                            <ion-input type="number" v-model="productQty" inputmode="decimal" :value="productData.qty" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
-                        </ion-button>
+                        <div>
+                            <ion-grid class="ion-no-padding">
+                                <ion-row class="ion-align-items-center">
+                                    <!-- Subtract -->
+                                    <ion-icon class="countQty_button" @click="changeQty('sub')" :color="countQtyButtonColor" :icon="removeCircleOutline"></ion-icon>
+                                    <!-- Show data -->
+                                    <ion-text class="ion-padding-horizontal countQty_count" color="primary">{{ setProductQty(productData.qty) }}</ion-text>
+                                    <!-- Add -->
+                                    <ion-icon class="countQty_button" @click="changeQty('add')" color="primary" :icon="addCircleOutline"></ion-icon>
+                                </ion-row>
+                            </ion-grid>
+
+                        </div>
                     </ion-row>
                     <!-- Сумма -->
-                    <ion-row v-if="blockToShow === 'attributes'" class="ion-justify-content-between ion-align-items-center flex_nowrap">
+                    <ion-row v-if="blockToShow === 'attributes'" class="ion-justify-content-between ion-align-items-center flex_nowrap ion-margin-top">
                         <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
                             Сумма ({{ currency }})
                         </ion-button>
                         <ion-button  color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                            <ion-input type="number" v-model="productTotalPrice" inputmode="decimal" :value="productData.totalPrice" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
+                            <ion-text style="font-size: 32px; color: black; font-weight: bold">{{productData.totalPrice}}</ion-text>
                         </ion-button>
                     </ion-row>
                 </ion-grid>
@@ -109,10 +119,10 @@
 </template>
 
 <script>
-    import { defineComponent, ref, watch, watchEffect } from 'vue';
+    import { defineComponent, onMounted, ref, watch, watchEffect } from 'vue';
     import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonThumbnail, IonImg, IonInput, IonChip, IonLabel, IonIcon } from '@ionic/vue';
     //
-    import {  } from 'ionicons/icons';
+    import { removeCircleOutline, addCircleOutline } from 'ionicons/icons';
     //
     import Select from '../Select.vue';
     //
@@ -123,7 +133,7 @@
     //
     export default defineComponent({
         name: 'ViewPriceProduct',
-        emits: ['getCostEstimation', 'getProductPrice', 'getProductQty', 'getProductTotalPrice', 'getRentType', 'closeModal'],
+        emits: ['getCostEstimation', 'getProductPrice', 'getProductQty', 'getRentType', 'closeModal'],
         props: {
             productData: Object,
             blockToShow: String
@@ -169,16 +179,18 @@
                 emit('getCostEstimation', costEstimationType)
             })
             watch(productPrice, (price) => {
-                console.log(price)
+                // console.log(price)
                 emit('getProductPrice', +price)
             })
             watch(productQty, (qty) => {
-                console.log(qty)
+                // console.log(qty)
                 emit('getProductQty', +qty)
-            })
-            watch(productTotalPrice, (totalPrice) => {
-                console.log(totalPrice)
-                emit('getProductTotalPrice', +totalPrice)
+                // раскрашиваем кнопки counter
+                if(qty < 2) {
+                    countQtyButtonColor.value = 'light'
+                } else {
+                    countQtyButtonColor.value = 'primary'
+                }
             })
             watch(rentType, (type) => {
                 // console.log(type)
@@ -192,9 +204,27 @@
                     return 'Атрибут к продукту'
                 }
             }
-
+            // функционал управления кнопками добавить / вычесть
+            const countQtyButtonColor = ref('primary')
+            const changeQty = (action) => {
+                if(action === 'sub' && productQty.value > 1) {
+                    // console.log(productQty.value)
+                    productQty.value--
+                } else if (action === 'add') {
+                    productQty.value++
+                } else if (productQty.value < 2) {
+                    countQtyButtonColor.value = 'light'
+                }
+                // console.log(action)
+            }
+            // подтягиваем данные из props в управляющую переменную productQty
+            const setProductQty = (qty) => {
+                productQty.value = qty
+                return productQty.value
+            } 
+            
             return {
-                productData, priceEstimationType, priceAttributeType, priceCalcType, costEstimation, rentType, currency, productPrice, productQty, productTotalPrice, setIconByBlockToShow, translateValue, priceChipList, setNameByBlockToShow
+                productData, priceEstimationType, priceAttributeType, priceCalcType, costEstimation, rentType, currency, productPrice, productQty, productTotalPrice, setIconByBlockToShow, translateValue, priceChipList, setNameByBlockToShow, changeQty, setProductQty, removeCircleOutline, addCircleOutline, countQtyButtonColor
             }
         }
     })
@@ -219,5 +249,11 @@
     }
     .flex_nowrap {
         flex-wrap: nowrap;
+    }
+    .countQty_count {
+        font-size: 24px;
+    }
+    .countQty_button {
+        font-size: 32px;
     }
 </style>
