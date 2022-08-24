@@ -12,6 +12,7 @@
             </ion-toolbar>
         </ion-header>
         <ion-content class="ion-padding">
+            {{newProductData}}
             <!-- ============================= Основные данные ===================================== -->
             <!-- Выбор что добавляем в прайс: атрибут или продукт -->
             <ion-item-group>
@@ -110,7 +111,7 @@
                         </ion-button>
 
                     </ion-row>
-                    <!-- Цена -->
+                    <!-- Цена 1 ед-->
                     <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
                         <!-- Цена -->
                         <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
@@ -118,8 +119,38 @@
                         </ion-button>
                         <!-- Кнопка показа и изменения цены -->
                         <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                            <ion-input type="number" v-model="newProductData.price" placeholder="0.00" inputmode="decimal" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
+                            <ion-input type="number" v-model="newProductPrice" :value="newProductData.price" placeholder="0" inputmode="decimal" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
                         </ion-button>
+                    </ion-row>
+                    <!-- Количество -->
+                    <ion-row v-if="blockToShow === 'attributes'" class="ion-justify-content-between ion-align-items-center flex_nowrap border-bottom ion-padding-bottom">
+                        <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                            Количество, шт.
+                        </ion-button>
+                        <div>
+                            <ion-grid class="ion-no-padding">
+                                <ion-row class="ion-align-items-center">
+                                    <!-- Subtract -->
+                                    <ion-icon class="countQty_button" @click="changeQty('sub')" :color="countQtyButtonColor" :icon="removeCircleOutline"></ion-icon>
+                                    <!-- Show data -->
+                                    <ion-text class="ion-padding-horizontal countQty_count" color="primary">{{setProductQty(newProductData.qty)}}</ion-text>
+                                    <!-- Add -->
+                                    <ion-icon class="countQty_button" @click="changeQty('add')" color="primary" :icon="addCircleOutline"></ion-icon>
+                                </ion-row>
+                            </ion-grid>
+                        </div>
+                    </ion-row>
+                    <!-- Сумма -->
+                    <ion-row v-if="blockToShow === 'attributes'" class="ion-justify-content-between ion-align-items-center flex_nowrap ion-margin-top">
+                        <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                            <!-- Сумма ({{ currency }}) -->
+                        </ion-button>
+                        <div>
+                            <ion-button  color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                <ion-text style="font-size: 32px; color: black; font-weight: bold">{{newProductData.totalPrice}}</ion-text>
+                            </ion-button>
+                            <ion-text color="medium">{{currency}}</ion-text>
+                        </div>
                     </ion-row>
                 </ion-grid>
             </ion-item-group>
@@ -130,7 +161,7 @@
 <script>
     import { defineComponent, ref, watchEffect, computed, watch } from 'vue';
     import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonThumbnail, IonImg, IonIcon, IonSearchbar, IonItem, IonInput, IonChip, IonLabel } from '@ionic/vue';
-    import { helpOutline } from 'ionicons/icons';
+    import { helpOutline, removeCircleOutline, addCircleOutline } from 'ionicons/icons';
     //
     import store from '../../store/index';
     //
@@ -143,7 +174,7 @@
     //
     export default defineComponent({
         name: 'CreatePriceProduct',
-        emits: ['blockToShowIsChanged', 'closeModal', 'addPriceProduct'],
+        emits: ['blockToShowIsChanged', 'closeModal', 'addPriceProduct', 'getNewProductQty', 'getNewProductPrice'],
         props: {
             newProductData: Object,
             blockToShow: String
@@ -217,9 +248,46 @@
                     return 'Атрибут к продукту'
                 }
             }
+            // функционал управления кнопками добавить / вычесть
+            const countQtyButtonColor = ref('primary')
+            const changeQty = (action) => {
+                if(action === 'sub' && newProductData.value.qty > 1) {
+                    // console.log(productQty.value)
+                    newProductData.value.qty--
+                } else if (action === 'add') {
+                    newProductData.value.qty++
+                } else if (newProductData.value.qty < 2) {
+                    countQtyButtonColor.value = 'light'
+                }
+                // console.log(action)
+            }
+            //
+            const newProductQty = ref();
+            watch(newProductQty, (qty) => {
+                emit('getNewProductQty', +qty)
+                // раскрашиваем кнопки counter
+                if(qty < 2) {
+                    countQtyButtonColor.value = 'light'
+                } else {
+                    countQtyButtonColor.value = 'primary'
+                }
+            })
+            const setProductQty = (qty) => {
+                newProductQty.value = qty;
+                return newProductQty.value
+            }
+            //
+            const newProductPrice = ref()
+            // console.log(newProductData.value.price)
+            watch(newProductPrice, (price) => {
+                // console.log(price)
+                emit('getNewProductPrice', +price)
+            })
+            // так как изначально пустое - проще, чем во ViewPriceProduct - viewProduct
+            //newProductData.price
 
             return {
-                helpOutline, dealSaleSubjectArray, subjectAttributeArray, showSelectedProduct, searchSelectedProduct, searchProductMenu, translateValue, searchedProduct, sortAlphabetically, searchDealSubjectFilter, chooseProduct, priceEstimationType, priceAttributeType, currency, showBlockName, priceChipList, setIconByBlockToShow, setNameByBlockToShow
+                helpOutline, dealSaleSubjectArray, subjectAttributeArray, showSelectedProduct, searchSelectedProduct, searchProductMenu, translateValue, searchedProduct, sortAlphabetically, searchDealSubjectFilter, chooseProduct, priceEstimationType, priceAttributeType, currency, showBlockName, priceChipList, setIconByBlockToShow, setNameByBlockToShow, changeQty, countQtyButtonColor, removeCircleOutline, addCircleOutline, setProductQty, newProductPrice
             }
         }
     })
@@ -244,5 +312,14 @@
     }
     .flex_nowrap {
         flex-wrap: nowrap;
+    }
+    .countQty_count {
+        font-size: 24px;
+    }
+    .countQty_button {
+        font-size: 32px;
+    }
+    .border-bottom {
+        border-bottom: 1px solid var(--ion-color-light);
     }
 </style>

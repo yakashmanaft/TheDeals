@@ -18,7 +18,7 @@
                 </ion-chip>
             </ion-item-group>
             <!-- ============================= Добавленный продукт ===================================== -->
-            <ion-item-group>
+            <ion-item-group class="border-bottom ion-padding-bottom">
                 <!-- Заголовок -->
                 <ion-text>
                     <h4 class="ion-no-margin">{{setNameByBlockToShow(blockToShow)}}</h4>
@@ -85,9 +85,9 @@
                         </ion-button>
                     </ion-row>
                     <!-- Количество -->
-                    <ion-row v-if="blockToShow === 'attributes'" class="ion-justify-content-between ion-align-items-center flex_nowrap">
+                    <ion-row v-if="blockToShow === 'attributes'" class="ion-justify-content-between ion-align-items-center flex_nowrap border-bottom ion-padding-bottom">
                         <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                            Количество
+                            Количество, шт.
                         </ion-button>
                         <div>
                             <ion-grid class="ion-no-padding">
@@ -100,17 +100,19 @@
                                     <ion-icon class="countQty_button" @click="changeQty('add')" color="primary" :icon="addCircleOutline"></ion-icon>
                                 </ion-row>
                             </ion-grid>
-
                         </div>
                     </ion-row>
                     <!-- Сумма -->
                     <ion-row v-if="blockToShow === 'attributes'" class="ion-justify-content-between ion-align-items-center flex_nowrap ion-margin-top">
                         <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                            Сумма ({{ currency }})
+                            <!-- Сумма ({{ currency }}) -->
                         </ion-button>
-                        <ion-button  color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                            <ion-text style="font-size: 32px; color: black; font-weight: bold">{{productData.totalPrice}}</ion-text>
-                        </ion-button>
+                        <div>
+                            <ion-button  color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                <ion-text style="font-size: 32px; color: black; font-weight: bold">{{productData.totalPrice}}</ion-text>
+                            </ion-button>
+                            <ion-text color="medium">{{currency}}</ion-text>
+                        </div>
                     </ion-row>
                 </ion-grid>
             </ion-item-group>
@@ -255,5 +257,8 @@
     }
     .countQty_button {
         font-size: 32px;
+    }
+    .border-bottom {
+        border-bottom: 1px solid var(--ion-color-light);
     }
 </style>

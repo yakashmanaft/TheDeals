@@ -139,7 +139,17 @@
                     :subjectData="currentSubjectAttribute"
                     :currentDealType="currentDealType"
                 /> -->
-                <ion-modal :isOpen="isViewSubjectAttributeOpened">
+
+                <!-- <ion-modal :isOpen="isViewSubjectAttributeOpened"> -->
+                <ViewPriceProduct 
+                    :isOpen="isViewSubjectAttributeOpened"
+                    @closeModal="isViewSubjectAttributeOpened = false"
+                    :productData="currentSubjectAttribute"
+                    :blockToShow="'attributes'"
+                    @getRentType="setAttributeRentType"
+                />
+
+                <ion-modal>
                     <ion-header translucent="true">
                         <ion-toolbar>
                             <ion-buttons slot="start">
@@ -273,6 +283,8 @@
     //
     import store from '../../store/index';
     //
+    import ViewPriceProduct from '../modal/ViewPriceProduct-modalViewProduct.vue'
+    //
     export default defineComponent({
         name: 'ViewDealSubject',
         emits: ['closeModal', 'updateBD'],
@@ -281,7 +293,7 @@
             currentDealType: String
         },
         components: {
-            IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonSearchbar, IonItem, IonGrid, IonRow, IonThumbnail, IonImg, IonToggle, IonCard, IonIcon, IonActionSheet
+            IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonSearchbar, IonItem, IonGrid, IonRow, IonThumbnail, IonImg, IonToggle, IonCard, IonIcon, IonActionSheet, ViewPriceProduct
         },
         setup(props, { emit }) {
             // Валюта отображения
@@ -428,9 +440,14 @@
                     return
                 }
             }
+            //
+            const setAttributeRentType = (type) => {
+                currentSubjectAttribute.value.rentType = type
+                emit('updateBD');
+            }
 
             return {
-                systemCurrency, userSettings, subjectData, currentDealType, searchRecipeMenu, searchRecipe, chooseRecipe, noRecipe, searchedRecipe, userRecipeArray, showSelectedRecipe, translateProductValue, dealSaleSubjectArray, dealBuySubjectArray, addOutline, closeCircleOutline, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, openDeleteAttributeModal, deleteAttributeFunc, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, currentSubjectAttribute, isItemAlreadyHave, searchAttributeMenu, searchAdditionalAttributes, searchedAdditionalAttributes, dealAdditionalAttributesArray, chooseAttribute
+                systemCurrency, userSettings, subjectData, currentDealType, searchRecipeMenu, searchRecipe, chooseRecipe, noRecipe, searchedRecipe, userRecipeArray, showSelectedRecipe, translateProductValue, dealSaleSubjectArray, dealBuySubjectArray, addOutline, closeCircleOutline, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, openDeleteAttributeModal, deleteAttributeFunc, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, currentSubjectAttribute, isItemAlreadyHave, searchAttributeMenu, searchAdditionalAttributes, searchedAdditionalAttributes, dealAdditionalAttributesArray, chooseAttribute, setAttributeRentType
             }
         }
     })

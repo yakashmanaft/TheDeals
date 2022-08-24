@@ -29,6 +29,8 @@
             :is-open="isModalNewPriceItemOpened" 
             @closeModal="closeModalCreatePriceProduct"   
             :newProductData="newPriceProductData"
+            @getNewProductQty="setNewProductQty"
+            @getNewProductPrice="setNewProductPrice"
             @addPriceProduct="addNewPriceProduct"
             :blockToShow="blockToShow"
             @blockToShowIsChanged="changeBlockToShow"
@@ -524,12 +526,20 @@
                 }
             }
             //
-            // const setProductTotalPrice = (totalPrice) => {
-            //     if(blockToShow.value === 'attributes') {
-            //         currentProduct.value.totalPrice = totalPrice
-            //         updateUserPriceListDB()
-            //     }
-            // }
+            const setNewProductQty = (qty) => {
+                if(blockToShow.value === 'attributes') {
+                    // console.log(qty)
+                    newPriceProductData.value.totalPrice = newPriceProductData.value.qty * newPriceProductData.value.price 
+                }
+            }
+            //
+            const setNewProductPrice = (price) => {
+                if(blockToShow.value === 'attributes') {
+                    console.log(price)
+                    newPriceProductData.value.price = price
+                    newPriceProductData.value.totalPrice = newPriceProductData.value.qty * newPriceProductData.value.price 
+                }
+            }
             //
             const setAttributeRentType = (type) => {
                 currentProduct.value.rentType = type;
@@ -585,7 +595,7 @@
             }
 
             return {
-                priceChipList, blockToShow, menu, user, userEmail, router, pageTitle, userSettings, spinner, dataLoaded, trashOutline, deleteProductAction, openDeleteProductModal, openDeleteAttributeModal, deleteProductButtons, deleteAttributeButtons, productToDelete, attributeToDelete, deleteProduct, openSaleProductInfo, updateUserPriceListDB, isViewCurrentProductOpened, currentProduct, isModalNewPriceItemOpened, addNewPriceProduct, toggleNewPriceProductModal, newPriceProductData, closeCircleOutline, currency, priceCalcType, costEstimation, setCostEstimation, setProductPrice, setProductQty, newPriceAdditionalAttributeData, deleteAdditionalAttribute, setBlockToShow, countItemChip, setChipOutline, setRentType, deleteAttributeAction, isItemAlreadyHave, changeBlockToShow, closeModalCreatePriceProduct, setAttributeRentType
+                priceChipList, blockToShow, menu, user, userEmail, router, pageTitle, userSettings, spinner, dataLoaded, trashOutline, deleteProductAction, openDeleteProductModal, openDeleteAttributeModal, deleteProductButtons, deleteAttributeButtons, productToDelete, attributeToDelete, deleteProduct, openSaleProductInfo, updateUserPriceListDB, isViewCurrentProductOpened, currentProduct, isModalNewPriceItemOpened, addNewPriceProduct, toggleNewPriceProductModal, newPriceProductData, closeCircleOutline, currency, priceCalcType, costEstimation, setCostEstimation, setProductPrice, setProductQty, newPriceAdditionalAttributeData, deleteAdditionalAttribute, setBlockToShow, countItemChip, setChipOutline, setRentType, deleteAttributeAction, isItemAlreadyHave, changeBlockToShow, closeModalCreatePriceProduct, setAttributeRentType, setNewProductQty, setNewProductPrice
             }
         }
     })
@@ -624,4 +634,5 @@
         --overflow: scroll;
         white-space: nowrap;
     }
+
 </style>
