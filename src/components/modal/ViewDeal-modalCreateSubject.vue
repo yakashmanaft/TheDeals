@@ -14,7 +14,7 @@
         <!--  -->
         <ion-grid>
             <ion-row>
-                <ion-text v-if="subjectData.selectedProduct !== ''">Общая сумма предмета: {{ subjectData.subjectPrice }}</ion-text>
+                <ion-text v-if="subjectData.selectedProduct !== ''">Общая сумма предмета: {{ subjectData.totalSubjectPrice }}</ion-text>
             </ion-row>
         </ion-grid>
         <!--  -->
@@ -500,7 +500,7 @@
                     const newAttribute = attribute;
                     subjectData.value.additionalAttributes.push(newAttribute)
                     // 
-                    subjectData.value.subjectPrice += +attribute.totalPrice
+                    subjectData.value.totalSubjectPrice += +attribute.totalPrice
                     // emit('updateBD');
                 }
             }
@@ -542,7 +542,7 @@
             const deleteAttributeFunc = (attribute) => {
                 subjectData.value.additionalAttributes = subjectData.value.additionalAttributes.filter(item => item.uid !== attribute.uid);
                 // и вычитаем из общей стоимости
-                subjectData.value.subjectPrice -= +attribute.totalPrice
+                subjectData.value.totalSubjectPrice -= +attribute.totalPrice
             }
 
             // ======================================== Просмотр конкретного атрибута =====================================================

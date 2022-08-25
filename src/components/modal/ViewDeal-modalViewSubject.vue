@@ -11,9 +11,15 @@
                 </ion-buttons> -->
             </ion-toolbar>
         </ion-header>
-        <ion-content class="ion-padding-vertical ion-page" :scroll-events="true">
-            <br>
-            <br>
+        <!-- ============================ СТОИМОСТЬ ПРЕДМЕТА ПОКАЗЫВАЕМ ========================== -->
+         <!--  -->
+        <ion-grid>
+            <ion-row>
+                <ion-text v-if="subjectData.selectedProduct">Общая сумма предмета: {{ subjectData.totalSubjectPrice }}</ion-text>
+            </ion-row>
+        </ion-grid>
+        <!--  -->
+        <ion-content :scroll-events="true">
             {{currentDealType}}
             {{subjectData}}
             <!-- ================ Добавленный продукт ======================== -->
@@ -99,11 +105,16 @@
                 <!-- АТРИБУТЫ -->
                 <ion-item-group class="ion-margin-top">
                     <!-- Заголовок -->
-                    <ion-text>
-                        <h4 class="ion-no-margin ion-padding-horizontal">Атрибуты к предмету</h4>
-                    </ion-text>
+                    <ion-grid class="ion-no-padding">
+                        <ion-row class="ion-justify-content-between ion-align-items-center">
+                            <ion-text>
+                                <h4 class="ion-no-margin ion-padding-horizontal">Атрибуты (допы)</h4>
+                            </ion-text>
+                            <ion-text class="ion-margin-end" color="medium" v-if="subjectData.additionalAttributes.length > 0">{{sumAttributesPriceFunc(subjectData.additionalAttributes)}} {{systemCurrency.name}}</ion-text>
+                        </ion-row>
+                    </ion-grid>
                     <!--  -->
-                    <ion-grid class="ion-no-padding border-bottom ">
+                    <ion-grid class="ion-no-padding">
                         <ion-row class="ion-nowrap horizontal-scroll">
                             <!-- Карточки attribute -->
                             <ion-card @click.stop="openCurrentSubjectAttribute(index)" class="ion-padding ion-text-center card-center relative" v-for="(attribute, index) in subjectData.additionalAttributes" :key="attribute.id">
@@ -148,6 +159,7 @@
                     :blockToShow="'attributes'"
                     @getRentType="setAttributeRentType"
                     @getProductPrice="setProductPrice"
+                    @getProductQty="setProductQty"
                 />
 
                 <!-- <ion-modal>
@@ -205,9 +217,16 @@
                     <!--  -->
                     <ion-content style="height: 90vh">
                         <ion-item v-for="attribute in searchedAdditionalAttributes" :key="attribute.id" @click="chooseAttribute(attribute)">
-                            {{ attribute.name }}
-                            {{ attribute}}
-                            ({{ systemCurrency.name }})
+                            <ion-grid class="ion-no-padding">
+                                <ion-row class="ion-justify-content-between ion-align-items-center">
+                                    <ion-text color="primary">
+                                        {{ attribute.name }}
+                                    </ion-text>
+                                    <div class="ion-margin-end">
+                                        {{ attribute.totalPrice}} {{ systemCurrency.name }}
+                                    </div>
+                                </ion-row>
+                            </ion-grid>
                         </ion-item>
                         <!-- Если ничего подхлдящего нет, создать свое надо -->
                         <div v-if="searchedAdditionalAttributes.length <= 0">
@@ -239,31 +258,25 @@
                 </ion-item-group> -->
             </div>
 
-            <!-- ================= Стоимости показываем ======================-->
-            <!-- SUBJECT PRICE -->
-            <ion-item-group class="ion-padding-horizontal ion-margin-top">
-                <!-- Заголовок -->
+            <!-- ===================================== Заметки показываем ======================================== -->
+            <!-- product note -->
+            <ion-item-group class="ion-margin-horizontal ion-margin-bottom border-top">
                 <ion-text>
-                    <h4 v-if="currentDealType === 'sale' && subjectData.subjectPrice" class="ion-no-margin">Стоимость продукта</h4>
-                    <h4 v-if="currentDealType === 'buy'" class="ion-no-margin">Стоимость приобретения</h4>
+                    <h4 class="ion-no-margin ion-margin-top">Заметки по предмету</h4>
                 </ion-text>
-                <!--  -->
-                <ion-grid class="ion-no-padding border-bottom ion-padding-bottom">
-                    <!--  -->
-                    <ion-row v-if="subjectData.selectedProduct">
-                        <div>
-                            Всего: {{subjectData.subjectPrice}} {{systemCurrency.name}}
-                        </div>
-                    </ion-row>
-                </ion-grid>
+                <ion-textarea class="ion-margin-bottom" autocapitalize="on" v-model="subjectData.productNote" :placeholder="setProductNotePlaceholder(subjectData.productNote)"></ion-textarea>
             </ion-item-group>
+            <br>
+            <br>
+            <br>
+            <br>
         </ion-content>
     </ion-modal>
 </template>
 
 <script>
     import { defineComponent, computed, ref, watchEffect, onMounted, watch } from 'vue';
-    import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonSearchbar, IonItem, IonGrid, IonRow, IonThumbnail, IonImg, IonToggle, IonCard, IonIcon, IonActionSheet } from '@ionic/vue';
+    import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonSearchbar, IonItem, IonGrid, IonRow, IonThumbnail, IonImg, IonToggle, IonCard, IonIcon, IonActionSheet, IonTextarea } from '@ionic/vue';
     //
     import { addOutline, closeCircleOutline } from 'ionicons/icons';
     //
@@ -284,7 +297,7 @@
             currentDealType: String
         },
         components: {
-            IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonSearchbar, IonItem, IonGrid, IonRow, IonThumbnail, IonImg, IonToggle, IonCard, IonIcon, IonActionSheet, ViewPriceProduct
+            IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonSearchbar, IonItem, IonGrid, IonRow, IonThumbnail, IonImg, IonToggle, IonCard, IonIcon, IonActionSheet, ViewPriceProduct, IonTextarea
         },
         setup(props, { emit }) {
             // Валюта отображения
@@ -304,7 +317,6 @@
             onMounted( async() => {
                 await store.methods.getUserSettingsfromDB();
                 userSettings.value = store.state.userSettings
-                // dealSaleSubjectArray.value = userSettings.value[0].userPriceList
                 dealAdditionalAttributesArray.value = userSettings.value[0].userAdditionalAttributes
             })
             //
@@ -340,8 +352,6 @@
                     searchAttributeMenu.value = false;
                     const newAttribute = attribute;
                     subjectData.value.additionalAttributes.push(newAttribute)
-                    // 
-                    subjectData.value.subjectPrice += +attribute.totalPrice;
                     emit('updateBD');
                 }
             }
@@ -383,7 +393,7 @@
             const deleteAttributeFunc = (attribute) => {
                 subjectData.value.additionalAttributes = subjectData.value.additionalAttributes.filter(item => item.uid !== attribute.uid);
                 // и вычитаем из общей стоимости
-                subjectData.value.subjectPrice -= +attribute.totalPrice
+                subjectData.value.totalSubjectPrice -= +attribute.totalPrice
                 emit('updateBD');
             }
 
@@ -440,11 +450,52 @@
             const setProductPrice = (price) => {
                 currentSubjectAttribute.value.price = price
                 currentSubjectAttribute.value.totalPrice = currentSubjectAttribute.value.price * currentSubjectAttribute.value.qty
-                // console.log(price)
+                emit('updateBD');
+            }
+            //
+            const setProductQty = (qty) => {
+                console.log(qty)
+                currentSubjectAttribute.value.qty = qty
+                currentSubjectAttribute.value.totalPrice = currentSubjectAttribute.value.price * currentSubjectAttribute.value.qty
+                emit('updateBD');
+            }
+            //Считаем сумма всех атрибутов
+            const sumAttributesPriceFunc = (array) => {
+                // Выбираем из массива данных нужные значения
+                let attrPriceArray = array.map(item => item.totalPrice)
+                // Суммируем значения
+                const sumAttributesPriceValue = attrPriceArray.reduce( (accumulator, currentValue) => accumulator + currentValue)
+                // console.log(sumAttributesPriceValue)
+                calcTotalSubjectPrice(sumAttributesPriceValue);
+                return sumAttributesPriceValue
+            }
+            // ========= показываем, меняем и обноавляем в БД запись по заметке к предмету дела
+            const productNote = ref();
+            watch(productNote, () => {
+                // console.log(productNote.value)
+                emit('updateBD');
+            })
+            //
+            const setProductNotePlaceholder = (note) => {
+                if (note === '') {
+                    return 'Напишите что-нибудь'
+                } else {
+                    productNote.value = note
+                    return note
+                }
+            }
+            // функция калькуляции общей стоимости предмета дела
+            const calcTotalSubjectPrice = (sumAttrPrice) => {
+                if(currentDealType.value === 'sale') {
+                    subjectData.value.totalSubjectPrice = sumAttrPrice
+                    console.log('sale')
+                } else if(currentDealType.value === 'buy') {
+                    console.log('buy')
+                }
             }
 
             return {
-                systemCurrency, userSettings, subjectData, currentDealType, searchRecipeMenu, searchRecipe, chooseRecipe, noRecipe, searchedRecipe, userRecipeArray, showSelectedRecipe, translateProductValue, dealSaleSubjectArray, dealBuySubjectArray, addOutline, closeCircleOutline, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, openDeleteAttributeModal, deleteAttributeFunc, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, currentSubjectAttribute, isItemAlreadyHave, searchAttributeMenu, searchAdditionalAttributes, searchedAdditionalAttributes, dealAdditionalAttributesArray, chooseAttribute, setAttributeRentType, setProductPrice
+                systemCurrency, userSettings, subjectData, currentDealType, searchRecipeMenu, searchRecipe, chooseRecipe, noRecipe, searchedRecipe, userRecipeArray, showSelectedRecipe, translateProductValue, dealSaleSubjectArray, dealBuySubjectArray, addOutline, closeCircleOutline, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, openDeleteAttributeModal, deleteAttributeFunc, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, currentSubjectAttribute, isItemAlreadyHave, searchAttributeMenu, searchAdditionalAttributes, searchedAdditionalAttributes, dealAdditionalAttributesArray, chooseAttribute, setAttributeRentType, setProductPrice, setProductQty, sumAttributesPriceFunc, productNote, setProductNotePlaceholder, calcTotalSubjectPrice
             }
         }
     })
@@ -504,5 +555,8 @@
     }
     .border-bottom {
         border-bottom: 1px solid var(--ion-color-light);
+    }
+    .border-top {
+        border-top: 1px solid var(--ion-color-light);
     }
 </style>

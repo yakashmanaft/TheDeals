@@ -265,6 +265,7 @@
                             recipe: '',
                             productQuantity: 1,
                             additionalAttributes: [],
+                            totalSubjectPrice: 0, 
                             productNote: '',
                         }
                     } else if (dealData.value.dealType === 'buy') {
@@ -299,6 +300,7 @@
                         recipe: '',
                         productQuantity: 1,
                         additionalAttributes: [],
+                        totalSubjectPrice: 0, 
                         productNote: '',
                     }
                 } else if (dealData.value.dealType === 'buy') {

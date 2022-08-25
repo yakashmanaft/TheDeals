@@ -360,6 +360,8 @@
             const updateBD = () => {
                 update()
             }
+            // ======================================== refresh current deal =================================
+            
             // ================================== delete current deal function ===============================
             const deleteDeal = async () => {
                 try {
@@ -471,6 +473,7 @@
                         recipe: '',
                         productQuantity: 1,
                         additionalAttributes: [],
+                        totalSubjectPrice: 0, 
                         productNote: '',
                     }
                 } else if (currentDeal.value.dealType === 'buy') {
