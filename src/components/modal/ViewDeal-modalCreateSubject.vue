@@ -171,16 +171,20 @@
                     :subjectData="currentDealSubject"
                     :currentDealType="currentDealType"
                 /> -->
-                <ion-modal :isOpen="isViewSubjectAttributeOpened">
+                <ViewPriceProduct
+                    :isOpen="isViewSubjectAttributeOpened"
+                    @closeModal="isViewSubjectAttributeOpened = false"
+                    :productData="currentSubjectAttribute"
+                    :blockToShow="'attributes'"
+                    @getRentType="setAttributeRentType"
+                />
+                <!-- <ion-modal :isOpen="isViewSubjectAttributeOpened">
                     <ion-header translucent="true">
                         <ion-toolbar>
                             <ion-buttons slot="start">
                                 <ion-button @click="isViewSubjectAttributeOpened = false">Закрыть</ion-button>
                             </ion-buttons>
                             <ion-title class="ion-text-center">Просмотр</ion-title>
-                            <!-- <ion-buttons slot="end">
-                                <ion-button>Готово</ion-button>
-                            </ion-buttons> -->
                         </ion-toolbar>
                     </ion-header>
                     <ion-content>
@@ -188,37 +192,30 @@
                         {{currentDealType}}
                         {{currentSubjectAttribute}}
                         <ion-item-group class="ion-padding-horizontal">
-                            <!-- Заголовок -->
                             <ion-text>
                                 <h4 class="ion-no-margin ion-margin-top">Доп. Атрибут</h4>
                             </ion-text>
-                            <!-- Показываем текущий доп. атрибут -->
                             <ion-grid class="ion-no-padding border-bottom ion-padding-bottom">
                                 <ion-row class="ion-justify-content-between ion-align-items-center">
-                                    <!-- Название текущего доп. атрибуту -->
                                     <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
                                         {{ currentSubjectAttribute.name }}
                                     </ion-button>
-                                    <!-- Иконка к текущему доп. атрибуту -->
                                     <ion-thumbnail class="thumbnail_deal-subject">
                                         <ion-img :src="`../img/subjects/sale/${currentSubjectAttribute.value}.webp`"></ion-img>
                                     </ion-thumbnail>
                                 </ion-row>
                             </ion-grid>
                         </ion-item-group>
-                        <!--  -->
                         <ion-item-group>
                             Кол-во
                             <input type="number" v-model="currentSubjectAttribute.qty">
                             Цена за 1 ед.
                             <input type="number" v-model="currentSubjectAttribute.pricePerUnit">
                         </ion-item-group>
-                        <!--  -->
                         <ion-item-group class="ion-padding-horizontal">
                             <ion-text>
                                 <h4 class="ion-no-margin">Стоимость атрибута</h4>
                             </ion-text>
-                            <!--  -->
                             <ion-grid>
                                 <ion-row>
                                     <div>
@@ -228,7 +225,7 @@
                             </ion-grid>
                         </ion-item-group>
                     </ion-content>
-                </ion-modal>
+                </ion-modal> -->
 
                 <!-- Модалка по выбору / поиску атрибутов в прайсе пользователя -->
                 <ion-modal :isOpen="searchAttributeMenu">
@@ -236,9 +233,16 @@
                     <!--  -->
                     <ion-content style="height: 90vh">
                         <ion-item v-for="attribute in searchedAdditionalAttributes" :key="attribute.id" @click="chooseAttribute(attribute)">
-                            {{ attribute.name }}
-                            {{ attribute }}
-                            ({{ systemCurrency.name }})
+                            <ion-grid class="ion-no-padding">
+                                <ion-row class="ion-justify-content-between ion-align-items-center">
+                                    <ion-text color="primary">
+                                        {{ attribute.name }}
+                                    </ion-text>
+                                    <div class="ion-margin-end">
+                                        {{ attribute.totalPrice}} {{ systemCurrency.name }}
+                                    </div>
+                                </ion-row>
+                            </ion-grid>
                         </ion-item>
                         <!-- Если ничего подхлдящего нет, создать свое надо -->
                         <div v-if="searchedAdditionalAttributes.length <= 0">
@@ -343,6 +347,8 @@
     import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonImg, IonThumbnail, IonIcon, IonGrid, IonRow, IonSearchbar, IonItem, IonTextarea, IonToggle, IonCard, IonLabel, IonActionSheet } from '@ionic/vue';
     import { helpOutline, addOutline, closeCircleOutline } from 'ionicons/icons';
     //
+    import ViewPriceProduct from '../modal/ViewPriceProduct-modalViewProduct.vue'
+    //
     import { searchDealSubjectFilter } from '../../helpers/filterDealSubject';
     import { searchUserRecipeFilter } from '../../helpers/filterUserRecipe';
     import { sortAlphabetically } from '../../helpers/sortDealSubject';
@@ -380,6 +386,7 @@
             IonCard, 
             IonLabel,
             IonActionSheet,
+            ViewPriceProduct
         },
         setup(props, {emit}) {
             //
@@ -557,7 +564,11 @@
             }
             // Проверяем добавлен ли уже атрибут к продукту
             const isItemAlreadyHave = ref();
-
+            //
+            const setAttributeRentType = (type) => {
+                currentSubjectAttribute.value.rentType = type
+                // emit('updateBD')
+            }
 
 
 
@@ -597,7 +608,7 @@
             // })
 
             return {
-                dealSaleSubjectArray, dealBuySubjectArray, helpOutline, addOutline, showSelectedProduct, searchSubjectMenu, searchSelectedProduct, currentDealType, translateValue, searchedSubject, choose, searchRecipeMenu, searchRecipe, userRecipeArray, chooseRecipe, showSelectedRecipe, searchedRecipe, noRecipe, searchAttributeMenu, searchAdditionalAttributes, dealAdditionalAttributesArray, searchedAdditionalAttributes, chooseAttribute, closeCircleOutline, isAttributesMenuOpened, toggleAttributesMenu, openDeleteAttributeModal, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, systemCurrency, currentSubjectAttribute, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, isItemAlreadyHave
+                dealSaleSubjectArray, dealBuySubjectArray, helpOutline, addOutline, showSelectedProduct, searchSubjectMenu, searchSelectedProduct, currentDealType, translateValue, searchedSubject, choose, searchRecipeMenu, searchRecipe, userRecipeArray, chooseRecipe, showSelectedRecipe, searchedRecipe, noRecipe, searchAttributeMenu, searchAdditionalAttributes, dealAdditionalAttributesArray, searchedAdditionalAttributes, chooseAttribute, closeCircleOutline, isAttributesMenuOpened, toggleAttributesMenu, openDeleteAttributeModal, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, systemCurrency, currentSubjectAttribute, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, isItemAlreadyHave, setAttributeRentType
             }
         }
     })
