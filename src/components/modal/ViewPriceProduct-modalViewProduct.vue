@@ -155,7 +155,7 @@
             const productQty = ref();
             const productTotalPrice = ref();
             const rentType = ref();
-            console.log(rentType.value)
+            // console.log(rentType.value)
             //
             const priceEstimationType = ref(store.state.priceEstimataionType)
             const priceAttributeType = ref(store.state.priceAttributeType)

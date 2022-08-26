@@ -482,7 +482,7 @@
                     selectedProduct: subjectData.selectedProduct,
                     price: subjectData.price,
                     costEstimation: subjectData.costEstimation,
-                    recipe: subjectData.recipe,
+                    recipe: subjectData.recipe, 
                     productQuantity: subjectData.productQuantity,
                     // массив пока шаблоном, в modalCreateSubject задавать значения
                     additionalAttributes: subjectData.additionalAttributes,

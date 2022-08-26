@@ -13,6 +13,8 @@
             :subjectData="currentDealSubject"
             :currentDealType="currentDeal.dealType"
             @updateBD="updateBD"
+            @getSubjectPrice="setSubjectPrice"
+            @getSumAttributesPriceValue="setSumAttributesPriceValue"
         />
 
         <!-- add subject to deal -->
@@ -469,6 +471,9 @@
                         selectedProduct: '',
                         price: 0,
                         costEstimation: '',
+                        personQuantity: 1,
+                        gramPerPerson: 120,
+                        subjectDiscount: 0,
                         subjectPrice: 0,
                         recipe: '',
                         productQuantity: 1,
@@ -516,9 +521,29 @@
                     }
                 }
             }
+            //
+            const sumAttributesPriceValue = ref(0);
+            const setSumAttributesPriceValue = (sumAttrPriceValue) => {
+                sumAttributesPriceValue.value = sumAttrPriceValue
+            }
+            // Считаем общую totalSubjectPrice по предмету (предмет + допы)
+            const calcSubjectTotalPrice = () => {
+                currentDealSubject.value.totalSubjectPrice = currentDealSubject.value.subjectPrice + sumAttributesPriceValue.value
+            }
+            // ставим currentDealSubject.value.price
+            const setSubjectPrice = (price) => {
+                if(currentDeal.value.dealType === 'sale') {
+                    currentDealSubject.value.price = price;
+                    // Формула рассчета цены currentDealSubject 
+                    currentDealSubject.value.subjectPrice = (currentDealSubject.value.price / 1000) * (currentDealSubject.value.personQuantity * currentDealSubject.value.gramPerPerson) * currentDealSubject.value.productQuantity * ((100 - currentDealSubject.value.subjectDiscount) / 100) 
+                    // Считаем общую totalSubjectPrice по предмету (предмет + допы)
+                    calcSubjectTotalPrice()
+                    update();
+                }
+            }
 
             return {
-                spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, translateDealSubjectRecipe, userRecipeArray, updateBD
+                spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, translateDealSubjectRecipe, userRecipeArray, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice
             }
         }
     })

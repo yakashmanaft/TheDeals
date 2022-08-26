@@ -120,51 +120,73 @@
                     </ion-modal>
                 </ion-item-group>
 
-                <!-- Расчет цена предмета -->
-                <ion-item-group>
-                    <!-- per Kilogram -->
-                    <div v-if="subjectData.costEstimation === 'perKilogram'">
-                        <!-- Заголовок -->
-                        <ion-text >
-                            <h4 class="ion-padding-horizontal">Цена предмета</h4>
-                        </ion-text>
-                        <!--  -->
-                        <ion-grid class="ion-no-padding">
-                            <ion-row>
-                                Цена за 1 кг.: {{ subjectData.price }}
-                            </ion-row>
-                            <ion-row>
-                                Количество гостей (чел.): {{ subjectData.personQuantity }}
-                            </ion-row>
-                            <ion-row>
-                                Вес одной порции (гр.): {{ subjectData.gramPerPerson }}
-                            </ion-row>
-                            <ion-row>
-                                Количество предмета (шт.): {{ subjectData.productQuantity }}
-                            </ion-row>
-                            <ion-row>
-                                Скидка на предмет: (%): {{ subjectData.subjectDiscount }}
-                            </ion-row>
-                        </ion-grid>
-                    </div>
-                    <!-- per 100gram -->
-                    <div v-if="subjectData.costEstimation === 'per100gram'">
+                <!-- ЦЕНА ПРЕДМЕТА -->
+                <ion-item-group class="ion-margin-horizontal ion-padding-bottom border-bottom ion-margin-top">
                     <!-- Заголовок -->
-                    <ion-text>
-                        <h4>Цена предмета</h4>
-                    </ion-text>
-                        Цена за 100 гр. {{ subjectData.price }} <br>
-
-                    </div>
-                    <!-- per Unit -->
-                    <div v-if="subjectData.costEstimation === 'perUnit'">
-                    <!-- Заголовок -->
-                    <ion-text>
-                        <h4>Цена предмета</h4>
-                    </ion-text>
-                        Цена за 1 шт. {{ subjectData.price }} <br>
-                    </div>
-
+                    <ion-grid class="ion-no-padding">
+                        <ion-row class="ion-justify-content-between ion-align-items-center">
+                            <ion-text>
+                                <h4 class="ion-no-margin">Цена предмета</h4>
+                            </ion-text>
+                            <ion-text color="medium">
+                                {{ subjectData.subjectPrice }} {{ systemCurrency.name }}
+                            </ion-text>
+                        </ion-row>
+                    </ion-grid>
+                    <!--  -->
+                    <ion-grid v-if="subjectData.costEstimation === 'perKilogram'" class="ion-no-padding">
+                        <ion-row>
+                            Цена за 1 кг.: {{ subjectData.price }}
+                        </ion-row>
+                        <ion-row>
+                            Количество гостей (чел.): {{ subjectData.personQuantity }}
+                        </ion-row>
+                        <ion-row>
+                            Вес одной порции (гр.): {{ subjectData.gramPerPerson }}
+                        </ion-row>
+                        <ion-row>
+                            Количество предмета (шт.): {{ subjectData.productQuantity }}
+                        </ion-row>
+                        <ion-row>
+                            Скидка на предмет: (%): {{ subjectData.subjectDiscount }}
+                        </ion-row>
+                    </ion-grid>
+                    <!--  -->
+                    <ion-grid v-if="subjectData.costEstimation === 'per100gram'" class="ion-no-padding">
+                        <ion-row>
+                            Цена за 1 кг.: {{ subjectData.price }}
+                        </ion-row>
+                        <!-- <ion-row>
+                            Количество гостей (чел.): {{ subjectData.personQuantity }}
+                        </ion-row>
+                        <ion-row>
+                            Вес одной порции (гр.): {{ subjectData.gramPerPerson }}
+                        </ion-row>
+                        <ion-row>
+                            Количество предмета (шт.): {{ subjectData.productQuantity }}
+                        </ion-row>
+                        <ion-row>
+                            Скидка на предмет: (%): {{ subjectData.subjectDiscount }}
+                        </ion-row> -->
+                    </ion-grid>
+                    <!--  -->
+                    <ion-grid v-if="subjectData.costEstimation === 'perUnit'" class="ion-no-padding">
+                        <ion-row>
+                            Цена за 1 шт: {{ subjectData.price }}
+                        </ion-row>
+                        <!-- <ion-row>
+                            Количество гостей (чел.): {{ subjectData.personQuantity }}
+                        </ion-row>
+                        <ion-row>
+                            Вес одной порции (гр.): {{ subjectData.gramPerPerson }}
+                        </ion-row>
+                        <ion-row>
+                            Количество предмета (шт.): {{ subjectData.productQuantity }}
+                        </ion-row>
+                        <ion-row>
+                            Скидка на предмет: (%): {{ subjectData.subjectDiscount }}
+                        </ion-row> -->
+                    </ion-grid>
                 </ion-item-group>
 
                 <!-- АТРИБУТЫ -->
