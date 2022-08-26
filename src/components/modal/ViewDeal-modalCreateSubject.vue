@@ -14,7 +14,7 @@
         <!--  -->
         <ion-grid>
             <ion-row>
-                <ion-text v-if="subjectData.selectedProduct !== ''">Общая сумма предмета: {{ subjectData.totalSubjectPrice }}</ion-text>
+                <ion-text>Общая сумма предмета: {{ subjectData.totalSubjectPrice }}</ion-text>
             </ion-row>
         </ion-grid>
         <!--  -->
@@ -28,7 +28,7 @@
                     <h4 class="ion-no-margin ion-margin-top">Предмет</h4>
                 </ion-text>
                 <!-- Показываем выбранный предмет по делу -->
-                <ion-grid class="ion-no-padding">
+                <ion-grid class="ion-no-padding border-bottom ion-padding-bottom">
                     <ion-row class="ion-justify-content-between ion-align-items-center">
                         <!-- Кнопка выбора предмета дела -->
                         <ion-button color="primary" size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click="searchSubjectMenu = true">
@@ -84,9 +84,11 @@
                         <h4>Рецепт</h4>
                     </ion-text>
                     <!-- Кнопка выбора рецепта к предмету -->
-                    <ion-button color="primary" size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click="searchRecipeMenu = true">
-                        {{ showSelectedRecipe(subjectData.recipe) }}
-                    </ion-button>
+                    <ion-grid class="ion-no-padding border-bottom">
+                        <ion-button color="primary" size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click="searchRecipeMenu = true">
+                            {{ showSelectedRecipe(subjectData.recipe) }}
+                        </ion-button>
+                    </ion-grid>
                     <!-- Модалка для выбор (Выбор / поиск рецепта для предмета) -->
                     <ion-modal :isOpen="searchRecipeMenu">
                         <ion-searchbar class="ion-text-left" placeholder="Поиск..." v-model="searchRecipe" show-cancel-button="always" cancelButtonText="Отменить" @ionCancel="searchRecipeMenu = false">
@@ -118,15 +120,62 @@
                     </ion-modal>
                 </ion-item-group>
 
-                <!-- АТРИБУТЫ -->
-                <ion-item-group class="ion-margin-top">
+                <!-- Расчет цена предмета -->
+                <ion-item-group>
+                    <!-- per Kilogram -->
+                    <div v-if="subjectData.costEstimation === 'perKilogram'">
+                        <!-- Заголовок -->
+                        <ion-text >
+                            <h4 class="ion-padding-horizontal">Цена предмета</h4>
+                        </ion-text>
+                        <!--  -->
+                        <ion-grid class="ion-no-padding">
+                            <ion-row>
+                                Цена за 1 кг.: {{ subjectData.price }}
+                            </ion-row>
+                            <ion-row>
+                                Количество гостей (чел.): {{ subjectData.personQuantity }}
+                            </ion-row>
+                            <ion-row>
+                                Вес одной порции (гр.): {{ subjectData.gramPerPerson }}
+                            </ion-row>
+                            <ion-row>
+                                Количество предмета (шт.): {{ subjectData.productQuantity }}
+                            </ion-row>
+                            <ion-row>
+                                Скидка на предмет: (%): {{ subjectData.subjectDiscount }}
+                            </ion-row>
+                        </ion-grid>
+                    </div>
+                    <!-- per 100gram -->
+                    <div v-if="subjectData.costEstimation === 'per100gram'">
                     <!-- Заголовок -->
                     <ion-text>
-                        <ion-grid class="ion-no-padding ion-padding-horizontal">
-                            <ion-row class="ion-align-items-center ion-justify-content-between">
+                        <h4>Цена предмета</h4>
+                    </ion-text>
+                        Цена за 100 гр. {{ subjectData.price }} <br>
+
+                    </div>
+                    <!-- per Unit -->
+                    <div v-if="subjectData.costEstimation === 'perUnit'">
+                    <!-- Заголовок -->
+                    <ion-text>
+                        <h4>Цена предмета</h4>
+                    </ion-text>
+                        Цена за 1 шт. {{ subjectData.price }} <br>
+                    </div>
+
+                </ion-item-group>
+
+                <!-- АТРИБУТЫ -->
+                <ion-item-group class="ion-margin-vertical">
+                    <!-- Заголовок -->
+                    <ion-text>
+                        <ion-grid class="ion-no-padding">
+                            <ion-row class="ion-align-items-center ion-justify-content-between ion-padding-horizontal">
                                 <div>
                                     <h4 class="ion-no-margin">Атрибуты к предмету</h4>
-                                    <ion-text color="primary">Всего {{ subjectData.additionalAttributes.length }}</ion-text>
+                                    <ion-text color="medium" v-if="subjectData.additionalAttributes.length > 0">{{sumAttributesPriceFunc(subjectData.additionalAttributes)}} {{systemCurrency.name}}</ion-text>
                                 </div>
                                 <ion-toggle color="success" @ionChange="toggleAttributesMenu"></ion-toggle>
                             </ion-row>
@@ -136,7 +185,7 @@
                     <ion-grid class="ion-no-padding" v-if="isAttributesMenuOpened">
                         <ion-row class="ion-nowrap horizontal-scroll">
                             <!-- Карточки attribute -->
-                            <ion-card @click.stop="openCurrentSubjectAttribute(attribute)" class="ion-padding ion-text-center card-center relative" v-for="(attribute, index) in subjectData.additionalAttributes" :key="attribute.id">
+                            <ion-card @click.stop="openCurrentSubjectAttribute(index)" class="ion-padding ion-text-center card-center relative" v-for="(attribute, index) in subjectData.additionalAttributes" :key="attribute.id">
                                 <!-- Кнопка удалить конкретный атрибут у предмета -->
                                 <ion-icon class="icon_size icon_del absolute" :icon="closeCircleOutline" @click.stop="openDeleteAttributeModal(attribute)"></ion-icon>
                                 <!-- attribute img-->
@@ -165,67 +214,15 @@
 
                 <!-- ===================================================================== -->
                 <!-- модалка просмотра уже добавленного атрибута -->
-                <!-- <ViewDealSubject 
-                    :isOpen="isViewSubjectAttributeOpened"
-                    @closeModal="isViewSubjectAttributeOpened = false"
-                    :subjectData="currentDealSubject"
-                    :currentDealType="currentDealType"
-                /> -->
                 <ViewPriceProduct
                     :isOpen="isViewSubjectAttributeOpened"
                     @closeModal="isViewSubjectAttributeOpened = false"
-                    :productData="currentSubjectAttribute"
+                    :productData="newAttribute"
                     :blockToShow="'attributes'"
                     @getRentType="setAttributeRentType"
+                    @getProductPrice="setProductPrice"
+                    @getProductQty="setProductQty"
                 />
-                <!-- <ion-modal :isOpen="isViewSubjectAttributeOpened">
-                    <ion-header translucent="true">
-                        <ion-toolbar>
-                            <ion-buttons slot="start">
-                                <ion-button @click="isViewSubjectAttributeOpened = false">Закрыть</ion-button>
-                            </ion-buttons>
-                            <ion-title class="ion-text-center">Просмотр</ion-title>
-                        </ion-toolbar>
-                    </ion-header>
-                    <ion-content>
-                        <br>
-                        {{currentDealType}}
-                        {{currentSubjectAttribute}}
-                        <ion-item-group class="ion-padding-horizontal">
-                            <ion-text>
-                                <h4 class="ion-no-margin ion-margin-top">Доп. Атрибут</h4>
-                            </ion-text>
-                            <ion-grid class="ion-no-padding border-bottom ion-padding-bottom">
-                                <ion-row class="ion-justify-content-between ion-align-items-center">
-                                    <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                                        {{ currentSubjectAttribute.name }}
-                                    </ion-button>
-                                    <ion-thumbnail class="thumbnail_deal-subject">
-                                        <ion-img :src="`../img/subjects/sale/${currentSubjectAttribute.value}.webp`"></ion-img>
-                                    </ion-thumbnail>
-                                </ion-row>
-                            </ion-grid>
-                        </ion-item-group>
-                        <ion-item-group>
-                            Кол-во
-                            <input type="number" v-model="currentSubjectAttribute.qty">
-                            Цена за 1 ед.
-                            <input type="number" v-model="currentSubjectAttribute.pricePerUnit">
-                        </ion-item-group>
-                        <ion-item-group class="ion-padding-horizontal">
-                            <ion-text>
-                                <h4 class="ion-no-margin">Стоимость атрибута</h4>
-                            </ion-text>
-                            <ion-grid>
-                                <ion-row>
-                                    <div>
-                                        Всего: {{currentSubjectAttribute.totalPrice}} {{systemCurrency.name}}
-                                    </div>
-                                </ion-row>
-                            </ion-grid>
-                        </ion-item-group>
-                    </ion-content>
-                </ion-modal> -->
 
                 <!-- Модалка по выбору / поиску атрибутов в прайсе пользователя -->
                 <ion-modal :isOpen="searchAttributeMenu">
@@ -262,60 +259,6 @@
                     </ion-content>
                 </ion-modal>
 
-                <!-- ================== Считаем Subject Price ==================================== -->
-                <ion-item-group>
-                    <!-- per Kilogram -->
-                    <div v-if="subjectData.costEstimation === 'perKilogram'">
-                        <!-- Заголовок -->
-                        <ion-text >
-                            <h4 class="ion-padding-horizontal">Калькулятор цены</h4>
-                        </ion-text>
-                        <!--  -->
-                        <ion-grid class="ion-no-padding">
-                            <ion-row>
-                                Цена за 1 кг.: {{ subjectData.price }}
-                            </ion-row>
-                            <ion-row>
-                                Количество гостей (чел.): {{ subjectData.personQuantity }}
-                            </ion-row>
-                            <ion-row>
-                                Вес одной порции (гр.): {{ subjectData.gramPerPerson }}
-                            </ion-row>
-                            <ion-row>
-                                Количество предмета (шт.): {{ subjectData.productQuantity }}
-                            </ion-row>
-                            <ion-row>
-                                Скидка на предмет: (%): {{ subjectData.subjectDiscount }}
-                            </ion-row>
-                        </ion-grid>
-                    </div>
-                    <!-- per 100gram -->
-                    <div v-if="subjectData.costEstimation === 'per100gram'">
-                    <!-- Заголовок -->
-                    <ion-text>
-                        <h4>Калькулятор цены</h4>
-                    </ion-text>
-                        Цена за 100 гр. {{ subjectData.price }} <br>
-
-                    </div>
-                    <!-- per Unit -->
-                    <div v-if="subjectData.costEstimation === 'perUnit'">
-                    <!-- Заголовок -->
-                    <ion-text>
-                        <h4>Калькулятор цены</h4>
-                    </ion-text>
-                        Цена за 1 шт. {{ subjectData.price }} <br>
-                    </div>
-
-
-                    <!-- 
-                        
-                     -->
-                    <!-- модалка для выбора (Поиск атрибута к предмету) -->
-
-
-                    <!-- ================== Считаем Total Subject Price ============================== -->
-                </ion-item-group>
             </div>
 
             <!-- Если ЗАКУПКА -->
@@ -328,8 +271,8 @@
                 </ion-item-group>
             </div>
 
-            <!-- product note -->
-            <ion-item-group class="ion-padding-horizontal ion-margin-bottom">
+            <!-- ЗАМЕТКИ -->
+            <ion-item-group class="ion-margin-horizontal ion-margin-bottom border-top">
                 <ion-text>
                     <h4>Заметки по предмету</h4>
                 </ion-text>
@@ -498,16 +441,26 @@
                 searchRecipeMenu.value = false;
             }
             // Выбираем из списка объект для массива атрибутов
+            const newAttribute = ref()
             const chooseAttribute = (attribute) => {
                 isItemAlreadyHave.value = subjectData.value.additionalAttributes.find(item => item.value === attribute.value)
                 if(isItemAlreadyHave.value !== undefined) {
                     alert('Modal Create Subject: атрибут уже добавлен к предмету')
                 } else {
                     searchAttributeMenu.value = false;
-                    const newAttribute = attribute;
-                    subjectData.value.additionalAttributes.push(newAttribute)
+                    newAttribute.value = {
+                        uid: attribute.uid,
+                        value: attribute.value,
+                        name: attribute.name,
+                        price: attribute.price,
+                        qty: attribute.qty,
+                        totalPrice: attribute.totalPrice,
+                        rentType: attribute.rentType,
+                        isReturned: attribute.isReturned
+                    };
+                    subjectData.value.additionalAttributes.push(newAttribute.value)
                     // 
-                    subjectData.value.totalSubjectPrice += +attribute.totalPrice
+                    // subjectData.value.totalSubjectPrice += +attribute.totalPrice
                     // emit('updateBD');
                 }
             }
@@ -550,65 +503,57 @@
                 subjectData.value.additionalAttributes = subjectData.value.additionalAttributes.filter(item => item.uid !== attribute.uid);
                 // и вычитаем из общей стоимости
                 subjectData.value.totalSubjectPrice -= +attribute.totalPrice
+                // newAttribute.value = {}
             }
 
             // ======================================== Просмотр конкретного атрибута =====================================================
             // открываем view current attribute item
             const isViewSubjectAttributeOpened = ref(false);
-            const openCurrentSubjectAttribute = (attribute) => {
+            const openCurrentSubjectAttribute = (index) => {
                 isViewSubjectAttributeOpened.value = true;
                 // console.log(subjectData.value.additionalAttributes[index])
-                // currentSubjectAttribute.value = subjectData.value.additionalAttributes[index];
-                currentSubjectAttribute.value = attribute
+                currentSubjectAttribute.value = subjectData.value.additionalAttributes[index];
+                // currentSubjectAttribute.value = attribute
                 // console.log(currentSubjectAttribute.value)
             }
             // Проверяем добавлен ли уже атрибут к продукту
             const isItemAlreadyHave = ref();
             //
             const setAttributeRentType = (type) => {
-                currentSubjectAttribute.value.rentType = type
+                newAttribute.value.rentType = type
                 // emit('updateBD')
             }
-
-
-
-        // // Берем массив данных
-        // let array = dealsList.value;
-        // // Выбираем из массива данных нужные значения
-        // let numbers = array.map(item => item.totalSubjectPrice)
-        // // Суммируем значения
-        // let sum = numbers.reduce( (accumulator, currentValue) => accumulator + currentValue)
-
-
-            // subjectData.value.subjectPrice = 1
-
-
-
             //
-            // const attributeTotalPriceValue = ref(0);
-            // // attributeTotalPriceValue.value = currentSubjectAttribute.pricePerUnit
-            // console.log(currentSubjectAttribute.value)
+            const setProductPrice = (price) => {
+                newAttribute.value.price = price
+                newAttribute.value.totalPrice = newAttribute.value.price * newAttribute.value.qty
+            }
             //
-            // const attributeTotalPrice = (pricePerUnit, qty) => {
-            //     currentSubjectAttribute.value.totalPrice = pricePerUnit * qty
-            //     console.log(currentSubjectAttribute.value.totalPrice)
-            //     // attributeTotalPriceValue.value = currentSubjectAttribute.value.totalPrice
-            // }
-            // subjectData.value.subjectPrice -= attributeTotalPriceValue.value
-            // watch(attributeTotalPriceValue, (newValue, oldValue) => {
-            //     // attributeTotalPrice()
-            //     console.log(attributeTotalPriceValue.value)
-            //     // subjectData.value.subjectPrice = (subjectData.value.subjectPrice - +oldValue) +  attributeTotalPriceValue.value
-            //     // subjectData.value.subjectPrice += attributeTotalPriceValue.value
-            //     // console.log(`oldValue: ${oldValue}`)
-            //     // console.log(`newValue: ${newValue}`)
-            //     // subjectData.value.subjectPrice = (subjectData.value.subjectPrice - +oldValue) + +newValue
-            //     //subjectData.value.subjectPrice +=
-            //     // console.log(subjectData.value.subjectPrice)
-            // })
+            const setProductQty = (qty) => {
+                newAttribute.value.qty = qty
+                newAttribute.value.totalPrice = newAttribute.value.price * newAttribute.value.qty
+            }
+            // функция калькуляции общей стоимости предмета дела
+            const calcTotalSubjectPrice = (sumAttrPrice) => {
+                if(currentDealType.value === 'sale') {
+                    subjectData.value.totalSubjectPrice = sumAttrPrice
+                    // console.log('sale')
+                } else if(currentDealType.value === 'buy') {
+                    // console.log('buy')
+                }
+            }
+            // Считаем сумму всех атритов
+            const sumAttributesPriceFunc = (array) => {
+                // Выбираем из массива данных нужные значения
+                let attrPriceArray = array.map(item => item.totalPrice)
+                // Суммируем значения
+                const sumAttributesPriceValue = attrPriceArray.reduce( (accumulator, currentValue) => accumulator + currentValue)
+                calcTotalSubjectPrice(sumAttributesPriceValue);
+                return sumAttributesPriceValue
+            }
 
             return {
-                dealSaleSubjectArray, dealBuySubjectArray, helpOutline, addOutline, showSelectedProduct, searchSubjectMenu, searchSelectedProduct, currentDealType, translateValue, searchedSubject, choose, searchRecipeMenu, searchRecipe, userRecipeArray, chooseRecipe, showSelectedRecipe, searchedRecipe, noRecipe, searchAttributeMenu, searchAdditionalAttributes, dealAdditionalAttributesArray, searchedAdditionalAttributes, chooseAttribute, closeCircleOutline, isAttributesMenuOpened, toggleAttributesMenu, openDeleteAttributeModal, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, systemCurrency, currentSubjectAttribute, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, isItemAlreadyHave, setAttributeRentType
+                dealSaleSubjectArray, dealBuySubjectArray, helpOutline, addOutline, showSelectedProduct, searchSubjectMenu, searchSelectedProduct, currentDealType, translateValue, searchedSubject, choose, searchRecipeMenu, searchRecipe, userRecipeArray, chooseRecipe, showSelectedRecipe, searchedRecipe, noRecipe, searchAttributeMenu, searchAdditionalAttributes, dealAdditionalAttributesArray, searchedAdditionalAttributes, chooseAttribute, closeCircleOutline, isAttributesMenuOpened, toggleAttributesMenu, openDeleteAttributeModal, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, systemCurrency, currentSubjectAttribute, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, isItemAlreadyHave, setAttributeRentType, sumAttributesPriceFunc, newAttribute, setProductQty, calcTotalSubjectPrice, setProductPrice
             }
         }
     })
@@ -665,6 +610,12 @@
         top: -0.4rem;
         left: -0.4rem;
         z-index: 20;
+    }
+    .border-bottom {
+        border-bottom: 1px solid var(--ion-color-light);
+    }
+    .border-top {
+        border-top: 1px solid var(--ion-color-light);
     }
 
 </style>

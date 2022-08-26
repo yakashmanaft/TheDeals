@@ -56,7 +56,7 @@
                             <Select
                                 :data="priceEstimationType" 
                                 :placeholder="priceCalcType(productData.costEstimation)"
-                                @date-updated="(selected) => costEstimation = selected.currentValue"
+                                @date-updated="(selected) => productData.costEstimation = selected.currentValue"
                             />
                         </ion-button>
                         <!-- Для attributes -->
@@ -64,7 +64,7 @@
                             <Select
                                 :data="priceAttributeType" 
                                 :placeholder="priceCalcType(productData.rentType)"
-                                @date-updated="(selected) => rentType = selected.currentValue"
+                                @date-updated="(selected) => productData.rentType = selected.currentValue"
                             />
                         </ion-button>
                     </ion-row>
@@ -155,6 +155,7 @@
             const productQty = ref();
             const productTotalPrice = ref();
             const rentType = ref();
+            console.log(rentType.value)
             //
             const priceEstimationType = ref(store.state.priceEstimataionType)
             const priceAttributeType = ref(store.state.priceAttributeType)
@@ -195,7 +196,7 @@
                 }
             })
             watch(rentType, (type) => {
-                // console.log(type)
+                console.log(type)
                 emit('getRentType', type)
             })
             //
