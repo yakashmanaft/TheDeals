@@ -133,8 +133,15 @@
                         <ion-row>
                             Вес одной порции (гр.): {{ subjectData.gramPerPerson }}
                         </ion-row>
-                        <ion-row>
-                            Количество предмета (шт.): {{ subjectData.productQuantity }}
+                        <!-- Кол-во предмета -->
+                        <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                Количество предмета, шт
+                            </ion-button>
+                            <!--  -->
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                <ion-input type="number" v-model="subjectQty" inputmode="decimal" :value="subjectData.productQuantity " class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
+                            </ion-button>
                         </ion-row>
                         <ion-row>
                             Скидка на предмет: (%): {{ subjectData.subjectDiscount }}
@@ -161,8 +168,15 @@
                     </ion-grid>
                     <!--  -->
                     <ion-grid v-if="subjectData.costEstimation === 'perUnit'" class="ion-no-padding">
-                        <ion-row>
-                            Цена за 1 шт: {{ subjectData.price }}
+                        <!-- Цена за 1 шт -->
+                        <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                1 шт. ({{ systemCurrency.name }})
+                            </ion-button>
+                            <!--  -->
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                <ion-input type="number" v-model="subjectPrice" inputmode="decimal" :value="subjectData.price" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
+                            </ion-button>
                         </ion-row>
                         <!-- <ion-row>
                             Количество гостей (чел.): {{ subjectData.personQuantity }}
@@ -176,6 +190,16 @@
                         <ion-row>
                             Скидка на предмет: (%): {{ subjectData.subjectDiscount }}
                         </ion-row> -->
+                        <!-- Кол-во предмета -->
+                        <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                Количество предмета, шт
+                            </ion-button>
+                            <!--  -->
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                <ion-input type="number" v-model="subjectQty" inputmode="decimal" :value="subjectData.productQuantity " class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
+                            </ion-button>
+                        </ion-row>
                     </ion-grid>
                 </ion-item-group>
 
@@ -221,7 +245,6 @@
                 </ion-item-group>
 
                 <!-- модалка просмотра уже добавленного атрибута -->
-
                 <ViewPriceProduct 
                     :isOpen="isViewSubjectAttributeOpened"
                     @closeModal="isViewSubjectAttributeOpened = false"
@@ -312,7 +335,7 @@
     //
     export default defineComponent({
         name: 'ViewDealSubject',
-        emits: ['closeModal', 'updateBD', 'getSubjectPrice'],
+        emits: ['closeModal', 'updateBD', 'getSubjectPrice', 'getSumAttributesPriceValue', 'getSubjectQty'],
         props: {
             subjectData: Object,
             currentDealType: String
@@ -531,12 +554,18 @@
             // следим за изменениями price
             const subjectPrice = ref()
             watch(subjectPrice, (price) => {
-                console.log(price)
+                // console.log(subjectPrice.value)
                 emit('getSubjectPrice', +price);
+            })
+            // следим за изменениями qty
+            const subjectQty = ref();
+            watch(subjectQty, (qty) => {
+                // console.log(subjectQty.value)
+                emit('getSubjectQty', +qty);
             })
 
             return {
-                systemCurrency, userSettings, subjectData, currentDealType, searchRecipeMenu, searchRecipe, chooseRecipe, noRecipe, searchedRecipe, userRecipeArray, showSelectedRecipe, translateProductValue, dealSaleSubjectArray, dealBuySubjectArray, addOutline, closeCircleOutline, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, openDeleteAttributeModal, deleteAttributeFunc, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, currentSubjectAttribute, isItemAlreadyHave, searchAttributeMenu, searchAdditionalAttributes, searchedAdditionalAttributes, dealAdditionalAttributesArray, chooseAttribute, setAttributeRentType, setProductPrice, setProductQty, sumAttributesPriceFunc, productNote, setProductNotePlaceholder, calcTotalSubjectPrice, subjectPrice, newAttribute, sumAttributesPriceValue
+                systemCurrency, userSettings, subjectData, currentDealType, searchRecipeMenu, searchRecipe, chooseRecipe, noRecipe, searchedRecipe, userRecipeArray, showSelectedRecipe, translateProductValue, dealSaleSubjectArray, dealBuySubjectArray, addOutline, closeCircleOutline, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, openDeleteAttributeModal, deleteAttributeFunc, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, currentSubjectAttribute, isItemAlreadyHave, searchAttributeMenu, searchAdditionalAttributes, searchedAdditionalAttributes, dealAdditionalAttributesArray, chooseAttribute, setAttributeRentType, setProductPrice, setProductQty, sumAttributesPriceFunc, productNote, setProductNotePlaceholder, calcTotalSubjectPrice, subjectPrice, newAttribute, sumAttributesPriceValue, subjectQty
             }
         }
     })

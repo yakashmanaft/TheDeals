@@ -15,6 +15,7 @@
             @updateBD="updateBD"
             @getSubjectPrice="setSubjectPrice"
             @getSumAttributesPriceValue="setSumAttributesPriceValue"
+            @getSubjectQty="setSubjectQty"
         />
 
         <!-- add subject to deal -->
@@ -24,6 +25,8 @@
             :subjectData="currentSubject"
             @createSubject="addNewSubject"
             :currentDealType="currentDeal.dealType"
+            @getSubjectPrice="setNewSubjectPrice"
+            @getSubjectQty="setNewSubjectQty"
         />
 
         <!-- page-content -->
@@ -44,6 +47,8 @@
 
             <!-- Data -->
             <div>
+                <!-- currentSubject: {{currentSubject}}
+                currentDealSubject: {{currentDealSubject}} -->
                 <!-- Тип дела -->
                 <!-- ============================== Статус и тип дела ========================================== -->
                 <ion-item-group>
@@ -496,6 +501,34 @@
             // Закрываем модалку создания нового предмета к текущему делу
             const closeCreateSubjectModal = () => {
                 isCreateNewSubjectOpened.value = false;
+                // Обнуляем шаблон нового предмета у дела согласно dealType
+                // if (currentDeal.value.dealType === 'sale') {
+                //     currentSubject.value = {
+                //         id: uid(),
+                //         selectedProduct: '',
+                //         price: 0,
+                //         costEstimation: '',
+                //         personQuantity: 1,
+                //         gramPerPerson: 120,
+                //         subjectDiscount: 0,
+                //         subjectPrice: 0,
+                //         recipe: '',
+                //         productQuantity: 0,
+                //         additionalAttributes: [],
+                //         totalSubjectPrice: 0, 
+                //         productNote: '',
+                //     }
+                // } else if (currentDeal.value.dealType === 'buy') {
+                //     currentSubject.value = {
+                //         id: uid(),
+                //         selectedProduct: '',
+                //         price: 0,
+                //         subjectPrice: 0,
+                //         // costEstimation: '',
+                //         productQuantity: 0,
+                //         productNote: '',
+                //     }
+                // }
             }
             // Добавляем новый предмет к текущему делу и делаем запись в БД
             const addNewSubject = () => {
@@ -506,6 +539,7 @@
                     alert('ViewDeal: Вы не указали рецепт')
                 } else {
                     currentDeal.value.dealsList.push(currentSubject.value); 
+                    
                     isCreateNewSubjectOpened.value = false;
                     update();
                 }
@@ -526,6 +560,7 @@
             const setSumAttributesPriceValue = (sumAttrPriceValue) => {
                 sumAttributesPriceValue.value = sumAttrPriceValue
             }
+            // ========================================= View Deal Modal View Subject ===================================================
             // Считаем общую totalSubjectPrice по предмету (предмет + допы)
             const calcSubjectTotalPrice = () => {
                 currentDealSubject.value.totalSubjectPrice = currentDealSubject.value.subjectPrice + sumAttributesPriceValue.value
@@ -534,16 +569,84 @@
             const setSubjectPrice = (price) => {
                 if(currentDeal.value.dealType === 'sale') {
                     currentDealSubject.value.price = price;
-                    // Формула рассчета цены currentDealSubject 
-                    currentDealSubject.value.subjectPrice = (currentDealSubject.value.price / 1000) * (currentDealSubject.value.personQuantity * currentDealSubject.value.gramPerPerson) * currentDealSubject.value.productQuantity * ((100 - currentDealSubject.value.subjectDiscount) / 100) 
-                    // Считаем общую totalSubjectPrice по предмету (предмет + допы)
-                    calcSubjectTotalPrice()
-                    update();
+                    if(currentDealSubject.value.costEstimation === 'perKilogram') {
+                        // Формула рассчета цены currentDealSubject 
+                        currentDealSubject.value.subjectPrice = (currentDealSubject.value.price / 1000) * (currentDealSubject.value.personQuantity * currentDealSubject.value.gramPerPerson) * currentDealSubject.value.productQuantity * ((100 - currentDealSubject.value.subjectDiscount) / 100) 
+                        // Считаем общую totalSubjectPrice по предмету (предмет + допы)
+                        calcSubjectTotalPrice()
+                        update();
+                    } else if (currentDealSubject.value.costEstimation === 'perUnit') {
+                        currentDealSubject.value.subjectPrice = currentDealSubject.value.price * currentDealSubject.value.productQuantity
+                        calcSubjectTotalPrice()
+                        update();
+                    } else if (currentDealSubject.value.costEstimation === 'per100gram') {
+                        console.log('В разработке')
+                    }
+                }
+            }
+            // ставим currentDealSubject.value.productQuanityt
+            const setSubjectQty = (qty) => {
+                if(currentDeal.value.dealType === 'sale') {
+                    currentDealSubject.value.productQuantity = qty;
+                    if(currentDealSubject.value.costEstimation === 'perKilogram') {
+                        // Формула рассчета цены currentDealSubject 
+                        currentDealSubject.value.subjectPrice = (currentDealSubject.value.price / 1000) * (currentDealSubject.value.personQuantity * currentDealSubject.value.gramPerPerson) * currentDealSubject.value.productQuantity * ((100 - currentDealSubject.value.subjectDiscount) / 100) 
+                        // Считаем общую totalSubjectPrice по предмету (предмет + допы)
+                        calcSubjectTotalPrice()
+                        update();
+                    } else if (currentDealSubject.value.costEstimation === 'perUnit') {
+                        currentDealSubject.value.subjectPrice = currentDealSubject.value.price * currentDealSubject.value.productQuantity
+                        calcSubjectTotalPrice()
+                        update();
+                    } else if (currentDealSubject.value.costEstimation === 'per100gram') {
+                        console.log('В разработке')
+                    }
                 }
             }
 
+            // ================================== View Deal Modal Create Subject ============================================
+            // Считаем общую totalSubjectPrice по предмету (предмет + допы)
+            const calcNewSubjectTotalPrice = () => {
+                currentSubject.value.totalSubjectPrice = currentSubject.value.subjectPrice + sumAttributesPriceValue.value
+            }
+            // ставим NEW Current Subject PRICE
+            const setNewSubjectPrice = (price) => {
+                if(currentDeal.value.dealType === 'sale') {
+                    currentSubject.value.price = price;
+                    if(currentSubject.value.costEstimation === 'perKilogram') {
+                        // Формула рассчета цены currentDealSubject 
+                        currentSubject.value.subjectPrice = (currentSubject.value.price / 1000) * (currentSubject.value.personQuantity * currentSubject.value.gramPerPerson) * currentSubject.value.productQuantity * ((100 - currentSubject.value.subjectDiscount) / 100) 
+                        // Считаем общую totalSubjectPrice по предмету (предмет + допы)
+                        calcNewSubjectTotalPrice()
+                    } else if (currentSubject.value.costEstimation === 'perUnit') {
+                        currentSubject.value.subjectPrice = currentSubject.value.price * currentSubject.value.productQuantity
+                        calcNewSubjectTotalPrice()
+                    } else if (currentSubject.value.costEstimation === 'per100gram') {
+                        console.log('В разработке')
+                    }
+                }
+            }
+            // ставим NEW Current Subject QUANTITY
+            const setNewSubjectQty = (qty) => {
+                if(currentDeal.value.dealType === 'sale') {
+                    currentSubject.value.productQuantity = qty;
+                    if(currentSubject.value.costEstimation === 'perKilogram') {
+                        // Формула рассчета цены currentDealSubject 
+                        currentSubject.value.subjectPrice = (currentSubject.value.price / 1000) * (currentSubject.value.personQuantity * currentSubject.value.gramPerPerson) * currentSubject.value.productQuantity * ((100 - currentSubject.value.subjectDiscount) / 100) 
+                        // Считаем общую totalSubjectPrice по предмету (предмет + допы)
+                        calcNewSubjectTotalPrice()
+                    } else if(currentSubject.value.costEstimation === 'perUnit') {
+                        currentSubject.value.subjectPrice = currentSubject.value.price * currentSubject.value.productQuantity
+                        calcNewSubjectTotalPrice()
+                    } else if (currentSubject.value.costEstimation === 'per100gram') {
+                        console.log('В разработке')
+                    }
+                }
+            }
+
+
             return {
-                spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, translateDealSubjectRecipe, userRecipeArray, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice
+                spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, translateDealSubjectRecipe, userRecipeArray, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty
             }
         }
     })

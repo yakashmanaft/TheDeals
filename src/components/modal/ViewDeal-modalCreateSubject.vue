@@ -135,8 +135,15 @@
                     </ion-grid>
                     <!--  -->
                     <ion-grid v-if="subjectData.costEstimation === 'perKilogram'" class="ion-no-padding">
-                        <ion-row>
-                            Цена за 1 кг.: {{ subjectData.price }}
+                        <!-- Цена за 1 кг -->
+                        <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                1 кг. ({{ systemCurrency.name }})
+                            </ion-button>
+                            <!--  -->
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                <ion-input type="number" v-model="subjectPrice" inputmode="decimal" :value="subjectData.price" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
+                            </ion-button>
                         </ion-row>
                         <ion-row>
                             Количество гостей (чел.): {{ subjectData.personQuantity }}
@@ -144,8 +151,15 @@
                         <ion-row>
                             Вес одной порции (гр.): {{ subjectData.gramPerPerson }}
                         </ion-row>
-                        <ion-row>
-                            Количество предмета (шт.): {{ subjectData.productQuantity }}
+                        <!-- Кол-во предмета -->
+                        <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                Количество предмета, шт
+                            </ion-button>
+                            <!--  -->
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                <ion-input type="number" v-model="subjectQty" inputmode="decimal" :value="subjectData.productQuantity " class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
+                            </ion-button>
                         </ion-row>
                         <ion-row>
                             Скидка на предмет: (%): {{ subjectData.subjectDiscount }}
@@ -171,17 +185,31 @@
                     </ion-grid>
                     <!--  -->
                     <ion-grid v-if="subjectData.costEstimation === 'perUnit'" class="ion-no-padding">
-                        <ion-row>
-                            Цена за 1 шт: {{ subjectData.price }}
+                        <!-- Цена за 1 шт -->
+                        <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                1 шт. ({{ systemCurrency.name }})
+                            </ion-button>
+                            <!--  -->
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                <ion-input type="number" v-model="subjectPrice" inputmode="decimal" :value="subjectData.price" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
+                            </ion-button>
+                        </ion-row>
+                        <!-- Кол-во предмета -->
+                        <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                Количество предмета, шт
+                            </ion-button>
+                            <!--  -->
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                <ion-input type="number" v-model="subjectQty" inputmode="decimal" :value="subjectData.productQuantity " class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
+                            </ion-button>
                         </ion-row>
                         <!-- <ion-row>
                             Количество гостей (чел.): {{ subjectData.personQuantity }}
                         </ion-row>
                         <ion-row>
                             Вес одной порции (гр.): {{ subjectData.gramPerPerson }}
-                        </ion-row>
-                        <ion-row>
-                            Количество предмета (шт.): {{ subjectData.productQuantity }}
                         </ion-row>
                         <ion-row>
                             Скидка на предмет: (%): {{ subjectData.subjectDiscount }}
@@ -309,7 +337,7 @@
 
 <script>
     import { defineComponent, ref, onMounted, computed, watch, watchEffect } from 'vue';
-    import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonImg, IonThumbnail, IonIcon, IonGrid, IonRow, IonSearchbar, IonItem, IonTextarea, IonToggle, IonCard, IonLabel, IonActionSheet } from '@ionic/vue';
+    import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonImg, IonThumbnail, IonIcon, IonGrid, IonRow, IonSearchbar, IonItem, IonTextarea, IonToggle, IonCard, IonLabel, IonActionSheet, IonInput } from '@ionic/vue';
     import { helpOutline, addOutline, closeCircleOutline } from 'ionicons/icons';
     //
     import ViewPriceProduct from '../modal/ViewPriceProduct-modalViewProduct.vue'
@@ -323,7 +351,7 @@
     //
     export default defineComponent({
         name: 'CreateDealSubject',
-        emits: ['closeModal', 'createSubject'],
+        emits: ['closeModal', 'createSubject', 'getSubjectPrice', 'getSubjectQty'],
         props: {
             subjectData: Object,
             currentDealType: String,
@@ -351,7 +379,8 @@
             IonCard, 
             IonLabel,
             IonActionSheet,
-            ViewPriceProduct
+            ViewPriceProduct,
+            IonInput
         },
         setup(props, {emit}) {
             //
@@ -378,6 +407,7 @@
                 // console.log(userSettings.value[0].userPriceList)
                 dealSaleSubjectArray.value = userSettings.value[0].userPriceList
                 dealAdditionalAttributesArray.value = userSettings.value[0].userAdditionalAttributes
+                //
             })
             //
             const showSelectedProduct = (selectedProduct) => {
@@ -456,6 +486,20 @@
                 subjectData.value.costEstimation = subject.costEstimation;
                 //
                 searchSubjectMenu.value = false
+                //
+                subjectPrice.value = subject.price;
+                subjectQty.value = 1
+                subjectData.value.productQuantity = 1
+                //
+                if(subjectData.value.costEstimation === 'perUnit') {
+                    subjectData.value.subjectPrice = subjectData.value.productQuantity * subjectPrice.value;
+                    sumAttributesPriceFunc(subjectData.value.additionalAttributes)
+                } else if (subjectData.value.costEstimation === 'perKilogram') {
+                    subjectData.value.subjectPrice = (subjectData.value.price / 1000) * (subjectData.value.personQuantity * subjectData.value.gramPerPerson) * subjectData.value.productQuantity * ((100 - subjectData.value.subjectDiscount) / 100) 
+                    sumAttributesPriceFunc(subjectData.value.additionalAttributes)
+                } else if (subjectData.value.costEstimation === 'per100gram') {
+                    console.log('В разработке')
+                }
             }
             // Задаем из выбранного списка значение для recipe
             const chooseRecipe = (recipe) => {
@@ -558,7 +602,7 @@
             // функция калькуляции общей стоимости предмета дела
             const calcTotalSubjectPrice = (sumAttrPrice) => {
                 if(currentDealType.value === 'sale') {
-                    subjectData.value.totalSubjectPrice = sumAttrPrice
+                    subjectData.value.totalSubjectPrice = sumAttrPrice + subjectData.value.subjectPrice
                     // console.log('sale')
                 } else if(currentDealType.value === 'buy') {
                     // console.log('buy')
@@ -566,16 +610,45 @@
             }
             // Считаем сумму всех атритов
             const sumAttributesPriceFunc = (array) => {
-                // Выбираем из массива данных нужные значения
-                let attrPriceArray = array.map(item => item.totalPrice)
-                // Суммируем значения
-                const sumAttributesPriceValue = attrPriceArray.reduce( (accumulator, currentValue) => accumulator + currentValue)
-                calcTotalSubjectPrice(sumAttributesPriceValue);
-                return sumAttributesPriceValue
+                if(array.length > 0 ) {
+                    // Выбираем из массива данных нужные значения
+                    let attrPriceArray = array.map(item => item.totalPrice)
+                    // Суммируем значения
+                    const sumAttributesPriceValue = attrPriceArray.reduce( (accumulator, currentValue) => accumulator + currentValue)
+                    calcTotalSubjectPrice(sumAttributesPriceValue);
+                    return sumAttributesPriceValue
+                } else if (array.length === 0) {
+                    let sumAttributesPriceValue = 0
+                    calcTotalSubjectPrice(sumAttributesPriceValue);
+                    return sumAttributesPriceValue
+                }
             }
+            // следим за изменениями price
+            const subjectPrice = ref();
+            watch(subjectPrice, (price) => {
+                // console.log(price)
+                emit('getSubjectPrice', +price);
+            })
+            // следим за изменением qty
+            const subjectQty = ref();
+            watch(subjectQty, (qty) => {
+                console.log(qty)
+                emit('getSubjectQty', +qty);
+            })
+            //
+            watch(searchSelectedProduct, (SelectedProduct) => {
+                console.log(SelectedProduct)
+            })
+            // const choose = (subject) => {
+            //     subjectData.value.selectedProduct = subject.value;
+            //     subjectData.value.price = subject.price;
+            //     subjectData.value.costEstimation = subject.costEstimation;
+            //     //
+            //     searchSubjectMenu.value = false
+            // }
 
             return {
-                dealSaleSubjectArray, dealBuySubjectArray, helpOutline, addOutline, showSelectedProduct, searchSubjectMenu, searchSelectedProduct, currentDealType, translateValue, searchedSubject, choose, searchRecipeMenu, searchRecipe, userRecipeArray, chooseRecipe, showSelectedRecipe, searchedRecipe, noRecipe, searchAttributeMenu, searchAdditionalAttributes, dealAdditionalAttributesArray, searchedAdditionalAttributes, chooseAttribute, closeCircleOutline, isAttributesMenuOpened, toggleAttributesMenu, openDeleteAttributeModal, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, systemCurrency, currentSubjectAttribute, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, isItemAlreadyHave, setAttributeRentType, sumAttributesPriceFunc, newAttribute, setProductQty, calcTotalSubjectPrice, setProductPrice
+                dealSaleSubjectArray, dealBuySubjectArray, helpOutline, addOutline, showSelectedProduct, searchSubjectMenu, searchSelectedProduct, currentDealType, translateValue, searchedSubject, choose, searchRecipeMenu, searchRecipe, userRecipeArray, chooseRecipe, showSelectedRecipe, searchedRecipe, noRecipe, searchAttributeMenu, searchAdditionalAttributes, dealAdditionalAttributesArray, searchedAdditionalAttributes, chooseAttribute, closeCircleOutline, isAttributesMenuOpened, toggleAttributesMenu, openDeleteAttributeModal, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, systemCurrency, currentSubjectAttribute, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, isItemAlreadyHave, setAttributeRentType, sumAttributesPriceFunc, newAttribute, setProductQty, calcTotalSubjectPrice, setProductPrice, subjectPrice, subjectQty
             }
         }
     })
@@ -632,6 +705,15 @@
         top: -0.4rem;
         left: -0.4rem;
         z-index: 20;
+    }
+    .flex_nowrap {
+        flex-wrap: nowrap;
+    }
+    .countQty_count {
+        font-size: 24px;
+    }
+    .countQty_button {
+        font-size: 32px;
     }
     .border-bottom {
         border-bottom: 1px solid var(--ion-color-light);
