@@ -215,10 +215,7 @@
                     productQty.value--
                 } else if (action === 'add') {
                     productQty.value++
-                } else if (productQty.value < 2) {
-                    countQtyButtonColor.value = 'light'
                 }
-                // console.log(action)
             }
             // подтягиваем данные из props в управляющую переменную productQty
             const setProductQty = (qty) => {

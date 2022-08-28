@@ -126,7 +126,7 @@
                     <ion-grid class="ion-no-padding">
                         <ion-row class="ion-justify-content-between ion-align-items-center">
                             <ion-text>
-                                <h4 class="ion-no-margin">Цена предмета</h4>
+                                <h4 class="ion-no-margin">Стоимость</h4>
                             </ion-text>
                             <ion-text color="medium">
                                 {{ subjectData.subjectPrice }} {{ systemCurrency.name }}
@@ -157,9 +157,18 @@
                                 Количество предмета, шт
                             </ion-button>
                             <!--  -->
-                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                                <ion-input type="number" v-model="subjectQty" inputmode="decimal" :value="subjectData.productQuantity " class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
-                            </ion-button>
+                            <div>
+                                <ion-grid class="ion-no-padding">
+                                    <ion-row class="ion-align-items-center">
+                                        <!-- Subtract -->
+                                        <ion-icon class="countQty_button" @click="changeQty('sub')" :icon="removeCircleOutline" :color="countQtyButtonColor"></ion-icon>
+                                        <!-- Show data -->
+                                        <ion-text class="ion-padding-horizontal countQty_count" color="primary">{{ subjectData.productQuantity }}</ion-text>
+                                        <!-- Add -->
+                                        <ion-icon class="countQty_button" @click="changeQty('add')" color="primary" :icon="addCircleOutline"></ion-icon>
+                                    </ion-row>
+                                </ion-grid>
+                            </div>
                         </ion-row>
                         <ion-row>
                             Скидка на предмет: (%): {{ subjectData.subjectDiscount }}
@@ -168,7 +177,7 @@
                     <!--  -->
                     <ion-grid v-if="subjectData.costEstimation === 'per100gram'" class="ion-no-padding">
                         <ion-row>
-                            Цена за 1 кг.: {{ subjectData.price }}
+                            Цена за 100 грамм.: {{ subjectData.price }}
                         </ion-row>
                         <!-- <ion-row>
                             Количество гостей (чел.): {{ subjectData.personQuantity }}
@@ -201,9 +210,18 @@
                                 Количество предмета, шт
                             </ion-button>
                             <!--  -->
-                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                                <ion-input type="number" v-model="subjectQty" inputmode="decimal" :value="subjectData.productQuantity " class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
-                            </ion-button>
+                            <div>
+                                <ion-grid class="ion-no-padding">
+                                    <ion-row class="ion-align-items-center">
+                                        <!-- Subtract -->
+                                        <ion-icon class="countQty_button" @click="changeQty('sub')" :icon="removeCircleOutline" :color="countQtyButtonColor"></ion-icon>
+                                        <!-- Show data -->
+                                        <ion-text class="ion-padding-horizontal countQty_count" color="primary">{{ subjectData.productQuantity }}</ion-text>
+                                        <!-- Add -->
+                                        <ion-icon class="countQty_button" @click="changeQty('add')" color="primary" :icon="addCircleOutline"></ion-icon>
+                                    </ion-row>
+                                </ion-grid>
+                            </div>
                         </ion-row>
                         <!-- <ion-row>
                             Количество гостей (чел.): {{ subjectData.personQuantity }}
@@ -338,7 +356,7 @@
 <script>
     import { defineComponent, ref, onMounted, computed, watch, watchEffect } from 'vue';
     import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonImg, IonThumbnail, IonIcon, IonGrid, IonRow, IonSearchbar, IonItem, IonTextarea, IonToggle, IonCard, IonLabel, IonActionSheet, IonInput } from '@ionic/vue';
-    import { helpOutline, addOutline, closeCircleOutline } from 'ionicons/icons';
+    import { helpOutline, addOutline, closeCircleOutline, removeCircleOutline, addCircleOutline } from 'ionicons/icons';
     //
     import ViewPriceProduct from '../modal/ViewPriceProduct-modalViewProduct.vue'
     //
@@ -632,8 +650,13 @@
             // следим за изменением qty
             const subjectQty = ref();
             watch(subjectQty, (qty) => {
-                console.log(qty)
+                // console.log(qty)
                 emit('getSubjectQty', +qty);
+                if(qty < 2) {
+                    countQtyButtonColor.value = 'light'
+                } else {
+                    countQtyButtonColor.value = 'primary'
+                }
             })
             //
             watch(searchSelectedProduct, (SelectedProduct) => {
@@ -646,9 +669,19 @@
             //     //
             //     searchSubjectMenu.value = false
             // }
+            //
+            // функционал управления кнопками добавить / вычесть
+            const countQtyButtonColor = ref('primary')
+            const changeQty = (action) => {
+                if(action === 'sub' && subjectQty.value > 1) {
+                    subjectQty.value--
+                } else if (action === 'add') {
+                    subjectQty.value++
+                } 
+            }
 
             return {
-                dealSaleSubjectArray, dealBuySubjectArray, helpOutline, addOutline, showSelectedProduct, searchSubjectMenu, searchSelectedProduct, currentDealType, translateValue, searchedSubject, choose, searchRecipeMenu, searchRecipe, userRecipeArray, chooseRecipe, showSelectedRecipe, searchedRecipe, noRecipe, searchAttributeMenu, searchAdditionalAttributes, dealAdditionalAttributesArray, searchedAdditionalAttributes, chooseAttribute, closeCircleOutline, isAttributesMenuOpened, toggleAttributesMenu, openDeleteAttributeModal, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, systemCurrency, currentSubjectAttribute, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, isItemAlreadyHave, setAttributeRentType, sumAttributesPriceFunc, newAttribute, setProductQty, calcTotalSubjectPrice, setProductPrice, subjectPrice, subjectQty
+                dealSaleSubjectArray, dealBuySubjectArray, helpOutline, addOutline, showSelectedProduct, searchSubjectMenu, searchSelectedProduct, currentDealType, translateValue, searchedSubject, choose, searchRecipeMenu, searchRecipe, userRecipeArray, chooseRecipe, showSelectedRecipe, searchedRecipe, noRecipe, searchAttributeMenu, searchAdditionalAttributes, dealAdditionalAttributesArray, searchedAdditionalAttributes, chooseAttribute, closeCircleOutline, isAttributesMenuOpened, toggleAttributesMenu, openDeleteAttributeModal, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, systemCurrency, currentSubjectAttribute, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, isItemAlreadyHave, setAttributeRentType, sumAttributesPriceFunc, newAttribute, setProductQty, calcTotalSubjectPrice, setProductPrice, subjectPrice, subjectQty, removeCircleOutline, addCircleOutline, countQtyButtonColor, changeQty
             }
         }
     })
