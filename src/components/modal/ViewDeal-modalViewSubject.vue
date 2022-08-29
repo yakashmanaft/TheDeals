@@ -127,8 +127,24 @@
                                 <ion-input type="number" v-model="subjectPrice" inputmode="decimal" :value="subjectData.price" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
                             </ion-button>
                         </ion-row>
-                        <ion-row>
-                            Количество гостей (чел.): {{ subjectData.personQuantity }}
+                        <!-- Кол-во гостей, кто накинется на торт -->
+                        <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                Кол-во гостей, чел
+                            </ion-button>
+                            <!--  -->
+                            <div>
+                                <ion-grid class="ion-no-padding">
+                                    <ion-row class="ion-align-items-center">
+                                        <!-- Subtract -->
+                                        <ion-icon class="countQty_button" @click="changePersonQty('sub')" :icon="removeCircleOutline" :color="countPersonQtyButtonColor"></ion-icon>
+                                        <!-- Show data -->
+                                        <ion-text class="ion-padding-horizontal countQty_count" color="primary">{{ subjectData.personQuantity }}</ion-text>
+                                        <!-- Add -->
+                                        <ion-icon class="countQty_button" @click="changePersonQty('add')" color="primary" :icon="addCircleOutline"></ion-icon>
+                                    </ion-row>
+                                </ion-grid>
+                            </div>
                         </ion-row>
                         <ion-row>
                             Вес одной порции (гр.): {{ subjectData.gramPerPerson }}
@@ -354,11 +370,12 @@
     //
     export default defineComponent({
         name: 'ViewDealSubject',
-        emits: ['closeModal', 'updateBD', 'getSubjectPrice', 'getSumAttributesPriceValue', 'getSubjectQty'],
+        emits: ['closeModal', 'updateBD', 'getSubjectPrice', 'getSumAttributesPriceValue', 'getSubjectQty', 'getPersonQty'],
         props: {
             subjectData: Object,
             currentDealType: String,
-            countQtyButtonColor: String
+            countQtyButtonColor: String,
+            countPersonQtyButtonColor: String
         },
         components: {
             IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonSearchbar, IonItem, IonGrid, IonRow, IonThumbnail, IonImg, IonToggle, IonCard, IonIcon, IonActionSheet, ViewPriceProduct, IonTextarea, IonInput
@@ -500,7 +517,9 @@
                 // countQtyButtonColor.value = props.countQtyButtonColor
             })
             //
-            const countQtyButtonColor = ref();
+            // const countQtyButtonColor = ref();
+            //
+            // const countPersonQtyButtonColor = ref();
             //
             const translateProductValue = (selected) => {
                 if (subjectData.value.selectedProduct !== '') {
@@ -586,18 +605,11 @@
             watch(subjectQty, (qty) => {
                 // console.log(subjectQty.value)
                 emit('getSubjectQty', +qty);
-                // emit('countQtyButtonColor', countQtyButtonColor.value)
-                // if(qty < 2) {
-                //     countQtyButtonColor.value = 'light'
-                // } else {
-                //     countQtyButtonColor.value = 'primary'
-                // }
-                // console.log(subjectData.value.productQuantity)
-                // if(subjectData.value.productQuantity < 2) {
-                //     return countQtyButtonColor.value = 'light'
-                // } else if(subjectData.value.productQuantity >= 2) {
-                //     return countQtyButtonColor.value = 'primary'
-                // }
+            })
+            // следим за изменениями personQty
+            const personQty = ref();
+            watch(personQty, (qty) => {
+                emit('getPersonQty', +qty)
             })
             // функционал управления кнопками добавить / вычесть
             // const countQtyButtonColor = ref('')
@@ -609,11 +621,20 @@
                     subjectQty.value++
                 } 
             }
+            // функционал управления кнопка добавить убавить количество гостей на торт
+            const changePersonQty = (action) => {
+                personQty.value = subjectData.value.personQuantity
+                if(action === 'sub' && personQty.value > 1) {
+                    personQty.value--
+                } else if (action === 'add') {
+                    personQty.value++
+                } 
+            }
 
 
 
             return {
-                systemCurrency, userSettings, subjectData, currentDealType, searchRecipeMenu, searchRecipe, chooseRecipe, noRecipe, searchedRecipe, userRecipeArray, showSelectedRecipe, translateProductValue, dealSaleSubjectArray, dealBuySubjectArray, addOutline, closeCircleOutline, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, openDeleteAttributeModal, deleteAttributeFunc, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, currentSubjectAttribute, isItemAlreadyHave, searchAttributeMenu, searchAdditionalAttributes, searchedAdditionalAttributes, dealAdditionalAttributesArray, chooseAttribute, setAttributeRentType, setProductPrice, setProductQty, sumAttributesPriceFunc, productNote, setProductNotePlaceholder, calcTotalSubjectPrice, subjectPrice, newAttribute, sumAttributesPriceValue, subjectQty, removeCircleOutline, addCircleOutline, changeQty
+                systemCurrency, userSettings, subjectData, currentDealType, searchRecipeMenu, searchRecipe, chooseRecipe, noRecipe, searchedRecipe, userRecipeArray, showSelectedRecipe, translateProductValue, dealSaleSubjectArray, dealBuySubjectArray, addOutline, closeCircleOutline, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, openDeleteAttributeModal, deleteAttributeFunc, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, currentSubjectAttribute, isItemAlreadyHave, searchAttributeMenu, searchAdditionalAttributes, searchedAdditionalAttributes, dealAdditionalAttributesArray, chooseAttribute, setAttributeRentType, setProductPrice, setProductQty, sumAttributesPriceFunc, productNote, setProductNotePlaceholder, calcTotalSubjectPrice, subjectPrice, newAttribute, sumAttributesPriceValue, subjectQty, removeCircleOutline, addCircleOutline, changeQty, changePersonQty
             }
         }
     })

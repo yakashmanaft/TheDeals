@@ -16,7 +16,9 @@
             @getSubjectPrice="setSubjectPrice"
             @getSumAttributesPriceValue="setSumAttributesPriceValue"
             @getSubjectQty="setSubjectQty"
+            @getPersonQty="setPersonQty"
             :countQtyButtonColor="countQtyButtonColor"
+            :countPersonQtyButtonColor="countPersonQtyButtonColor"
         />
 
         <!-- add subject to deal -->
@@ -452,6 +454,7 @@
                 isViewDealSubjectOpened.value = true;
                 currentDealSubject.value = currentDeal.value.dealsList[index];
                 setCountQtyButtonColor(currentDealSubject.value.productQuantity)
+                setCountPersonQtyButtonColor(currentDealSubject.value.personQuantity)
             }
             // Вызываем action sheet уведомление в качестве подтверждения
             const deleteSubject = ref(false);
@@ -557,10 +560,14 @@
                     }
                 }
             }
-            //
+            // Вспомогательная переменная
             const sumAttributesPriceValue = ref(0);
             const setSumAttributesPriceValue = (sumAttrPriceValue) => {
                 sumAttributesPriceValue.value = sumAttrPriceValue
+            }
+            // Считаем общую totalSubjectPrice по предмету (предмет + допы)
+            const calcNewSubjectTotalPrice = () => {
+                currentSubject.value.totalSubjectPrice = currentSubject.value.subjectPrice + sumAttributesPriceValue.value
             }
             // ========================================= View Deal Modal View Subject ===================================================
             // Считаем общую totalSubjectPrice по предмету (предмет + допы)
@@ -590,8 +597,8 @@
             // ставим Current Subject PRODUCT QUANTITY
             const setSubjectQty = (qty) => {
                 if(currentDeal.value.dealType === 'sale') {
-                    currentDealSubject.value.productQuantity = qty;
                     if(currentDealSubject.value.costEstimation === 'perKilogram') {
+                        currentDealSubject.value.productQuantity = qty;
                         // Формула рассчета цены currentDealSubject 
                         currentDealSubject.value.subjectPrice = (currentDealSubject.value.price / 1000) * (currentDealSubject.value.personQuantity * currentDealSubject.value.gramPerPerson) * currentDealSubject.value.productQuantity * ((100 - currentDealSubject.value.subjectDiscount) / 100) 
                         // Считаем общую totalSubjectPrice по предмету (предмет + допы)
@@ -599,6 +606,7 @@
                         calcSubjectTotalPrice()
                         update();
                     } else if (currentDealSubject.value.costEstimation === 'perUnit') {
+                        currentDealSubject.value.productQuantity = qty;
                         currentDealSubject.value.subjectPrice = currentDealSubject.value.price * currentDealSubject.value.productQuantity
                         setCountQtyButtonColor(qty)
                         calcSubjectTotalPrice()
@@ -610,7 +618,27 @@
                     console.log('В разработке')
                 }
             }
-            // countQtyButtonColor
+            // ставим Current Subjecty PERSON QUANTITY
+            const setPersonQty = (qty) => {
+                if(currentDeal.value.dealType === 'sale') {
+                    if(currentDealSubject.value.costEstimation === 'perKilogram') {
+                        currentDealSubject.value.personQuantity = qty;
+                        // Формула рассчета цены currentDealSubject 
+                        currentDealSubject.value.subjectPrice = (currentDealSubject.value.price / 1000) * (currentDealSubject.value.personQuantity * currentDealSubject.value.gramPerPerson) * currentDealSubject.value.productQuantity * ((100 - currentDealSubject.value.subjectDiscount) / 100) 
+                        // Считаем общую totalSubjectPrice по предмету (предмет + допы)
+                        setCountPersonQtyButtonColor(qty)
+                        calcSubjectTotalPrice()
+                        update();
+                    } else if (currentDealSubject.value.costEstimation === 'perUnit') {
+                        // Пока не используется в perUnit
+                    } else if (currentDealSubject.value.costEstimation === 'per100gram') {
+                        // Пока не используется в per100gram
+                    }
+                } else if(currentDeal.value.dealType === 'buy') {
+                    console.log('В разработке')
+                }
+            }
+            // count SUBJECT QTY BUTTON COLOR
             const countQtyButtonColor = ref('primary');
             const setCountQtyButtonColor = (qty) => {
                 if(qty < 2) {
@@ -619,11 +647,16 @@
                     return countQtyButtonColor.value = 'primary'
                 }
             }
-            // ================================== View Deal Modal Create Subject ============================================
-            // Считаем общую totalSubjectPrice по предмету (предмет + допы)
-            const calcNewSubjectTotalPrice = () => {
-                currentSubject.value.totalSubjectPrice = currentSubject.value.subjectPrice + sumAttributesPriceValue.value
+            // count PERSON QTY BUTTON COLOR
+            const countPersonQtyButtonColor = ref('primary');
+            const setCountPersonQtyButtonColor = (qty) => {
+                if(qty < 2) {
+                    return countPersonQtyButtonColor.value = 'light'
+                } else {
+                    return countPersonQtyButtonColor.value = 'primary'
+                }
             }
+            // ================================== View Deal Modal Create Subject ============================================
             // ставим NEW Current Subject PRICE
             const setNewSubjectPrice = (price) => {
                 if(currentDeal.value.dealType === 'sale') {
@@ -665,7 +698,7 @@
 
 
             return {
-                spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, translateDealSubjectRecipe, userRecipeArray, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor
+                spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, translateDealSubjectRecipe, userRecipeArray, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, setPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor
             }
         }
     })
