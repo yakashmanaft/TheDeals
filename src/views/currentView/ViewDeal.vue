@@ -16,6 +16,7 @@
             @getSubjectPrice="setSubjectPrice"
             @getSumAttributesPriceValue="setSumAttributesPriceValue"
             @getSubjectQty="setSubjectQty"
+            :countQtyButtonColor="countQtyButtonColor"
         />
 
         <!-- add subject to deal -->
@@ -565,7 +566,7 @@
             const calcSubjectTotalPrice = () => {
                 currentDealSubject.value.totalSubjectPrice = currentDealSubject.value.subjectPrice + sumAttributesPriceValue.value
             }
-            // ставим currentDealSubject.value.price
+            // ставим Current Subject PRICE
             const setSubjectPrice = (price) => {
                 if(currentDeal.value.dealType === 'sale') {
                     currentDealSubject.value.price = price;
@@ -573,6 +574,7 @@
                         // Формула рассчета цены currentDealSubject 
                         currentDealSubject.value.subjectPrice = (currentDealSubject.value.price / 1000) * (currentDealSubject.value.personQuantity * currentDealSubject.value.gramPerPerson) * currentDealSubject.value.productQuantity * ((100 - currentDealSubject.value.subjectDiscount) / 100) 
                         // Считаем общую totalSubjectPrice по предмету (предмет + допы)
+
                         calcSubjectTotalPrice()
                         update();
                     } else if (currentDealSubject.value.costEstimation === 'perUnit') {
@@ -584,7 +586,7 @@
                     }
                 }
             }
-            // ставим currentDealSubject.value.productQuanityt
+            // ставим Current Subject PRODUCT QUANTITY
             const setSubjectQty = (qty) => {
                 if(currentDeal.value.dealType === 'sale') {
                     currentDealSubject.value.productQuantity = qty;
@@ -592,15 +594,28 @@
                         // Формула рассчета цены currentDealSubject 
                         currentDealSubject.value.subjectPrice = (currentDealSubject.value.price / 1000) * (currentDealSubject.value.personQuantity * currentDealSubject.value.gramPerPerson) * currentDealSubject.value.productQuantity * ((100 - currentDealSubject.value.subjectDiscount) / 100) 
                         // Считаем общую totalSubjectPrice по предмету (предмет + допы)
+                        setCountQtyButtonColor(qty)
                         calcSubjectTotalPrice()
                         update();
                     } else if (currentDealSubject.value.costEstimation === 'perUnit') {
                         currentDealSubject.value.subjectPrice = currentDealSubject.value.price * currentDealSubject.value.productQuantity
+                        setCountQtyButtonColor(qty)
                         calcSubjectTotalPrice()
                         update();
                     } else if (currentDealSubject.value.costEstimation === 'per100gram') {
                         console.log('В разработке')
                     }
+                } else if (currentDeal.value.dealType === 'buy') {
+                    console.log('В разработке')
+                }
+            }
+            // countQtyButtonColor
+            const countQtyButtonColor = ref('primary');
+            const setCountQtyButtonColor = (qty) => {
+                if(qty < 2) {
+                    return countQtyButtonColor.value = 'light'
+                } else {
+                    return countQtyButtonColor.value = 'primary'
                 }
             }
 
@@ -624,6 +639,8 @@
                     } else if (currentSubject.value.costEstimation === 'per100gram') {
                         console.log('В разработке')
                     }
+                } else if (currentDeal.value.dealType === 'buy') {
+                    console.log('В разработке')
                 }
             }
             // ставим NEW Current Subject QUANTITY
@@ -641,12 +658,14 @@
                     } else if (currentSubject.value.costEstimation === 'per100gram') {
                         console.log('В разработке')
                     }
+                } else if (currentDeal.value.dealType === 'buy') {
+                    console.log('В разработке')
                 }
             }
 
 
             return {
-                spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, translateDealSubjectRecipe, userRecipeArray, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty
+                spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, translateDealSubjectRecipe, userRecipeArray, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor
             }
         }
     })

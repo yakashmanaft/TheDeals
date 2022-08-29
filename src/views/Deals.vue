@@ -482,10 +482,15 @@
                     selectedProduct: subjectData.selectedProduct,
                     price: subjectData.price,
                     costEstimation: subjectData.costEstimation,
+                    personQuantity: subjectData.personQuantity,
+                    gramPerPerson: subjectData.gramPerPerson,
+                    subjectDiscount: subjectData.subjectDiscount,
+                    subjectPrice: subjectData.subjectPrice,
                     recipe: subjectData.recipe, 
                     productQuantity: subjectData.productQuantity,
                     // массив пока шаблоном, в modalCreateSubject задавать значения
                     additionalAttributes: subjectData.additionalAttributes,
+                    totalSubjectPrice: subjectData.totalSubjectPrice,
                     productNote: subjectData.productNote,
                 })  
             }
