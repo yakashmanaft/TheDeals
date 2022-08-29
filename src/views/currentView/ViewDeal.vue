@@ -451,6 +451,7 @@
             const openCurrentDealSubject = (index) => {
                 isViewDealSubjectOpened.value = true;
                 currentDealSubject.value = currentDeal.value.dealsList[index];
+                setCountQtyButtonColor(currentDealSubject.value.productQuantity)
             }
             // Вызываем action sheet уведомление в качестве подтверждения
             const deleteSubject = ref(false);
@@ -618,7 +619,6 @@
                     return countQtyButtonColor.value = 'primary'
                 }
             }
-
             // ================================== View Deal Modal Create Subject ============================================
             // Считаем общую totalSubjectPrice по предмету (предмет + допы)
             const calcNewSubjectTotalPrice = () => {

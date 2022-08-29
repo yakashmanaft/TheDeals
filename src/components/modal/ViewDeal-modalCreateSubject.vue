@@ -649,6 +649,7 @@
             })
             // следим за изменением qty
             const subjectQty = ref();
+            const countQtyButtonColor = ref('primary')
             watch(subjectQty, (qty) => {
                 // console.log(qty)
                 emit('getSubjectQty', +qty);
@@ -662,16 +663,7 @@
             watch(searchSelectedProduct, (SelectedProduct) => {
                 console.log(SelectedProduct)
             })
-            // const choose = (subject) => {
-            //     subjectData.value.selectedProduct = subject.value;
-            //     subjectData.value.price = subject.price;
-            //     subjectData.value.costEstimation = subject.costEstimation;
-            //     //
-            //     searchSubjectMenu.value = false
-            // }
-            //
             // функционал управления кнопками добавить / вычесть
-            const countQtyButtonColor = ref('primary')
             const changeQty = (action) => {
                 if(action === 'sub' && subjectQty.value > 1) {
                     subjectQty.value--

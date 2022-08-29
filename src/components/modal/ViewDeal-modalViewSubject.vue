@@ -497,7 +497,10 @@
             watchEffect(() => {
                 subjectData.value = props.subjectData;
                 currentDealType.value = props.currentDealType;
+                // countQtyButtonColor.value = props.countQtyButtonColor
             })
+            //
+            const countQtyButtonColor = ref();
             //
             const translateProductValue = (selected) => {
                 if (subjectData.value.selectedProduct !== '') {
@@ -579,6 +582,7 @@
             })
             // следим за изменениями qty
             const subjectQty = ref();
+            // const countQtyButtonColor = ref();
             watch(subjectQty, (qty) => {
                 // console.log(subjectQty.value)
                 emit('getSubjectQty', +qty);
@@ -588,9 +592,15 @@
                 // } else {
                 //     countQtyButtonColor.value = 'primary'
                 // }
+                // console.log(subjectData.value.productQuantity)
+                // if(subjectData.value.productQuantity < 2) {
+                //     return countQtyButtonColor.value = 'light'
+                // } else if(subjectData.value.productQuantity >= 2) {
+                //     return countQtyButtonColor.value = 'primary'
+                // }
             })
             // функционал управления кнопками добавить / вычесть
-            // const countQtyButtonColor = ref('primary')
+            // const countQtyButtonColor = ref('')
             const changeQty = (action) => {
                 subjectQty.value = subjectData.value.productQuantity
                 if(action === 'sub' && subjectQty.value > 1) {
@@ -599,6 +609,8 @@
                     subjectQty.value++
                 } 
             }
+
+
 
             return {
                 systemCurrency, userSettings, subjectData, currentDealType, searchRecipeMenu, searchRecipe, chooseRecipe, noRecipe, searchedRecipe, userRecipeArray, showSelectedRecipe, translateProductValue, dealSaleSubjectArray, dealBuySubjectArray, addOutline, closeCircleOutline, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, openDeleteAttributeModal, deleteAttributeFunc, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, currentSubjectAttribute, isItemAlreadyHave, searchAttributeMenu, searchAdditionalAttributes, searchedAdditionalAttributes, dealAdditionalAttributesArray, chooseAttribute, setAttributeRentType, setProductPrice, setProductQty, sumAttributesPriceFunc, productNote, setProductNotePlaceholder, calcTotalSubjectPrice, subjectPrice, newAttribute, sumAttributesPriceValue, subjectQty, removeCircleOutline, addCircleOutline, changeQty

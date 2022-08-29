@@ -31,7 +31,7 @@
                 <ion-chip :color="setColorByDealType(dealData.dealType)" class="ion-no-margin">
                     <ion-icon class="ion-no-margin" v-if="dealData.dealType !== ''" :icon="setIconByDealType(dealData.dealType)"></ion-icon>
                     <ion-label>
-                        <Select :data="dealTypes" :placeholder="`Укажите тип дела`" @date-updated="(selected) => currentDealType = selected.currentValue"/>
+                        <Select :data="dealTypes" :placeholder="`Укажите тип дела`" @date-updated="(selected) => dealData.dealType = selected.currentValue"/>
                     </ion-label>
                 </ion-chip>
             </ion-item-group>
@@ -397,6 +397,7 @@
             const openCurrentDealSubject = (index) => {
                 isViewDealSubjectOpened.value = true;
                 currentDealSubject.value = dealData.value.dealsList[index];
+                setCountQtyButtonColor(currentDealSubject.value.productQuantity)
             }
             //
             const translateDealSubjectRecipe = (value) => {
@@ -419,8 +420,9 @@
             const currentDealType = ref();    
             watch(currentDealType, () => {
                 // При случайном или намеренном изменении типа дела - очищаем объект дела
-                console.log(currentDealType.value)
+                // console.log(currentDealType.value)
                 dealData.value.dealType = currentDealType.value
+                // dealData.value.dealType = ''
                 dealData.value.contactID = '000'
                 dealData.value.dealsList = []
                 dealData.value.shipping = ''
