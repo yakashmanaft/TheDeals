@@ -115,7 +115,7 @@
                             </ion-text>
                         </ion-row>
                     </ion-grid>
-                    <!--  -->
+                    <!-- PER KILOGRAM -->
                     <ion-grid v-if="subjectData.costEstimation === 'perKilogram'" class="ion-no-padding">
                         <!-- Цена за 1 кг -->
                         <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
@@ -146,8 +146,15 @@
                                 </ion-grid>
                             </div>
                         </ion-row>
-                        <ion-row>
-                            Вес одной порции (гр.): {{ subjectData.gramPerPerson }}
+                        <!-- Цена одной порции -->
+                        <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                Вес одной порции (гр.)
+                            </ion-button>
+                            <!--  -->
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                <ion-input type="number" v-model="gramPerPerson" inputmode="decimal" :value="subjectData.gramPerPerson" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
+                            </ion-button>
                         </ion-row>
                         <!-- Кол-во предмета -->
                         <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
@@ -168,11 +175,15 @@
                                 </ion-grid>
                             </div>
                         </ion-row>
-                        <ion-row>
-                            Скидка на предмет: (%): {{ subjectData.subjectDiscount }}
+                        <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                Скидка, %
+                            </ion-button>
+                            <!-- Скидка на предмет: (%): {{ subjectData.subjectDiscount }} -->
+                            <ion-range class="ion-no-padding ion-padding-horizontal ion-margin-start" :min="0" :max="30" :value="0" :pin="true" :ticks="true" :snaps="false"></ion-range>
                         </ion-row>
                     </ion-grid>
-                    <!--  -->
+                    <!-- PER 100 GRAM -->
                     <ion-grid v-if="subjectData.costEstimation === 'per100gram'" class="ion-no-padding">
                         <ion-row>
                             Цена за 100 г.: {{ subjectData.price }}
@@ -191,7 +202,7 @@
                             Скидка на предмет: (%): {{ subjectData.subjectDiscount }}
                         </ion-row> -->
                     </ion-grid>
-                    <!--  -->
+                    <!-- PER UNIT -->
                     <ion-grid v-if="subjectData.costEstimation === 'perUnit'" class="ion-no-padding">
                         <!-- Цена за 1 шт -->
                         <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
@@ -222,19 +233,10 @@
                                 </ion-grid>
                             </div>
                         </ion-row>
+                        <!-- Скидка на предмет -->
                         <ion-row>
                             Скидка на предмет: (%): {{ subjectData.subjectDiscount }}
                         </ion-row> 
-                        <!-- <ion-row>
-                            Количество гостей (чел.): {{ subjectData.personQuantity }}
-                        </ion-row>
-                        <ion-row>
-                            Вес одной порции (гр.): {{ subjectData.gramPerPerson }}
-                        </ion-row>
-                        <ion-row>
-                            Количество предмета (шт.): {{ subjectData.productQuantity }}
-                        </ion-row>-->
-
                     </ion-grid>
                 </ion-item-group>
 
@@ -355,7 +357,7 @@
 
 <script>
     import { defineComponent, computed, ref, watchEffect, onMounted, watch } from 'vue';
-    import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonSearchbar, IonItem, IonGrid, IonRow, IonThumbnail, IonImg, IonToggle, IonCard, IonIcon, IonActionSheet, IonTextarea, IonInput } from '@ionic/vue';
+    import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonSearchbar, IonItem, IonGrid, IonRow, IonThumbnail, IonImg, IonToggle, IonCard, IonIcon, IonActionSheet, IonTextarea, IonInput, IonRange } from '@ionic/vue';
     //
     import { addOutline, closeCircleOutline, removeCircleOutline, addCircleOutline } from 'ionicons/icons';
     //
@@ -370,7 +372,7 @@
     //
     export default defineComponent({
         name: 'ViewDealSubject',
-        emits: ['closeModal', 'updateBD', 'getSubjectPrice', 'getSumAttributesPriceValue', 'getSubjectQty', 'getPersonQty'],
+        emits: ['closeModal', 'updateBD', 'getSubjectPrice', 'getGramPerPerson', 'getSumAttributesPriceValue', 'getSubjectQty', 'getPersonQty'],
         props: {
             subjectData: Object,
             currentDealType: String,
@@ -378,7 +380,7 @@
             countPersonQtyButtonColor: String
         },
         components: {
-            IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonSearchbar, IonItem, IonGrid, IonRow, IonThumbnail, IonImg, IonToggle, IonCard, IonIcon, IonActionSheet, ViewPriceProduct, IonTextarea, IonInput
+            IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonSearchbar, IonItem, IonGrid, IonRow, IonThumbnail, IonImg, IonToggle, IonCard, IonIcon, IonActionSheet, ViewPriceProduct, IonTextarea, IonInput, IonRange
         },
         setup(props, { emit }) {
             // Валюта отображения
@@ -599,6 +601,12 @@
                 // console.log(subjectPrice.value)
                 emit('getSubjectPrice', +price);
             })
+            // следим за изменениями gramPerPerson
+            const gramPerPerson = ref();
+            watch(gramPerPerson, (gram) => {
+                // console.log(gramPerPerson.value)
+                emit('getGramPerPerson', +gram)
+            })
             // следим за изменениями qty
             const subjectQty = ref();
             // const countQtyButtonColor = ref();
@@ -634,7 +642,7 @@
 
 
             return {
-                systemCurrency, userSettings, subjectData, currentDealType, searchRecipeMenu, searchRecipe, chooseRecipe, noRecipe, searchedRecipe, userRecipeArray, showSelectedRecipe, translateProductValue, dealSaleSubjectArray, dealBuySubjectArray, addOutline, closeCircleOutline, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, openDeleteAttributeModal, deleteAttributeFunc, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, currentSubjectAttribute, isItemAlreadyHave, searchAttributeMenu, searchAdditionalAttributes, searchedAdditionalAttributes, dealAdditionalAttributesArray, chooseAttribute, setAttributeRentType, setProductPrice, setProductQty, sumAttributesPriceFunc, productNote, setProductNotePlaceholder, calcTotalSubjectPrice, subjectPrice, newAttribute, sumAttributesPriceValue, subjectQty, removeCircleOutline, addCircleOutline, changeQty, changePersonQty
+                systemCurrency, userSettings, subjectData, currentDealType, searchRecipeMenu, searchRecipe, chooseRecipe, noRecipe, searchedRecipe, userRecipeArray, showSelectedRecipe, translateProductValue, dealSaleSubjectArray, dealBuySubjectArray, addOutline, closeCircleOutline, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, openDeleteAttributeModal, deleteAttributeFunc, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, currentSubjectAttribute, isItemAlreadyHave, searchAttributeMenu, searchAdditionalAttributes, searchedAdditionalAttributes, dealAdditionalAttributesArray, chooseAttribute, setAttributeRentType, setProductPrice, setProductQty, sumAttributesPriceFunc, productNote, setProductNotePlaceholder, calcTotalSubjectPrice, subjectPrice, newAttribute, sumAttributesPriceValue, subjectQty, removeCircleOutline, addCircleOutline, changeQty, changePersonQty, gramPerPerson
             }
         }
     })

@@ -145,11 +145,34 @@
                                 <ion-input type="number" v-model="subjectPrice" inputmode="decimal" :value="subjectData.price" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
                             </ion-button>
                         </ion-row>
-                        <ion-row>
-                            Количество гостей (чел.): {{ subjectData.personQuantity }}
+                        <!-- Вес одной порции -->
+                        <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                Вес одной порции (гр.)
+                            </ion-button>
+                            <!--  -->
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                <ion-input type="number" v-model="gramPerPerson" inputmode="decimal" :value="subjectData.gramPerPerson" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
+                            </ion-button>
                         </ion-row>
-                        <ion-row>
-                            Вес одной порции (гр.): {{ subjectData.gramPerPerson }}
+                        <!-- Кол-во гостей -->
+                        <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                Количество гостей, чел
+                            </ion-button>
+                            <!--  -->
+                            <div>
+                                <ion-grid class="ion-no-padding">
+                                    <ion-row class="ion-align-items-center">
+                                        <!-- Subtract -->
+                                        <ion-icon class="countQty_button" @click="changePersonQty('sub')" :icon="removeCircleOutline" :color="countPersonQtyButtonColor"></ion-icon>
+                                        <!-- Show data -->
+                                        <ion-text class="ion-padding-horizontal countQty_count" color="primary">{{ subjectData.personQuantity }}</ion-text>
+                                        <!-- Add -->
+                                        <ion-icon class="countQty_button" @click="changePersonQty('add')" color="primary" :icon="addCircleOutline"></ion-icon>
+                                    </ion-row>
+                                </ion-grid>
+                            </div>
                         </ion-row>
                         <!-- Кол-во предмета -->
                         <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
@@ -369,7 +392,7 @@
     //
     export default defineComponent({
         name: 'CreateDealSubject',
-        emits: ['closeModal', 'createSubject', 'getSubjectPrice', 'getSubjectQty'],
+        emits: ['closeModal', 'createSubject', 'getSubjectPrice', 'getGramPerPerson', 'getSubjectQty', 'getPersonQty'],
         props: {
             subjectData: Object,
             currentDealType: String,
@@ -506,8 +529,11 @@
                 searchSubjectMenu.value = false
                 //
                 subjectPrice.value = subject.price;
+                //
                 subjectQty.value = 1
+                personQty.value = 1
                 subjectData.value.productQuantity = 1
+                subjectData.value.personQuantity = 1
                 //
                 if(subjectData.value.costEstimation === 'perUnit') {
                     subjectData.value.subjectPrice = subjectData.value.productQuantity * subjectPrice.value;
@@ -647,7 +673,13 @@
                 // console.log(price)
                 emit('getSubjectPrice', +price);
             })
-            // следим за изменением qty
+            // следим за изменениями веса порций
+            const gramPerPerson = ref();
+            watch(gramPerPerson, (gram) => {
+                // console.log(gram)
+                emit('getGramPerPerson', +gram)
+            })
+            // следим за изменением subject qty
             const subjectQty = ref();
             const countQtyButtonColor = ref('primary')
             watch(subjectQty, (qty) => {
@@ -659,21 +691,43 @@
                     countQtyButtonColor.value = 'primary'
                 }
             })
+            // следим за изменениями person qty
+            const personQty = ref();
+            const countPersonQtyButtonColor = ref('primary')
+            watch(personQty, (qty) => {
+                // console.log(personQty.value)
+                emit('getPersonQty', +qty);
+                if(qty < 2) {
+                    countPersonQtyButtonColor.value = 'light'
+                } else {
+                    countPersonQtyButtonColor.value = 'primary'
+                }
+            })
             //
             watch(searchSelectedProduct, (SelectedProduct) => {
                 console.log(SelectedProduct)
             })
             // функционал управления кнопками добавить / вычесть
             const changeQty = (action) => {
+                // subjectQty.value = subjectData.value.productQuantity
                 if(action === 'sub' && subjectQty.value > 1) {
                     subjectQty.value--
                 } else if (action === 'add') {
                     subjectQty.value++
                 } 
             }
+            // функционал управления кнопка добавить убавить количество гостей на торт
+            const changePersonQty = (action) => {
+                // personQty.value = subjectData.value.personQuantity
+                if(action === 'sub' && personQty.value > 1) {
+                    personQty.value--
+                } else if (action === 'add') {
+                    personQty.value++
+                } 
+            }
 
             return {
-                dealSaleSubjectArray, dealBuySubjectArray, helpOutline, addOutline, showSelectedProduct, searchSubjectMenu, searchSelectedProduct, currentDealType, translateValue, searchedSubject, choose, searchRecipeMenu, searchRecipe, userRecipeArray, chooseRecipe, showSelectedRecipe, searchedRecipe, noRecipe, searchAttributeMenu, searchAdditionalAttributes, dealAdditionalAttributesArray, searchedAdditionalAttributes, chooseAttribute, closeCircleOutline, isAttributesMenuOpened, toggleAttributesMenu, openDeleteAttributeModal, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, systemCurrency, currentSubjectAttribute, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, isItemAlreadyHave, setAttributeRentType, sumAttributesPriceFunc, newAttribute, setProductQty, calcTotalSubjectPrice, setProductPrice, subjectPrice, subjectQty, removeCircleOutline, addCircleOutline, countQtyButtonColor, changeQty
+                dealSaleSubjectArray, dealBuySubjectArray, helpOutline, addOutline, showSelectedProduct, searchSubjectMenu, searchSelectedProduct, currentDealType, translateValue, searchedSubject, choose, searchRecipeMenu, searchRecipe, userRecipeArray, chooseRecipe, showSelectedRecipe, searchedRecipe, noRecipe, searchAttributeMenu, searchAdditionalAttributes, dealAdditionalAttributesArray, searchedAdditionalAttributes, chooseAttribute, closeCircleOutline, isAttributesMenuOpened, toggleAttributesMenu, openDeleteAttributeModal, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, systemCurrency, currentSubjectAttribute, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, isItemAlreadyHave, setAttributeRentType, sumAttributesPriceFunc, newAttribute, setProductQty, calcTotalSubjectPrice, setProductPrice, subjectPrice, subjectQty, removeCircleOutline, addCircleOutline, countQtyButtonColor, changeQty, changePersonQty, countPersonQtyButtonColor, gramPerPerson
             }
         }
     })

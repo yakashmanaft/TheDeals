@@ -140,7 +140,9 @@
                             :subjectData="currentSubject"
                             :currentDealType="dealData.dealType"
                             @getSubjectPrice="setNewSubjectPrice"
+                            @getGramPerPerson="setNewGramPerPerson"
                             @getSubjectQty="setNewSubjectQty"
+                            @getPersonQty="setNewPersonQty"
                         />
                         <!-- Компонент просмотра предмета по делу -->
                         <ViewDealSubject
@@ -149,9 +151,12 @@
                             :subjectData="currentDealSubject"
                             :currentDealType="dealData.dealType"
                             @getSubjectPrice="setSubjectPrice"
+                            @getGramPerPerson="setGramPerPerson"
                             @getSumAttributesPriceValue="setSumAttributesPriceValue"
                             @getSubjectQty="setSubjectQty"
+                            @getPersonQty="setPersonQty"
                             :countQtyButtonColor="countQtyButtonColor"
+                            :countPersonQtyButtonColor="countPersonQtyButtonColor"
                         />
                     </ion-row>
                 </ion-grid>
@@ -261,7 +266,7 @@
                         currentSubject.value = {
                             id: uid(),
                             selectedProduct: '',
-                            price: '',
+                            price: 0,
                             costEstimation: '',
                             personQuantity: 1,
                             gramPerPerson: 120,
@@ -398,6 +403,7 @@
                 isViewDealSubjectOpened.value = true;
                 currentDealSubject.value = dealData.value.dealsList[index];
                 setCountQtyButtonColor(currentDealSubject.value.productQuantity)
+                setCountPersonQtyButtonColor(currentDealSubject.value.personQuantity)
             }
             //
             const translateDealSubjectRecipe = (value) => {
@@ -485,6 +491,45 @@
                     console.log('В разработке')
                 }
             }
+            // ставим Current Subject gramPerPErson
+            const setGramPerPerson = (gram) => {
+                if(dealData.value.dealType === 'sale') {
+                    currentDealSubject.value.gramPerPerson = gram;
+                    if(currentDealSubject.value.costEstimation === 'perKilogram') {
+                        // Формула рассчета цены currentDealSubject 
+                        currentDealSubject.value.subjectPrice = (currentDealSubject.value.price / 1000) * (currentDealSubject.value.personQuantity * currentDealSubject.value.gramPerPerson) * currentDealSubject.value.productQuantity * ((100 - currentDealSubject.value.subjectDiscount) / 100) 
+                        // Считаем общую totalSubjectPrice по предмету (предмет + допы)
+
+                        calcSubjectTotalPrice()
+                        // update();
+                    } else if (currentDealSubject.value.costEstimation === 'perUnit') {
+                        currentDealSubject.value.subjectPrice = currentDealSubject.value.price * currentDealSubject.value.productQuantity
+                        calcSubjectTotalPrice()
+                        // update();
+                    } else if (currentDealSubject.value.costEstimation === 'per100gram') {
+                        console.log('В разработке')
+                    }
+                }
+            }
+            // ставим NEW Subject gramPerPerson
+            const setNewGramPerPerson = (gram) => {
+                if(dealData.value.dealType === 'sale') {
+                    currentSubject.value.gramPerPerson = gram;
+                    if(currentSubject.value.costEstimation === 'perKilogram') {
+                        // Формула рассчета цены currentDealSubject 
+                        currentSubject.value.subjectPrice = (currentSubject.value.price / 1000) * (currentSubject.value.personQuantity * currentSubject.value.gramPerPerson) * currentSubject.value.productQuantity * ((100 - currentSubject.value.subjectDiscount) / 100) 
+                        // Считаем общую totalSubjectPrice по предмету (предмет + допы)
+                        calcNewSubjectTotalPrice()
+                    } else if (currentSubject.value.costEstimation === 'perUnit') {
+                        currentSubject.value.subjectPrice = currentSubject.value.price * currentSubject.value.productQuantity
+                        calcNewSubjectTotalPrice()
+                    } else if (currentSubject.value.costEstimation === 'per100gram') {
+                        console.log('В разработке')
+                    }
+                } else if(dealData.value.dealType === 'but') {
+                    console.log('В разработке')
+                }
+            }
             // ставим Current Subject QUANTITY
             const setSubjectQty = (qty) => {
                 if(dealData.value.dealType === 'sale') {
@@ -508,7 +553,7 @@
                     console.log('В разработке')
                 }
             }
-            // ставим New Cubject QUANTITY
+            // ставим New Subject QUANTITY
             const setNewSubjectQty = (qty) => {
                 if(dealData.value.dealType === 'sale') {
                     currentSubject.value.productQuantity = qty;
@@ -527,7 +572,7 @@
                     console.log('В разработке')
                 }
             }
-            // Изменяем цвет кнопки по условиям 
+            // count SUBJECT QTY BUTTON COLOR
             const countQtyButtonColor = ref('primary');
             const setCountQtyButtonColor = (qty) => {
                 if(qty < 2) {
@@ -536,9 +581,56 @@
                     return countQtyButtonColor.value = 'primary'
                 }
             }
+            // ставим Current PERSON Subject QUANTITY
+            const setPersonQty = (qty) => {
+                if(dealData.value.dealType === 'sale') {
+                    if(currentDealSubject.value.costEstimation === 'perKilogram') {
+                        currentDealSubject.value.personQuantity = qty;
+                        // Формула рассчета цены currentDealSubject 
+                        currentDealSubject.value.subjectPrice = (currentDealSubject.value.price / 1000) * (currentDealSubject.value.personQuantity * currentDealSubject.value.gramPerPerson) * currentDealSubject.value.productQuantity * ((100 - currentDealSubject.value.subjectDiscount) / 100) 
+                        // Считаем общую totalSubjectPrice по предмету (предмет + допы)
+                        setCountPersonQtyButtonColor(qty)
+                        calcSubjectTotalPrice()
+                    } else if(currentDealSubject.value.costEstimation === 'perUnit') {
+                        // Не используется
+                    }else if(currentDealSubject.value.costEstimation === 'per100gram') {
+                        // Не используется
+                    }
+                } else if(dealData.value.dealType === 'buy') {
+                    console.log('В разработке')
+                }
+            }
+            // ставим NEW PERSON Subject QUANTITY
+            const setNewPersonQty = (qty) => {
+                if(dealData.value.dealType === 'sale') {
+                    if(currentSubject.value.costEstimation === 'perKilogram') {
+                        currentSubject.value.personQuantity = qty;
+                        // Формула рассчета цены currentSubject 
+                        currentSubject.value.subjectPrice = (currentSubject.value.price / 1000) * (currentSubject.value.personQuantity * currentSubject.value.gramPerPerson) * currentSubject.value.productQuantity * ((100 - currentSubject.value.subjectDiscount) / 100) 
+                        // Считаем общую totalSubjectPrice по предмету (предмет + допы)
+                        calcNewSubjectTotalPrice()
+                    } else if(currentSubject.value.costEstimation === 'perUnit') {
+                        // Не используется
+                    } else if(currentSubject.value.costEstimation === 'per100gram') {
+                        // Не используется
+                    }
+                } else if(dealData.value.dealType === 'buy') {
+                    console.log('В разработке')
+                } 
+            }
+            // count PERSON QTY BUTTON COLOR
+            const countPersonQtyButtonColor = ref('primary');
+            const setCountPersonQtyButtonColor = (qty) => {
+                if(qty < 2) {
+                    return countPersonQtyButtonColor.value = 'light'
+                } else {
+                    return countPersonQtyButtonColor.value = 'primary'
+                }
+            }
+
 
             return {
-                dealContact, dealContactID , searchContactMenu, choose, isCalendarOpened, closeModalCalendar, updateExecutionDate, datepicker, myContactsArray, searchDealContact, searchedContacts, dealTypes, addCircleOutline, closeCircleOutline, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, openDeleteSubjectModal, subjectToDelete, deleteDealSubjectButtons, addNewSubject, deleteSubject, dealData, currentDealSubject, isViewDealSubjectOpened, openCurrentDealSubject, checkRentAttr, setColorByDealType, setIconByDealType, translateDealSubjectRecipe, userRecipeArray, currentDealType, isAttributesMenuOpened, setNewSubjectPrice, calcNewSubjectTotalPrice, sumAttributesPriceValue, setSumAttributesPriceValue, setSubjectPrice, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, calcSubjectTotalPrice, setNewSubjectQty
+                dealContact, dealContactID , searchContactMenu, choose, isCalendarOpened, closeModalCalendar, updateExecutionDate, datepicker, myContactsArray, searchDealContact, searchedContacts, dealTypes, addCircleOutline, closeCircleOutline, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, openDeleteSubjectModal, subjectToDelete, deleteDealSubjectButtons, addNewSubject, deleteSubject, dealData, currentDealSubject, isViewDealSubjectOpened, openCurrentDealSubject, checkRentAttr, setColorByDealType, setIconByDealType, translateDealSubjectRecipe, userRecipeArray, currentDealType, isAttributesMenuOpened, setNewSubjectPrice, calcNewSubjectTotalPrice, sumAttributesPriceValue, setSumAttributesPriceValue, setSubjectPrice, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, calcSubjectTotalPrice, setNewSubjectQty, setPersonQty, setNewPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setGramPerPerson, setNewGramPerPerson
             }
         }
     })
