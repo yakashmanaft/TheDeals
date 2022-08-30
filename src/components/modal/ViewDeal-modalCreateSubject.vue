@@ -12,15 +12,25 @@
             </ion-toolbar>
         </ion-header>
         <!--  -->
-        <ion-grid>
-            <ion-row>
-                <ion-text>Общая сумма предмета: {{ subjectData.totalSubjectPrice }}</ion-text>
-            </ion-row>
+        <ion-grid class="ion-no-padding ion-padding-horizontal" >
+            <div class="border-bottom">
+                <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap ion-margin-top">
+                    <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                        Итого по предмету:
+                    </ion-button>
+                    <div>
+                        <ion-button  color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                            <ion-text style="font-size: 32px; color: black; font-weight: bold">{{subjectData.totalSubjectPrice}}</ion-text>
+                        </ion-button>
+                        <ion-text color="medium">{{systemCurrency.name}}</ion-text>
+                    </div>
+                </ion-row>
+            </div>
         </ion-grid>
         <!--  -->
         <ion-content>
-            {{currentDealType}}
-            {{subjectData}}
+            <!-- {{currentDealType}} -->
+            <!-- {{subjectData}} -->
             <!-- Выбор предмета к делу -->
             <ion-item-group class="ion-padding-horizontal">
                 <!-- заголовок -->
@@ -145,16 +155,6 @@
                                 <ion-input type="number" v-model="subjectPrice" inputmode="decimal" :value="subjectData.price" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
                             </ion-button>
                         </ion-row>
-                        <!-- Вес одной порции -->
-                        <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
-                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                                Вес одной порции (гр.)
-                            </ion-button>
-                            <!--  -->
-                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                                <ion-input type="number" v-model="gramPerPerson" inputmode="decimal" :value="subjectData.gramPerPerson" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
-                            </ion-button>
-                        </ion-row>
                         <!-- Кол-во гостей -->
                         <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
                             <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
@@ -173,6 +173,16 @@
                                     </ion-row>
                                 </ion-grid>
                             </div>
+                        </ion-row>
+                        <!-- Вес одной порции -->
+                        <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                Вес одной порции (гр.)
+                            </ion-button>
+                            <!--  -->
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                <ion-input type="number" v-model="gramPerPerson" inputmode="decimal" :value="subjectData.gramPerPerson" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
+                            </ion-button>
                         </ion-row>
                         <!-- Кол-во предмета -->
                         <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
@@ -193,8 +203,22 @@
                                 </ion-grid>
                             </div>
                         </ion-row>
-                        <ion-row>
-                            Скидка на предмет: (%): {{ subjectData.subjectDiscount }}
+                        <!-- Скидка -->
+                        <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                Скидка,{{subjectData.subjectDiscount}} %
+                            </ion-button>
+                            <!-- Скидка на предмет: (%): {{ subjectData.subjectDiscount }} -->
+                            <ion-range 
+                                class="ion-no-padding ion-padding-horizontal ion-margin-start" 
+                                :min="setDiscountRange('min')" 
+                                :max="setDiscountRange('max')" 
+                                v-model="subjectDiscount"
+                                :value="subjectData.subjectDiscount" 
+                                :pin="true" 
+                                :ticks="true" 
+                                :snaps="false">
+                            </ion-range>
                         </ion-row>
                     </ion-grid>
                     <!--  -->
@@ -246,15 +270,23 @@
                                 </ion-grid>
                             </div>
                         </ion-row>
-                        <!-- <ion-row>
-                            Количество гостей (чел.): {{ subjectData.personQuantity }}
+                        <!-- Скидка -->
+                        <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                Скидка, {{subjectData.subjectDiscount}}%
+                            </ion-button>
+                            <!-- Скидка на предмет: (%): {{ subjectData.subjectDiscount }} -->
+                            <ion-range 
+                                class="ion-no-padding ion-padding-horizontal ion-margin-start" 
+                                :min="setDiscountRange('min')" 
+                                :max="setDiscountRange('max')" 
+                                v-model="subjectDiscount"
+                                :value="subjectData.subjectDiscount" 
+                                :pin="true" 
+                                :ticks="true" 
+                                :snaps="false">
+                            </ion-range>
                         </ion-row>
-                        <ion-row>
-                            Вес одной порции (гр.): {{ subjectData.gramPerPerson }}
-                        </ion-row>
-                        <ion-row>
-                            Скидка на предмет: (%): {{ subjectData.subjectDiscount }}
-                        </ion-row> -->
                     </ion-grid>
                 </ion-item-group>
 
@@ -372,13 +404,15 @@
             <br>
             <br>
             <br>
+            <br>
+            <br>
         </ion-content>
     </ion-modal>
 </template>
 
 <script>
     import { defineComponent, ref, onMounted, computed, watch, watchEffect } from 'vue';
-    import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonImg, IonThumbnail, IonIcon, IonGrid, IonRow, IonSearchbar, IonItem, IonTextarea, IonToggle, IonCard, IonLabel, IonActionSheet, IonInput } from '@ionic/vue';
+    import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonImg, IonThumbnail, IonIcon, IonGrid, IonRow, IonSearchbar, IonItem, IonTextarea, IonToggle, IonCard, IonLabel, IonActionSheet, IonInput, IonRange } from '@ionic/vue';
     import { helpOutline, addOutline, closeCircleOutline, removeCircleOutline, addCircleOutline } from 'ionicons/icons';
     //
     import ViewPriceProduct from '../modal/ViewPriceProduct-modalViewProduct.vue'
@@ -392,7 +426,7 @@
     //
     export default defineComponent({
         name: 'CreateDealSubject',
-        emits: ['closeModal', 'createSubject', 'getSubjectPrice', 'getGramPerPerson', 'getSubjectQty', 'getPersonQty'],
+        emits: ['closeModal', 'createSubject', 'getSubjectPrice', 'getGramPerPerson', 'getSubjectQty', 'getPersonQty', 'getSubjectDiscount'],
         props: {
             subjectData: Object,
             currentDealType: String,
@@ -421,7 +455,8 @@
             IonLabel,
             IonActionSheet,
             ViewPriceProduct,
-            IonInput
+            IonInput, 
+            IonRange
         },
         setup(props, {emit}) {
             //
@@ -725,9 +760,25 @@
                     personQty.value++
                 } 
             }
+            // Устанавливаем значение скидок
+            const setDiscountRange = (name) => {
+                const userDiscountRangeValue = store.state.userDiscountRangeValue
+                if(name === 'min') {
+                    const value = userDiscountRangeValue[0].value;
+                    return value
+                } else if(name === 'max') {
+                    const value = userDiscountRangeValue[1].value;
+                    return value
+                }
+            }
+            // следим за изменениями Subject Discount
+            const subjectDiscount = ref();
+            watch(subjectDiscount, (discount) => {
+                emit('getSubjectDiscount', +discount)
+            })
 
             return {
-                dealSaleSubjectArray, dealBuySubjectArray, helpOutline, addOutline, showSelectedProduct, searchSubjectMenu, searchSelectedProduct, currentDealType, translateValue, searchedSubject, choose, searchRecipeMenu, searchRecipe, userRecipeArray, chooseRecipe, showSelectedRecipe, searchedRecipe, noRecipe, searchAttributeMenu, searchAdditionalAttributes, dealAdditionalAttributesArray, searchedAdditionalAttributes, chooseAttribute, closeCircleOutline, isAttributesMenuOpened, toggleAttributesMenu, openDeleteAttributeModal, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, systemCurrency, currentSubjectAttribute, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, isItemAlreadyHave, setAttributeRentType, sumAttributesPriceFunc, newAttribute, setProductQty, calcTotalSubjectPrice, setProductPrice, subjectPrice, subjectQty, removeCircleOutline, addCircleOutline, countQtyButtonColor, changeQty, changePersonQty, countPersonQtyButtonColor, gramPerPerson
+                dealSaleSubjectArray, dealBuySubjectArray, helpOutline, addOutline, showSelectedProduct, searchSubjectMenu, searchSelectedProduct, currentDealType, translateValue, searchedSubject, choose, searchRecipeMenu, searchRecipe, userRecipeArray, chooseRecipe, showSelectedRecipe, searchedRecipe, noRecipe, searchAttributeMenu, searchAdditionalAttributes, dealAdditionalAttributesArray, searchedAdditionalAttributes, chooseAttribute, closeCircleOutline, isAttributesMenuOpened, toggleAttributesMenu, openDeleteAttributeModal, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, systemCurrency, currentSubjectAttribute, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, isItemAlreadyHave, setAttributeRentType, sumAttributesPriceFunc, newAttribute, setProductQty, calcTotalSubjectPrice, setProductPrice, subjectPrice, subjectQty, removeCircleOutline, addCircleOutline, countQtyButtonColor, changeQty, changePersonQty, countPersonQtyButtonColor, gramPerPerson, setDiscountRange, subjectDiscount
             }
         }
     })
@@ -799,6 +850,37 @@
     }
     .border-top {
         border-top: 1px solid var(--ion-color-light);
+    }
+/*  */
+
+    ion-range::part(pin) {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        background: #ffafcc;
+        color: #fff;
+
+        border-radius: 50%;
+        /* transform: scale(1.01); */
+
+        top: -20px;
+
+        min-width: 28px;
+        height: 28px;
+        transition: transform 120ms ease, background 120ms ease; 
+    } 
+
+    ion-range::part(pin)::before {
+        /* content: none; */
+    }
+
+    ion-range::part(bar) {
+        background: #a2d2ff;
+    }
+
+    ion-range::part(bar-active) {
+        background: #bde0fe;
     }
 
 </style>

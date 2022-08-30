@@ -414,6 +414,17 @@ const state = reactive({
       value: 'drink',
       name: 'Напиток',
     }
+  ],
+  // Максимально допустимую скидку (устанавливается в настройках аккаунта)
+  userDiscountRangeValue : [
+    {
+      name: 'min',
+      value: 0
+    },
+    {
+      name: 'max',
+      value: 30
+    }
   ]
 });
 
