@@ -263,6 +263,11 @@ const state = reactive({
       name: 'Эскимошки',
       costEstimation: 'perUnit'
     },
+    {
+      value: 'trifle',
+      name: 'Трайфл',
+      costEstimation: 'perUnit'
+    }
   ],
   // deal BUY subject list
   dealBuySubjectArray: [

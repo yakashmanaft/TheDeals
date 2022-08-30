@@ -119,7 +119,7 @@
                         </ion-button>
                         <!-- Кнопка показа и изменения цены -->
                         <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                            <ion-input type="number" v-model="newProductPrice" :value="newProductData.price" placeholder="0" inputmode="decimal" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
+                            <ion-input type="number" v-model="newProductData.price" :value="newProductData.price" placeholder="0" inputmode="decimal" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
                         </ion-button>
                     </ion-row>
                     <!-- Количество -->

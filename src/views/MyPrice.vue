@@ -410,7 +410,7 @@
                         uid: uid(),
                         value: '',
                         name: '',
-                        price: '',
+                        price: 0,
                         costEstimation: ''
                     }
                 } else if (blockToShow.value === 'attributes') {
@@ -529,15 +529,18 @@
             const setNewProductQty = (qty) => {
                 if(blockToShow.value === 'attributes') {
                     // console.log(qty)
+                    newPriceProductData.value.qty = qty
                     newPriceProductData.value.totalPrice = newPriceProductData.value.qty * newPriceProductData.value.price 
                 }
             }
             //
             const setNewProductPrice = (price) => {
                 if(blockToShow.value === 'attributes') {
-                    console.log(price)
+                    // console.log(price)
                     newPriceProductData.value.price = price
                     newPriceProductData.value.totalPrice = newPriceProductData.value.qty * newPriceProductData.value.price 
+                } else if (blockToShow.value === 'products') {
+                    newPriceProductData.value.price = price
                 }
             }
             //
@@ -592,6 +595,26 @@
             const closeModalCreatePriceProduct = (value) => {
                 isModalNewPriceItemOpened.value = false
                 blockToShow.value = value
+                if(blockToShow.value === 'products') {
+                    newPriceProductData.value = {
+                        uid: '',
+                        value: '',
+                        name: '',
+                        price: 0,
+                        costEstimation: ''
+                    }
+                } else if (blockToShow.value === 'attributes') {
+                    newPriceProductData.value = {
+                        uid: '',
+                        value: '',
+                        name: '',
+                        price: 0,
+                        totalPrice: 0,
+                        qty: 1,
+                        rentType: '',
+                        isReturned: false 
+                    }
+                }
             }
 
             return {
