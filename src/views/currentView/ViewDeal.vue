@@ -201,6 +201,47 @@
                 >
                 </ion-action-sheet>
 
+                <!-- ========================== Доставка ================================================= -->
+                <ion-item-group class="ion-text-left ion-padding-horizontal">
+                    <!-- Заголовок -->
+                    <ion-text>
+                        <h4 class="ion-no-margin ion-margin-bottom" >Доставка</h4>
+                    </ion-text>
+                </ion-item-group> 
+
+
+                <!-- ============================ ИТОГ ==================================================== -->
+                <ion-item-group class="ion-text-left ion-padding-horizontal">
+                    <!-- Заголовок -->
+                    <ion-text>
+                        <h4 class="ion-no-margin ion-margin-bottom" >Итого</h4>
+                    </ion-text>
+                    <ul style="list-style: none; padding-left: 0; font-size: 14px;" class="ion-text-left">
+                        <li>
+                            Торт Без рецепта 1.00 * 2378.00 = 2378.00 <br>
+                            С учетом 5% скидки (118,90) = 2259,10<br>
+                            Напиток 1.00 * 150.00 = 150.00 <br>
+                            Упаковка для торта 1.00 * 210.00 = 210.00
+                        </li>
+                        <li style="margin-top: 10px;">
+                            Капкейк Молочная девочка 6.00 * 190.00 = 1140.00 <br>
+                            Напиток 1.00 * 150.00 = 150.00 <br>
+                            Упаковка для капкейков 1.00 * 210.00 = 210.00
+                        </li>
+                        <li style="margin-top: 10px;">
+                            Итог: 4119,1 <br> 
+                        </li>
+                        <li style="margin-top: 10px;">
+                            Доставка 1.00 * 279.00 = 279.00
+                        </li>
+                    </ul>
+                    Сумма(totalDealPrice): =4398.00 <br>
+                    Получено(dealPaid): =1000.00 <br>
+                    Задолженность: =3398.10 <br>
+                    <ion-button expand="block">
+                        Внести
+                    </ion-button>
+                </ion-item-group>
                 <br>
                 {{currentDeal}}
                 <br>
