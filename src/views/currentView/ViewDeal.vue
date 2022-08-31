@@ -231,9 +231,8 @@
                             </ion-button>
                             <!-- Ценник -->
                             <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                            <ion-input type="number" v-model="shippingPrice" :value="currentDeal.shipping.shippingPrice" placeholder="0" inputmode="decimal" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
-                        </ion-button>
-
+                                <ion-input type="number" v-model="shippingPrice" :value="currentDeal.shipping.shippingPrice" placeholder="0" inputmode="decimal" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
+                            </ion-button>
                         </ion-row>
                     </ion-grid>
                     <!-- Вариант при самовывозе (disabled изменения input) -->
@@ -271,16 +270,25 @@
                     </ion-grid>
                 </ion-item-group> 
 
-
                 <!-- ============================ ИТОГ ==================================================== -->
                 <ion-item-group class="ion-text-left ion-padding-horizontal">
                     <!-- Заголовок -->
                     <ion-text>
                         <h4>Итого</h4>
                     </ion-text>
+                    <!--  -->
+                    <ion-list>
+                        <ion-grid class="ion-no-padding">
+                            <ion-row class="ion-justify-content-between ion-align-items-center">
+                                <ion-text>Торт</ion-text>
+                                <ion-text>1.00 * 2378.00 = 2378.00 </ion-text>
+                            </ion-row>
+                        </ion-grid>
+                    </ion-list>
                     <ul style="list-style: none; padding-left: 0; font-size: 14px;" class="ion-text-left">
                         <li>
-                            Торт Без рецепта 1.00 * 2378.00 = 2378.00 <br>
+                             <br>
+                            Без рецепта <br>
                             С учетом 5% скидки (118,90) = 2259,10<br>
                             Напиток 1.00 * 150.00 = 150.00 <br>
                             Упаковка для торта 1.00 * 210.00 = 210.00
@@ -299,10 +307,10 @@
                     </ul>
                     <ul>
                         <li style="background-color: green;">
-                            Сумма: {{ currentDeal.totalDealPrice }}
+                            Сумма оплате: {{ currentDeal.totalDealPrice }}
                         </li>
                         <li>
-                            Получено(dealPaid): =1000.00 <br>
+                            Оплачено: (dealPaid): =1000.00 <br>
                         </li>
                         <li>
                             Задолженность: =3398.10 <br>
@@ -338,7 +346,7 @@
     import { useRoute, useRouter } from 'vue-router';
     import store from '../../store/index';
     import { uid } from 'uid';
-    import { IonContent, IonButton, IonActionSheet, IonItemGroup, IonText, IonGrid, IonRow, IonModal, IonItem, IonSearchbar, IonChip, IonCard, IonImg, IonThumbnail, IonLabel, IonIcon, IonInput, IonTextarea } from '@ionic/vue';
+    import { IonContent, IonButton, IonActionSheet, IonItemGroup, IonText, IonGrid, IonRow, IonModal, IonItem, IonSearchbar, IonChip, IonCard, IonImg, IonThumbnail, IonLabel, IonIcon, IonInput, IonTextarea, IonList } from '@ionic/vue';
     import { addCircleOutline, closeCircleOutline, helpOutline } from 'ionicons/icons';
     //
     import { searchFilter } from '../../helpers/filterMyContacts'; 
@@ -383,7 +391,8 @@
             IonLabel,
             IonIcon,
             IonInput,
-            IonTextarea
+            IonTextarea, 
+            IonList
         }, 
         setup() {
             // Currency

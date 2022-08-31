@@ -382,7 +382,7 @@
                 contactID: '000',
                 dealsList: [],
                 shipping: '',
-                totalDealPrice: '',
+                totalDealPrice: 0,
                 executionDate: '',
                 dealPaid: '',
                 cancelledReason: ''
@@ -398,7 +398,7 @@
                     contactID: '000',
                     dealsList: [],
                     shipping: '',
-                    totalDealPrice: '',
+                    totalDealPrice: 0,
                     executionDate: '',
                     dealPaid: '',
                     cancelledReason: ''
