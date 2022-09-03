@@ -609,11 +609,7 @@
             }
             // удаляем current deal item и обновляем запись в БД
             const deleteCurrentDealItem = (id) => {
-                // totalDealPrice -=dealsList[id]
-                currentDeal.value.dealsList = currentDeal.value.dealsList.filter(subject => {
-                    subject.id !== id;
-                    currentDeal.value.totalDealPrice -= subject.totalSubjectPrice 
-                });
+                currentDeal.value.dealsList = currentDeal.value.dealsList.filter(subject => subject.id !== id);
                 update();
             }
             // create new current deal subject
@@ -986,6 +982,7 @@
                     // console.log(sumAllTotalSubjectPrice.value)
                     return sumAllTotalSubjectPrice
                 } else {
+                    calcTotalDealPrice(0)
                     return 0
                 }
             }

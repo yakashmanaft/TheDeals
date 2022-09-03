@@ -498,10 +498,7 @@
                 })  
             }
             const deleteSubject = (id) => {
-                dealData.value.dealsList = dealData.value.dealsList.filter(subject => {
-                    subject.id !== id
-                    dealData.value.totalDealPrice -= subject.totalSubjectPrice 
-                });
+                dealData.value.dealsList = dealData.value.dealsList.filter(subject => subject.id !== id);
             }
 
             return {

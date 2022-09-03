@@ -872,12 +872,14 @@
                     // console.log(sumAllTotalSubjectPrice.value)
                     return sumAllTotalSubjectPrice
                 } else {
+                    calcTotalDealPrice(0)
                     return 0
                 }
             }
             // функция калькуляции общей стоимости дела (с учетом доставки)
             const calcTotalDealPrice = (sumSubjectPrice) => {
                 if(dealData.value.dealType === 'sale') {
+                    console.log(sumSubjectPrice)
                     dealData.value.totalDealPrice = sumSubjectPrice + dealData.value.shipping.shippingPrice
                     // update()
                 } else if (dealData.value.dealType === 'buy') {
