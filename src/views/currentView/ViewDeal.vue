@@ -956,13 +956,17 @@
             // Считаем сумму всех PRICE всех subject
             const sumAllTotalSubjectPrice = ref();
             const sumAllTotalSubjectPriceFunc = (array) => {
-                // Выбираем из массива данных нужные значения
-                let totalSubjectPriceArray = array.map(item => item.totalSubjectPrice)
-                // Суммируем значения
-                const sumAllTotalSubjectPrice = totalSubjectPriceArray.reduce((accumulator, currentValue) => accumulator + currentValue)
-                calcTotalDealPrice(sumAllTotalSubjectPrice)
-                // console.log(sumAllTotalSubjectPrice.value)
-                return sumAllTotalSubjectPrice
+                if (array.length !== 0) {
+                    // Выбираем из массива данных нужные значения
+                    let totalSubjectPriceArray = array.map(item => item.totalSubjectPrice)
+                    // Суммируем значения
+                    const sumAllTotalSubjectPrice = totalSubjectPriceArray.reduce((accumulator, currentValue) => accumulator + currentValue)
+                    calcTotalDealPrice(sumAllTotalSubjectPrice)
+                    // console.log(sumAllTotalSubjectPrice.value)
+                    return sumAllTotalSubjectPrice
+                } else {
+                    return 0
+                }
             }
             // функция калькуляции общей стоимости дела (с учетом доставки)
             const calcTotalDealPrice = (sumSubjectPrice) => {
