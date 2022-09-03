@@ -397,7 +397,10 @@
                     dealStatus:"deal-in-booking",
                     contactID: '000',
                     dealsList: [],
-                    shipping: '',
+                    shipping: {
+                        typeOfShipping: '',
+                        shippingPrice: 0
+                    },
                     totalDealPrice: 0,
                     executionDate: '',
                     dealPaid: '',
@@ -495,7 +498,10 @@
                 })  
             }
             const deleteSubject = (id) => {
-                dealData.value.dealsList = dealData.value.dealsList.filter(subject => subject.id !== id);
+                dealData.value.dealsList = dealData.value.dealsList.filter(subject => {
+                    subject.id !== id
+                    dealData.value.totalDealPrice -= subject.totalSubjectPrice 
+                });
             }
 
             return {

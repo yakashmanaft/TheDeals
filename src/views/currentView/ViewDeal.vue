@@ -212,10 +212,11 @@
                     <ion-grid class="ion-no-padding">
                         <ion-row class="ion-justify-content-between ion-align-items-center">
                             <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">Тип доставки</ion-button>
+                            <!--  -->
                             <ion-chip :color="setChipColor(currentDeal.shipping.typeOfShipping)">
                                 <Select
                                     :data="shippingTypeList" 
-                                    :placeholder="translateValue(currentDeal.shipping.typeOfShipping, shippingTypeList)"
+                                    :placeholder="translateShippingType(currentDeal.shipping.typeOfShipping)"
                                     @date-updated="(selected) => dealShippingType = selected.currentValue"
                                 />
                             </ion-chip>
@@ -608,7 +609,11 @@
             }
             // удаляем current deal item и обновляем запись в БД
             const deleteCurrentDealItem = (id) => {
-                currentDeal.value.dealsList = currentDeal.value.dealsList.filter(subject => subject.id !== id);
+                // totalDealPrice -=dealsList[id]
+                currentDeal.value.dealsList = currentDeal.value.dealsList.filter(subject => {
+                    subject.id !== id;
+                    currentDeal.value.totalDealPrice -= subject.totalSubjectPrice 
+                });
                 update();
             }
             // create new current deal subject
@@ -699,6 +704,16 @@
                         return 'Без рецепта'
                     } else {
                         return translateValue(value, userRecipeArray.value)
+                    }
+                }
+            }
+            //
+            const translateShippingType = (value) => {
+                if(currentDeal.value.dealType === 'sale') {
+                    if(value === '') {
+                        return 'Не выбрано'
+                    } else {
+                        return translateValue(value, shippingTypeList.value)
                     }
                 }
             }
@@ -950,7 +965,13 @@
                         shippingAddress: '',
                         shippingPrice: 0
                     }
-                }
+                } 
+                // else if (dealShippingType.value === '') {
+                //     currentDeal.value.shipping = {
+                //         typeOfShipping: 'Не выбран',
+                //         shippingPrice: 0
+                //     }
+                // }
                 update()
             })
             // Считаем сумму всех PRICE всех subject
@@ -980,8 +1001,19 @@
             //
             const shippingPrice = ref();
             watch(shippingPrice, () => {
-                currentDeal.value.shipping.shippingPrice = +shippingPrice.value
-                update()
+                if(currentDeal.value.dealType === 'sale') {
+                    if(currentDeal.value.dealsList.length === 0) {
+                        currentDeal.value.shipping.shippingPrice = +shippingPrice.value
+                        currentDeal.value.totalDealPrice = currentDeal.value.shipping.shippingPrice
+                        update()
+                    } else {
+                        // console.log(shippingPrice.value)
+                        currentDeal.value.shipping.shippingPrice = +shippingPrice.value
+                        update()
+                    }
+                } else if (currentDeal.value.dealType === 'buy') {
+                    console.log('В разработке')
+                }
             })
             //
             const editShippingAddress = ref(false);
@@ -1008,7 +1040,7 @@
             }
 
             return {
-                currency, spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, translateDealSubjectRecipe, userRecipeArray, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, setPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setNewPersonQty, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, shippingTypeList, dealShippingType, shippingPrice, setProductNotePlaceholder, shippingAddress, editShippingAddress, toggleEditShippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc
+                currency, spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, translateDealSubjectRecipe, userRecipeArray, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, setPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setNewPersonQty, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, shippingTypeList, dealShippingType, shippingPrice, setProductNotePlaceholder, shippingAddress, editShippingAddress, toggleEditShippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, translateShippingType
             }
         }
     })

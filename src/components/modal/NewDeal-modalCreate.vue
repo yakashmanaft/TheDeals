@@ -185,7 +185,7 @@
                             <ion-chip :color="setChipColor(dealData.shipping.typeOfShipping)">
                                 <Select
                                     :data="shippingTypeList" 
-                                    placeholder="Выберите"
+                                    placeholder="Не выбран"
                                     @date-updated="(selected) => dealShippingType = selected.currentValue"
                                 />
                             </ion-chip>
@@ -840,7 +840,20 @@
             // следим за измененимями цены доставки
             const shippingPrice = ref()
             watch(shippingPrice, () => {
-                dealData.value.shipping.shippingPrice = +shippingPrice.value
+                // dealData.value.shipping.shippingPrice = +shippingPrice.value
+                if(dealData.value.dealType === 'sale') {
+                    if(dealData.value.dealsList.length === 0) {
+                        dealData.value.shipping.shippingPrice = +shippingPrice.value
+                        dealData.value.totalDealPrice = dealData.value.shipping.shippingPrice
+                        // update()
+                    } else {
+                        // console.log(shippingPrice.value)
+                        dealData.value.shipping.shippingPrice = +shippingPrice.value
+                        // update()
+                    }
+                } else if (dealData.value.dealType === 'buy') {
+                    console.log('В разработке')
+                }
             })
             //
             const shippingAddress = ref();
