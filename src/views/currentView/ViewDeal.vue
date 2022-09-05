@@ -278,27 +278,33 @@
                         <h4>Итого</h4>
                     </ion-text>
                     <!--  -->
-                    <ion-list>
+                    <ion-list class="border-bottom ion-padding-bottom">
                         <ion-grid class="ion-no-padding">
                             <ion-row class="ion-justify-content-between ion-align-items-center">
                                 <ion-text>Торт</ion-text>
                                 <ion-text>1.00 * 2378.00 = 2378.00 </ion-text>
                             </ion-row>
+                            <ion-row class="ion-justify-content-between ion-align-items-center">
+                                <ion-text style="font-size: 0.8rem" color="medium">Без рецепта</ion-text>
+                                <ion-text style="font-size: 0.8rem" color="medium">С учетом скидки</ion-text>
+                            </ion-row>
+                        </ion-grid>
+                        <ion-grid class="ion-no-padding ion-margin-top">
+                            <ion-row class="ion-justify-content-between ion-align-items-center">
+                                <ion-text>Напиток</ion-text>
+                                <ion-text>1.00 * 150.00 = 150.00 </ion-text>
+                            </ion-row>
+                            <ion-row class="ion-justify-content-between ion-align-items-center">
+                                <ion-text style="font-size: 0.8rem" color="medium">Атрибут</ion-text>
+                                <!-- <ion-text style="font-size: 0.8rem" color="medium">С учетом скидки</ion-text> -->
+                            </ion-row>
                         </ion-grid>
                     </ion-list>
+                    <!--  -->
+
+                    
+                    <!--  -->
                     <ul style="list-style: none; padding-left: 0; font-size: 14px;" class="ion-text-left">
-                        <li>
-                             <br>
-                            Без рецепта <br>
-                            С учетом 5% скидки (118,90) = 2259,10<br>
-                            Напиток 1.00 * 150.00 = 150.00 <br>
-                            Упаковка для торта 1.00 * 210.00 = 210.00
-                        </li>
-                        <li style="margin-top: 10px;">
-                            Капкейк Молочная девочка 6.00 * 190.00 = 1140.00 <br>
-                            Напиток 1.00 * 150.00 = 150.00 <br>
-                            Упаковка для капкейков 1.00 * 210.00 = 210.00
-                        </li>
                         <li style="margin-top: 10px; background-color: green;">
                             Итог: {{sumAllTotalSubjectPriceFunc(currentDeal.dealsList)}} {{ currency }}
                         </li>
