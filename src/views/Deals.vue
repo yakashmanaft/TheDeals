@@ -384,7 +384,7 @@
                 shipping: '',
                 totalDealPrice: 0,
                 executionDate: '',
-                dealPaid: '',
+                dealPaid: 0,
                 cancelledReason: ''
             })
             // При закрытии или открытии modal очищаем шаблон дела
@@ -403,7 +403,7 @@
                     },
                     totalDealPrice: 0,
                     executionDate: '',
-                    dealPaid: '',
+                    dealPaid: 0,
                     cancelledReason: ''
                 }
             }

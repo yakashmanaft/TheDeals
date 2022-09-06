@@ -277,55 +277,101 @@
                     <ion-text>
                         <h4>Итого</h4>
                     </ion-text>
-                    <!--  -->
-                    <ion-list class="border-bottom ion-padding-bottom">
+                    <!-- Итог предметов в режиме sale -->
+                    <div v-if="currentDeal.dealType === 'sale'">
+                        <ion-list v-for="item in currentDeal.dealsList" style="font-size: 0.8rem" class="border-bottom ion-padding-bottom ion-margin-bottom">
+                            <ion-grid class="ion-no-padding">
+    
+                                <!-- perUnit -->
+                                <ion-row v-if="item.costEstimation === 'perUnit'" class="ion-justify-content-between ion-align-items-center">
+                                    <ion-text>{{ translateSelectedProduct(item.selectedProduct) }}</ion-text>
+                                    <ion-text>{{ (item.productQuantity).toFixed(2) }} * {{ (item.price).toFixed(2) }} = {{ (item.subjectPrice).toFixed(2) }} </ion-text>
+                                </ion-row>
+    
+                                <!-- perKilogram -->
+                                <ion-row v-if="item.costEstimation === 'perKilogram'" class="ion-justify-content-between ion-align-items-center">
+                                    <ion-text>{{ translateSelectedProduct(item.selectedProduct) }}</ion-text>
+                                    <ion-text>{{ culcSubjectWeight(item.personQuantity, item.gramPerPerson) }} * {{ (item.price).toFixed(2) }} = {{ (item.subjectPrice).toFixed(2) }}</ion-text>
+                                </ion-row>
+    
+                                <!-- per100gram -->
+                                <ion-row v-if="item.costEstimation === 'per100gram'" class="ion-justify-content-between ion-align-items-center">
+                                    <ion-text>{{ translateSelectedProduct(item.selectedProduct) }}</ion-text>
+                                    <!-- <ion-text>{{ (item.productQuantity).toFixed(2) }} * {{ (item.price).toFixed(2) }} = {{ item.subjectPrice }} </ion-text> -->
+                                    В разработке
+                                </ion-row>
+    
+                                <ion-row class="ion-justify-content-between ion-align-items-center">
+                                    <ion-text color="medium">{{ translateDealSubjectRecipe(item.recipe) }}</ion-text>
+                                    <ion-text v-if="item.subjectDiscount > 0" color="medium">С учетом скидки {{ item.subjectDiscount }}%</ion-text>
+                                    <ion-text v-else color="medium">Без скидки</ion-text>
+                                </ion-row>
+                            </ion-grid>
+                            <!-- Атрибуты у предметов дела пока есть только в режиме sale -->
+                            <div v-if="item.additionalAttributes.length !== 0" class="ion-margin-start">
+                                <ion-grid v-for="attribute in item.additionalAttributes" class="ion-no-padding ion-margin-top" >
+                                    <ion-row class="ion-justify-content-between ion-align-items-center">
+                                        <ion-text>{{attribute.name}}</ion-text>
+                                        <ion-text>{{ (attribute.qty).toFixed(2) }} * {{ (attribute.price).toFixed(2) }} = {{ (attribute.totalPrice).toFixed(2) }} </ion-text>
+                                    </ion-row>
+                                    <ion-row class="ion-justify-content-between ion-align-items-center">
+                                        <ion-text color="medium">Атрибут</ion-text>
+                                        <!-- <ion-text style="font-size: 0.8rem" color="medium">С учетом скидки</ion-text> -->
+                                    </ion-row>
+                                </ion-grid>
+                            </div>
+                        </ion-list>
+                        <!-- СВОД -->
                         <ion-grid class="ion-no-padding">
-                            <ion-row class="ion-justify-content-between ion-align-items-center">
-                                <ion-text>Торт</ion-text>
-                                <ion-text>1.00 * 2378.00 = 2378.00 </ion-text>
-                            </ion-row>
-                            <ion-row class="ion-justify-content-between ion-align-items-center">
-                                <ion-text style="font-size: 0.8rem" color="medium">Без рецепта</ion-text>
-                                <ion-text style="font-size: 0.8rem" color="medium">С учетом скидки</ion-text>
-                            </ion-row>
-                        </ion-grid>
-                        <ion-grid class="ion-no-padding ion-margin-top">
-                            <ion-row class="ion-justify-content-between ion-align-items-center">
-                                <ion-text>Напиток</ion-text>
-                                <ion-text>1.00 * 150.00 = 150.00 </ion-text>
-                            </ion-row>
-                            <ion-row class="ion-justify-content-between ion-align-items-center">
-                                <ion-text style="font-size: 0.8rem" color="medium">Атрибут</ion-text>
-                                <!-- <ion-text style="font-size: 0.8rem" color="medium">С учетом скидки</ion-text> -->
-                            </ion-row>
-                        </ion-grid>
-                    </ion-list>
-                    <!--  -->
 
+                            <!-- Итог -->
+                            <ion-row class="ion-justify-content-between ion-align-items-center">
+                                <ion-text>Итог: </ion-text>
+                                <ion-text>{{ (sumAllTotalSubjectPriceFunc(currentDeal.dealsList)).toFixed(2) }} {{ currency }}</ion-text>
+                            </ion-row>
+
+                            <!-- Доставка -->
+                            <ion-row class="ion-margin-top ion-justify-content-between ion-align-items-center">
+                                <ion-text>Доставка: </ion-text>
+                                <ion-text>{{ (currentDeal.shipping.shippingPrice).toFixed(2) }} {{ currency }}</ion-text>
+                            </ion-row>
+
+                            <!-- Сумма к оплате -->
+                            <ion-row class="ion-margin-top ion-justify-content-between ion-align-items-center">
+                                <ion-text class="ion-margin-top" style="font-weight: bold">Сумма к оплате: </ion-text>
+                                <ion-text>{{ (currentDeal.totalDealPrice).toFixed(2) }} {{ currency }}</ion-text>
+                            </ion-row>
+
+                            <!-- Оплачено -->
+                            <ion-row class="ion-margin-top ion-justify-content-between ion-align-items-center">
+                                <ion-text style="font-weight: bold">Оплачено: </ion-text>
+                                <ion-text>{{ (+currentDeal.dealPaid).toFixed(2) }} {{ currency }}</ion-text>
+                            </ion-row>
+
+                            <!-- Задолженность -->
+                            <ion-row class="ion-margin-top ion-justify-content-between ion-align-items-center">
+                                <ion-text style="font-weight: bold">Задолженность: </ion-text>
+                                <ion-text>{{ (culcDealDeabt(currentDeal.totalDealPrice, currentDeal.dealPaid)).toFixed(2) }} {{ currency }}</ion-text>
+                            </ion-row>
+                        </ion-grid>
+                    </div>
+
+                    <!-- Итог предметов в режиме buy -->
+                    <div v-if="currentDeal.dealType === 'buy'">
+                        В разработке
+                    </div>
                     
-                    <!--  -->
-                    <ul style="list-style: none; padding-left: 0; font-size: 14px;" class="ion-text-left">
-                        <li style="margin-top: 10px; background-color: green;">
-                            Итог: {{sumAllTotalSubjectPriceFunc(currentDeal.dealsList)}} {{ currency }}
-                        </li>
-                        <li style="margin-top: 10px; background-color: green;">
-                            Доставка: {{ currentDeal.shipping.shippingPrice }} {{ currency }}
-                        </li>
-                    </ul>
-                    <ul>
-                        <li style="background-color: green;">
-                            Сумма оплате: {{ currentDeal.totalDealPrice }}
-                        </li>
-                        <li>
-                            Оплачено: (dealPaid): =1000.00 <br>
-                        </li>
-                        <li>
-                            Задолженность: =3398.10 <br>
-                        </li>
-                    </ul>
-                    <ion-button expand="block">
+                    <!-- Кнопка -->
+                    <ion-button @click="openDealPaidMenu" expand="block" class="ion-margin-top">
                         Внести
                     </ion-button>
+
+                    <!--  -->
+                    <DealPaidMenu
+                        :is-open="isDealPaidMenuOpened"
+                        @didDismiss="isDealPaidMenuOpened = false"
+                        @closeModal="closeDealPaidMenu"
+                    />
                 </ion-item-group>
                 <br>
                 {{currentDeal}}
@@ -368,6 +414,7 @@
     import ModalCalendar from '../../components/modal/NewDeal-modalCalendar.vue';
     import ViewDealSubject from '../../components/modal/ViewDeal-modalViewSubject.vue';
     import CreateDealSubject from '../../components/modal/ViewDeal-modalCreateSubject.vue';
+    import DealPaidMenu from '../../components/DealPaidMenu.vue'
     //
     import { format, parseISO } from 'date-fns';
     import { ru } from 'date-fns/locale'
@@ -399,7 +446,8 @@
             IonIcon,
             IonInput,
             IonTextarea, 
-            IonList
+            IonList,
+            DealPaidMenu
         }, 
         setup() {
             // Currency
@@ -708,7 +756,7 @@
                     }
                 }
             }
-            //
+            // Переводчик названий типов доставки
             const translateShippingType = (value) => {
                 if(currentDeal.value.dealType === 'sale') {
                     if(value === '') {
@@ -716,6 +764,14 @@
                     } else {
                         return translateValue(value, shippingTypeList.value)
                     }
+                }
+            }
+            // Переводчик названий предметов заказа
+            const translateSelectedProduct = (value) => {
+                if(currentDeal.value.dealType === 'sale') {
+                    return translateValue(value, store.state.dealSaleSubjectArray)
+                } else if (currentDeal.value.dealType === 'buy') {
+                    return translateValue(value, store.state.dealBuySubjectArray)
                 }
             }
             // Вспомогательная переменная
@@ -1046,9 +1102,25 @@
                     return note
                 }
             }
+            // считаем вес торта
+            const culcSubjectWeight = (personQty, portionWeight) => {
+                return (personQty * portionWeight / 1000).toFixed(3)
+            }
+            // считаем задолженность по делу
+            const culcDealDeabt = (totalDealPrice, dealPaid) => {
+                return totalDealPrice - dealPaid
+            } 
+            // управление модалкой deal paid
+            const isDealPaidMenuOpened = ref(false)
+            const openDealPaidMenu = () => {
+                isDealPaidMenuOpened.value = true
+            }
+            const closeDealPaidMenu = () => {
+                isDealPaidMenuOpened.value = false
+            }
 
             return {
-                currency, spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, translateDealSubjectRecipe, userRecipeArray, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, setPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setNewPersonQty, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, shippingTypeList, dealShippingType, shippingPrice, setProductNotePlaceholder, shippingAddress, editShippingAddress, toggleEditShippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, translateShippingType
+                currency, spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, translateDealSubjectRecipe, userRecipeArray, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, setPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setNewPersonQty, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, shippingTypeList, dealShippingType, shippingPrice, setProductNotePlaceholder, shippingAddress, editShippingAddress, toggleEditShippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, translateShippingType, translateSelectedProduct, culcSubjectWeight, culcDealDeabt, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu
             }
         }
     })
