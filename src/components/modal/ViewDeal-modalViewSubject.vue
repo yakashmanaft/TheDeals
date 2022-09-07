@@ -31,8 +31,8 @@
         </ion-grid>
         <!--  -->
         <ion-content :scroll-events="true">
-            <!-- {{currentDealType}} -->
-            <!-- {{subjectData}} -->
+            {{currentDealType}}
+            {{subjectData}}
             <!-- ================ Добавленный продукт ======================== -->
 
             <!-- Если ПРОДУКТ (продажа, закуп) -->

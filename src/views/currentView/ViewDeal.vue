@@ -277,6 +277,7 @@
                     <ion-text>
                         <h4>Итого</h4>
                     </ion-text>
+                    
                     <!-- Итог предметов в режиме sale -->
                     <div v-if="currentDeal.dealType === 'sale'">
                         <ion-list v-for="item in currentDeal.dealsList" style="font-size: 0.8rem" class="border-bottom ion-padding-bottom ion-margin-bottom">
@@ -693,9 +694,11 @@
                         id: uid(),
                         selectedProduct: '',
                         price: 0,
+                        gramPerPerson: 0,
                         subjectPrice: 0,
-                        // costEstimation: '',
+                        costEstimation: '',
                         productQuantity: 1,
+                        totalSubjectPrice: 0, 
                         productNote: '',
                     }
                 }
@@ -959,8 +962,15 @@
                         console.log('В разработке')
                     }
                 } else if (currentDeal.value.dealType === 'buy') {
-                    console.log('В разработке')
-                }
+                    if(currentSubject.value.costEstimation === 'perKilogram') {
+                        // Формула рассчета цены currentDealSubject 
+                        currentSubject.value.subjectPrice = +((currentSubject.value.price / 1000) * currentSubject.value.gramPerPerson).toFixed(0)
+                    } else if (currentSubject.value.costEstimation === 'perUnit') {
+                        // 
+                    } else if (currentSubject.value.costEstimation === 'per100gram') {
+                        console.log('В разработке')
+                    }
+                 }
             }
             // ставим NEW Subject QUANTITY
             const setNewSubjectQty = (qty) => {

@@ -31,7 +31,7 @@
                 <ion-chip :color="setColorByDealType(dealData.dealType)" class="ion-no-margin">
                     <ion-icon class="ion-no-margin" v-if="dealData.dealType !== ''" :icon="setIconByDealType(dealData.dealType)"></ion-icon>
                     <ion-label>
-                        <Select :data="dealTypes" :placeholder="`Укажите тип дела`" @date-updated="(selected) => dealData.dealType = selected.currentValue"/>
+                        <Select :data="dealTypes" :placeholder="`Укажите тип дела`" @date-updated="(selected) => currentDealType = selected.currentValue"/>
                     </ion-label>
                 </ion-chip>
             </ion-item-group>
@@ -236,6 +236,25 @@
             </ion-item-group>
             
             <!-- ============================ ИТОГ ==================================================== -->
+            <ion-item-group v-if="dealData.dealType !== ''" class="ion-text-left ion-padding-horizontal">
+                <!-- Заголовок -->
+                <ion-text>
+                    <h4>Итого</h4>
+                </ion-text>
+
+                <!-- Итог предметов в режиме sale -->
+                <div v-if="dealData.dealType === 'sale'">
+                    sale...
+                </div>
+
+                <!-- Итог предметов в режиме sale -->
+                <div v-if="dealData.dealType === 'buy'">
+                    buy...
+                </div>
+            </ion-item-group>
+
+
+            <!--  -->
             <ion-item-group class="ion-text-left ion-padding-horizontal" v-if="dealData.dealType === 'sale'">
                 <!-- Заголовок -->
                 <ion-text>
@@ -285,17 +304,6 @@
                     Внести
                 </ion-button>
             </ion-item-group>
-
-            <ion-item-group class="ion-text-left ion-padding-horizontal" v-if="dealData.dealType === 'buy'">
-                <!-- Заголовок -->
-                <ion-text>
-                    <h4>Итого</h4>
-                </ion-text>
-                <ion-list>
-                    В разработке...
-                </ion-list>
-            </ion-item-group>
-
 
             <br>
             {{dealData}}
@@ -410,10 +418,12 @@
                         currentSubject.value = {
                             id: uid(),
                             selectedProduct: '',
-                            price: '',
+                            price: 0,
+                            gramPerPerson: 0,
                             subjectPrice: 0,
-                            // costEstimation: '',
+                            costEstimation: '',
                             productQuantity: 1,
+                            totalSubjectPrice: 0, 
                             productNote: '',
                         }
                     }
@@ -517,6 +527,8 @@
                         // Если атрибутов в принципе не выбрано
                         // console.log('без атрибутов')
                         return false;
+                    } else {
+                        return
                     }
                 } else if (dealData.value.dealType === 'buy') {
                     return
@@ -551,18 +563,22 @@
                 dealData.value = props.dealData;
             });
 
-            const currentDealType = ref();    
+            const currentDealType = ref();
+            dealData.value.dealType = currentDealType.value
+            console.log(currentDealType.value)    
             watch(currentDealType, () => {
                 // При случайном или намеренном изменении типа дела - очищаем объект дела
-                // console.log(currentDealType.value)
                 dealData.value.dealType = currentDealType.value
+                console.log(currentDealType.value)
                 // dealData.value.dealType = ''
                 dealData.value.contactID = '000'
                 dealData.value.dealsList = []
-                dealData.value.shipping = ''
-                dealData.value.totalDealPrice = ''
+                dealData.value.shipping = {
+                    shippingPrice: 0
+                }
+                dealData.value.totalDealPrice = 0
                 dealData.value.executionDate = ''
-                dealData.value.dealPaid = ''
+                dealData.value.dealPaid = 0
                 dealData.value.cancelledReason = ''
             })
 
@@ -574,11 +590,19 @@
             }
             // Считаем общую totalSubjectPrice по CURRENT предмету (предмет + допы)
             const calcNewSubjectTotalPrice = () => {
-                currentSubject.value.totalSubjectPrice = currentSubject.value.subjectPrice + sumAttributesPriceValue.value
+                if (dealData.value.dealType === 'sale') {
+                    currentSubject.value.totalSubjectPrice = currentSubject.value.subjectPrice + sumAttributesPriceValue.value
+                } else if (dealData.value.dealType === 'buy') {
+                    currentSubject.value.totalSubjectPrice = currentSubject.value.subjectPrice
+                }
             }
             // Считаем общую totalSubjectPrice по NEW предмету (предмет + допы)
             const calcSubjectTotalPrice = () => {
-                currentDealSubject.value.totalSubjectPrice = currentDealSubject.value.subjectPrice + sumAttributesPriceValue.value
+                if(dealData.value.dealType === 'sale') {
+                    currentDealSubject.value.totalSubjectPrice = currentDealSubject.value.subjectPrice + sumAttributesPriceValue.value
+                } else if (dealData.value.dealType === 'buy') {
+                    currentSubject.value.totalSubjectPrice = currentSubject.value.subjectPrice
+                }
             }
             // ставим Current Subject PRICE
             const setSubjectPrice = (price) => {
@@ -588,7 +612,6 @@
                         // Формула рассчета цены currentDealSubject 
                         currentDealSubject.value.subjectPrice = +((currentDealSubject.value.price / 1000) * (currentDealSubject.value.personQuantity * currentDealSubject.value.gramPerPerson) * currentDealSubject.value.productQuantity * ((100 - currentDealSubject.value.subjectDiscount) / 100)).toFixed(0)
                         // Считаем общую totalSubjectPrice по предмету (предмет + допы)
-
                         calcSubjectTotalPrice()
                         // update();
                     } else if (currentDealSubject.value.costEstimation === 'perUnit') {
@@ -615,8 +638,17 @@
                     } else if (currentSubject.value.costEstimation === 'per100gram') {
                         console.log('В разработке')
                     }
-                } else if(dealData.value.dealType === 'but') {
-                    console.log('В разработке')
+                } else if(dealData.value.dealType === 'buy') {
+                    if(currentSubject.value.costEstimation === 'perKilogram') {
+                        // Формула рассчета цены currentDealSubject 
+                        currentSubject.value.subjectPrice = +((currentSubject.value.price / 1000) * currentSubject.value.gramPerPerson).toFixed(0)
+                        // Считаем общую totalSubjectPrice по предмету (предмет + допы)
+                        calcNewSubjectTotalPrice()
+                    } else if (currentSubject.value.costEstimation === 'perUnit') {
+
+                    } else if (currentSubject.value.costEstimation === 'per100gram') {
+                        console.log('В разработке')
+                    }
                 }
             }
             // ставим Current Subject gramPerPErson
@@ -627,7 +659,6 @@
                         // Формула рассчета цены currentDealSubject 
                         currentDealSubject.value.subjectPrice = +((currentDealSubject.value.price / 1000) * (currentDealSubject.value.personQuantity * currentDealSubject.value.gramPerPerson) * currentDealSubject.value.productQuantity * ((100 - currentDealSubject.value.subjectDiscount) / 100)).toFixed(0)
                         // Считаем общую totalSubjectPrice по предмету (предмет + допы)
-
                         calcSubjectTotalPrice()
                         // update();
                     } else if (currentDealSubject.value.costEstimation === 'perUnit') {
@@ -654,7 +685,11 @@
                     } else if (currentSubject.value.costEstimation === 'per100gram') {
                         console.log('В разработке')
                     }
-                } else if(dealData.value.dealType === 'but') {
+                } else if(dealData.value.dealType === 'buy') {
+                    if (currentSubject.value.costEstimation === 'perKilogram') {
+                        currentSubject.value.subjectPrice = +((currentSubject.value.price / 1000) * currentSubject.value.gramPerPerson).toFixed(0)
+                        calcNewSubjectTotalPrice()
+                    }
                     console.log('В разработке')
                 }
             }
@@ -873,6 +908,7 @@
                     return sumAllTotalSubjectPrice
                 } else {
                     calcTotalDealPrice(0)
+                    // sumAllTotalSubjectPrice.value = 0
                     return 0
                 }
             }
@@ -883,7 +919,8 @@
                     dealData.value.totalDealPrice = sumSubjectPrice + dealData.value.shipping.shippingPrice
                     // update()
                 } else if (dealData.value.dealType === 'buy') {
-                    console.log('В разработке')
+                    // Доставки в данном разделе нет
+                    dealData.value.totalDealPrice = sumSubjectPrice
                 }
             }
 

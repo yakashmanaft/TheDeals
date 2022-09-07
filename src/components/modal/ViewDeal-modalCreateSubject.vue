@@ -29,8 +29,8 @@
         </ion-grid>
         <!--  -->
         <ion-content>
-            <!-- {{currentDealType}} -->
-            <!-- {{subjectData}} -->
+            {{currentDealType}}
+            {{subjectData}}
             <!-- Выбор предмета к делу -->
             <ion-item-group class="ion-padding-horizontal">
                 <!-- заголовок -->
@@ -386,11 +386,57 @@
 
             <!-- Если ЗАКУПКА -->
             <div v-if="currentDealType === 'buy'" >
-                <!-- product price -->
-                <ion-item-group >
-                    <ion-text>
-                        <h4>Стоимость приобретения</h4>
-                    </ion-text>
+                
+                <!-- ЦЕНА ПРЕДМЕТА -->
+                <ion-item-group class="ion-margin-horizontal ion-padding-bottom ion-margin-top">
+                    <!-- Заголовок -->
+                    <ion-grid class="ion-no-padding">
+                        <ion-row class="ion-justify-content-between ion-align-items-center">
+                            <ion-text>
+                                <h4 class="ion-no-margin">Стоимость</h4>
+                            </ion-text>
+                            <ion-text color="medium">
+                                {{ subjectData.subjectPrice }} {{ systemCurrency.name }}
+                            </ion-text>
+                        </ion-row>
+                    </ion-grid>
+                    <!--  -->
+                    <ion-grid v-if="subjectData.costEstimation === 'perKilogram'" class="ion-no-padding">
+                        <!-- Цена за 1 кг -->
+                        <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                1 кг. ({{ systemCurrency.name }})
+                            </ion-button>
+                            <!--  -->
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                <ion-input type="number" v-model="subjectPrice" inputmode="decimal" :value="subjectData.price" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
+                            </ion-button>
+                        </ion-row>
+                        <!-- Фактический вес -->
+                        <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                Фактический вес (гр.)
+                            </ion-button>
+                            <!--  -->
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                <ion-input type="number" v-model="gramPerPerson" inputmode="decimal" :value="subjectData.gramPerPerson" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
+                            </ion-button>
+                        </ion-row>
+
+                    </ion-grid>
+                    <!--  -->
+                    <ion-grid v-if="subjectData.costEstimation === 'per100gram'" class="ion-no-padding">
+                        В разработке...
+                        <ion-row>
+                            Цена за 100 грамм.: {{ subjectData.price }}
+                        </ion-row>
+                    </ion-grid>
+                    <!--  -->
+                    <ion-grid v-if="subjectData.costEstimation === 'perUnit'" class="ion-no-padding">
+
+                    </ion-grid>
+
+
                 </ion-item-group>
             </div>
 
@@ -563,7 +609,11 @@
                 //
                 searchSubjectMenu.value = false
                 //
-                subjectPrice.value = subject.price;
+                if(currentDealType.value === 'sale') {
+                    subjectPrice.value = subject.price;
+                } else if (currentDealType.value === 'buy') {
+                    subject.price = 0;
+                }
                 //
                 subjectQty.value = 1
                 personQty.value = 1
@@ -689,17 +739,21 @@
             }
             // Считаем сумму всех атритов
             const sumAttributesPriceFunc = (array) => {
-                if(array.length > 0 ) {
-                    // Выбираем из массива данных нужные значения
-                    let attrPriceArray = array.map(item => item.totalPrice)
-                    // Суммируем значения
-                    const sumAttributesPriceValue = attrPriceArray.reduce( (accumulator, currentValue) => accumulator + currentValue)
-                    calcTotalSubjectPrice(sumAttributesPriceValue);
-                    return sumAttributesPriceValue
-                } else if (array.length === 0) {
-                    let sumAttributesPriceValue = 0
-                    calcTotalSubjectPrice(sumAttributesPriceValue);
-                    return sumAttributesPriceValue
+                if(currentDealType.value === 'sale') {
+                    if(array.length > 0 ) {
+                        // Выбираем из массива данных нужные значения
+                        let attrPriceArray = array.map(item => item.totalPrice)
+                        // Суммируем значения
+                        const sumAttributesPriceValue = attrPriceArray.reduce( (accumulator, currentValue) => accumulator + currentValue)
+                        calcTotalSubjectPrice(sumAttributesPriceValue);
+                        return sumAttributesPriceValue
+                    } else if (array.length === 0) {
+                        let sumAttributesPriceValue = 0
+                        calcTotalSubjectPrice(sumAttributesPriceValue);
+                        return sumAttributesPriceValue
+                    }
+                } else if (currentDealType.value === 'buy') {
+                    return
                 }
             }
             // следим за изменениями price

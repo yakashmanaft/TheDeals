@@ -274,92 +274,92 @@ const state = reactive({
     {
       value: 'sugar',
       name: 'Сахар',
-      // costEstimation: 'perKilogram'
+      costEstimation: 'perKilogram'
     },
     {
       value: 'cottage-cheese',
       name: 'Сливочный творожный сыр',
-      // costEstimation: 'perKilogram'
+      costEstimation: 'perKilogram'
     },
     {
       value: 'sugar-powder',
       name: 'Сахарная пудра',
-      // costEstimation: 'perKilogram'
+      costEstimation: 'perKilogram'
     },
     {
       value: 'nuts',
       name: 'Орехи',
-      // costEstimation: 'perKilogram'
+      costEstimation: 'perKilogram'
     },
     {
       value: 'egg',
       name: 'Яйцо',
-      // costEstimation: 'perUnit'
+      costEstimation: 'perUnit'
     },
     {
       value: 'flour',
       name: 'Мука',
-      // costEstimation: 'perKilogram'
+      costEstimation: 'perKilogram'
     },
     {
       value: 'cocoa',
       name: 'Какао',
-      // costEstimation: 'perKilogram'
+      costEstimation: 'perKilogram'
     },
     {
       value: 'corn-starch',
       name: 'Кукурузный крахмал',
-      // costEstimation: 'perKilogram'
+      costEstimation: 'perKilogram'
     },
     {
       value: 'salt',
       name: 'Соль',
-      // costEstimation: 'perKilogram'
+      costEstimation: 'perKilogram'
     },
     {
       value: 'vanilla',
       name: 'Ваниль',
-      // costEstimation: 'perKilogram'
+      costEstimation: 'perKilogram'
     },
     {
       value: 'sour-cream',
       name: 'Сметана',
-      // costEstimation: 'perKilogram'
+      costEstimation: 'perKilogram'
     },
     {
       value: 'banana',
       name: 'Банан',
-      // costEstimation: 'perKilogram'
+      costEstimation: 'perKilogram'
     },
     {
       value: 'baking-soda',
       name: 'Пищевая сода',
-      // costEstimation: 'perKilogram'
+      costEstimation: 'perKilogram'
     },
     {
       value: 'vanilla-extract',
       name: 'Ванильный экстракт',
-      // costEstimation: 'perKilogram'
+      costEstimation: 'perKilogram'
     },
     {
       value: 'cream',
       name: 'Сливки',
-      // costEstimation: 'perKilogram'
+      costEstimation: 'perKilogram'
     },
     {
       value: 'gouda-cheese',
       name: 'Сыр гауда',
-      // costEstimation: 'perKilogram'
+      costEstimation: 'perKilogram'
     },
     {
       value: 'lemon-juice',
       name: 'Сок лимона',
-      // costEstimation: 'perKilogram'
+      costEstimation: 'perKilogram'
     },
     {
       value: 'lemon-juice',
       name: 'Сок лимона',
-      // costEstimation: 'perUnit'
+      costEstimation: 'perUnit'
     },
     {
       value: 'gingerbread',
