@@ -604,30 +604,40 @@
             // Задаем из выбранному списка значение для selectedProduct
             const choose = (subject) => {
                 subjectData.value.selectedProduct = subject.value;
-                subjectData.value.price = subject.price;
+                if (currentDealType.value === 'sale') {
+                    subjectData.value.price = subject.price;
+                } else {
+                    subjectData.value.price = 0
+                }
                 subjectData.value.costEstimation = subject.costEstimation;
                 //
                 searchSubjectMenu.value = false
                 //
-                if(currentDealType.value === 'sale') {
-                    subjectPrice.value = subject.price;
-                } else if (currentDealType.value === 'buy') {
-                    subject.price = 0;
-                }
+                subjectPrice.value = subject.price;
                 //
                 subjectQty.value = 1
                 personQty.value = 1
                 subjectData.value.productQuantity = 1
                 subjectData.value.personQuantity = 1
                 //
-                if(subjectData.value.costEstimation === 'perUnit') {
-                    subjectData.value.subjectPrice = subjectData.value.productQuantity * subjectPrice.value;
-                    sumAttributesPriceFunc(subjectData.value.additionalAttributes)
-                } else if (subjectData.value.costEstimation === 'perKilogram') {
-                    subjectData.value.subjectPrice = (subjectData.value.price / 1000) * (subjectData.value.personQuantity * subjectData.value.gramPerPerson) * subjectData.value.productQuantity * ((100 - subjectData.value.subjectDiscount) / 100) 
-                    sumAttributesPriceFunc(subjectData.value.additionalAttributes)
-                } else if (subjectData.value.costEstimation === 'per100gram') {
-                    console.log('В разработке')
+                if(currentDealType.value === 'sale') {
+                    if(subjectData.value.costEstimation === 'perUnit') {
+                        subjectData.value.subjectPrice = subjectData.value.productQuantity * subjectPrice.value;
+                        sumAttributesPriceFunc(subjectData.value.additionalAttributes)
+                    } else if (subjectData.value.costEstimation === 'perKilogram') {
+                        subjectData.value.subjectPrice = (subjectData.value.price / 1000) * (subjectData.value.personQuantity * subjectData.value.gramPerPerson) * subjectData.value.productQuantity * ((100 - subjectData.value.subjectDiscount) / 100) 
+                        sumAttributesPriceFunc(subjectData.value.additionalAttributes)
+                    } else if (subjectData.value.costEstimation === 'per100gram') {
+                        console.log('В разработке')
+                    }
+                } else if (currentDealType.value === 'buy') {
+                    if (subjectData.value.costEstimation === 'perKilogram') {
+                        subjectData.value.subjectPrice = subjectData.value.price / 1000 * subjectData.value.gramPerPerson;
+                    } else if (subjectData.value.costEstimation === 'perUnit') {
+                        subjectData.value.subjectPrice = subjectData.value.productQuantity * subjectPrice.value;
+                    } else if (subjectData.value.costEstimation === 'per100gram') {
+                        console.log('В разработке')
+                    }
                 }
             }
             // Задаем из выбранного списка значение для recipe
@@ -735,6 +745,7 @@
                     // console.log('sale')
                 } else if(currentDealType.value === 'buy') {
                     // console.log('buy')
+                    subjectData.value.totalSubjectPrice = subjectData.value.subjectPrice
                 }
             }
             // Считаем сумму всех атритов
@@ -759,13 +770,13 @@
             // следим за изменениями price
             const subjectPrice = ref();
             watch(subjectPrice, (price) => {
-                // console.log(price)
+                console.log(price)
                 emit('getSubjectPrice', +price);
             })
             // следим за изменениями веса порций
             const gramPerPerson = ref();
             watch(gramPerPerson, (gram) => {
-                // console.log(gram)
+                console.log(gram)
                 emit('getGramPerPerson', +gram)
             })
             // следим за изменением subject qty

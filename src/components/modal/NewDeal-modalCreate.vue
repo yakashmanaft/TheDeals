@@ -580,6 +580,7 @@
                 dealData.value.executionDate = ''
                 dealData.value.dealPaid = 0
                 dealData.value.cancelledReason = ''
+                //
             })
 
             // ================================== New Deal Modal Create Subject ============================================
@@ -639,11 +640,13 @@
                         console.log('В разработке')
                     }
                 } else if(dealData.value.dealType === 'buy') {
+                    currentSubject.value.price = price;
                     if(currentSubject.value.costEstimation === 'perKilogram') {
                         // Формула рассчета цены currentDealSubject 
                         currentSubject.value.subjectPrice = +((currentSubject.value.price / 1000) * currentSubject.value.gramPerPerson).toFixed(0)
                         // Считаем общую totalSubjectPrice по предмету (предмет + допы)
                         calcNewSubjectTotalPrice()
+                        console.log('В разработке')
                     } else if (currentSubject.value.costEstimation === 'perUnit') {
 
                     } else if (currentSubject.value.costEstimation === 'per100gram') {
@@ -686,11 +689,16 @@
                         console.log('В разработке')
                     }
                 } else if(dealData.value.dealType === 'buy') {
+                    currentSubject.value.gramPerPerson = gram;
                     if (currentSubject.value.costEstimation === 'perKilogram') {
                         currentSubject.value.subjectPrice = +((currentSubject.value.price / 1000) * currentSubject.value.gramPerPerson).toFixed(0)
                         calcNewSubjectTotalPrice()
+                    } else if (currentSubject.value.costEstimation === 'perUnit') {
+                        currentSubject.value.subjectPrice = +(currentSubject.value.price * currentSubject.value.productQuantity).toFixed(0)
+                        calcNewSubjectTotalPrice()
+                    } else if (currentSubject.value.costEstimation === 'per100gram') {
+                        console.log('В разработке')
                     }
-                    console.log('В разработке')
                 }
             }
             // ставим Current Subject QUANTITY
