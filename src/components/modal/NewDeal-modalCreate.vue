@@ -234,6 +234,53 @@
                     </ion-row>
                 </ion-grid>
             </ion-item-group>
+            <ion-item-group class="ion-text-left ion-padding-horizontal" v-if="dealData.dealType === 'buy'">
+                <!-- Заголовок -->
+                <ion-text>
+                    <h4 class="ion-no-margin" >Доставка</h4>
+                </ion-text>
+                <!-- Тип доставки -->
+                <ion-grid class="ion-no-padding">
+                    <ion-row class="ion-justify-content-between ion-align-items-center">
+                        <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">Тип доставки</ion-button>
+                            <ion-chip :color="setChipColor(dealData.shipping.typeOfShipping)">
+                                <Select
+                                    :data="shippingTypeList" 
+                                    placeholder="Не выбран"
+                                    @date-updated="(selected) => dealShippingType = selected.currentValue"
+                                />
+                            </ion-chip>
+                        </ion-row>
+                </ion-grid>
+                <!-- Стоимость доставки -->
+                <!-- Вариант с доставкой -->
+                <ion-grid v-if="dealData.shipping.typeOfShipping === 'shipping-delivery'" class="ion-no-padding">
+                    <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
+                            <!-- Заголовок -->
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                Стоимость доставки ({{ currency }})
+                            </ion-button>
+                            <!-- Ценник -->
+                        <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                <ion-input type="number" v-model="shippingPrice" :value="dealData.shipping.shippingPrice" placeholder="0" inputmode="decimal" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
+                        </ion-button>
+                    </ion-row>
+                </ion-grid>
+                <!-- Вариант при самовывозе (в данном случае disabled="false") -->
+                <ion-grid v-if="dealData.shipping.typeOfShipping === 'shipping-pickup'" class="ion-no-padding border-bottom">
+                    <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
+                        <!-- Заголовок -->
+                        <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                            Стоимость доставки ({{ currency }})
+                        </ion-button>
+                        <!-- Ценник -->
+                        <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                        <ion-input type="number" v-model="shippingPrice" :value="dealData.shipping.shippingPrice" placeholder="0" inputmode="decimal" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
+                    </ion-button>
+
+                    </ion-row>
+                </ion-grid>
+            </ion-item-group>
             
             <!-- ============================ ИТОГ ==================================================== -->
             <ion-item-group v-if="dealData.dealType !== ''" class="ion-text-left ion-padding-horizontal">
@@ -948,7 +995,15 @@
                         // update()
                     }
                 } else if (dealData.value.dealType === 'buy') {
-                    console.log('В разработке')
+                    if(dealData.value.dealsList.length === 0) {
+                        dealData.value.shipping.shippingPrice = +shippingPrice.value
+                        dealData.value.totalDealPrice = dealData.value.shipping.shippingPrice
+                        // update()
+                    } else {
+                        // console.log(shippingPrice.value)
+                        dealData.value.shipping.shippingPrice = +shippingPrice.value
+                        // update()
+                    }
                 }
             })
             //
