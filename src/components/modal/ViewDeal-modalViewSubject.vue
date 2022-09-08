@@ -363,14 +363,97 @@
 
                 <!--  -->
             </div>
+            
             <!-- Если ЗАКУП -->
             <div v-if="currentDealType === 'buy'">
-                <!-- product price -->
-                <!-- <ion-item-group >
-                    <ion-text>
-                        <h4>Стоимость приобретения</h4>
-                    </ion-text>
-                </ion-item-group> -->
+                <!-- ЦЕНА ПРЕДМЕТА -->
+                <ion-item-group class="ion-margin-horizontal ion-padding-bottom ion-margin-top">
+                    <!-- Заголовок -->
+                    <ion-grid class="ion-no-padding">
+                        <ion-row class="ion-justify-content-between ion-align-items-center">
+                            <ion-text>
+                                <h4 class="ion-no-margin">Стоимость</h4>
+                            </ion-text>
+                            <ion-text color="medium">
+                                {{ subjectData.subjectPrice }} {{ systemCurrency.name }}
+                            </ion-text>
+                        </ion-row>
+                    </ion-grid>
+                    <!-- PER KILOGRAM -->
+                    <ion-grid v-if="subjectData.costEstimation === 'perKilogram'" class="ion-no-padding">
+                        <!-- Цена за 1 кг -->
+                        <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                Цена за 1 кг. ({{ systemCurrency.name }})
+                            </ion-button>
+                            <!--  -->
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                <ion-input type="number" v-model="subjectPrice" inputmode="decimal" :value="subjectData.price" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
+                            </ion-button>
+                        </ion-row>
+                        <!-- Фактический вес -->
+                        <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                Фактический вес (гр.)
+                            </ion-button>
+                            <!--  -->
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                <ion-input type="number" v-model="gramPerPerson" inputmode="decimal" :value="subjectData.gramPerPerson" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
+                            </ion-button>
+                        </ion-row>
+                    </ion-grid>
+                    <!-- PER 100 GRAM -->
+                    <ion-grid v-if="subjectData.costEstimation === 'per100gram'" class="ion-no-padding">
+                        <ion-row>
+                            Цена за 100 г.: {{ subjectData.price }}
+                            В РАЗРАБОТКЕ
+                        </ion-row>
+                        <!-- <ion-row>
+                            Количество гостей (чел.): {{ subjectData.personQuantity }}
+                        </ion-row>
+                        <ion-row>
+                            Вес одной порции (гр.): {{ subjectData.gramPerPerson }}
+                        </ion-row>
+                        <ion-row>
+                            Количество предмета (шт.): {{ subjectData.productQuantity }}
+                        </ion-row>
+                        <ion-row>
+                            Скидка на предмет: (%): {{ subjectData.subjectDiscount }}
+                        </ion-row> -->
+                    </ion-grid>
+                    <!-- PER UNIT -->
+                    <ion-grid v-if="subjectData.costEstimation === 'perUnit'" class="ion-no-padding">
+                        <!-- Цена за 1 шт -->
+                        <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                1 шт. ({{ systemCurrency.name }})
+                            </ion-button>
+                            <!--  -->
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                <ion-input type="number" v-model="subjectPrice" inputmode="decimal" :value="subjectData.price" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
+                            </ion-button>
+                        </ion-row>
+                        <!-- Кол-во предмета -->
+                        <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                Количество предмета, шт
+                            </ion-button>
+                            <!--  -->
+                            <div>
+                                <ion-grid class="ion-no-padding">
+                                    <ion-row class="ion-align-items-center">
+                                        <!-- Subtract -->
+                                        <ion-icon class="countQty_button" @click="changeQty('sub')" :icon="removeCircleOutline" :color="countQtyButtonColor"></ion-icon>
+                                        <!-- Show data -->
+                                        <ion-text class="ion-padding-horizontal countQty_count" color="primary">{{ subjectData.productQuantity }}</ion-text>
+                                        <!-- Add -->
+                                        <ion-icon class="countQty_button" @click="changeQty('add')" color="primary" :icon="addCircleOutline"></ion-icon>
+                                    </ion-row>
+                                </ion-grid>
+                            </div>
+                        </ion-row>
+                    </ion-grid>
+                </ion-item-group>
             </div>
 
             <!-- ===================================== Заметки показываем ======================================== -->
@@ -596,13 +679,22 @@
             //Считаем сумма всех атрибутов
             const sumAttributesPriceValue = ref();
             const sumAttributesPriceFunc = (array) => {
-                // Выбираем из массива данных нужные значения
-                let attrPriceArray = array.map(item => item.totalPrice)
-                // Суммируем значения
-                const sumAttributesPriceValue = attrPriceArray.reduce( (accumulator, currentValue) => accumulator + currentValue)
-                // console.log(sumAttributesPriceValue)
-                calcTotalSubjectPrice(sumAttributesPriceValue);
-                return sumAttributesPriceValue
+                if(currentDealType.value === 'sale') {
+                    if(array.length > 0 ) {
+                        // Выбираем из массива данных нужные значения
+                        let attrPriceArray = array.map(item => item.totalPrice)
+                        // Суммируем значения
+                        const sumAttributesPriceValue = attrPriceArray.reduce( (accumulator, currentValue) => accumulator + currentValue)
+                        calcTotalSubjectPrice(sumAttributesPriceValue);
+                        return sumAttributesPriceValue
+                    } else if (array.length === 0) {
+                        let sumAttributesPriceValue = 0
+                        calcTotalSubjectPrice(sumAttributesPriceValue);
+                        return sumAttributesPriceValue
+                    }
+                } else if (currentDealType.value === 'buy') {
+                    return
+                }
             }
             watch(sumAttributesPriceValue, () => {
                 emit('getSumAttributesPriceValue', sumAttributesPriceValue.value)
@@ -629,6 +721,7 @@
                     // console.log('sale')
                 } else if(currentDealType.value === 'buy') {
                     // console.log('buy')
+                    subjectData.value.totalSubjectPrice = subjectData.value.subjectPrice
                 }
             }
             // следим за изменениями price

@@ -256,6 +256,10 @@
 
             <!--  -->
             <ion-item-group class="ion-text-left ion-padding-horizontal" v-if="dealData.dealType === 'sale'">
+                {{sumAllTotalSubjectPriceFunc(dealData.dealsList)}}
+            </ion-item-group>
+            <!--  -->
+            <ion-item-group class="ion-text-left ion-padding-horizontal" v-if="dealData.dealType === 'sale'">
                 <!-- Заголовок -->
                 <ion-text>
                     <h4>Итого</h4>
@@ -557,19 +561,19 @@
             }
             // Подтягивает данные по рецептам ПОЛЬЗОВАТЕЛЯ из стора (временно)
             const userRecipeArray = ref(store.state.userRecipeArray)
-
+            const currentDealType = ref('');
             watchEffect(() => {
                 myContactsArray.value = props.myContacts;
                 dealData.value = props.dealData;
+                currentDealType.value = props.dealData.dealType;
             });
-
-            const currentDealType = ref();
-            dealData.value.dealType = currentDealType.value
-            console.log(currentDealType.value)    
-            watch(currentDealType, () => {
+            
+            currentDealType.value = dealData.value.dealType
+            watch(currentDealType, (type) => {
                 // При случайном или намеренном изменении типа дела - очищаем объект дела
-                dealData.value.dealType = currentDealType.value
-                console.log(currentDealType.value)
+                dealData.value.dealType = type
+                // console.log(currentDealType.value)
+                console.log(type)
                 // dealData.value.dealType = ''
                 dealData.value.contactID = '000'
                 dealData.value.dealsList = []
@@ -602,7 +606,7 @@
                 if(dealData.value.dealType === 'sale') {
                     currentDealSubject.value.totalSubjectPrice = currentDealSubject.value.subjectPrice + sumAttributesPriceValue.value
                 } else if (dealData.value.dealType === 'buy') {
-                    currentSubject.value.totalSubjectPrice = currentSubject.value.subjectPrice
+                    currentDealSubject.value.totalSubjectPrice = currentDealSubject.value.subjectPrice
                 }
             }
             // ставим Current Subject PRICE
@@ -613,16 +617,28 @@
                         // Формула рассчета цены currentDealSubject 
                         currentDealSubject.value.subjectPrice = +((currentDealSubject.value.price / 1000) * (currentDealSubject.value.personQuantity * currentDealSubject.value.gramPerPerson) * currentDealSubject.value.productQuantity * ((100 - currentDealSubject.value.subjectDiscount) / 100)).toFixed(0)
                         // Считаем общую totalSubjectPrice по предмету (предмет + допы)
-                        calcSubjectTotalPrice()
+                        // calcSubjectTotalPrice()
                         // update();
                     } else if (currentDealSubject.value.costEstimation === 'perUnit') {
                         currentDealSubject.value.subjectPrice = +(currentDealSubject.value.price * currentDealSubject.value.productQuantity * ((100 - currentDealSubject.value.subjectDiscount) / 100)).toFixed(0)
-                        calcSubjectTotalPrice()
+                        // calcSubjectTotalPrice()
                         // update();
                     } else if (currentDealSubject.value.costEstimation === 'per100gram') {
                         console.log('В разработке')
                     }
+                } else if (dealData.value.dealType === 'buy') {
+                    currentDealSubject.value.price = price;
+                    if(currentDealSubject.value.costEstimation === 'perKilogram') {
+                        // Формула рассчета цены currentDealSubject 
+                        currentDealSubject.value.subjectPrice = +((currentDealSubject.value.price / 1000) * currentDealSubject.value.gramPerPerson).toFixed(0)
+                    } else if (currentDealSubject.value.costEstimation === 'perUnit') {
+                        currentDealSubject.value.subjectPrice = +(currentDealSubject.value.price * currentDealSubject.value.productQuantity).toFixed(0)
+                    } else if (currentDealSubject.value.costEstimation === 'per100gram') {
+                        console.log('В разработке')
+                    }
                 }
+                // Считаем общую totalSubjectPrice по предмету (предмет + допы)
+                calcSubjectTotalPrice()
             }
             // ставим NEW Subject PRICE
             const setNewSubjectPrice = (price) => {
@@ -632,10 +648,10 @@
                         // Формула рассчета цены currentDealSubject 
                         currentSubject.value.subjectPrice = +((currentSubject.value.price / 1000) * (currentSubject.value.personQuantity * currentSubject.value.gramPerPerson) * currentSubject.value.productQuantity * ((100 - currentSubject.value.subjectDiscount) / 100)).toFixed(0)
                         // Считаем общую totalSubjectPrice по предмету (предмет + допы)
-                        calcNewSubjectTotalPrice()
+                        // calcNewSubjectTotalPrice()
                     } else if (currentSubject.value.costEstimation === 'perUnit') {
                         currentSubject.value.subjectPrice = +(currentSubject.value.price * currentSubject.value.productQuantity *((100 - currentSubject.value.subjectDiscount) / 100)).toFixed(0)
-                        calcNewSubjectTotalPrice()
+                        // calcNewSubjectTotalPrice()
                     } else if (currentSubject.value.costEstimation === 'per100gram') {
                         console.log('В разработке')
                     }
@@ -644,15 +660,13 @@
                     if(currentSubject.value.costEstimation === 'perKilogram') {
                         // Формула рассчета цены currentDealSubject 
                         currentSubject.value.subjectPrice = +((currentSubject.value.price / 1000) * currentSubject.value.gramPerPerson).toFixed(0)
-                        // Считаем общую totalSubjectPrice по предмету (предмет + допы)
-                        calcNewSubjectTotalPrice()
-                        console.log('В разработке')
                     } else if (currentSubject.value.costEstimation === 'perUnit') {
-
+                        currentSubject.value.subjectPrice = +(currentSubject.value.price * currentSubject.value.productQuantity).toFixed(0)
                     } else if (currentSubject.value.costEstimation === 'per100gram') {
                         console.log('В разработке')
                     }
                 }
+                calcNewSubjectTotalPrice()
             }
             // ставим Current Subject gramPerPErson
             const setGramPerPerson = (gram) => {
@@ -662,16 +676,27 @@
                         // Формула рассчета цены currentDealSubject 
                         currentDealSubject.value.subjectPrice = +((currentDealSubject.value.price / 1000) * (currentDealSubject.value.personQuantity * currentDealSubject.value.gramPerPerson) * currentDealSubject.value.productQuantity * ((100 - currentDealSubject.value.subjectDiscount) / 100)).toFixed(0)
                         // Считаем общую totalSubjectPrice по предмету (предмет + допы)
-                        calcSubjectTotalPrice()
+                        // calcSubjectTotalPrice()
                         // update();
                     } else if (currentDealSubject.value.costEstimation === 'perUnit') {
                         currentDealSubject.value.subjectPrice = +(currentDealSubject.value.price * currentDealSubject.value.productQuantity * ((100 - currentDealSubject.value.subjectDiscount) / 100)).toFixed(2)
-                        calcSubjectTotalPrice()
+                        // calcSubjectTotalPrice()
                         // update();
                     } else if (currentDealSubject.value.costEstimation === 'per100gram') {
                         console.log('В разработке')
                     }
+                } else if (dealData.value.dealType === 'buy') {
+                    currentDealSubject.value.gramPerPerson = gram;
+                    if(currentDealSubject.value.costEstimation === 'perKilogram') {
+                        currentDealSubject.value.subjectPrice = +((currentDealSubject.value.price / 1000) * currentDealSubject.value.gramPerPerson).toFixed(0)
+                    } else if (currentDealSubject.value.costEstimation === 'perUnit') {
+                        currentDealSubject.value.subjectPrice = +(currentDealSubject.value.price * currentDealSubject.value.productQuantity).toFixed(0)
+                    } else if (currentDealSubject.value.costEstimation === 'per100gram') {
+                        console.log('В разработке')
+                    }
                 }
+                // Считаем общую totalSubjectPrice по предмету (предмет + допы)
+                calcSubjectTotalPrice()
             }
             // ставим NEW Subject gramPerPerson
             const setNewGramPerPerson = (gram) => {
@@ -681,10 +706,10 @@
                         // Формула рассчета цены currentDealSubject 
                         currentSubject.value.subjectPrice = +((currentSubject.value.price / 1000) * (currentSubject.value.personQuantity * currentSubject.value.gramPerPerson) * currentSubject.value.productQuantity * ((100 - currentSubject.value.subjectDiscount) / 100)).toFixed(0)
                         // Считаем общую totalSubjectPrice по предмету (предмет + допы)
-                        calcNewSubjectTotalPrice()
+                        // calcNewSubjectTotalPrice()
                     } else if (currentSubject.value.costEstimation === 'perUnit') {
                         currentSubject.value.subjectPrice = +(currentSubject.value.price * currentSubject.value.productQuantity * ((100 - currentSubject.value.subjectDiscount) / 100)).toFixed(0)
-                        calcNewSubjectTotalPrice()
+                        // calcNewSubjectTotalPrice()
                     } else if (currentSubject.value.costEstimation === 'per100gram') {
                         console.log('В разработке')
                     }
@@ -692,14 +717,16 @@
                     currentSubject.value.gramPerPerson = gram;
                     if (currentSubject.value.costEstimation === 'perKilogram') {
                         currentSubject.value.subjectPrice = +((currentSubject.value.price / 1000) * currentSubject.value.gramPerPerson).toFixed(0)
-                        calcNewSubjectTotalPrice()
+                        // calcNewSubjectTotalPrice()
                     } else if (currentSubject.value.costEstimation === 'perUnit') {
                         currentSubject.value.subjectPrice = +(currentSubject.value.price * currentSubject.value.productQuantity).toFixed(0)
-                        calcNewSubjectTotalPrice()
+                        // calcNewSubjectTotalPrice()
                     } else if (currentSubject.value.costEstimation === 'per100gram') {
                         console.log('В разработке')
                     }
                 }
+                // Считаем общую totalSubjectPrice по предмету (предмет + допы)
+                calcNewSubjectTotalPrice()
             }
             // ставим Current Subject QUANTITY
             const setSubjectQty = (qty) => {
@@ -708,21 +735,32 @@
                     if(currentDealSubject.value.costEstimation === 'perKilogram') {
                         // Формула рассчета цены currentDealSubject 
                         currentDealSubject.value.subjectPrice = +((currentDealSubject.value.price / 1000) * (currentDealSubject.value.personQuantity * currentDealSubject.value.gramPerPerson) * currentDealSubject.value.productQuantity * ((100 - currentDealSubject.value.subjectDiscount) / 100)).toFixed(0)
-                        // Считаем общую totalSubjectPrice по предмету (предмет + допы)
-                        setCountQtyButtonColor(qty)
-                        calcSubjectTotalPrice()
+                        // Считаем общую totalSubjectPrice по предмету (предмет + допы) и цвет кнопок меняем пол условию
+                        // setCountQtyButtonColor(qty)
+                        // calcSubjectTotalPrice()
                         // update();
                     } else if (currentDealSubject.value.costEstimation === 'perUnit') {
                         currentDealSubject.value.subjectPrice = +(currentDealSubject.value.price * currentDealSubject.value.productQuantity * ((100 - currentDealSubject.value.subjectDiscount) / 100)).toFixed(0)
-                        setCountQtyButtonColor(qty)
-                        calcSubjectTotalPrice()
+                        // setCountQtyButtonColor(qty)
+                        // calcSubjectTotalPrice()
                         // update();
                     } else if (currentDealSubject.value.costEstimation === 'per100gram') {
                         console.log('В разработке')
                     }
                 } else if (dealData.value.dealType === 'buy') {
-                    console.log('В разработке')
+                    currentDealSubject.value.productQuantity = qty;
+                    if(currentDealSubject.value.costEstimation === 'perKilogram') {
+                        // Формула рассчета цены currentDealSubject
+                        currentDealSubject.value.subjectPrice = +((currentDealSubject.value.price / 1000) * currentDealSubject.value.gramPerPerson).toFixed(0)
+                    } else if (currentDealSubject.value.costEstimation === 'perUnit') {
+                        currentDealSubject.value.subjectPrice = +(currentDealSubject.value.price * currentDealSubject.value.productQuantity).toFixed(2)
+                    } else if (currentDealSubject.value.costEstimation === 'per100gram') {
+                        console.log('В разработке')
+                    }
                 }
+                // Считаем общую totalSubjectPrice по предмету (предмет + допы) и цвет кнопок меняем пол условию
+                setCountQtyButtonColor(qty)
+                calcSubjectTotalPrice()
             }
             // ставим New Subject QUANTITY
             const setNewSubjectQty = (qty) => {
@@ -732,16 +770,26 @@
                         // Формула рассчета цены currentDealSubject 
                         currentSubject.value.subjectPrice = +((currentSubject.value.price / 1000) * (currentSubject.value.personQuantity * currentSubject.value.gramPerPerson) * currentSubject.value.productQuantity * ((100 - currentSubject.value.subjectDiscount) / 100)).toFixed(0)
                         // Считаем общую totalSubjectPrice по предмету (предмет + допы)
-                        calcNewSubjectTotalPrice()
+                        // calcNewSubjectTotalPrice()
                     } else if(currentSubject.value.costEstimation === 'perUnit') {
                         currentSubject.value.subjectPrice = +(currentSubject.value.price * currentSubject.value.productQuantity * ((100 - currentSubject.value.subjectDiscount) / 100)).toFixed(0)
-                        calcNewSubjectTotalPrice()
+                        // calcNewSubjectTotalPrice()
                     } else if (currentSubject.value.costEstimation === 'per100gram') {
                         console.log('В разработке')
                     }
                 } else if (dealData.value.dealType === 'buy') {
-                    console.log('В разработке')
+                    currentSubject.value.productQuantity = qty;
+                    if(currentSubject.value.costEstimation === 'perKilogram') {
+                        // Формула рассчета цены currentDealSubject 
+                        currentSubject.value.subjectPrice = +((currentSubject.value.price / 1000) * currentSubject.value.gramPerPerson).toFixed(0)
+                    } else if (currentSubject.value.costEstimation === 'perUnit') {
+                        currentSubject.value.subjectPrice = +(currentSubject.value.price * currentSubject.value.productQuantity).toFixed(0)
+                    } else if (currentSubject.value.costEstimation === 'per100gram') {
+                        console.log('В разработке')
+                    }
                 }
+                // Считаем общую totalSubjectPrice по предмету (предмет + допы)
+                calcNewSubjectTotalPrice()
             }
             // count SUBJECT QTY BUTTON COLOR
             const countQtyButtonColor = ref('primary');
@@ -768,6 +816,7 @@
                         // Не используется
                     }
                 } else if(dealData.value.dealType === 'buy') {
+                    // Если не понадобится - удалить
                     console.log('В разработке')
                 }
             }
@@ -786,6 +835,7 @@
                         // Не используется
                     }
                 } else if(dealData.value.dealType === 'buy') {
+                    // Если не понадобится - удалить
                     console.log('В разработке')
                 } 
             }
@@ -806,7 +856,6 @@
                         // Формула рассчета цены currentDealSubject 
                         currentDealSubject.value.subjectPrice = +((currentDealSubject.value.price / 1000) * (currentDealSubject.value.personQuantity * currentDealSubject.value.gramPerPerson) * currentDealSubject.value.productQuantity * ((100 - currentDealSubject.value.subjectDiscount) / 100)).toFixed(0)
                         // Считаем общую totalSubjectPrice по предмету (предмет + допы)
-
                         calcSubjectTotalPrice()
                         // update();
                     } else if (currentDealSubject.value.costEstimation === 'perUnit') {
@@ -816,6 +865,9 @@
                     } else if (currentDealSubject.value.costEstimation === 'per100gram') {
                         console.log('В разработке')
                     }
+                } else if (dealData.value.dealType === 'buy') {
+                    // Если не понадобится - удалить
+                    console.log('В разработке')
                 }
             }
             // Ставим NEW subject discount
@@ -833,7 +885,8 @@
                     } else if (currentSubject.value.costEstimation === 'per100gram') {
                         console.log('В разработке')
                     }
-                } else if(dealData.value.dealType === 'but') {
+                } else if(dealData.value.dealType === 'buy') {
+                    // Если не понадобится - удалить
                     console.log('В разработке')
                 }
             }
@@ -920,10 +973,10 @@
                     return 0
                 }
             }
-            // функция калькуляции общей стоимости дела (с учетом доставки)
+            // функция калькуляции общей стоимости дела
             const calcTotalDealPrice = (sumSubjectPrice) => {
                 if(dealData.value.dealType === 'sale') {
-                    console.log(sumSubjectPrice)
+                    // console.log(sumSubjectPrice)
                     dealData.value.totalDealPrice = sumSubjectPrice + dealData.value.shipping.shippingPrice
                     // update()
                 } else if (dealData.value.dealType === 'buy') {

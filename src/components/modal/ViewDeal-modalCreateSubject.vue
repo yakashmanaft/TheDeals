@@ -143,7 +143,7 @@
                             </ion-text>
                         </ion-row>
                     </ion-grid>
-                    <!--  -->
+                    <!-- PER KILOGRAM -->
                     <ion-grid v-if="subjectData.costEstimation === 'perKilogram'" class="ion-no-padding">
                         <!-- Цена за 1 кг -->
                         <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
@@ -221,10 +221,11 @@
                             </ion-range>
                         </ion-row>
                     </ion-grid>
-                    <!--  -->
+                    <!-- PER 100 GRAM -->
                     <ion-grid v-if="subjectData.costEstimation === 'per100gram'" class="ion-no-padding">
                         <ion-row>
                             Цена за 100 грамм.: {{ subjectData.price }}
+                            В разработке...
                         </ion-row>
                         <!-- <ion-row>
                             Количество гостей (чел.): {{ subjectData.personQuantity }}
@@ -239,7 +240,7 @@
                             Скидка на предмет: (%): {{ subjectData.subjectDiscount }}
                         </ion-row> -->
                     </ion-grid>
-                    <!--  -->
+                    <!-- PER UNIT -->
                     <ion-grid v-if="subjectData.costEstimation === 'perUnit'" class="ion-no-padding">
                         <!-- Цена за 1 шт -->
                         <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
@@ -400,12 +401,12 @@
                             </ion-text>
                         </ion-row>
                     </ion-grid>
-                    <!--  -->
+                    <!-- PER KILOGRAM -->
                     <ion-grid v-if="subjectData.costEstimation === 'perKilogram'" class="ion-no-padding">
                         <!-- Цена за 1 кг -->
                         <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
                             <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                                1 кг. ({{ systemCurrency.name }})
+                                Цена за 1 кг. ({{ systemCurrency.name }})
                             </ion-button>
                             <!--  -->
                             <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
@@ -424,16 +425,44 @@
                         </ion-row>
 
                     </ion-grid>
-                    <!--  -->
+                    <!-- PER 100 GRAM -->
                     <ion-grid v-if="subjectData.costEstimation === 'per100gram'" class="ion-no-padding">
-                        В разработке...
                         <ion-row>
                             Цена за 100 грамм.: {{ subjectData.price }}
                         </ion-row>
+                        В разработке...
                     </ion-grid>
-                    <!--  -->
+                    <!-- PER UNIT -->
                     <ion-grid v-if="subjectData.costEstimation === 'perUnit'" class="ion-no-padding">
-
+                        <!-- Цена за 1 шт -->
+                        <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                1 шт. ({{ systemCurrency.name }})
+                            </ion-button>
+                            <!--  -->
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                <ion-input type="number" v-model="subjectPrice" inputmode="decimal" :value="subjectData.price" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
+                            </ion-button>
+                        </ion-row>
+                        <!-- Кол-во предмета -->
+                        <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                Количество предмета, шт
+                            </ion-button>
+                            <!--  -->
+                            <div>
+                                <ion-grid class="ion-no-padding">
+                                    <ion-row class="ion-align-items-center">
+                                        <!-- Subtract -->
+                                        <ion-icon class="countQty_button" @click="changeQty('sub')" :icon="removeCircleOutline" :color="countQtyButtonColor"></ion-icon>
+                                        <!-- Show data -->
+                                        <ion-text class="ion-padding-horizontal countQty_count" color="primary">{{ subjectData.productQuantity }}</ion-text>
+                                        <!-- Add -->
+                                        <ion-icon class="countQty_button" @click="changeQty('add')" color="primary" :icon="addCircleOutline"></ion-icon>
+                                    </ion-row>
+                                </ion-grid>
+                            </div>
+                        </ion-row>
                     </ion-grid>
 
 
@@ -606,14 +635,14 @@
                 subjectData.value.selectedProduct = subject.value;
                 if (currentDealType.value === 'sale') {
                     subjectData.value.price = subject.price;
-                } else {
+                    subjectPrice.value = subject.price;
+                } else if(currentDealType.value === 'buy') {
                     subjectData.value.price = 0
+                    subjectPrice.value = 0
                 }
                 subjectData.value.costEstimation = subject.costEstimation;
                 //
                 searchSubjectMenu.value = false
-                //
-                subjectPrice.value = subject.price;
                 //
                 subjectQty.value = 1
                 personQty.value = 1
