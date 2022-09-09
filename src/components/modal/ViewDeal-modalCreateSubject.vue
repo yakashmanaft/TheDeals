@@ -15,9 +15,24 @@
         <ion-grid class="ion-no-padding ion-padding-horizontal" >
             <div class="border-bottom">
                 <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap ion-margin-top">
-                    <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                    <!-- <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
                         Итого по предмету:
-                    </ion-button>
+                    </ion-button> -->
+                    <div style="display: flex; flex-direction: column">
+                        <ion-text color="medium">
+                            Итого по предмету
+                        </ion-text>
+                        <div style="font-size: 0.8rem" v-if="currentDealType === 'sale' && (subjectData.additionalAttributes.length !== 0 || subjectData.subjectDiscount > 0)" >
+                            <ion-text>С учетом:</ion-text>
+                            <ion-text v-if="subjectData.additionalAttributes.length !== 0" color="primary" style="text-decoration: underline;" >
+                                допов
+                            </ion-text>
+                            <ion-text v-if="subjectData.subjectDiscount > 0" color="primary" style="text-decoration: underline;">
+                                скидки
+                            </ion-text>
+                        </div>
+                    </div>
+                    <!--  -->
                     <div>
                         <ion-button  color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
                             <ion-text style="font-size: 32px; color: black; font-weight: bold">{{subjectData.totalSubjectPrice}}</ion-text>

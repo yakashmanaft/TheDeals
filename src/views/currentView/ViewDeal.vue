@@ -329,6 +329,11 @@
                     
                     <!-- Итог предметов в режиме sale -->
                     <div v-if="currentDeal.dealType === 'sale'">
+                        <!-- ЕСЛИ ПРЕДМЕТОВ НЕТ -->
+                        <ion-list v-if="currentDeal.dealsList.length === 0" style="font-size: 0.8rem" class="border-bottom ion-padding-bottom ion-margin-bottom">
+                            Нет предметов в деле
+                        </ion-list>
+                        <!-- ЕСЛИ ПРЕДМЕТЫ ЕСТЬ -->
                         <ion-list v-for="item in currentDeal.dealsList" style="font-size: 0.8rem" class="border-bottom ion-padding-bottom ion-margin-bottom">
                             <ion-grid class="ion-no-padding">
     
@@ -376,6 +381,11 @@
                     
                     <!-- Итог предметов в режиме buy -->
                     <div v-if="currentDeal.dealType === 'buy'">
+                        <!-- ЕСЛИ ПРЕДМЕТОВ НЕТ -->
+                        <ion-list v-if="currentDeal.dealsList.length === 0" style="font-size: 0.8rem" class="border-bottom ion-padding-bottom ion-margin-bottom">
+                            Нет предметов в деле
+                        </ion-list>
+                        <!-- ЕСЛИ ПРЕДМЕТЫ ЕСТЬ -->
                         <ion-list v-for="item in currentDeal.dealsList" style="font-size: 0.8rem" class="border-bottom ion-padding-bottom ion-margin-bottom">
                             <ion-grid class="ion-no-padding">
 
@@ -398,7 +408,7 @@
                                     В разработке
                                 </ion-row >
 
-                                <!--  -->
+                                <!-- Указатель типа расчета цены -->
                                 <ion-row class="ion-justify-content-between ion-align-items-center">
                                     <ion-text color="medium" v-if="item.costEstimation === 'perKilogram' || item.costEstimation === 'per100gram'">Расчет цены по весу</ion-text>
                                     <ion-text color="medium" v-if="item.costEstimation === 'perUnit'">Расчет цены по единицам</ion-text>
@@ -417,13 +427,14 @@
                         </ion-row>
 
                         <!-- Доставка -->
+                        <!-- SALE -->
                         <div v-if="currentDeal.dealType === 'sale'">
                             <ion-row v-if="currentDeal.shipping.typeOfShipping === 'shipping-delivery'" class="ion-margin-top ion-justify-content-between ion-align-items-center">
                                 <ion-text>Доставка: </ion-text>
                                 <ion-text>{{ (currentDeal.shipping.shippingPrice).toFixed(2) }} {{ currency }}</ion-text>
                             </ion-row>
                         </div>
-                        <!--  -->
+                        <!-- BUY -->
                         <div v-if="currentDeal.dealType === 'buy'">
                             <ion-row v-if="currentDeal.shipping.typeOfShipping === 'shipping-pickup'" class="ion-margin-top ion-justify-content-between ion-align-items-center">
                                 <ion-text>Самовывоз: </ion-text>
@@ -445,7 +456,7 @@
                         <!-- Оплачено -->
                         <ion-row class="ion-margin-top ion-justify-content-between ion-align-items-center">
                             <ion-text style="font-weight: bold">Оплачено: </ion-text>
-                            <ion-text>{{ (+currentDeal.dealPaid).toFixed(2) }} {{ currency }}</ion-text>
+                            <ion-text>{{ (currentDeal.dealPaid).toFixed(2) }} {{ currency }}</ion-text>
                         </ion-row>
 
                         <!-- Задолженность -->
@@ -467,9 +478,11 @@
                         @closeModal="closeDealPaidMenu"
                     />
                 </ion-item-group>
+                
                 <br>
                 {{currentDeal}}
                 <br>
+
                 <!-- ========================== Кнопка удалить дело =================================== -->
                 <!-- Не показываем в режиме edit -->
                 <ion-button @click="setOpen(true)" fill="clear" color="danger">Удалить дело</ion-button>
@@ -854,21 +867,30 @@
             }
             // Переводчик названий типов доставки
             const translateShippingType = (value) => {
-                if(currentDeal.value.dealType === 'sale') {
+                if(value) {
                     if(value === '') {
                         return 'Не выбрано'
                     } else {
                         return translateValue(value, shippingTypeList.value)
                     }
-                }  else if (currentDeal.value.dealType === 'buy') {
-                    if(value === '') {
-                        return 'Не выбрано'
-                    } else {
-                        return translateValue(value, shippingTypeList.value)
-                    }
+                } else {
+                    return 'Не выбрано'
                 }
+                // if(currentDeal.value.dealType === 'sale') {
+                //     if(value === '') {
+                //         return 'Не выбрано'
+                //     } else {
+                //         return translateValue(value, shippingTypeList.value)
+                //     }
+                // }  else if (currentDeal.value.dealType === 'buy') {
+                //     if(value === '') {
+                //         return 'Не выбрано'
+                //     } else {
+                //         return translateValue(value, shippingTypeList.value)
+                //     }
+                // }
             }
-            // Переводчик названий предметов заказа
+            // Переводчик названий предметов дела
             const translateSelectedProduct = (value) => {
                 if(currentDeal.value.dealType === 'sale') {
                     return translateValue(value, store.state.dealSaleSubjectArray)
@@ -1080,7 +1102,7 @@
                         // Формула рассчета цены currentDealSubject 
                         currentSubject.value.subjectPrice = +((currentSubject.value.price / 1000) * currentSubject.value.gramPerPerson).toFixed(2)
                     } else if (currentSubject.value.costEstimation === 'perUnit') {
-                        currentSubject.value.subjectPrice = (currentSubject.value.price * currentSubject.value.productQuantity).toFixed(2)
+                        currentSubject.value.subjectPrice = +(currentSubject.value.price * currentSubject.value.productQuantity).toFixed(2)
                     } else if (currentSubject.value.costEstimation === 'per100gram') {
                         console.log('В разработке')
                     }
@@ -1281,18 +1303,20 @@
                     return note
                 }
             }
-            // считаем вес торта
+            // считаем для свода данных ИТОГО
+            // вес при расчете за КГ в режиме sale
             const culcSubjectWeight = (personQty, portionWeight) => {
                 return (personQty * portionWeight / 1000).toFixed(3)
             }
-            // считаем вес при закупках
+            // вес при расчете за КГ в режиме buy
             const culcBuySubjectWeight = (weight) => {
                 // Переводим в килограммы
-                return (weight / 1000)
+                return (weight / 1000).toFixed(3)
             }
 
             // считаем задолженность по делу
             const culcDealDeabt = (totalDealPrice, dealPaid) => {
+                // Пока так
                 return totalDealPrice - dealPaid
             } 
             // управление модалкой deal paid

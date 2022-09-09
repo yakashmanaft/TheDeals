@@ -20,16 +20,30 @@
             <br>
             <!-- page content -->
             <!-- No data -->
-            <div v-if="(!dataLoaded || userSettings.length === 0) && !spinner">
+            <div v-if="(!dataLoaded || userSettings.length === 0) && !spinner" class="ion-margin-top">
                 <!-- Если !data -->
                 <!-- Data is not available -->
+                <br>
+                Данные не загружены
             </div>
 
             <!-- Data -->
             <div v-if="dataLoaded && userSettings.length !== 0" class="ion-margin-top">
-                {{userSettings}}
-                <!-- Продуктовый прайс -->
-
+                <!--  -->
+                <ion-grid class="ion-no-padding">
+                    <ion-row>
+                        id: {{ userSettings.id }}
+                    </ion-row>
+                    <ion-row>
+                        uid: {{ userSettings.uid }}
+                    </ion-row>
+                    <ion-row>
+                        Зарегистрирован: {{ userSettings.created_at }}
+                    </ion-row>
+                    <ion-row>
+                        {{ userSettings.email }}
+                    </ion-row>
+                </ion-grid>
             </div>
 
         </ion-content>
@@ -118,7 +132,7 @@
             // Page title
             const pageTitle = router.currentRoute._value.meta.translation;
             //
-            const userSettings = ref(store.state.userSettings)
+            const userSettings = ref(store.state.userSettings[0])
             //
             const spinner = ref(null)
             const dataLoaded = ref(null)
@@ -126,7 +140,7 @@
             spinner.value = true;
             onMounted( async() => {
                 await store.methods.getUserSettingsfromDB();
-                userSettings.value = store.state.userSettings
+                userSettings.value = store.state.userSettings[0]
                 spinner.value = false;
                 dataLoaded.value = true;
                 // console.log(userSettings.value[0].id)
