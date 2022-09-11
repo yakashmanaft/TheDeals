@@ -296,7 +296,7 @@
                         Нет предметов в деле
                     </ion-list>
                     <!-- ЕСЛИ ПРЕДМЕТОВ ЕСТЬ -->
-                    <ion-list v-for="item in dealData.dealsList" style="font-size: 0.8rem" class="border-bottom ion-padding-bottom ion-margin-bottom">
+                    <ion-list v-for="item in dealData.dealsList" :key="item.id" style="font-size: 0.8rem" class="border-bottom ion-padding-bottom ion-margin-bottom">
                         <ion-grid class="ion-no-padding">
 
                             <!-- perUnit -->
@@ -327,7 +327,7 @@
                         </ion-grid>
                         <!-- Атрибуты у предметов дела пока есть только в режиме sale -->
                         <div v-if="item.additionalAttributes.length !== 0" class="ion-margin-start">
-                            <ion-grid v-for="attribute in item.additionalAttributes" class="ion-no-padding ion-margin-top">
+                            <ion-grid v-for="attribute in item.additionalAttributes" :key="attribute.id" class="ion-no-padding ion-margin-top">
                                 <ion-row class="ion-justify-content-between ion-align-items-center">
                                     <ion-text>{{ attribute.name }}</ion-text>
                                     <ion-text>{{ (attribute.qty).toFixed(2) }} * {{ (attribute.price).toFixed(2) }} = {{ (attribute.totalPrice).toFixed(2) }}</ion-text>
@@ -348,7 +348,7 @@
                         Нет предметов в деле
                     </ion-list>
                     <!-- ЕСЛИ ПРЕДМЕТОВ ЕСТЬ -->
-                    <ion-list v-for="item in dealData.dealsList" style="font-size: 0.8rem" class="border-bottom ion-padding-bottom ion-margin-bottom">
+                    <ion-list v-for="item in dealData.dealsList" :key="item.id" style="font-size: 0.8rem" class="border-bottom ion-padding-bottom ion-margin-bottom">
                          <ion-grid class="ion-no-padding">
 
                             <!-- PerUnit -->
@@ -439,6 +439,8 @@
                     :is-open="isDealPaidMenuOpened"
                     @didDismiss="isDealPaidMenuOpened = false"
                     @closeModal="closeDealPaidMenu"
+                    :currentDeal="dealData"
+                    @getAmountValue="setAmountValue"
                 />
             </ion-item-group>
 
@@ -1214,9 +1216,21 @@
                 // Пока так
                 return totalDealPrice - dealPaid
             }
+            // управляем оплатой по задолженностям (при изменении сразу обновляется)
+            const setAmountValue = (amount) => {
+                if (dealData.value.dealPaid === 0){
+                    dealData.value.dealPaid = +amount
+                } else if (currentDeal.value.dealPaid !== 0) {
+                    dealData.value.dealPaid += +amount
+                }
+                culcDealDeabt(dealData.value.totalDealPrice, dealData.value.dealPaid)
+                closeDealPaidMenu()
+                // вопрос с обнулением значения amountValue при закрытии модалки DealPaidMenu
+                
+            }
 
             return {
-                currency, dealContact, dealContactID , searchContactMenu, choose, isCalendarOpened, closeModalCalendar, updateExecutionDate, datepicker, myContactsArray, searchDealContact, searchedContacts, dealTypes, addCircleOutline, closeCircleOutline, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, openDeleteSubjectModal, subjectToDelete, deleteDealSubjectButtons, addNewSubject, deleteSubject, dealData, currentDealSubject, isViewDealSubjectOpened, openCurrentDealSubject, checkRentAttr, setColorByDealType, setIconByDealType, translateDealSubjectRecipe, userRecipeArray, currentDealType, isAttributesMenuOpened, setNewSubjectPrice, calcNewSubjectTotalPrice, sumAttributesPriceValue, setSumAttributesPriceValue, setSubjectPrice, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, calcSubjectTotalPrice, setNewSubjectQty, setPersonQty, setNewPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, setChipColor, shippingTypeList, dealShippingType, shippingPrice, shippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, calcTotalDealPrice, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, translateSelectedProduct, culcSubjectWeight, culcBuySubjectWeight, culcDealDeabt
+                currency, dealContact, dealContactID , searchContactMenu, choose, isCalendarOpened, closeModalCalendar, updateExecutionDate, datepicker, myContactsArray, searchDealContact, searchedContacts, dealTypes, addCircleOutline, closeCircleOutline, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, openDeleteSubjectModal, subjectToDelete, deleteDealSubjectButtons, addNewSubject, deleteSubject, dealData, currentDealSubject, isViewDealSubjectOpened, openCurrentDealSubject, checkRentAttr, setColorByDealType, setIconByDealType, translateDealSubjectRecipe, userRecipeArray, currentDealType, isAttributesMenuOpened, setNewSubjectPrice, calcNewSubjectTotalPrice, sumAttributesPriceValue, setSumAttributesPriceValue, setSubjectPrice, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, calcSubjectTotalPrice, setNewSubjectQty, setPersonQty, setNewPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, setChipColor, shippingTypeList, dealShippingType, shippingPrice, shippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, calcTotalDealPrice, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, translateSelectedProduct, culcSubjectWeight, culcBuySubjectWeight, culcDealDeabt, setAmountValue
             }
         }
     })

@@ -334,7 +334,7 @@
                             Нет предметов в деле
                         </ion-list>
                         <!-- ЕСЛИ ПРЕДМЕТЫ ЕСТЬ -->
-                        <ion-list v-for="item in currentDeal.dealsList" style="font-size: 0.8rem" class="border-bottom ion-padding-bottom ion-margin-bottom">
+                        <ion-list v-for="item in currentDeal.dealsList" :key="item.id" style="font-size: 0.8rem" class="border-bottom ion-padding-bottom ion-margin-bottom">
                             <ion-grid class="ion-no-padding">
     
                                 <!-- perUnit -->
@@ -365,7 +365,7 @@
                             </ion-grid>
                             <!-- Атрибуты у предметов дела пока есть только в режиме sale -->
                             <div v-if="item.additionalAttributes.length !== 0" class="ion-margin-start">
-                                <ion-grid v-for="attribute in item.additionalAttributes" class="ion-no-padding ion-margin-top" >
+                                <ion-grid v-for="attribute in item.additionalAttributes" :key="attribute.id" class="ion-no-padding ion-margin-top" >
                                     <ion-row class="ion-justify-content-between ion-align-items-center">
                                         <ion-text>{{attribute.name}}</ion-text>
                                         <ion-text>{{ (attribute.qty).toFixed(2) }} * {{ (attribute.price).toFixed(2) }} = {{ (attribute.totalPrice).toFixed(2) }} </ion-text>
@@ -386,7 +386,7 @@
                             Нет предметов в деле
                         </ion-list>
                         <!-- ЕСЛИ ПРЕДМЕТЫ ЕСТЬ -->
-                        <ion-list v-for="item in currentDeal.dealsList" style="font-size: 0.8rem" class="border-bottom ion-padding-bottom ion-margin-bottom">
+                        <ion-list v-for="item in currentDeal.dealsList" :key="item.id" style="font-size: 0.8rem" class="border-bottom ion-padding-bottom ion-margin-bottom">
                             <ion-grid class="ion-no-padding">
 
                                 <!-- perUnit -->
@@ -462,12 +462,12 @@
                         <!-- Задолженность -->
                         <ion-row class="ion-margin-top ion-justify-content-between ion-align-items-center">
                             <ion-text style="font-weight: bold">Задолженность: </ion-text>
-                            <ion-text>{{ (culcDealDeabt(currentDeal.totalDealPrice, currentDeal.dealPaid)).toFixed(2) }} {{ currency }}</ion-text>
+                            <ion-text>{{ (culcDealDebt(currentDeal.totalDealPrice, currentDeal.dealPaid)).toFixed(2) }} {{ currency }}</ion-text>
                         </ion-row>
                     </ion-grid>
                     
                     <!-- Кнопка внести средства -->
-                    <ion-button @click="openDealPaidMenu" expand="block" class="ion-margin-top">
+                    <ion-button v-if="debt > 0" @click="openDealPaidMenu" expand="block" class="ion-margin-top">
                         Внести
                     </ion-button>
 
@@ -476,6 +476,8 @@
                         :is-open="isDealPaidMenuOpened"
                         @didDismiss="isDealPaidMenuOpened = false"
                         @closeModal="closeDealPaidMenu"
+                        :currentDeal="currentDeal"
+                        @getAmountValue="setAmountValue"
                     />
                 </ion-item-group>
                 
@@ -1315,21 +1317,48 @@
             }
 
             // считаем задолженность по делу
-            const culcDealDeabt = (totalDealPrice, dealPaid) => {
+            const debt = ref()
+            //
+            const culcDealDebt = (totalDealPrice, dealPaid) => {
                 // Пока так
-                return totalDealPrice - dealPaid
+                debt.value = totalDealPrice - dealPaid
+                return debt.value
             } 
             // управление модалкой deal paid
             const isDealPaidMenuOpened = ref(false)
+            //
             const openDealPaidMenu = () => {
                 isDealPaidMenuOpened.value = true
             }
             const closeDealPaidMenu = () => {
                 isDealPaidMenuOpened.value = false
             }
+            // управляем внесении оплаты по задолженностям (при изменении сразу обновляется)
+            const setAmountValue = (amount) => {
+                if (currentDeal.value.dealPaid === 0){
+                    currentDeal.value.dealPaid = +amount
+                } else if (currentDeal.value.dealPaid !== 0) {
+                    currentDeal.value.dealPaid += +amount
+                }
+                culcDealDebt(currentDeal.value.totalDealPrice, currentDeal.value.dealPaid)
+                if (debt.value < 0) {
+                    alert('Получается переплата... Верно?')
+                } else if(debt.value === 0) {
+                    // временно
+                    alert('предлагаем сменить статус на Завершено')
+                    // Если долгов по возврату доп атрибутов нет, то перемещаем в статус ЗАВЕРШЕН
+                    // Если есть - оставляем в текущем статусе
+                    closeDealPaidMenu()
+                } else {
+                    alert(`Внесено ${amount} ${currency.value}`)
+                    closeDealPaidMenu()
+                }
+                // вопрос с обнулением значения amountValue при закрытии модалки DealPaidMenu
+                
+            }
 
             return {
-                currency, spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, translateDealSubjectRecipe, userRecipeArray, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, setPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setNewPersonQty, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, shippingTypeList, dealShippingType, shippingPrice, setProductNotePlaceholder, shippingAddress, editShippingAddress, toggleEditShippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, translateShippingType, translateSelectedProduct, culcSubjectWeight, culcDealDeabt, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, culcBuySubjectWeight
+                currency, spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, translateDealSubjectRecipe, userRecipeArray, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, setPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setNewPersonQty, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, shippingTypeList, dealShippingType, shippingPrice, setProductNotePlaceholder, shippingAddress, editShippingAddress, toggleEditShippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, translateShippingType, translateSelectedProduct, culcSubjectWeight, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, culcBuySubjectWeight, debt, setAmountValue
             }
         }
     })
