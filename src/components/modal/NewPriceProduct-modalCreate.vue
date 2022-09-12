@@ -281,6 +281,7 @@
             // console.log(newProductData.value.price)
             watch(newProductPrice, (price) => {
                 // console.log(price)
+                // newProductPrice.value = price
                 emit('getNewProductPrice', +price)
             })
             // так как изначально пустое - проще, чем во ViewPriceProduct - viewProduct

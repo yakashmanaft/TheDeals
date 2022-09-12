@@ -420,7 +420,7 @@
                         name: '',
                         price: 0,
                         totalPrice: 0,
-                        qty: 1,
+                        qty: 0,
                         rentType: '',
                         isReturned: false 
                     }
@@ -446,6 +446,8 @@
                     alert('My price: Вы не указали тип расчета')
                 } else if (blockToShow.value === 'attributes' && newProductData.rentType === '') {
                     alert('My price: Вы не указали тип расчета')
+                } else if (newProductData.qty === 0) {
+                    alert('My price: Вы не указали количество')
                 } else if (newProductData.price === '') {
                     alert('My price: Вы не указали стоимость')
                 } else if (blockToShow.value === 'products') {

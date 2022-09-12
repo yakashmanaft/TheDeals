@@ -425,6 +425,17 @@ const state = reactive({
       name: 'max',
       value: 30
     }
+  ],
+  // Для возвратных позиций по атрибутам к предмету дела
+  rentTypeInfo: [
+    {
+      name: 'Подлежит возврату',
+      value: ''
+    },
+    {
+      name: 'Возвращен',
+      value: 'true'
+    }
   ]
 });
 

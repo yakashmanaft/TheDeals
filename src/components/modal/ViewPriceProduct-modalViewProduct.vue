@@ -12,10 +12,22 @@
             {{productData}}
             <!-- Вариант типа выбранного блока -->
             <ion-item-group class="ion-margin-bottom">
-                <ion-chip color="primary" class="ion-no-margin ion-margin-bottom">
-                    <ion-icon :icon="setIconByBlockToShow(blockToShow)"></ion-icon>
-                    <ion-label>{{translateValue(blockToShow, priceChipList)}}</ion-label>
-                </ion-chip>
+                <ion-grid class="ion-no-padding">
+                    <ion-row class="ion-justify-content-between ion-align-items-center">
+                        <ion-chip color="primary" class="ion-no-margin">
+                            <ion-icon :icon="setIconByBlockToShow(blockToShow)"></ion-icon>
+                            <ion-label>{{translateValue(blockToShow, priceChipList)}}</ion-label>
+                        </ion-chip>
+                        <!--  -->
+                        <ion-button v-if="blockToShow === 'attributes' && productData.rentType === 'rent' && mode === 'sale'" color="primary" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                        <Select
+                            :data="rentTypeInfo" 
+                            :placeholder="productData.isReturned"
+                            @date-updated="(selected) => productData.isReturned = Boolean(selected.currentValue)"
+                        />
+                        </ion-button>
+                    </ion-row>
+                </ion-grid>
             </ion-item-group>
             <!-- ============================= Добавленный продукт ===================================== -->
             <ion-item-group class="border-bottom ion-padding-bottom">
@@ -135,10 +147,11 @@
     //
     export default defineComponent({
         name: 'ViewPriceProduct',
-        emits: ['getCostEstimation', 'getProductPrice', 'getProductQty', 'getRentType', 'closeModal'],
+        emits: ['getCostEstimation', 'getProductPrice', 'getProductQty', 'getRentType', 'closeModal', 'getIsReturned'],
         props: {
             productData: Object,
-            blockToShow: String
+            blockToShow: String,
+            mode: String
         },
         components: {
             IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonThumbnail, IonImg, Select, IonInput, IonChip, IonLabel, IonIcon
@@ -155,7 +168,6 @@
             const productQty = ref();
             const productTotalPrice = ref();
             const rentType = ref();
-            // console.log(rentType.value)
             //
             const priceEstimationType = ref(store.state.priceEstimataionType)
             const priceAttributeType = ref(store.state.priceAttributeType)
@@ -222,9 +234,19 @@
                 productQty.value = qty
                 return productQty.value
             } 
+            // данные по возвратной позиции для select
+            const rentTypeInfo = ref(store.state.rentTypeInfo);
+            //
+            const showIsReturned = ref(productData.isReturned);
+            //productData.isReturned
+            watch(showIsReturned, (isReturned) => {
+                console.log(isReturned)
+                console.log(productData.isReturned)
+                emit('getIsReturned', isReturned)
+            })
             
             return {
-                productData, priceEstimationType, priceAttributeType, priceCalcType, costEstimation, rentType, currency, productPrice, productQty, productTotalPrice, setIconByBlockToShow, translateValue, priceChipList, setNameByBlockToShow, changeQty, setProductQty, removeCircleOutline, addCircleOutline, countQtyButtonColor
+                productData, priceEstimationType, priceAttributeType, priceCalcType, costEstimation, rentType, currency, productPrice, productQty, productTotalPrice, setIconByBlockToShow, translateValue, priceChipList, setNameByBlockToShow, changeQty, setProductQty, removeCircleOutline, addCircleOutline, countQtyButtonColor, rentTypeInfo, showIsReturned
             }
         }
     })
