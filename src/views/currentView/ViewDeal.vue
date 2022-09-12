@@ -606,17 +606,21 @@
             watch (dealStatus, () => {
                 culcDealDebt(currentDeal.value.totalDealPrice, currentDeal.value.dealPaid)
                 if(debt.value > 0 && dealStatus.value === 'deal-complete') {
-                    dealStatus.value = 'deal-in-debt'
-                    alert(`VewDeal: Оплата неполная. Статус дела изменен на ДОЛГ`)
                     currentDeal.value.dealStatus = 'deal-in-debt'
-                } else if (debt.value === 0) {
+                    dealStatus.value = 'deal-in-debt'
+                    alert(`VewDeal: По делу имеется долг. Статус дела изменен на "ДОЛГ"`)
+                    update()
+                } else if (debt.value === 0 && dealStatus.value === 'deal-complete') {
                     if(currentDeal.value.dealType === 'sale') {
+                        // А если сумма полностью уплачено, но атрибуты не возвращены?
                         isAllAttrReturnedFunc()
+                        // в данном меню не будет никогда нуля в долге, меняется через кнопки ВНЕСТИ
                     } else if (currentDeal.value.dealType === 'buy') {
-                        alert('ViewDeal: статус дела изменен на Завершено')
+                        alert('ViewDeal: статус дела изменен на "Завершено"')
                     }
+                    update()
                 }
-                update()
+                // update()
             })
             // выдергиваем из массива нужный контакт
             const searchContactMenu = ref(false)
