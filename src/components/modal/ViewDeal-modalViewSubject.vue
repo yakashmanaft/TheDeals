@@ -687,7 +687,15 @@
             }
             //
             const setIsReturned = (isReturned) => {
-                currentSubjectAttribute.value.isReturned = isReturned
+                console.log(isReturned)
+                if(isReturned === 'true') {
+                    // console.log(true)
+                    currentSubjectAttribute.value.isReturned = true
+                } else if (isReturned === 'false') {
+                    // console.log(false)
+                    currentSubjectAttribute.value.isReturned = false
+                } 
+                // currentSubjectAttribute.value.isReturned = isReturned
                 emit('updateBD');
             }
             //

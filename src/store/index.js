@@ -430,11 +430,11 @@ const state = reactive({
   rentTypeInfo: [
     {
       name: 'Подлежит возврату',
-      value: ''
+      value: false
     },
     {
       name: 'Возвращен',
-      value: 'true'
+      value: true
     }
   ]
 });

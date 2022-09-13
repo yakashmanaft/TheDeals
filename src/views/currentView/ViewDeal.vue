@@ -69,6 +69,7 @@
                                     :placeholder="translateValue(currentDeal.dealStatus, dealStatusList)"
                                     @date-updated="(selected) => dealStatus = selected.currentValue"
                                 />
+                                <!-- :placeholder="translateValue(currentDeal.dealStatus, dealStatusList)" -->
                             </ion-chip>
                             <!-- Тип дела -->
                             <ion-chip :color="setColorByDealType(currentDeal.dealType)" outline="true">
@@ -603,24 +604,36 @@
             // храним значение dealStatus
             const dealStatus = ref(currentDeal.value.dealStatus);
             // следим за изменениями значения dealStatus у текущего дела и обновляем его в БД
-            watch (dealStatus, () => {
+            watch (dealStatus, (status) => {
                 culcDealDebt(currentDeal.value.totalDealPrice, currentDeal.value.dealPaid)
+                console.log(status)
+                console.log(dealStatus.value)
                 if(debt.value > 0 && dealStatus.value === 'deal-complete') {
-                    currentDeal.value.dealStatus = 'deal-in-debt'
-                    dealStatus.value = 'deal-in-debt'
-                    alert(`VewDeal: По делу имеется долг. Статус дела изменен на "ДОЛГ"`)
-                    update()
+                    // alert(`VewDeal: По делу имеется долг. Статус дела изменен на "ДОЛГ"`)
+                    if(confirm(`VewDeal: По делу имеется долг. Внести сумму задолженности или её часть?`) === true) {
+                        // Если хотим, чтобы открывалось меню Внесения средств
+                        openDealPaidMenu()
+                        // currentDeal.value.dealStatus = 'deal-in-debt'
+                        // dealStatus.value = 'deal-in-debt'
+                    } else {
+                        // Если нажали отмену, то ничего и не меняется
+                        alert(`Статус дела изменен на ДОЛГ`)
+                        currentDeal.value.dealStatus = 'deal-in-debt'
+                        dealStatus.value = 'deal-in-debt'
+                    }
+                    // return currentDeal.value.dealStatus
+                    // update()
                 } else if (debt.value === 0 && dealStatus.value === 'deal-complete') {
                     if(currentDeal.value.dealType === 'sale') {
-                        // А если сумма полностью уплачено, но атрибуты не возвращены?
+                        // А если сумма полностью уплачено, но атрибуты не возвращены - запускаем функцию
                         isAllAttrReturnedFunc()
                         // в данном меню не будет никогда нуля в долге, меняется через кнопки ВНЕСТИ
                     } else if (currentDeal.value.dealType === 'buy') {
                         alert('ViewDeal: статус дела изменен на "Завершено"')
                     }
-                    update()
+                    // update()
                 }
-                // update()
+                update()
             })
             // выдергиваем из массива нужный контакт
             const searchContactMenu = ref(false)
@@ -1379,8 +1392,8 @@
                         // закрываем dealPaid Menu
                         closeDealPaidMenu()
                     }
-                } else {
-                    alert(`Внесено ${amount} ${currency.value}`)
+                } else if(debt.value > 0){
+                    // Пр
                     closeDealPaidMenu()
                 }
                 // вопрос с обнулением значения amountValue при закрытии модалки DealPaidMenu
@@ -1410,7 +1423,7 @@
                         isAllAttrReturned.value = true
                         // alert(`ViewDeal: внесено ${amount} ${currency.value}`)
                         alert('ViewDeal: статус дела изменен на ЗАВЕРШЕН')
-                        dealStatus.value = 'deal-complete'
+                        // dealStatus.value = 'deal-complete'
                         currentDeal.value.dealStatus = 'deal-complete'
                     }
                 }

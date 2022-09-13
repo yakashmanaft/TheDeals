@@ -25,6 +25,9 @@
         setup(props, {emit}) {
             const selected = ref('');
             watch(selected, (currentValue) => {
+                // setTimeout(() => {
+
+                // }, 300)
                 emit('date-updated', {currentValue})
             })
             return {

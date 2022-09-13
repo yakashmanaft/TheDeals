@@ -106,7 +106,7 @@
                             <Select
                                 :data="priceAttributeType" 
                                 placeholder="Не указан"
-                                @date-updated="(selected) => newProductData.rentType = selected.currentValue"
+                                @date-updated="(selected) => rentType = selected.currentValue"
                             />
                         </ion-button>
 
@@ -174,7 +174,7 @@
     //
     export default defineComponent({
         name: 'CreatePriceProduct',
-        emits: ['blockToShowIsChanged', 'closeModal', 'addPriceProduct', 'getNewProductQty', 'getNewProductPrice'],
+        emits: ['blockToShowIsChanged', 'closeModal', 'addPriceProduct', 'getNewProductQty', 'getNewProductPrice', 'getRentType'],
         props: {
             newProductData: Object,
             blockToShow: String
@@ -284,11 +284,15 @@
                 // newProductPrice.value = price
                 emit('getNewProductPrice', +price)
             })
-            // так как изначально пустое - проще, чем во ViewPriceProduct - viewProduct
-            //newProductData.price
+            //
+            const rentType = ref()
+            watch(rentType, (type) => {
+                //console.log(type)
+                emit('getRentType', type)
+            })
 
             return {
-                helpOutline, dealSaleSubjectArray, subjectAttributeArray, showSelectedProduct, searchSelectedProduct, searchProductMenu, translateValue, searchedProduct, sortAlphabetically, searchDealSubjectFilter, chooseProduct, priceEstimationType, priceAttributeType, currency, showBlockName, priceChipList, setIconByBlockToShow, setNameByBlockToShow, changeQty, countQtyButtonColor, removeCircleOutline, addCircleOutline, setProductQty, newProductPrice
+                helpOutline, dealSaleSubjectArray, subjectAttributeArray, showSelectedProduct, searchSelectedProduct, searchProductMenu, translateValue, searchedProduct, sortAlphabetically, searchDealSubjectFilter, chooseProduct, priceEstimationType, priceAttributeType, currency, showBlockName, priceChipList, setIconByBlockToShow, setNameByBlockToShow, changeQty, countQtyButtonColor, removeCircleOutline, addCircleOutline, setProductQty, newProductPrice, rentType
             }
         }
     })

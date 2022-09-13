@@ -22,8 +22,8 @@
                         <ion-button v-if="blockToShow === 'attributes' && productData.rentType === 'rent' && mode === 'sale'" color="primary" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
                         <Select
                             :data="rentTypeInfo" 
-                            :placeholder="productData.isReturned"
-                            @date-updated="(selected) => productData.isReturned = Boolean(selected.currentValue)"
+                            :placeholder="translateValue(productData.isReturned, rentTypeInfo)"
+                            @date-updated="(selected) => showIsReturned = selected.currentValue"
                         />
                         </ion-button>
                     </ion-row>
@@ -76,7 +76,7 @@
                             <Select
                                 :data="priceAttributeType" 
                                 :placeholder="priceCalcType(productData.rentType)"
-                                @date-updated="(selected) => productData.rentType = selected.currentValue"
+                                @date-updated="(selected) => rentType = selected.currentValue"
                             />
                         </ion-button>
                     </ion-row>
@@ -208,7 +208,7 @@
                 }
             })
             watch(rentType, (type) => {
-                console.log(type)
+                // console.log(type)
                 emit('getRentType', type)
             })
             //
@@ -237,12 +237,10 @@
             // данные по возвратной позиции для select
             const rentTypeInfo = ref(store.state.rentTypeInfo);
             //
-            const showIsReturned = ref(productData.isReturned);
+            const showIsReturned = ref();
             //productData.isReturned
-            watch(showIsReturned, (isReturned) => {
-                console.log(isReturned)
-                console.log(productData.isReturned)
-                emit('getIsReturned', isReturned)
+            watch(showIsReturned, (value) => {
+                emit('getIsReturned', value)
             })
             
             return {

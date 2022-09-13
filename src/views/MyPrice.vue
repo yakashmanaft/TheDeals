@@ -32,6 +32,7 @@
             @getNewProductQty="setNewProductQty"
             @getNewProductPrice="setNewProductPrice"
             @addPriceProduct="addNewPriceProduct"
+            @getRentType="setNewProductAttributeRentType"
             :blockToShow="blockToShow"
             @blockToShowIsChanged="changeBlockToShow"
         />
@@ -399,7 +400,7 @@
                 totalPrice: 0,
                 qty: 1,
                 rentType: '',
-                isReturned: false 
+                isReturned: '' 
             })
             //
             const toggleNewPriceProductModal = () => {
@@ -422,7 +423,7 @@
                         totalPrice: 0,
                         qty: 0,
                         rentType: '',
-                        isReturned: false 
+                        isReturned: '' 
                     }
                 }
             }
@@ -546,8 +547,24 @@
                 }
             }
             //
+            const setNewProductAttributeRentType = (type) => {
+                console.log(type)
+                newPriceProductData.value.rentType = type
+                if(type === 'sale') {
+                    newPriceProductData.value.isReturned = ''
+                } else if (type === 'rent') {
+                    newPriceProductData.value.isReturned = false
+                }
+            }
+            //
             const setAttributeRentType = (type) => {
+                console.log(type)
                 currentProduct.value.rentType = type;
+                if(type === 'sale') {
+                    currentProduct.value.isReturned = ''
+                } else if (type === 'rent') {
+                    currentProduct.value.isReturned = false
+                }
                 updateUserPriceListDB()
             }
             //
@@ -614,13 +631,13 @@
                         totalPrice: 0,
                         qty: 1,
                         rentType: '',
-                        isReturned: false 
+                        isReturned: '' 
                     }
                 }
             }
 
             return {
-                priceChipList, blockToShow, menu, user, userEmail, router, pageTitle, userSettings, spinner, dataLoaded, trashOutline, deleteProductAction, openDeleteProductModal, openDeleteAttributeModal, deleteProductButtons, deleteAttributeButtons, productToDelete, attributeToDelete, deleteProduct, openSaleProductInfo, updateUserPriceListDB, isViewCurrentProductOpened, currentProduct, isModalNewPriceItemOpened, addNewPriceProduct, toggleNewPriceProductModal, newPriceProductData, closeCircleOutline, currency, priceCalcType, costEstimation, setCostEstimation, setProductPrice, setProductQty, newPriceAdditionalAttributeData, deleteAdditionalAttribute, setBlockToShow, countItemChip, setChipOutline, setRentType, deleteAttributeAction, isItemAlreadyHave, changeBlockToShow, closeModalCreatePriceProduct, setAttributeRentType, setNewProductQty, setNewProductPrice
+                priceChipList, blockToShow, menu, user, userEmail, router, pageTitle, userSettings, spinner, dataLoaded, trashOutline, deleteProductAction, openDeleteProductModal, openDeleteAttributeModal, deleteProductButtons, deleteAttributeButtons, productToDelete, attributeToDelete, deleteProduct, openSaleProductInfo, updateUserPriceListDB, isViewCurrentProductOpened, currentProduct, isModalNewPriceItemOpened, addNewPriceProduct, toggleNewPriceProductModal, newPriceProductData, closeCircleOutline, currency, priceCalcType, costEstimation, setCostEstimation, setProductPrice, setProductQty, newPriceAdditionalAttributeData, deleteAdditionalAttribute, setBlockToShow, countItemChip, setChipOutline, setRentType, deleteAttributeAction, isItemAlreadyHave, changeBlockToShow, closeModalCreatePriceProduct, setAttributeRentType, setNewProductQty, setNewProductPrice, setNewProductAttributeRentType
             }
         }
     })
