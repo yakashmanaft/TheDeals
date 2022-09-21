@@ -4,7 +4,7 @@
             <ion-toolbar>
                 <ion-buttons slot="start">
                     <!-- <ion-button>Отменить</ion-button> -->
-                    <ion-button @click="$emit('closeModal', amountValue = 0)">Отменить</ion-button>
+                    <ion-button @click="$emit('closeModal', amountValue)">Отменить</ion-button>
                 </ion-buttons>
                 <ion-title>Внести</ion-title>
                 <ion-buttons slot="end">
@@ -15,11 +15,11 @@
         </ion-header>
         <ion-content>
             <!--  -->
-            <input type="text" v-model="amountValue" placeholder="Сумма к оплате">
+            <input type="number" v-model="amountValue" placeholder="Сумма к оплате">
 
 
             <br>
-            Задолженность по делу:  {{ currentDeal.totalDealPrice - currentDeal.dealPaid }}
+            Задолженность по делу:  {{ dealDebt }}
             <br>
             СУмма к оплате: {{ amountValue }}
         </ion-content>
@@ -46,14 +46,24 @@
             const currentDeal = ref() 
             // сумма к оплате (следим за изменениями значения переменной)
             const amountValue = ref(0)
-            // const debtValue = ref()
-            //
+            // 
             watchEffect(() => {
                 currentDeal.value = props.currentDeal
             })
+            // текущий долг по делу
+            const dealDebt = ref(currentDeal.value.totalDealPrice - currentDeal.value.dealPaid)
+            // проверяем какое значение вписывает пользователь
+            watch(amountValue, (value) => {
+                console.log(value)
+                if (value > dealDebt.value) {
+                    amountValue.value = dealDebt.value
+                } else if (value === '') {
+                    amountValue.value = 0
+                }
+            })
 
             return {
-                currentDeal, amountValue
+                currentDeal, amountValue, dealDebt
             }
         } 
     })

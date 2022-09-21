@@ -20,14 +20,19 @@
         components: {
             IonList, IonItem, IonSelect, IonSelectOption
         },
-        props: ['placeholder', 'data'],
+        props: ['placeholder', 'data', 'currentSelected'],
         emits: ["date-updated"],
         setup(props, {emit}) {
             const selected = ref('');
-            watch(selected, (currentValue) => {
+            // selected.value = props.currentSelected
+            watch(selected, (currentValue, prevValue) => {
                 // setTimeout(() => {
 
                 // }, 300)
+                // console.log(props.data)
+                
+                console.log(`это из select prevValue: ${prevValue}`)
+                console.log(`это из select currentValue: ${prevValue}`)
                 emit('date-updated', {currentValue})
             })
             return {
