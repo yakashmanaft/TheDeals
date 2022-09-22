@@ -275,7 +275,7 @@
                 myDeals.value = store.state.myDealsArray;
                 spinner.value = false
                 dataLoaded.value = true;
-                resfreshData();
+                refreshData();
             })
             // Получаем массив форматированных к показу дат
             const getExecutionDate = () => {
@@ -302,7 +302,7 @@
             const currentDealStatus = ref('deal-in-booking');
             // Следим за изменением статуса дела и запускаем функцию показа
             watch(currentDealStatus, (currentValue) => {
-                resfreshData(currentValue)
+                refreshData(currentValue)
             })
             // Счетчик коилчества дел по конкретному статусу
             const countDealByStatus = (status) => {
@@ -340,7 +340,7 @@
                         dealStatus: deal.dealStatus
                     }).eq('id', deal.id);
                     if(error) throw error;
-                    resfreshData();
+                    refreshData();
                 } catch (error) {
                     alert(`Error: ${error.message}`);
                 }
@@ -442,7 +442,7 @@
                 }
             }
             // Функция обновления контента к показу (после обновления в записей в БД)
-            const resfreshData = () => {
+            const refreshData = () => {
                 daysArray.value = []
                 days.value = []
                 // Обновляем содержимое к отображению
@@ -477,7 +477,7 @@
             }
             // Следим за изменением dealByType и запускаем обнолвение дел к показу по выбранным критериям
             watch(dealByType, () => {
-                resfreshData(currentDealStatus)
+                refreshData(currentDealStatus)
             })
             // 
             const addSubject = (subjectData) => {
@@ -505,7 +505,7 @@
             }
 
             return {
-                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isViewDealModalOpened, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translateValue, resfreshData, myContacts, getContact, showNameByID, checkRentAttr, dealTypesList, dealByType, showDealByType, helpOutline, addSubject, deleteSubject, setIconByDealType
+                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isViewDealModalOpened, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translateValue, refreshData, myContacts, getContact, showNameByID, checkRentAttr, dealTypesList, dealByType, showDealByType, helpOutline, addSubject, deleteSubject, setIconByDealType
             }
         }
     })

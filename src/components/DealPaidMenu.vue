@@ -19,7 +19,7 @@
 
 
             <br>
-            Задолженность по делу:  {{ dealDebt }}
+            Задолженность по делу:  {{ debt }}
             <br>
             СУмма к оплате: {{ amountValue }}
         </ion-content>
@@ -37,6 +37,8 @@
         ],
         props: {
             currentDeal: Object,
+            debt: Number,
+            amount: Number
         },
         components: {
             IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent,
@@ -46,24 +48,32 @@
             const currentDeal = ref() 
             // сумма к оплате (следим за изменениями значения переменной)
             const amountValue = ref(0)
+            //
+            const debt = ref()
+            //
+            // const amount = ref()
             // 
             watchEffect(() => {
                 currentDeal.value = props.currentDeal
+                debt.value = props.debt
+                // amount.value = props.amount
+                amountValue.value = props.amount
             })
+            //
+            
             // текущий долг по делу
-            const dealDebt = ref(currentDeal.value.totalDealPrice - currentDeal.value.dealPaid)
             // проверяем какое значение вписывает пользователь
             watch(amountValue, (value) => {
                 console.log(value)
-                if (value > dealDebt.value) {
-                    amountValue.value = dealDebt.value
+                if (value > debt.value) {
+                    amountValue.value = debt.value
                 } else if (value === '') {
                     amountValue.value = 0
                 }
             })
 
             return {
-                currentDeal, amountValue, dealDebt
+                currentDeal, amountValue
             }
         } 
     })

@@ -20,7 +20,7 @@
         components: {
             IonList, IonItem, IonSelect, IonSelectOption
         },
-        props: ['placeholder', 'data', 'currentSelected'],
+        props: ['placeholder', 'data', 'currentSelected', 'dealStatusCurrentValue'],
         emits: ["date-updated"],
         setup(props, {emit}) {
             const selected = ref('');
@@ -31,8 +31,9 @@
                 // }, 300)
                 // console.log(props.data)
                 
-                console.log(`это из select prevValue: ${prevValue}`)
-                console.log(`это из select currentValue: ${prevValue}`)
+                console.log(`Это из select prevValue: ${prevValue}`)
+                console.log(`Это из select currentValue: ${currentValue}`)
+                console.log(`Это props: ${props.dealStatusCurrentValue}`)
                 emit('date-updated', {currentValue})
             })
             return {

@@ -424,7 +424,7 @@
 
                     <!-- Задолженность -->
                     <ion-row class="ion-margin-top ion-justify-content-between ion-align-items-center">
-                        <ion-text style="font-weight: bold">Задолженность: </ion-text>
+                        <ion-text style="font-weight: bold">Остаток: </ion-text>
                         <ion-text>{{ (culcDealDeabt(dealData.totalDealPrice, dealData.dealPaid)).toFixed(2) }} {{ currency }}</ion-text>
                     </ion-row>
                 </ion-grid>

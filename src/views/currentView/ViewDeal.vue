@@ -64,17 +64,18 @@
                         <ion-row class="ion-justify-content-between ion-align-items-center">
                             <!-- Статус дела -->
                             <ion-chip :color="setChipColor(dealStatus)">
-                                <Select
-                                    :data="dealStatusList" 
-                                    :placeholder="translateValue(currentDeal.dealStatus, dealStatusList)"
-                                    @date-updated="(selected) => dealStatus = selected.currentValue"
-                                />
-                                <Select
-                                    :data="dealStatusList" 
-                                    :placeholder="currentDeal.dealStatus"
-                                    :currentSelected="currentDeal.dealStatus"
-                                    @date-updated="(selected) => dealStatus = selected.currentValue"
-                                />
+                                <!-- Кнопка вызова меню статус -->
+                                <div @click="openActionSheetDealStatusMenu()">
+                                    {{translateValue(currentDeal.dealStatus, dealStatusList)}}
+                                </div>
+                                <!-- Всплывашка изменения статуса -->
+                                <ion-action-sheet
+                                    :is-open="actionSheetDealStatus"
+                                    header="Сменить статус дела"
+                                    :buttons="changeDealStatusMenuButtons"
+                                    @didDismiss="actionSheetDealStatus = false"
+                                >
+                            </ion-action-sheet>
                             </ion-chip>
                             <!-- Тип дела -->
                             <ion-chip :color="setColorByDealType(currentDeal.dealType)" outline="true">
@@ -483,6 +484,8 @@
                         @didDismiss="isDealPaidMenuOpened = false"
                         @closeModal="closeDealPaidMenu"
                         :currentDeal="currentDeal"
+                        :debt="refreshDebtValue()"
+                        :amount="dealPaidAmountValue()"
                         @getAmountValue="setAmountValue"
                     />
                 </ion-item-group>
@@ -509,7 +512,7 @@
 </template>
 
 <script>
-    import { onMounted, defineComponent, ref, computed, watch } from 'vue';
+    import { onMounted, defineComponent, ref, computed, watch, watchEffect } from 'vue';
     import { supabase } from '../../supabase/init';
     import { useRoute, useRouter } from 'vue-router';
     import store from '../../store/index';
@@ -616,67 +619,37 @@
                 currentDeal.value.dealStatus = dealStatus.value
                 // считаем долг
                 culcDealDebt(currentDeal.value.totalDealPrice, currentDeal.value.dealPaid)
-                // console.log(prev)
-                // console.log(next)
-                // console.log(`Текущий статус: ${dealStatus.value}`)
+                // оцениваем долг
                 if(debt.value > 0) {
-                    // alert('Есть долг по оплате дела')
                     if(next === 'deal-complete') {
                         if(confirm(`Есть долг по оплате дела. Внести сумму задолженности или её часть?`)) {
-                            // currentDeal.value.dealStatus = 'deal-in-debt'
                             dealStatus.value = prev
                             currentDeal.value.dealStatus = prev
                             openDealPaidMenu()
-                            // расписать условия когда долг остается больше нуля и когда долг равен нулю
+                            // далее включается функция setAmountValue(amount)
                         } else {
                             //prev - это изначальное значение статуса у дела
                             dealStatus.value = prev
                             currentDeal.value.dealStatus = prev
                             update()
-                            // console.log(prev)
-                            // console.log(next)
-                            console.log(`Текущий статус: ${dealStatus.value}`)
                         }
                     } else {
                         console.log(`Текущий статус: ${dealStatus.value}`)
                     }
                 } else if (debt.value === 0) {
-
-                    // Соотнести с другими функциями закрытия долгов по сделкам
-                    alert('Без долга по оплате')
-
-                    // Требуется оценка по долгам возврата атрибутов
+                    // срабатывает когда мы вносим всю сумму долга, запуская функцию setAmountValue(amount)
+                    // срабатывает функция isAllAttrReturnedFunc(), которая запускается в setAmountValue(amount)
+                    if(currentDeal.value.dealType === 'sale') {
+                        // isAllAttrReturnedFunc()
+                        // в данном меню не будет никогда нуля в долге, меняется через кнопки ВНЕСТИ
+                    } else if (currentDeal.value.dealType === 'buy') {
+                        alert('ViewDeal: статус дела изменен на "ЗАВЕРШЕНО"')
+                    }
                 }
-
-
-                // if(debt.value > 0 && dealStatus.value === 'deal-complete') {
-                //     // alert(`VewDeal: По делу имеется долг. Статус дела изменен на "ДОЛГ"`)
-                //     if(confirm(`VewDeal: По делу имеется долг. Внести сумму задолженности или её часть?`) === true) {
-                //         // Если хотим, чтобы открывалось меню Внесения средств
-                //         openDealPaidMenu()
-                //         // currentDeal.value.dealStatus = 'deal-in-debt'
-                //         // dealStatus.value = 'deal-in-debt'
-                //     } else {
-                //         // Если нажали отмену, то ничего и не меняется
-                //         // alert(`Статус дела изменен на ДОЛГ`)
-                //         // currentDeal.value.dealStatus = 'deal-in-debt'
-                //         // dealStatus.value = 'deal-in-debt'
-                //         return
-                //     }
-                //     // return currentDeal.value.dealStatus
-                //     // update()
-                // } else if (debt.value === 0 && dealStatus.value === 'deal-complete') {
-                //     if(currentDeal.value.dealType === 'sale') {
-                //         // А если сумма полностью уплачено, но атрибуты не возвращены - запускаем функцию
-                //         isAllAttrReturnedFunc()
-                //         // в данном меню не будет никогда нуля в долге, меняется через кнопки ВНЕСТИ
-                //     } else if (currentDeal.value.dealType === 'buy') {
-                //         alert('ViewDeal: статус дела изменен на "ЗАВЕРШЕНО"')
-                //     }
-                //     // update()
-                // }
                 update()
             })
+
+
             // выдергиваем из массива нужный контакт
             const searchContactMenu = ref(false)
             const choose = (contact) => {
@@ -795,6 +768,25 @@
                     },
                 }
             ]
+            // ==================================== массив кнопок в меню смены статуса у дела =====================================
+            const changeDealStatusMenuButtons = []
+            // добавляем в массив changeDealStatusMenuButtons объекты из dealStatusList
+            for(let i = 1; i <= dealStatusList.value.length; i++) {
+                changeDealStatusMenuButtons.push({
+                    text: dealStatusList.value[i-1].name,
+                    handler: () => {
+                        dealStatus.value = dealStatusList.value[i-1].value
+                    }
+                })
+            }
+            // Добавляем кнопку отмены (скрытия меню)
+            changeDealStatusMenuButtons.push({
+                text: 'Отменить',
+                role: 'cancel',
+                handler: () => {
+                    console.log('Cancel clicked')
+                }
+            })
             // Задаем цвет chip
             const setChipColor = (value) => {
                 // Это для селекта по выбоору статуса дела
@@ -833,6 +825,11 @@
                 currentDealSubject.value = currentDeal.value.dealsList[index];
                 setCountQtyButtonColor(currentDealSubject.value.productQuantity)
                 setCountPersonQtyButtonColor(currentDealSubject.value.personQuantity)
+            }
+            // Вызываем action sheet меню выбор
+            const actionSheetDealStatus = ref(false)
+            const openActionSheetDealStatusMenu = () => {
+                actionSheetDealStatus.value = true
             }
             // Вызываем action sheet уведомление в качестве подтверждения
             const deleteSubject = ref(false);
@@ -1400,25 +1397,23 @@
             const isDealPaidMenuOpened = ref(false)
             //
             const openDealPaidMenu = () => {
+                // culcDealDebt(currentDeal.value.totalDealPrice, currentDeal.value.dealPaid)
+                dealPaidAmountValue()
                 isDealPaidMenuOpened.value = true
+                refreshDebtValue()
             }
             const closeDealPaidMenu = (amount) => {
                 console.log(amount)
-                // if (currentDeal.value.dealPaid === 0){
-                //     currentDeal.value.dealPaid = +amount
-                // } else if (currentDeal.value.dealPaid !== 0) {
-                //     currentDeal.value.dealPaid += +amount
-                // }
                 culcDealDebt(currentDeal.value.totalDealPrice, currentDeal.value.dealPaid)
                 isDealPaidMenuOpened.value = false
-                // if(debt.value === 0) {
-                //     return
-                // } else if (debt.value > 0) {
-                //     alert('Сумма внесена не полная, статус дела изменен на "ДОЛГ"')
-                //     currentDeal.value.dealStatus = 'deal-in-debt'
-                //     dealStatus.value = 'deal-in-debt'
-                //     console.log(dealStatus.value)
-                // }
+            }
+            // функция обнуления пропса по начальному значению суммы оплаты (для DealPaidMenu)
+            const dealPaidAmountValue = () => {
+                return 0
+            }
+            // функция обновления пропса по задолженности (для DealPaidMenu)
+            const refreshDebtValue = () => {
+                return debt.value
             }
             // управляем внесении оплаты по задолженностям (при изменении сразу обновляется)
             // ================== переработать с учетом closeDealPaidMenu
@@ -1435,6 +1430,7 @@
                 } else if(debt.value === 0) {
                     // SALE
                     if(currentDeal.value.dealType === 'sale') {
+                        dealStatus.value = 'deal-complete'
                         console.log(`Текущий статус: ${dealStatus.value}`)
                         alert(`ViewDeal: внесено ${amount} ${currency.value}`)
                         isAllAttrReturnedFunc()
@@ -1445,7 +1441,7 @@
                         // уведомляем о количестве внесенных средств
                         alert(`ViewDeal: внесено ${amount} ${currency.value}`)
                         // Уведомляем о смене статуса
-                        alert('ViewDeal: статус дела изменен на Завершено')
+                        // alert('ViewDeal: статус дела изменен на Завершено')
                         // Меняем статус дела на ЗАВЕРШЕН
                         dealStatus.value = 'deal-complete'
                         currentDeal.value.dealStatus = 'deal-complete'
@@ -1493,7 +1489,7 @@
             }
 
             return {
-                currency, spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, translateDealSubjectRecipe, userRecipeArray, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, setPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setNewPersonQty, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, shippingTypeList, dealShippingType, shippingPrice, setProductNotePlaceholder, shippingAddress, editShippingAddress, toggleEditShippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, translateShippingType, translateSelectedProduct, culcSubjectWeight, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, culcBuySubjectWeight, debt, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, nextDealStatus, prevDealStatus
+                currency, spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, translateDealSubjectRecipe, userRecipeArray, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, setPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setNewPersonQty, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, shippingTypeList, dealShippingType, shippingPrice, setProductNotePlaceholder, shippingAddress, editShippingAddress, toggleEditShippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, translateShippingType, translateSelectedProduct, culcSubjectWeight, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, culcBuySubjectWeight, debt, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, nextDealStatus, prevDealStatus, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, refreshDebtValue, dealPaidAmountValue
             }
         }
     })
