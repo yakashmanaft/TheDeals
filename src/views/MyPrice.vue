@@ -12,19 +12,20 @@
         <!-- Кнопка перехода к созданию нового дела -->
         <create-button @click="toggleNewPriceProductModal"/>
 
-        <!-- Модалка просмотра конкретного продукта в прайсе -->
+        <!-- Модалка просмотра конкретного продукта | атрибута в прайсе -->
         <ViewPriceProduct
             :is-open="isViewCurrentProductOpened" 
-            @closeModal="isViewCurrentProductOpened = false"   
+            @closeModal="closeProductInfo"   
             :productData="currentProduct"
             @getCostEstimation="setCostEstimation"
             @getProductPrice="setProductPrice"
             @getProductQty="setProductQty"
             @getRentType="setAttributeRentType"
             :blockToShow="blockToShow"
+            :refreshedProductPrice="refreshProductPrice()"
         />
 
-        <!-- Модалка создания нового продукта к прайсу -->
+        <!-- Модалка создания нового продукта | атрибута к прайсу -->
         <CreatePriceProduct
             :is-open="isModalNewPriceItemOpened" 
             @closeModal="closeModalCreatePriceProduct"   
@@ -69,7 +70,7 @@
                 <!-- Продуктовый прайс -->
                 <div v-if="dataLoaded && item.userPriceList.length !== 0 && blockToShow === 'products'">
                     <ion-item-group class="ion-text-left ion-padding-horizontal ion-margin-bottom">
-                        <ion-card class="ion-no-margin ion-margin-top relative" v-for="item in item.userPriceList" :key="item.id" @click.stop="openSaleProductInfo(item)">
+                        <ion-card class="ion-no-margin ion-margin-top relative" v-for="item in item.userPriceList" :key="item.id" @click.stop="openProductInfo(item)">
                             <ion-card-content class="ion-no-padding">
                                 <!-- Кнопка удалить конкретный продукт -->
                                 <ion-icon @click.stop="openDeleteProductModal(item.uid)" class="icon_size icon_del absolute" :icon="closeCircleOutline"></ion-icon>
@@ -104,7 +105,7 @@
                 <!-- Прайс по доп.атрибутам -->
                 <div v-if="dataLoaded && item.userAdditionalAttributes.length !== 0 && blockToShow === 'attributes'">
                     <ion-item-group class="ion-text-left ion-padding-horizontal ion-margin-bottom">
-                        <ion-card class="ion-no-margin ion-margin-top relative" v-for="item in item.userAdditionalAttributes" :key="item.id" @click.stop="openSaleProductInfo(item)">
+                        <ion-card class="ion-no-margin ion-margin-top relative" v-for="item in item.userAdditionalAttributes" :key="item.id" @click.stop="openProductInfo(item)">
                             <ion-card-content class="ion-no-padding">
                                 <!-- Кнопка удалить конкретный атрибут продукта -->
                                 <ion-icon @click.stop="openDeleteAttributeModal(item.uid)" class="icon_size icon_del absolute" :icon="closeCircleOutline"></ion-icon>
@@ -309,9 +310,15 @@
             const costEstimation = ref();
             //
             const isViewCurrentProductOpened = ref(false)
-            const openSaleProductInfo = (item) => {
+            const openProductInfo = (item) => {
                 isViewCurrentProductOpened.value = true
                 currentProduct.value = item;
+                refreshProductPrice()
+            }
+            //
+            const closeProductInfo = () => {
+                isViewCurrentProductOpened.value = false
+                // refreshProductPrice()
             }
 
             // ======================== Удаление конкретного продукта из прайса ===========================================
@@ -388,7 +395,7 @@
                 uid: uid(),
                 value: '',
                 name: '',
-                price: '',
+                price: 0,
                 costEstimation: ''
             })
             // Изменяемый шаблон нового доп атрибута
@@ -601,7 +608,7 @@
                         uid: uid(),
                         value: '',
                         name: '',
-                        price: '',
+                        price: 0,
                         costEstimation: ''
                     }
                 } else if (block === 'attributes') {
@@ -635,9 +642,13 @@
                     }
                 }
             }
+            //
+            const refreshProductPrice = () => {
+                console.log('refreshed')
+            }
 
             return {
-                priceChipList, blockToShow, menu, user, userEmail, router, pageTitle, userSettings, spinner, dataLoaded, trashOutline, deleteProductAction, openDeleteProductModal, openDeleteAttributeModal, deleteProductButtons, deleteAttributeButtons, productToDelete, attributeToDelete, deleteProduct, openSaleProductInfo, updateUserPriceListDB, isViewCurrentProductOpened, currentProduct, isModalNewPriceItemOpened, addNewPriceProduct, toggleNewPriceProductModal, newPriceProductData, closeCircleOutline, currency, priceCalcType, costEstimation, setCostEstimation, setProductPrice, setProductQty, newPriceAdditionalAttributeData, deleteAdditionalAttribute, setBlockToShow, countItemChip, setChipOutline, setRentType, deleteAttributeAction, isItemAlreadyHave, changeBlockToShow, closeModalCreatePriceProduct, setAttributeRentType, setNewProductQty, setNewProductPrice, setNewProductAttributeRentType
+                priceChipList, blockToShow, menu, user, userEmail, router, pageTitle, userSettings, spinner, dataLoaded, trashOutline, deleteProductAction, openDeleteProductModal, openDeleteAttributeModal, deleteProductButtons, deleteAttributeButtons, productToDelete, attributeToDelete, deleteProduct, openProductInfo, updateUserPriceListDB, isViewCurrentProductOpened, currentProduct, isModalNewPriceItemOpened, addNewPriceProduct, toggleNewPriceProductModal, newPriceProductData, closeCircleOutline, currency, priceCalcType, costEstimation, setCostEstimation, setProductPrice, setProductQty, newPriceAdditionalAttributeData, deleteAdditionalAttribute, setBlockToShow, countItemChip, setChipOutline, setRentType, deleteAttributeAction, isItemAlreadyHave, changeBlockToShow, closeModalCreatePriceProduct, setAttributeRentType, setNewProductQty, setNewProductPrice, setNewProductAttributeRentType, refreshProductPrice, closeProductInfo
             }
         }
     })

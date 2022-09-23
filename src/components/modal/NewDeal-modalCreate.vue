@@ -425,13 +425,17 @@
                     <!-- Задолженность -->
                     <ion-row class="ion-margin-top ion-justify-content-between ion-align-items-center">
                         <ion-text style="font-weight: bold">Остаток: </ion-text>
-                        <ion-text>{{ (culcDealDeabt(dealData.totalDealPrice, dealData.dealPaid)).toFixed(2) }} {{ currency }}</ion-text>
+                        <ion-text>{{ (culcDealDebt(dealData.totalDealPrice, dealData.dealPaid)).toFixed(2) }} {{ currency }}</ion-text>
                     </ion-row>
                 </ion-grid>
 
                 <!-- Кнопка внести средства -->
-                <ion-button @click="openDealPaidMenu" expand="block" class="ion-margin-top">
+                <ion-button  v-if="debt > 0" @click="openDealPaidMenu" expand="block" class="ion-margin-top">
                     Внести
+                </ion-button>
+                <!-- Кнопка дубляж СОЗДАТЬ ДЕЛО -->
+                <ion-button v-if="debt === 0" expand="block" class="ion-margin-top">
+                    Создать дело
                 </ion-button>
 
                 <!--  -->
@@ -440,65 +444,11 @@
                     @didDismiss="isDealPaidMenuOpened = false"
                     @closeModal="closeDealPaidMenu"
                     :currentDeal="dealData"
+                    :debt="refreshDebtValue()"
+                    :amount="dealPaidAmountValue()"
                     @getAmountValue="setAmountValue"
                 />
             </ion-item-group>
-
-
-            <!--  -->
-            <!-- <ion-item-group class="ion-text-left ion-padding-horizontal" v-if="dealData.dealType === 'sale'">
-                {{sumAllTotalSubjectPriceFunc(dealData.dealsList)}}
-            </ion-item-group> -->
-            <!--  -->
-            <!-- <ion-item-group class="ion-text-left ion-padding-horizontal" v-if="dealData.dealType === 'sale'">
-
-                <ion-text>
-                    <h4>Итого</h4>
-                </ion-text>
-
-                <ion-list>
-                    <ion-grid class="ion-no-padding">
-                        <ion-row class="ion-justify-content-between ion-align-items-center">
-                            <ion-text>Торт</ion-text>
-                            <ion-text>1.00 * 2378.00 = 2378.00 </ion-text>
-                        </ion-row>
-                    </ion-grid>
-                </ion-list>
-                <ul style="list-style: none; padding-left: 0; font-size: 14px;" class="ion-text-left">
-                    <li>
-                            <br>
-                        Без рецепта <br>
-                        С учетом 5% скидки (118,90) = 2259,10<br>
-                        Напиток 1.00 * 150.00 = 150.00 <br>
-                        Упаковка для торта 1.00 * 210.00 = 210.00
-                    </li>
-                    <li style="margin-top: 10px;">
-                        Капкейк Молочная девочка 6.00 * 190.00 = 1140.00 <br>
-                        Напиток 1.00 * 150.00 = 150.00 <br>
-                        Упаковка для капкейков 1.00 * 210.00 = 210.00
-                    </li>
-                    <li style="margin-top: 10px; background-color: green;">
-                        Итог: {{sumAllTotalSubjectPriceFunc(dealData.dealsList)}} {{ currency }}
-                    </li>
-                    <li style="margin-top: 10px; background-color: green;">
-                        Доставка: {{ dealData.shipping.shippingPrice }} {{ currency }}
-                    </li>
-                </ul>
-                <ul>
-                    <li style="background-color: green;">
-                        Сумма оплате: {{ dealData.totalDealPrice }}
-                    </li>
-                    <li>
-                        Оплачено: (dealPaid): =1000.00 <br>
-                    </li>
-                    <li>
-                        Задолженность: =3398.10 <br>
-                    </li>
-                </ul>
-                <ion-button expand="block">
-                    Внести
-                </ion-button>
-            </ion-item-group> -->
 
             <br>
             {{dealData}}
@@ -1186,12 +1136,21 @@
             // управление модалкой deal paid
             const isDealPaidMenuOpened = ref(false)
             const openDealPaidMenu = () => {
+                dealPaidAmountValue()
                 isDealPaidMenuOpened.value = true
+                refreshDebtValue()
             }
             const closeDealPaidMenu = () => {
                 isDealPaidMenuOpened.value = false
             }
-
+            // функция обнуления пропса по начальному значению суммы оплаты (для DealPaidMenu)
+            const dealPaidAmountValue = () => {
+                return 0
+            }
+            // функция обновления пропса по задолженности (для DealPaidMenu)
+            const refreshDebtValue = () => {
+                return debt.value
+            }
             //Переводчик названий предметов дела
             const translateSelectedProduct = (value) => {
                 if(dealData.value.dealType === 'sale') {
@@ -1212,25 +1171,26 @@
                 return (weight / 1000).toFixed(3)
             }
             // считаем задолженность по делу
-            const culcDealDeabt = (totalDealPrice, dealPaid) => {
+            const debt = ref()
+            //
+            const culcDealDebt = (totalDealPrice, dealPaid) => {
                 // Пока так
-                return totalDealPrice - dealPaid
+                debt.value = totalDealPrice - dealPaid
+                return debt.value
             }
             // управляем оплатой по задолженностям (при изменении сразу обновляется)
             const setAmountValue = (amount) => {
                 if (dealData.value.dealPaid === 0){
                     dealData.value.dealPaid = +amount
-                } else if (currentDeal.value.dealPaid !== 0) {
+                } else if (dealData.value.dealPaid !== 0) {
                     dealData.value.dealPaid += +amount
                 }
-                culcDealDeabt(dealData.value.totalDealPrice, dealData.value.dealPaid)
+                culcDealDebt(dealData.value.totalDealPrice, dealData.value.dealPaid)
                 closeDealPaidMenu()
-                // вопрос с обнулением значения amountValue при закрытии модалки DealPaidMenu
-                
             }
 
             return {
-                currency, dealContact, dealContactID , searchContactMenu, choose, isCalendarOpened, closeModalCalendar, updateExecutionDate, datepicker, myContactsArray, searchDealContact, searchedContacts, dealTypes, addCircleOutline, closeCircleOutline, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, openDeleteSubjectModal, subjectToDelete, deleteDealSubjectButtons, addNewSubject, deleteSubject, dealData, currentDealSubject, isViewDealSubjectOpened, openCurrentDealSubject, checkRentAttr, setColorByDealType, setIconByDealType, translateDealSubjectRecipe, userRecipeArray, currentDealType, isAttributesMenuOpened, setNewSubjectPrice, calcNewSubjectTotalPrice, sumAttributesPriceValue, setSumAttributesPriceValue, setSubjectPrice, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, calcSubjectTotalPrice, setNewSubjectQty, setPersonQty, setNewPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, setChipColor, shippingTypeList, dealShippingType, shippingPrice, shippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, calcTotalDealPrice, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, translateSelectedProduct, culcSubjectWeight, culcBuySubjectWeight, culcDealDeabt, setAmountValue
+                currency, dealContact, dealContactID , searchContactMenu, choose, isCalendarOpened, closeModalCalendar, updateExecutionDate, datepicker, myContactsArray, searchDealContact, searchedContacts, dealTypes, addCircleOutline, closeCircleOutline, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, openDeleteSubjectModal, subjectToDelete, deleteDealSubjectButtons, addNewSubject, deleteSubject, dealData, currentDealSubject, isViewDealSubjectOpened, openCurrentDealSubject, checkRentAttr, setColorByDealType, setIconByDealType, translateDealSubjectRecipe, userRecipeArray, currentDealType, isAttributesMenuOpened, setNewSubjectPrice, calcNewSubjectTotalPrice, sumAttributesPriceValue, setSumAttributesPriceValue, setSubjectPrice, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, calcSubjectTotalPrice, setNewSubjectQty, setPersonQty, setNewPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, setChipColor, shippingTypeList, dealShippingType, shippingPrice, shippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, calcTotalDealPrice, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, translateSelectedProduct, culcSubjectWeight, culcBuySubjectWeight, culcDealDebt, setAmountValue, debt, refreshDebtValue, dealPaidAmountValue
             }
         }
     })

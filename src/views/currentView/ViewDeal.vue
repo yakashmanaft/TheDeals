@@ -375,7 +375,7 @@
                                 <ion-grid v-for="attribute in item.additionalAttributes" :key="attribute.id" class="ion-no-padding ion-margin-top" >
                                     <ion-row class="ion-justify-content-between ion-align-items-center">
                                         <ion-text>{{attribute.name}}</ion-text>
-                                        <ion-text>{{ (attribute.qty).toFixed(2) }} * {{ attribute.price}} = {{ (attribute.totalPrice).toFixed(2) }} </ion-text>
+                                        <ion-text>{{ (attribute.qty).toFixed(2) }} * {{ (attribute.price).toFixed(2)}} = {{ (attribute.totalPrice).toFixed(2) }} </ion-text>
                                     </ion-row>
                                     <ion-row class="ion-justify-content-between ion-align-items-center">
                                         <ion-text color="medium">Атрибут</ion-text>
@@ -468,7 +468,7 @@
 
                         <!-- Задолженность -->
                         <ion-row class="ion-margin-top ion-justify-content-between ion-align-items-center">
-                            <ion-text style="font-weight: bold">Задолженность: </ion-text>
+                            <ion-text style="font-weight: bold">Остаток: </ion-text>
                             <ion-text>{{ (culcDealDebt(currentDeal.totalDealPrice, currentDeal.dealPaid)).toFixed(2) }} {{ currency }}</ion-text>
                         </ion-row>
                     </ion-grid>
@@ -1402,9 +1402,7 @@
                 isDealPaidMenuOpened.value = true
                 refreshDebtValue()
             }
-            const closeDealPaidMenu = (amount) => {
-                console.log(amount)
-                culcDealDebt(currentDeal.value.totalDealPrice, currentDeal.value.dealPaid)
+            const closeDealPaidMenu = () => {
                 isDealPaidMenuOpened.value = false
             }
             // функция обнуления пропса по начальному значению суммы оплаты (для DealPaidMenu)
@@ -1449,11 +1447,8 @@
                         closeDealPaidMenu()
                     }
                 } else if(debt.value > 0){
-                    // Пр
                     closeDealPaidMenu()
                 }
-                // вопрос с обнулением значения amountValue при закрытии модалки DealPaidMenu
-                
             }
 
             // Проверяем на возврат атрибутов
