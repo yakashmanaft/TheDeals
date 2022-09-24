@@ -362,12 +362,12 @@
                         <!-- Если ничего подхлдящего нет, создать свое надо -->
                         <div v-if="searchedAdditionalAttributes.length <= 0">
                             <ion-item lines="none">
-                                <ion-grid>
+                                <ion-grid class="ion-no-padding">
                                     <ion-row class="ion-justify-content-between ion-align-items-center">
                                         <ion-text color="medium">
                                             Ничего не найдено
                                         </ion-text>
-                                        <ion-text color="primary">
+                                        <ion-text color="primary" @click="addNewAttrToPrice">
                                             Добавить
                                         </ion-text>
                                     </ion-row>
@@ -813,10 +813,14 @@
             watch(subjectDiscount, (discount) => {
                 emit('getSubjectDiscount', +discount)
             })
+            //
+            const addNewAttrToPrice = () => {
+                alert('ViewDeal-modalViewSubject: функционал в разработке (addNewAttrToPrice)')
+            }
 
 
             return {
-                systemCurrency, userSettings, subjectData, currentDealType, searchRecipeMenu, searchRecipe, chooseRecipe, noRecipe, searchedRecipe, userRecipeArray, showSelectedRecipe, translateProductValue, dealSaleSubjectArray, dealBuySubjectArray, addOutline, closeCircleOutline, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, openDeleteAttributeModal, deleteAttributeFunc, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, currentSubjectAttribute, isItemAlreadyHave, searchAttributeMenu, searchAdditionalAttributes, searchedAdditionalAttributes, dealAdditionalAttributesArray, chooseAttribute, setAttributeRentType, setProductPrice, setProductQty, sumAttributesPriceFunc, productNote, setProductNotePlaceholder, calcTotalSubjectPrice, subjectPrice, newAttribute, sumAttributesPriceValue, subjectQty, removeCircleOutline, addCircleOutline, changeQty, changePersonQty, gramPerPerson, setDiscountRange, subjectDiscount, setIsReturned
+                systemCurrency, userSettings, subjectData, currentDealType, searchRecipeMenu, searchRecipe, chooseRecipe, noRecipe, searchedRecipe, userRecipeArray, showSelectedRecipe, translateProductValue, dealSaleSubjectArray, dealBuySubjectArray, addOutline, closeCircleOutline, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, openDeleteAttributeModal, deleteAttributeFunc, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, currentSubjectAttribute, isItemAlreadyHave, searchAttributeMenu, searchAdditionalAttributes, searchedAdditionalAttributes, dealAdditionalAttributesArray, chooseAttribute, setAttributeRentType, setProductPrice, setProductQty, sumAttributesPriceFunc, productNote, setProductNotePlaceholder, calcTotalSubjectPrice, subjectPrice, newAttribute, sumAttributesPriceValue, subjectQty, removeCircleOutline, addCircleOutline, changeQty, changePersonQty, gramPerPerson, setDiscountRange, subjectDiscount, setIsReturned, addNewAttrToPrice
             }
         }
     })
@@ -908,9 +912,9 @@
         transition: transform 120ms ease, background 120ms ease; 
     } 
 
-    ion-range::part(pin)::before {
-        /* content: none; */
-    }
+    /* ion-range::part(pin)::before {
+        content: none;
+    } */
 
     ion-range::part(bar) {
         background: #a2d2ff;

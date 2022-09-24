@@ -82,13 +82,13 @@
                         <!-- Если ничего подхлдящего нет, создать свое надо -->
                         <div v-if="searchedSubject.length <= 0">
                             <ion-item lines="none">
-                                <ion-grid>
+                                <ion-grid class="ion-no-padding">
                                     <ion-row class="ion-justify-content-between ion-align-items-center">
                                         <ion-text color="medium">
                                             Ничего не найдено
                                         </ion-text>
-                                        <ion-text color="primary">
-                                            Добавить
+                                        <ion-text color="primary" @click="addNewSubjectToPrice">
+                                                Добавить
                                         </ion-text>
                                     </ion-row>
                                 </ion-grid>
@@ -129,9 +129,16 @@
                             <!-- Создать свой или купить на маркете -->
                             <div v-if="searchedRecipe.length <= 0">
                                 <ion-item lines="none">
-                                    <ion-text color="medium">
-                                        Ничего не найдено
-                                    </ion-text>
+                                    <ion-grid class="ion-no-padding">
+                                        <ion-row class="ion-justify-content-between ion-align-items-center">
+                                            <ion-text color="medium">
+                                                Ничего не найдено
+                                            </ion-text>
+                                            <ion-text color="primary" @click="addNewRecipe">
+                                                    Добавить
+                                            </ion-text>
+                                        </ion-row>
+                                    </ion-grid>
                                 </ion-item>
                                 <br>
                                 <br>
@@ -383,12 +390,12 @@
                         <!-- Если ничего подхлдящего нет, создать свое надо -->
                         <div v-if="searchedAdditionalAttributes.length <= 0">
                             <ion-item lines="none">
-                                <ion-grid>
+                                <ion-grid class="ion-no-padding">
                                     <ion-row class="ion-justify-content-between ion-align-items-center">
                                         <ion-text color="medium">
                                             Ничего не найдено
                                         </ion-text>
-                                        <ion-text color="primary">
+                                        <ion-text color="primary" @click="addNewAttrToPrice">
                                             Добавить
                                         </ion-text>
                                     </ion-row>
@@ -885,9 +892,21 @@
             watch(subjectDiscount, (discount) => {
                 emit('getSubjectDiscount', +discount)
             })
+            //
+            const addNewAttrToPrice = () => {
+                alert('ViewDeal-modalCreateSubject: функционал в разработке (addNewAttrToPrice)')
+            }
+            //
+            const addNewRecipe = () => {
+                alert('ViewDeal-modalCreateSubject: функционал в разработке (addNewRecipe)')
+            }
+            //
+            const addNewSubjectToPrice = () => {
+                alert('ViewDeal-modalCreateSubject: функционал в разработке (addNewSubjectToPrice)')
+            }
 
             return {
-                dealSaleSubjectArray, dealBuySubjectArray, helpOutline, addOutline, showSelectedProduct, searchSubjectMenu, searchSelectedProduct, currentDealType, translateValue, searchedSubject, choose, searchRecipeMenu, searchRecipe, userRecipeArray, chooseRecipe, showSelectedRecipe, searchedRecipe, noRecipe, searchAttributeMenu, searchAdditionalAttributes, dealAdditionalAttributesArray, searchedAdditionalAttributes, chooseAttribute, closeCircleOutline, isAttributesMenuOpened, toggleAttributesMenu, openDeleteAttributeModal, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, systemCurrency, currentSubjectAttribute, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, isItemAlreadyHave, setAttributeRentType, sumAttributesPriceFunc, newAttribute, setProductQty, calcTotalSubjectPrice, setProductPrice, subjectPrice, subjectQty, removeCircleOutline, addCircleOutline, countQtyButtonColor, changeQty, changePersonQty, countPersonQtyButtonColor, gramPerPerson, setDiscountRange, subjectDiscount
+                dealSaleSubjectArray, dealBuySubjectArray, helpOutline, addOutline, showSelectedProduct, searchSubjectMenu, searchSelectedProduct, currentDealType, translateValue, searchedSubject, choose, searchRecipeMenu, searchRecipe, userRecipeArray, chooseRecipe, showSelectedRecipe, searchedRecipe, noRecipe, searchAttributeMenu, searchAdditionalAttributes, dealAdditionalAttributesArray, searchedAdditionalAttributes, chooseAttribute, closeCircleOutline, isAttributesMenuOpened, toggleAttributesMenu, openDeleteAttributeModal, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, systemCurrency, currentSubjectAttribute, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, isItemAlreadyHave, setAttributeRentType, sumAttributesPriceFunc, newAttribute, setProductQty, calcTotalSubjectPrice, setProductPrice, subjectPrice, subjectQty, removeCircleOutline, addCircleOutline, countQtyButtonColor, changeQty, changePersonQty, countPersonQtyButtonColor, gramPerPerson, setDiscountRange, subjectDiscount, addNewAttrToPrice, addNewRecipe, addNewSubjectToPrice
             }
         }
     })
@@ -980,9 +999,9 @@
         transition: transform 120ms ease, background 120ms ease; 
     } 
 
-    ion-range::part(pin)::before {
-        /* content: none; */
-    }
+    /* ion-range::part(pin)::before {
+        content: none;
+    } */
 
     ion-range::part(bar) {
         background: #a2d2ff;
