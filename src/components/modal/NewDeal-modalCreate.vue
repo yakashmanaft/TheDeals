@@ -434,7 +434,7 @@
                     Внести
                 </ion-button>
                 <!-- Кнопка дубляж СОЗДАТЬ ДЕЛО -->
-                <ion-button v-if="debt === 0" expand="block" class="ion-margin-top">
+                <ion-button v-if="debt === 0" expand="block" class="ion-margin-top" @click="$emit('createDeal', dealData)">
                     Создать дело
                 </ion-button>
 
