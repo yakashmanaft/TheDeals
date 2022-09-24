@@ -91,9 +91,6 @@
                         <ion-button v-if="blockToShow === 'products'" color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
                             <ion-input type="number" v-model="productPrice" inputmode="decimal" :value="productData.price" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
                         </ion-button>
-                        <ion-button v-if="blockToShow === 'products'" color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                            <ion-input type="number" v-model="productData.price" inputmode="decimal" :value="productData.price" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
-                        </ion-button>
                         <!-- для attributes -->
                         <ion-button v-if="blockToShow === 'attributes'" color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
                             <ion-input type="number" v-model="productPrice" inputmode="decimal" :value="productData.price" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
@@ -155,7 +152,7 @@
             productData: Object,
             blockToShow: String,
             mode: String,
-            refreshedProductPrice: Number
+            currentProductPrice: Number
         },
         components: {
             IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonThumbnail, IonImg, Select, IonInput, IonChip, IonLabel, IonIcon
@@ -192,13 +189,13 @@
             //
             watchEffect(() => {
                 productData.value = props.productData;
+                productPrice.value = props.currentProductPrice
             });
             // следим за изменениями значения costEstimation, price, rentType у текущего предмета в прайсе и emit наверх
             watch (costEstimation, (costEstimationType) => {
                 emit('getCostEstimation', costEstimationType)
             })
-            // productPrice.value = productData.value.price
-            // удалить , если не понадобится
+            //
             watch(productPrice, (price) => {
                 console.log(productPrice.value)
                 emit('getProductPrice', +price)

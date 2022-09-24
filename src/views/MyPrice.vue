@@ -22,7 +22,7 @@
             @getProductQty="setProductQty"
             @getRentType="setAttributeRentType"
             :blockToShow="blockToShow"
-            :refreshedProductPrice="refreshProductPrice()"
+            :currentProductPrice="currentProductPrice"
         />
 
         <!-- Модалка создания нового продукта | атрибута к прайсу -->
@@ -307,18 +307,19 @@
 
             // ==========================Управление current price product ================================================
             const currentProduct = ref();
+            const currentProductPrice = ref() 
             const costEstimation = ref();
             //
             const isViewCurrentProductOpened = ref(false)
             const openProductInfo = (item) => {
                 isViewCurrentProductOpened.value = true
                 currentProduct.value = item;
-                refreshProductPrice()
+                currentProductPrice.value = item.price
+                console.log(item.price)
             }
             //
             const closeProductInfo = () => {
                 isViewCurrentProductOpened.value = false
-                // refreshProductPrice()
             }
 
             // ======================== Удаление конкретного продукта из прайса ===========================================
@@ -642,13 +643,9 @@
                     }
                 }
             }
-            //
-            const refreshProductPrice = () => {
-                console.log('refreshed')
-            }
 
             return {
-                priceChipList, blockToShow, menu, user, userEmail, router, pageTitle, userSettings, spinner, dataLoaded, trashOutline, deleteProductAction, openDeleteProductModal, openDeleteAttributeModal, deleteProductButtons, deleteAttributeButtons, productToDelete, attributeToDelete, deleteProduct, openProductInfo, updateUserPriceListDB, isViewCurrentProductOpened, currentProduct, isModalNewPriceItemOpened, addNewPriceProduct, toggleNewPriceProductModal, newPriceProductData, closeCircleOutline, currency, priceCalcType, costEstimation, setCostEstimation, setProductPrice, setProductQty, newPriceAdditionalAttributeData, deleteAdditionalAttribute, setBlockToShow, countItemChip, setChipOutline, setRentType, deleteAttributeAction, isItemAlreadyHave, changeBlockToShow, closeModalCreatePriceProduct, setAttributeRentType, setNewProductQty, setNewProductPrice, setNewProductAttributeRentType, refreshProductPrice, closeProductInfo
+                priceChipList, blockToShow, menu, user, userEmail, router, pageTitle, userSettings, spinner, dataLoaded, trashOutline, deleteProductAction, openDeleteProductModal, openDeleteAttributeModal, deleteProductButtons, deleteAttributeButtons, productToDelete, attributeToDelete, deleteProduct, openProductInfo, updateUserPriceListDB, isViewCurrentProductOpened, currentProduct, isModalNewPriceItemOpened, addNewPriceProduct, toggleNewPriceProductModal, newPriceProductData, closeCircleOutline, currency, priceCalcType, costEstimation, setCostEstimation, setProductPrice, setProductQty, newPriceAdditionalAttributeData, deleteAdditionalAttribute, setBlockToShow, countItemChip, setChipOutline, setRentType, deleteAttributeAction, isItemAlreadyHave, changeBlockToShow, closeModalCreatePriceProduct, setAttributeRentType, setNewProductQty, setNewProductPrice, setNewProductAttributeRentType, closeProductInfo, currentProductPrice
             }
         }
     })
