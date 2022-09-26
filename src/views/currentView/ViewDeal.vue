@@ -75,7 +75,7 @@
                                     :buttons="changeDealStatusMenuButtons"
                                     @didDismiss="actionSheetDealStatus = false"
                                 >
-                            </ion-action-sheet>
+                                </ion-action-sheet>
                             </ion-chip>
                             <!-- Тип дела -->
                             <ion-chip :color="setColorByDealType(currentDeal.dealType)" outline="true">

@@ -93,8 +93,17 @@
                                                         <ion-icon class="icon-thumbnail_icon" :icon="setIconByDealType(deal.dealType)"></ion-icon>
                                                     </ion-thumbnail>
                                                     <!-- Кнопка смены статуса дела -->
-                                                    <div @click.prevent.stop="doSomething">
-                                                        <Select :data="dealStatusList" :placeholder="translateValue(deal.dealStatus, dealStatusList)" @date-updated="(selected) => {deal.dealStatus = selected.currentValue; updateCurrentDealStatus(deal)}"/>
+                                                    <!-- <div @click.prevent.stop="doSomething">
+                                                        <Select :data="dealStatusList" :placeholder="translateValue(deal.dealStatus, dealStatusList)" @date-updated="(selected) => {
+                                                            deal.dealStatus = selected.currentValue; 
+                                                            updateCurrentDealStatus(deal)
+                                                        }"/>
+                                                    </div> -->
+                                                    <!--  -->
+                                                    <div @click.prevent.stop="openActionSheetDealStatusMenu(deal, deal.dealStatus)" style="margin-left: 0.4rem">
+                                                        <ion-text color="primary">
+                                                            {{translateValue(deal.dealStatus, dealStatusList)}}
+                                                        </ion-text>
                                                     </div>
                                                 </div>
                                                 <!-- Контакт по делу -->
@@ -158,6 +167,14 @@
             </div>
         </ion-content>
     </div>
+    <!-- Всплывашка изменения статуса конкретного дела-->
+    <ion-action-sheet
+        :is-open="actionSheetDealStatus"
+        header="Сменить статус дела"
+        :buttons="changeDealStatusMenuButtons"
+        @didDismiss="actionSheetDealStatus = false"
+    >
+    </ion-action-sheet>
 </template>
 
 <script>
@@ -191,7 +208,8 @@
         IonRow,
         IonCardContent,
         IonThumbnail,
-        IonItemGroup
+        IonItemGroup,
+        IonActionSheet
     } from '@ionic/vue';
     import { helpOutline } from 'ionicons/icons';
     import { defineComponent, ref, computed, onMounted, watch } from 'vue';
@@ -239,7 +257,8 @@
             IonRow,
             IonCardContent,
             IonThumbnail,
-            IonItemGroup
+            IonItemGroup,
+            IonActionSheet
         },
         setup() {
             // Get user from store
@@ -331,9 +350,11 @@
             // Work with deal card
             const doSomething = () => {
                 console.log('clicked')
+                // Это заглушка
             }
             // Меняем статус прямо на карточке дела
             const updateCurrentDealStatus = async (deal) => {
+                // console.log(`После обновления: ${deal.dealStatus}`)
                 // Обновляем данные в БД
                 try{
                     const { error } = await supabase.from('deals').update({
@@ -503,9 +524,73 @@
             const deleteSubject = (id) => {
                 dealData.value.dealsList = dealData.value.dealsList.filter(subject => subject.id !== id);
             }
+            //
+            const prevDealStatus = ref()
+            // Вызываем action sheet меню выбора статуса дела
+            const actionSheetDealStatus = ref(false)
+            const openActionSheetDealStatusMenu = (deal, dealStatus) => {
+                actionSheetDealStatus.value = true
+                // console.log(deal)
+                dealWhereChangeStatus.value = deal
+                // console.log(dealStatus)
+                prevDealStatus.value = dealStatus
+                // updateCurrentDealStatus(deal)
+            }
+            // переменные для управления сменой статусов у выбранной карточки дела (выбранного дела)
+            const dealStatus = ref();
+            const dealWhereChangeStatus = ref()
+            // ======================================= Массив кнопок в меню смены статуса у дела ==================================
+            const changeDealStatusMenuButtons = []
+            // добавляем в массив changeDealStatusMenuButtons объекты из dealStatusList
+            for(let i = 1; i <= dealStatusList.value.length; i++) {
+                changeDealStatusMenuButtons.push({
+                    text: dealStatusList.value[i-1].name,
+                    handler: () => {
+                        dealStatus.value = dealStatusList.value[i-1].value
+                        // console.log(`это handler: ${dealStatus.value}`)
+                        // помещаем во временную переменную обновленное значение статуса
+                        dealWhereChangeStatus.value.dealStatus = dealStatus.value 
+                        console.log(`Предыдущий статус: ${prevDealStatus.value}`)
+                        console.log(`Текущий статус: ${dealStatus.value}`)
+                        //
+
+                        // Что нам надо
+                        // debt > 0, debt < 0, debt === 0
+                        // culcDealDebt(dealWhereChangeStatus.value.totalDealPrice, dealWhereChangeStatus.value.dealPaid)
+                        // из viewDeal, watch(dealStatus)
+                        // openDealPaidMenu() из viewDeal
+                        // dealPaidAmountValue() из viewDeal
+                        // refreshDebtValue() из viewDeal
+                        // setAmountValue(amount) из viewDeal
+                        // isAllAttrReturnedFunc()
+                        // компонент DealPaidMenu
+                        if(dealWhereChangeStatus.value.dealStatus === 'deal-complete') {
+                            alert('Раотает')
+                        }
+
+
+                        // сохраняем изменения в БД
+                        updateCurrentDealStatus(dealWhereChangeStatus.value)
+                    }
+                })
+            }
+            // Добавляем кнопку отмены (скрытия меню)
+            changeDealStatusMenuButtons.push({
+                text: 'Отменить',
+                role: 'cancel',
+                handler: () => {
+                    console.log('Cancel clicked')
+                }
+            })
+            // удалить если не понадобится
+            // watch(dealStatus, (status) => {
+            //     console.log(`это watch: ${status}`)
+                
+            // })
+
 
             return {
-                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isViewDealModalOpened, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translateValue, refreshData, myContacts, getContact, showNameByID, checkRentAttr, dealTypesList, dealByType, showDealByType, helpOutline, addSubject, deleteSubject, setIconByDealType
+                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isViewDealModalOpened, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translateValue, refreshData, myContacts, getContact, showNameByID, checkRentAttr, dealTypesList, dealByType, showDealByType, helpOutline, addSubject, deleteSubject, setIconByDealType, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, dealStatus, dealWhereChangeStatus, prevDealStatus
             }
         }
     })

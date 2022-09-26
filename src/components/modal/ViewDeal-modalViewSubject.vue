@@ -73,7 +73,6 @@
                 </ion-grid>
             </ion-item-group>
 
-
             <!-- ================  Показываем в зависимости от выбранного типа дела ==============-->
             <!-- Если ПРОДАЖА -->
             <div v-if="currentDealType === 'sale' && subjectData.additionalAttributes">
