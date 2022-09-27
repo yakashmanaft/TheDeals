@@ -19,7 +19,7 @@
             <div>
                 <ion-datetime
                     minute-values="0,15,30,45"
-                    day-values="5,10,15, 18, 20,25,30"
+                    day-values="5,10,15, 18, 20,25,"
                     presentation="date"
                     size="cover"
                     @ionChange="doSomething"
