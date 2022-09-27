@@ -165,16 +165,26 @@
                 </div>
 
             </div>
+            <!--  -->
+            <DealPaidMenu
+                :is-open="isDealPaidMenuOpened"
+                @didDismiss="isDealPaidMenuOpened = false"
+                :currentDeal="dealWhereChangeStatus"
+                :debt="refreshDebtValue()"
+                @closeModal="closeDealPaidMenu"
+                :amount="dealPaidAmountValue()"
+                @getAmountValue="setAmountValue"
+            />
+            <!-- Всплывашка изменения статуса конкретного дела-->
+            <ion-action-sheet
+                :is-open="actionSheetDealStatus"
+                header="Сменить статус дела"
+                :buttons="changeDealStatusMenuButtons"
+                @didDismiss="actionSheetDealStatus = false"
+            >
+            </ion-action-sheet>
         </ion-content>
     </div>
-    <!-- Всплывашка изменения статуса конкретного дела-->
-    <ion-action-sheet
-        :is-open="actionSheetDealStatus"
-        header="Сменить статус дела"
-        :buttons="changeDealStatusMenuButtons"
-        @didDismiss="actionSheetDealStatus = false"
-    >
-    </ion-action-sheet>
 </template>
 
 <script>
@@ -184,6 +194,7 @@
     import CreateButton from '@/components/CreateButton.vue';
     import CreateNewDeal from '@/components/modal/NewDeal-modalCreate.vue';
     import Select from '@/components/Select.vue'
+    import DealPaidMenu from '../components/DealPaidMenu.vue';
     import { 
         IonContent, 
         IonHeader, 
@@ -258,9 +269,12 @@
             IonCardContent,
             IonThumbnail,
             IonItemGroup,
-            IonActionSheet
+            IonActionSheet,
+            DealPaidMenu
         },
         setup() {
+            // Currency
+            const currency = ref(store.state.systemCurrency.name)
             // Get user from store
             const user = computed(() => store.state.user);
             // Setup ref to router
@@ -539,6 +553,7 @@
             // переменные для управления сменой статусов у выбранной карточки дела (выбранного дела)
             const dealStatus = ref();
             const dealWhereChangeStatus = ref()
+            const debt = ref()
             // ======================================= Массив кнопок в меню смены статуса у дела ==================================
             const changeDealStatusMenuButtons = []
             // добавляем в массив changeDealStatusMenuButtons объекты из dealStatusList
@@ -552,23 +567,37 @@
                         dealWhereChangeStatus.value.dealStatus = dealStatus.value 
                         console.log(`Предыдущий статус: ${prevDealStatus.value}`)
                         console.log(`Текущий статус: ${dealStatus.value}`)
-                        //
-
-                        // Что нам надо
-                        // debt > 0, debt < 0, debt === 0
-                        // culcDealDebt(dealWhereChangeStatus.value.totalDealPrice, dealWhereChangeStatus.value.dealPaid)
-                        // из viewDeal, watch(dealStatus)
-                        // openDealPaidMenu() из viewDeal
-                        // dealPaidAmountValue() из viewDeal
-                        // refreshDebtValue() из viewDeal
-                        // setAmountValue(amount) из viewDeal
-                        // isAllAttrReturnedFunc()
                         // компонент DealPaidMenu
                         if(dealWhereChangeStatus.value.dealStatus === 'deal-complete') {
-                            alert('Раотает')
+                            culcDealDebt(dealWhereChangeStatus.value.totalDealPrice, dealWhereChangeStatus.value.dealPaid)
+                            if(debt.value > 0) {
+                                if(confirm(`Есть долг по оплате дела. Внести сумму задолженности или её часть?`)) {
+                                    // оставляем старый статус (так как не понятно всю ли сумму внесут по долгу)
+                                    dealWhereChangeStatus.value.dealStatus = prevDealStatus.value
+                                    openDealPaidMenu()
+                                } else {
+                                    // просто оставляем старый статус дела (НЕ меняем на завершен)
+                                    dealWhereChangeStatus.value.dealStatus = prevDealStatus.value
+                                }
+                            } else if (debt.value === 0) {
+                                // SALE
+                                if(dealWhereChangeStatus.value.dealType === 'sale') {
+                                    // Оставляем dealStatus как deal-complete
+                                    // НО проверить на наличие долга по аренде атрибутов
+                                    isAllAttrReturnedFunc()
+                                    console.log(dealWhereChangeStatus.value.dealType)
+                                } 
+                                // BUY
+                                else if (dealWhereChangeStatus.value.dealType === 'buy') {
+                                    // Оставляем dealStatus как deal-complete
+                                    // console.log(dealWhereChangeStatus.value.dealType)
+                                    alert('Deal: статус дела изменен на "ЗАВЕРШЕНО"')
+                                }
+                            } else if (debt.value < 0) {
+                                // Удалить, если не пригодится
+                                alert('Получается переплата... Верно?')
+                            }
                         }
-
-
                         // сохраняем изменения в БД
                         updateCurrentDealStatus(dealWhereChangeStatus.value)
                     }
@@ -587,10 +616,102 @@
             //     console.log(`это watch: ${status}`)
                 
             // })
+            // Считаем debt у конкретного дела
+            const culcDealDebt = (totalDealPrice, dealPaid) => {
+                // Пока так
+                debt.value = totalDealPrice - dealPaid
+                return debt.value
+            } 
+            // управление модалкой внесения оплаты
+            const isDealPaidMenuOpened = ref(false)
+            const openDealPaidMenu = () => {
+                isDealPaidMenuOpened.value = true
+                refreshDebtValue()
+            }
+            //
+            const refreshDebtValue = () => {
+                return debt.value
+            }
+            //
+            const closeDealPaidMenu = () => {
+                isDealPaidMenuOpened.value = false
+            }
+            // функция обнуления пропса по начальному значению суммы оплаты (для DealPaidMenu)
+            const dealPaidAmountValue = () => {
+                return 0
+            }
+            const setAmountValue = (amount) => {
+                if(dealWhereChangeStatus.value.dealPaid === 0){
+                    dealWhereChangeStatus.value.dealPaid = +amount
+                } else if (dealWhereChangeStatus.value.dealPaid !== 0) {
+                    dealWhereChangeStatus.value.dealPaid += +amount
+                }
+                culcDealDebt(dealWhereChangeStatus.value.totalDealPrice, dealWhereChangeStatus.value.dealPaid)
+                if(debt.value > 0) {
+                    // сообщаем пользователю сколько внесено
+                    alert(`Deal: внесено ${amount} ${currency.value}`)
+                    // закрываем dealPaidMenu
+                    closeDealPaidMenu()
+                } else if (debt.value === 0) {
+                    // SALE
+                    if(dealWhereChangeStatus.value.dealType === 'sale') {
+                        // Сейчас делу присвоен статус ЗАВЕРШЕН
+                        // уведомляем о количестве внесенных средств
+                        alert(`Deal: внесено ${amount} ${currency.value}`)
+                        // проверяем на наличие долгов по атрибутам
+                        isAllAttrReturnedFunc()
+                        console.log(dealWhereChangeStatus.value.dealType)
+                    } 
+                    // BUY
+                    else if (dealWhereChangeStatus.value.dealType === 'buy') {
+                        // уведомляем о количестве внесенных средств
+                        alert(`Deal: внесено ${amount} ${currency.value}`)
+                        // console.log(dealWhereChangeStatus.value.dealType)
+                        // Делу уже присвоен статус ЗАВЕРШЕН
+                        dealWhereChangeStatus.value.dealStatus = 'deal-complete'
+                        alert('Deal: статус дела изменен на "ЗАВЕРШЕНО"')
+                        closeDealPaidMenu()
+                        updateCurrentDealStatus(dealWhereChangeStatus.value)
+                    }
+                } else if (debt.value < 0) {
+                    // Удалить, если не пригодится
+                    alert('Получается переплата... Верно?')
+                }
+            }
+            //
+            const isAllAttrReturned = ref(false)
+            const isAllAttrReturnedFunc = () => {
+                let dealsListArray = dealWhereChangeStatus.value.dealsList
+                let subjectAttributesArray = dealsListArray.map(item => item.additionalAttributes)
+                // Упрощаем массив, поднимая вложенные массивы в массив верхнего уровня
+                let isReturnedArray = subjectAttributesArray.flat()
+                let isReturnData = isReturnedArray.map(item => item.isReturned) 
+                if(isReturnData.length === 0) {
+                    // Значит массив атрибутов пустой
+                    // При создании он всеравно есть, но изначально пустой
+                } else if (isReturnData.length !== 0) {
+                    // Если массив содержит невозвращенные атрибуты какого-либо предмета дела
+                    if(isReturnData.includes(false)) {
+                        isAllAttrReturned.value = false
+                        alert(`Deal: Вам вернули не все допы по заказу. Статус дела изменен на ДОЛГ`)
+                        dealWhereChangeStatus.value.dealStatus = 'deal-in-debt'
+                        // Если dealPaidMenu открыто
+                        closeDealPaidMenu()
+                    } else {
+                        // Если содержит все true (то есть всё уже вернули)
+                        isAllAttrReturned.value = true
+                        dealWhereChangeStatus.value.dealStatus = 'deal-complete'
+                        alert('Deal: статус дела изменен на ЗАВЕРШЕН')
+                        closeDealPaidMenu()
+                    }
+                }
+                // сохраняем изменения в БД
+                updateCurrentDealStatus(dealWhereChangeStatus.value)
+            }
 
 
             return {
-                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isViewDealModalOpened, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translateValue, refreshData, myContacts, getContact, showNameByID, checkRentAttr, dealTypesList, dealByType, showDealByType, helpOutline, addSubject, deleteSubject, setIconByDealType, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, dealStatus, dealWhereChangeStatus, prevDealStatus
+                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isViewDealModalOpened, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translateValue, refreshData, myContacts, getContact, showNameByID, checkRentAttr, dealTypesList, dealByType, showDealByType, helpOutline, addSubject, deleteSubject, setIconByDealType, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, dealStatus, dealWhereChangeStatus, prevDealStatus, debt, culcDealDebt, openDealPaidMenu, isDealPaidMenuOpened, refreshDebtValue, closeDealPaidMenu, dealPaidAmountValue, setAmountValue, isAllAttrReturnedFunc, currency, isAllAttrReturned
             }
         }
     })

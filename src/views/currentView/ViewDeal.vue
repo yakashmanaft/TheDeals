@@ -1433,7 +1433,7 @@
                     // SALE
                     if(currentDeal.value.dealType === 'sale') {
                         dealStatus.value = 'deal-complete'
-                        console.log(`Текущий статус: ${dealStatus.value}`)
+                        // console.log(`Текущий статус: ${dealStatus.value}`)
                         alert(`ViewDeal: внесено ${amount} ${currency.value}`)
                         isAllAttrReturnedFunc()
                         closeDealPaidMenu()
@@ -1468,14 +1468,14 @@
                  } else if (isReturnData.length !== 0) {
                     // Если массив содержит невозвращенные атрибуты какого-либо предмета дела
                     if(isReturnData.includes(false)) {
-                        console.log(`Текущий статус: ${dealStatus.value}`)
+                        // console.log(`Текущий статус: ${dealStatus.value}`)
                         // Если содержит false (то есть есть то, чего не вернули)
                         isAllAttrReturned.value = false
                         // alert(`ViewDeal: внесено ${amount} ${currency.value}`)
                         alert(`VewDeal: Вам вернули не все допы по заказу. Статус дела изменен на ДОЛГ`)
                         dealStatus.value = 'deal-in-debt'
                         currentDeal.value.dealStatus = 'deal-in-debt'
-                        console.log(`Текущий статус: ${dealStatus.value}`)
+                        // console.log(`Текущий статус: ${dealStatus.value}`)
                     } else{
                         // Если содержит все true (то есть всё уже вернули)
                         isAllAttrReturned.value = true
