@@ -723,7 +723,8 @@
                     shippingPrice: 0
                 }
                 dealData.value.totalDealPrice = 0
-                dealData.value.executionDate = ''
+                // убрать, если не пригодится
+                // dealData.value.executionDate = ''
                 dealData.value.dealPaid = 0
                 dealData.value.cancelledReason = ''
                 //

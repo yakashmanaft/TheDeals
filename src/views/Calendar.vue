@@ -61,6 +61,17 @@
                 :deals="dealsByChoosenDate"
                 :date="choosenDate"
                 @viewChoosenDeal="goToChoosenDeal"
+                @createNewDeal="createNewDeal"
+            />
+            <!-- Модалка по созданию нового дела -->
+            <CreateNewDeal
+                :isOpen="isViewDealModalOpened"
+                @closeModal="setOpen"
+                @createDeal="createNew"
+                :dealData="dealData"
+                :myContacts="myContacts"
+                @addSubject="addSubject"
+                @deleteSubject="deleteSubject"
             />
         </ion-content>
 </template>
@@ -73,7 +84,8 @@
     import Header from '../components/headers/Header.vue';
     import Spinner from '../components/Spinner.vue';
     import NavigationMenu from '../components/NavigationMenu.vue';
-    import ViewChoosenDate from '../components/modal/ViewChoosenDate.vue'
+    import ViewChoosenDate from '../components/modal/ViewChoosenDate.vue';
+    import CreateNewDeal from '../components/modal/NewDeal-modalCreate.vue';
     //
     import { 
         IonContent, 
@@ -96,6 +108,7 @@
     import { computed } from 'vue';
     import { supabase } from '../supabase/init';
     import { useRouter } from 'vue-router';
+    import { uid } from 'uid';
 
 
 
@@ -118,7 +131,8 @@
             NavigationMenu,
             IonDatetime,
             Spinner,
-            ViewChoosenDate
+            ViewChoosenDate,
+            CreateNewDeal
         },
         setup() {
             // Get user from store
@@ -139,6 +153,8 @@
             const myDeals = ref([]);
             // массив дел под конкретную дату
             const dealsByChoosenDate = ref([])
+            //
+            const dateCreate = ref();
             // функция запускается при клике на дату в календаре
             const chooseDate = () => {
                 // Смотри ion-datetime Events
@@ -191,9 +207,139 @@
                 isViewChoosenDateOpened.value = false
                 router.push({name: 'View-Deal', params: { dealId: deal.id, deal: JSON.stringify(deal)}})
             }
+            // ==============================================================
+            // Work with Modal Create New Deal
+            const isViewDealModalOpened = ref(false)
+            // Изменяемый шаблон нового дела
+            const dealData = ref({
+                uid: uid(),
+                email: userEmail.value,
+                dealType: '',
+                dealStatus: "deal-in-booking",
+                contactID: '000',
+                dealsList: [],
+                shipping: '',
+                totalDealPrice: 0,
+                // executionDate: dateCreate.value,
+                executionDate: '',
+                dealPaid: 0,
+                cancelledReason: ''
+            })
+            // При закрытии или открытии modal очищаем шаблон дела
+            const setOpen = () => {
+                isViewDealModalOpened.value = !isViewDealModalOpened.value;
+                dealData.value = {
+                    uid: uid(),
+                    email: userEmail.value,
+                    dealType: '',
+                    dealStatus:"deal-in-booking",
+                    contactID: '000',
+                    dealsList: [],
+                    shipping: {
+                        typeOfShipping: '',
+                        shippingPrice: 0
+                    },
+                    totalDealPrice: 0,
+                    executionDate: '',
+                    dealPaid: 0,
+                    cancelledReason: ''
+                }
+            }
+            // =============================================================
+            // Создаем новое дело
+            const createNewDeal = (date) => {
+                // console.log(date)
+                isViewChoosenDateOpened.value = false
+                isViewDealModalOpened.value = true
+                dateCreate.value = date
+                // передаем выбранную дату в шаблон создания нового дела
+                dealData.value.executionDate = dateCreate.value
+            }
+            // Создаем новую сделку
+            const createNew = async (newDealData) => {
+                // принимаем инфу по контакту из modal
+                dealData.value = newDealData
+                spinner.value = true;
+                // Если строки Имя Фамилия пустые или не пустые 
+                // использовать валидацию 
+                if(dealData.value.executionDate === ''){
+                    alert('Deals: Вы не выбрали дату исполнения')
+                } else if(dealData.value.dealType === '') {
+                    alert('Deals: Вы не указали тип дела')
+                } else if (!dealData.value.shipping.typeOfShipping && dealData.value.dealType === 'sale') {
+                    // Если не понадобится - убрать
+                    alert('Deals: Вы не указали способ доставки')
+                } else {
+                    try{
+                        // Добавляем в БД инфу по новому контакту
+                        // Скорей всего надо будет вынести в store или нет
+                        const { error } = await supabase.from('deals').insert([dealData.value])
+                        if(error) throw error;
+                        // обновляем массив в store
+                        await store.methods.getMyDealsFromBD();
+                        myDeals.value = store.state.myDealsArray
+                        // ищем созданное новое дело в массиве всех дел в store (по uid)
+                        const newDeal = myDeals.value.find(el => el.uid === dealData.value.uid)
+                        // закрываем modal
+                        isViewDealModalOpened.value = false;
+                        // переходим на страницу созданного нового контакта
+                        router.push({name: 'View-Deal', params: { dealId: newDeal.id, deal: JSON.stringify(newDeal)}})
+                    } catch (error) {
+                        alert(`Error: ${error.message}`)
+                    }
+                }
+            }
+            // Храним данные контакта
+            const myContacts = ref([])
+            onMounted( async () => {
+                await store.methods.getMyContactsFromDB()
+                myContacts.value = store.state.myContactsArray
+            })
+            // Передаем в роут данные ко конкретному контакту
+            const getContact = (contactID) => {
+                const result = myContacts.value.filter(contact => contact.id === +contactID)
+                const contact = result[0]
+                return JSON.stringify(contact)
+            }
+            // Подтягиваем name, surname на основании contactID
+            // Вынести в отдельный файл
+            const showNameByID = (contactID) => {
+                const result = myContacts.value.filter(contact => contact.id === +contactID)
+                if(result.length !== 0) {
+                    const nameByID = (result[0].contactInfo.surname + ' ' + result[0].contactInfo.name).toString().replace(/"/g, "")
+                    return nameByID;
+                } else if (result.length === 0) {
+                    const nameByID = 'Неизвестный'
+                    return nameByID;
+                }
+            }
+            // 
+            const addSubject = (subjectData) => {
+                // console.log(dealData.value.dealType)
+                dealData.value.dealsList.push({
+                    // id: uid(),
+                    id: subjectData.id,
+                    selectedProduct: subjectData.selectedProduct,
+                    price: subjectData.price,
+                    costEstimation: subjectData.costEstimation,
+                    personQuantity: subjectData.personQuantity,
+                    gramPerPerson: subjectData.gramPerPerson,
+                    subjectDiscount: subjectData.subjectDiscount,
+                    subjectPrice: subjectData.subjectPrice,
+                    recipe: subjectData.recipe, 
+                    productQuantity: subjectData.productQuantity,
+                    // массив пока шаблоном, в modalCreateSubject задавать значения
+                    additionalAttributes: subjectData.additionalAttributes,
+                    totalSubjectPrice: subjectData.totalSubjectPrice,
+                    productNote: subjectData.productNote,
+                })  
+            }
+            const deleteSubject = (id) => {
+                dealData.value.dealsList = dealData.value.dealsList.filter(subject => subject.id !== id);
+            }
 
             return {
-                menu, user, router, pageTitle, choosenDate, chooseDate, spinner, dataLoaded, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal
+                menu, user, router, pageTitle, choosenDate, chooseDate, spinner, dataLoaded, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, getContact, showNameByID, addSubject, deleteSubject
             }
         }
     })

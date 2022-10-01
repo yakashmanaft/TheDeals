@@ -7,7 +7,7 @@
                 </ion-buttons>
                 <ion-title>{{formattedDate(date)}}</ion-title>
                 <ion-buttons slot="end">
-                    <ion-button @click="createNewDeal(date)">Добавить</ion-button>
+                    <ion-button @click="$emit('createNewDeal', date)">Добавить</ion-button>
                 </ion-buttons>
             </ion-toolbar>
         </ion-header>
@@ -47,7 +47,7 @@
 
     export default defineComponent({
         name: 'ViewChoosenDate',
-        emit: ['closeModal', 'viewChoosenDeal'],
+        emit: ['closeModal', 'viewChoosenDeal', 'createNewDeal'],
         props: {
             deals: Array,
             date: String
@@ -72,15 +72,9 @@
                 deals.value = props.deals;
                 date.value = props.date;
             })
-            // Создаем новое дело
-            const createNewDeal = (date) => {
-                // при создании надо передавать выбранную уже дату... чтобы второй раз её не выбирать
-                console.log(date)
-                alert('ViewChoosenDate: функционал в разработке...')
-            }
 
             return {
-                router, deals, date, formattedDate, createNewDeal
+                router, deals, date, formattedDate
             }
         }
     })
