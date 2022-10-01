@@ -375,7 +375,7 @@
                                 <ion-grid v-for="attribute in item.additionalAttributes" :key="attribute.id" class="ion-no-padding ion-margin-top" >
                                     <ion-row class="ion-justify-content-between ion-align-items-center">
                                         <ion-text>{{attribute.name}}</ion-text>
-                                        <ion-text>{{ (attribute.qty).toFixed(2) }} * {{ (attribute.price).toFixed(2)}} = {{ (attribute.totalPrice).toFixed(2) }} </ion-text>
+                                        <ion-text>{{ (attribute.qty).toFixed(2) }} * {{ attribute.price}} = {{ (attribute.totalPrice).toFixed(2) }} </ion-text>
                                     </ion-row>
                                     <ion-row class="ion-justify-content-between ion-align-items-center">
                                         <ion-text color="medium">Атрибут</ion-text>
