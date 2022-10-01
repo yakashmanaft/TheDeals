@@ -54,24 +54,13 @@
                 </ion-item-group>
                 <!-- {{choosenDate}} -->
             </div>
-            
-
-            <br>
-            <br>
-            <div>
-                <!-- {{myDeals}} -->
-            </div>
-            <!--  -->
-            <br>
-            <div>
-                {{dealsByChoosenDate}}
-            </div>
             <!-- Модалка дел по выбранной дате -->
             <ViewChoosenDate
                 :is-open="isViewChoosenDateOpened"
                 @closeModal="closeViewChoosenDate"
                 :deals="dealsByChoosenDate"
                 :date="choosenDate"
+                @viewChoosenDeal="goToChoosenDeal"
             />
         </ion-content>
 </template>
@@ -140,6 +129,10 @@
             const pageTitle = router.currentRoute._value.meta.translation;
             // Пеменная для выбранной в календаре даты
             const choosenDate = ref();
+            // Get user email
+            store.methods.setUserEmail()
+            const userEmail = ref(store.state.userEmail)
+            console.log(userEmail.value)
             //
             const spinner = ref(null);
             const dataLoaded = ref(null);
@@ -149,9 +142,7 @@
             // функция запускается при клике на дату в календаре
             const chooseDate = () => {
                 // Смотри ion-datetime Events
-                console.log(formattedDate(choosenDate.value))
-                // return choosenDate.value
-                // console.log(choosenDate.value)
+                // console.log(formattedDate(choosenDate.value))
                 isViewChoosenDateOpened.value = true
             }
             // 
@@ -185,8 +176,6 @@
                         return deal
                     }
                 })
-                console.log(dealsByChoosenDate.value.length)
-                // расчет количества дел по выбранной дате
             })
             // Управление модалкой просмотра даты
             const isViewChoosenDateOpened = ref(false)
@@ -196,9 +185,15 @@
                 // dealsByChoosenDate.value = []
                 // choosenDate.value = null
             }
+            // Переходим в карточку вабранного дела
+            const goToChoosenDeal = (deal) => {
+                // console.log(deal)
+                isViewChoosenDateOpened.value = false
+                router.push({name: 'View-Deal', params: { dealId: deal.id, deal: JSON.stringify(deal)}})
+            }
 
             return {
-                menu, user, router, pageTitle, choosenDate, chooseDate, spinner, dataLoaded, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate
+                menu, user, router, pageTitle, choosenDate, chooseDate, spinner, dataLoaded, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal
             }
         }
     })

@@ -92,13 +92,6 @@
                                                     <ion-thumbnail class="icon-thumbnail absolute" :class="{'icon-thumbnail_sale': deal.dealType === 'sale', 'icon-thumbnail_buy': deal.dealType === 'buy'}">
                                                         <ion-icon class="icon-thumbnail_icon" :icon="setIconByDealType(deal.dealType)"></ion-icon>
                                                     </ion-thumbnail>
-                                                    <!-- Кнопка смены статуса дела -->
-                                                    <!-- <div @click.prevent.stop="doSomething">
-                                                        <Select :data="dealStatusList" :placeholder="translateValue(deal.dealStatus, dealStatusList)" @date-updated="(selected) => {
-                                                            deal.dealStatus = selected.currentValue; 
-                                                            updateCurrentDealStatus(deal)
-                                                        }"/>
-                                                    </div> -->
                                                     <!--  -->
                                                     <div @click.prevent.stop="openActionSheetDealStatusMenu(deal, deal.dealStatus)" style="margin-left: 0.4rem">
                                                         <ion-text color="primary">

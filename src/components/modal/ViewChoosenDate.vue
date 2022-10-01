@@ -2,30 +2,35 @@
     <ion-modal>
         <ion-header>
             <ion-toolbar>
-                <ion-buttons slot="end">
+                <ion-buttons slot="start">
                     <ion-button @click="$emit('closeModal')">Закрыть</ion-button>
                 </ion-buttons>
                 <ion-title>{{formattedDate(date)}}</ion-title>
+                <ion-buttons slot="end">
+                    <ion-button @click="createNewDeal(date)">Добавить</ion-button>
+                </ion-buttons>
             </ion-toolbar>
         </ion-header>
         <ion-content>
             <!-- Маячок о количестве дел -->
-            <div>
-                <ion-text v-if="deals.length > 0">
+            <div class="ion-margin-top ion-text-center">
+                <ion-text color="medium" v-if="deals.length > 0">
                     Запланированных дел: {{deals.length}}
                 </ion-text>
-                <ion-text v-if="deals.length === 0">
-                    Нет запланированных дел
-                </ion-text>
+                <div class="no-deal" v-if="deals.length === 0">
+                    <ion-text color="medium">Нет запланированных дел</ion-text>
+                </div>
+                <!-- <ion-button @click="createNewDeal" class="ion-margin-top" expand="block">Создать дело</ion-button> -->
             </div>
             <!-- Карточки дел -->
             <div v-for="deal in deals" :key="deal.id" class="ion-margin-bottom">
-                <router-link :to="{ name: 'View-Deal', params: {
-                    dealId: deal.id,
-                    deal: JSON.stringify(deal)
-                }}">
+                <ion-card @click="$emit('viewChoosenDeal', deal)" class="ion-padding-horizontal ion-padding-vertical">
+                    <!-- Header of the card -->
+                    <ion-card-header class="ion-no-padding">
+
+                    </ion-card-header>
                     {{deal.id}} 
-                </router-link>
+                </ion-card>
             </div>
         </ion-content>
     </ion-modal>
@@ -33,7 +38,7 @@
 
 <script>
     import { defineComponent, ref, watchEffect } from 'vue';
-    import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonText } from '@ionic/vue';
+    import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonText, IonCard, IonCardHeader } from '@ionic/vue';
     //
     import { format, parseISO, formatISO  } from 'date-fns';
     import { ru } from 'date-fns/locale';
@@ -42,13 +47,13 @@
 
     export default defineComponent({
         name: 'ViewChoosenDate',
-        emit: ['closeModal'],
+        emit: ['closeModal', 'viewChoosenDeal'],
         props: {
             deals: Array,
             date: String
         },
         components: {
-            IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonText
+            IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonText, IonCard, IonCardHeader
         },
         setup(props, {emit}) {
             // Setup ref to router
@@ -67,14 +72,26 @@
                 deals.value = props.deals;
                 date.value = props.date;
             })
-            //
+            // Создаем новое дело
+            const createNewDeal = (date) => {
+                // при создании надо передавать выбранную уже дату... чтобы второй раз её не выбирать
+                console.log(date)
+                alert('ViewChoosenDate: функционал в разработке...')
+            }
+
             return {
-                router, deals, date, formattedDate
+                router, deals, date, formattedDate, createNewDeal
             }
         }
     })
 </script>
 
 <style scoped>
-
+    .no-deal {
+        height: 80vh; 
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+        justify-content: center;
+    }
 </style>

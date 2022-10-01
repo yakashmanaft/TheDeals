@@ -532,6 +532,11 @@
             const userSettings = ref(store.state.userSettings)
             //
             onMounted( async() => {
+                // if(userSettings.value[0].userAdditionalAttributes) {
+                //     await store.methods.getUserSettingsfromDB();
+                //     userSettings.value = store.state.userSettings
+                //     dealAdditionalAttributesArray.value = userSettings.value[0].userAdditionalAttributes
+                // }
                 await store.methods.getUserSettingsfromDB();
                 userSettings.value = store.state.userSettings
                 dealAdditionalAttributesArray.value = userSettings.value[0].userAdditionalAttributes
