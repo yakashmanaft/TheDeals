@@ -108,7 +108,7 @@
                                                                 contactId: deal.contactID,
                                                                 contact: getContact(deal.contactID)
                                                                 }}"
-                                                        >{{showNameByID(deal.contactID)}}</router-link>
+                                                        >{{showNameByID(deal.contactID, myContacts)}}</router-link>
                                                     </ion-text>
                                                 </div>
                                             </ion-row>
@@ -132,9 +132,6 @@
                                                         </div>
                                                     </ion-thumbnail>
                                                     <!--  -->
-                                                    <!-- <ion-thumbnail v-if="item.selectedProduct === ''" class="empty-deal-list_thumbnail">
-                                                        <ion-icon class="empty-deal-list_icon" :icon="helpOutline"></ion-icon>
-                                                    </ion-thumbnail> -->
                                                     <ion-label style="font-size: 12px">
                                                         x{{item.productQuantity}}
                                                     </ion-label>
@@ -228,6 +225,7 @@
     import { translateValue } from '@/helpers/translateValue';
     import { setChipOutline } from '@/helpers/setChip';
     import { checkRentAttr } from '@/helpers/checkRentAttr'; 
+    import { showNameByID } from '@/helpers/setNameByID';
     //
     export default defineComponent({
         name: 'Deals',
@@ -384,20 +382,7 @@
                 const result = myContacts.value.filter(contact => contact.id === +contactID)
                 const contact = result[0]
                 return JSON.stringify(contact)
-            }
-            // Подтягиваем name, surname на основании contactID
-            // Вынести в отдельный файл
-            const showNameByID = (contactID) => {
-                const result = myContacts.value.filter(contact => contact.id === +contactID)
-                if(result.length !== 0) {
-                    const nameByID = (result[0].contactInfo.surname + ' ' + result[0].contactInfo.name).toString().replace(/"/g, "")
-                    return nameByID;
-                } else if (result.length === 0) {
-                    const nameByID = 'Неизвестный'
-                    return nameByID;
-                }
-            }
-            
+            }          
             // ====================================================================
             // Work with Modal Create New Deal
             const isViewDealModalOpened = ref(false)

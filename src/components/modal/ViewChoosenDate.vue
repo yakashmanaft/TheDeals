@@ -14,7 +14,7 @@
         <ion-content>
             <!-- Маячок о количестве дел -->
             <div class="ion-margin-top ion-text-center">
-                <ion-text color="medium" v-if="deals.length > 0">
+                <ion-text color="success" v-if="deals.length > 0">
                     Запланированные
                 </ion-text>
                 <div class="no-deal" v-if="deals.length === 0">
@@ -33,12 +33,12 @@
                     @click="$emit('viewChoosenDeal', deal)"
                     :deal="deal"
                     @getContact="setContact"
-                    :contactNameByID="setNameByID(deal.contactID)"
+                    :contactNameByID="showNameByID(deal.contactID, myContacts)"
                 />
             </div>
             <!-- ==================================== Если завершены ==================================== -->
             <div v-if="checkStatus('deal-complete')" class="ion-margin-top ion-text-center">
-                <ion-text color="success">Завершенные</ion-text>
+                <ion-text color="medium">Завершенные</ion-text>
             </div>
             <div v-for="deal in deals" :key="deal.id">
                 <DealCard
@@ -46,12 +46,13 @@
                     @click="$emit('viewChoosenDeal', deal)"
                     :deal="deal"
                     @getContact="setContact"
-                    :contactNameByID="setNameByID(deal.contactID)"
+                    :contactNameByID="showNameByID(deal.contactID, myContacts)"
+                    class="deal-cover"
                 />
             </div>
             <!-- Если Отменены -->
             <div v-if="checkStatus('deal-cancelled')" class="ion-margin-top ion-text-center">
-                <ion-text color="warning">Отмененные</ion-text>
+                <ion-text color="medium">Отмененные</ion-text>
             </div>
             <div v-for="deal in deals" :key="deal.id">
                 <DealCard
@@ -59,7 +60,8 @@
                     @click="$emit('viewChoosenDeal', deal)"
                     :deal="deal"
                     @getContact="setContact"
-                    :contactNameByID="setNameByID(deal.contactID)"
+                    :contactNameByID="showNameByID(deal.contactID, myContacts)"
+                    class="deal-cover"
                 />
             </div>
             <br>
@@ -82,13 +84,16 @@
     import { helpOutline } from 'ionicons/icons';
     //
     import DealCard from '../DealCard.vue';
+    //
+    import { showNameByID } from '../../helpers/setNameByID'
 
     export default defineComponent({
         name: 'ViewChoosenDate',
         emit: ['closeModal', 'viewChoosenDeal', 'createNewDeal', 'goToChoosenContact'],
         props: {
             deals: Array,
-            date: String
+            date: String,
+            myContactsArray: Array
         },
         components: {
             IonModal,
@@ -142,28 +147,19 @@
             } 
             // Храним данные контакта
             const myContacts = ref([])
-            onMounted( async () => {
-                await store.methods.getMyContactsFromDB()
-                myContacts.value = store.state.myContactsArray
-            })
             // Эмитим наверх айдишник ко конкретному контакту
             const setContact = (dealContactID) => {
                 emit('goToChoosenContact', dealContactID)
             } 
             //
-            const contactNameByID = ref();
-            const setNameByID = (contactID) => {
-                // contactNameByID.value = contactID
-                return contactID
-            }
-            //
             watchEffect(() => {
                 deals.value = props.deals;
                 date.value = props.date;
+                myContacts.value = props.myContactsArray
             })
 
             return {
-                router, deals, date, formattedDate, helpOutline, checkStatus, checkStatusAndLength, setContact, myContacts, contactNameByID, setNameByID
+                router, deals, date, formattedDate, helpOutline, checkStatus, checkStatusAndLength, setContact, myContacts, showNameByID
             }
         }
     })
@@ -176,5 +172,19 @@
         flex-direction: column; 
         align-items: center; 
         justify-content: center;
+    }
+    .deal-cover {
+        box-shadow: none;
+        position: relative;
+        background-color: var(--ion-color-light)
+    }
+    .deal-cover:after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        backdrop-filter: blur(20rem) opacity(0.8)
     }
 </style>

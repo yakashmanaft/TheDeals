@@ -18,16 +18,47 @@
                     <!-- Контакт по делу -->
                     <div>
                         <ion-text v-if="deal.contactID === '000'" color="primary">Неизвестный</ion-text>
-                        <ion-text v-else>
-                            <div @click.prevent.stop="$emit('getContact', deal.contactID)">
-                                {{contactName}}
-                            </div>
+                        <ion-text v-else color="primary" @click.prevent.stop="$emit('getContact', deal.contactID)">
+                            {{contactName}}
                         </ion-text>
                     </div>
                 </ion-row>
             </ion-grid>
         </ion-card-header>
-        {{deal.id}}
+        <!-- Body of the card -->
+        <ion-card-content class="ion-no-padding ion-margin-top">
+            <!-- Предмет заказа -->
+            <ion-grid>
+                <ion-row style="gap: 0.8rem">
+                    <div class="relative product-block" v-for="(item, index) in deal.dealsList" :key="index">
+                        <!-- item -->
+                        <ion-thumbnail v-if="item.selectedProduct !== ''" style="height: 64px; width: 64px;">
+                            <!-- Если типа дела Продажа -->
+                            <div v-if="deal.dealType === 'sale'">
+                                <ion-img style="height: 100%" :src="`img/subjects/sale/${item.selectedProduct}.webp`"></ion-img>
+                            </div>
+                            <!-- Если типа дела Закупка -->
+                            <div v-if="deal.dealType === 'buy'">
+                                <ion-img style="height: 100%" :src="`img/subjects/buy/${item.selectedProduct}.webp`"></ion-img>
+                            </div>
+                        </ion-thumbnail>
+                        <!--  -->
+                        <ion-label style="font-size: 12px">
+                            x{{item.productQuantity}}
+                        </ion-label>
+                        <!-- mark where subject has attribute -->
+                        <div v-if="checkRentAttr(item, deal.dealType)" class="absolute mark-atribute"></div>
+                    </div>
+                    <div v-if="deal.dealsList.length" class="empty-item"></div>
+                    <!-- deal.dealsList is empty array -->
+                    <div v-if="!deal.dealsList.length">
+                        <ion-thumbnail class="empty-deal-list_thumbnail">
+                            <ion-icon class="empty-deal-list_icon" :icon="helpOutline"></ion-icon>
+                        </ion-thumbnail>
+                    </div>
+                </ion-row>
+            </ion-grid>
+        </ion-card-content>
     </ion-card>
 </template>
 
@@ -35,14 +66,14 @@
     import { defineComponent, ref, watchEffect, onMounted } from 'vue';
     import store from '../store/index';
     //
-    import { IonCard, IonCardHeader, IonGrid, IonRow, IonThumbnail, IonIcon, IonText } from '@ionic/vue'
+    import { IonCard, IonCardHeader, IonGrid, IonRow, IonThumbnail, IonIcon, IonText, IonCardContent, IonImg, IonLabel } from '@ionic/vue'
     //
     import { helpOutline } from 'ionicons/icons';
     //
-    import { setIconByDealType } from '@/helpers/setIconBy'
-    import { translateValue } from '@/helpers/translateValue'
-
-
+    import { setIconByDealType } from '@/helpers/setIconBy';
+    import { translateValue } from '@/helpers/translateValue';
+    import { checkRentAttr } from '@/helpers/checkRentAttr';
+    //
     export default defineComponent({
         name: 'DealCard',
         emit: ['getContact'],
@@ -51,7 +82,7 @@
             contactNameByID: String
         },
         components: {
-            IonCard, IonCardHeader, IonGrid, IonRow, IonThumbnail, IonIcon, IonText
+            IonCard, IonCardHeader, IonGrid, IonRow, IonThumbnail, IonIcon, IonText, IonCardContent, IonImg, IonLabel
         },
         setup(props, {emit}) {
             //
@@ -69,7 +100,7 @@
             })
 
             return {
-                deal, helpOutline, setIconByDealType, translateValue, dealStatusList, openActionSheetDealStatusMenu, contactName
+                deal, helpOutline, setIconByDealType, translateValue, dealStatusList, openActionSheetDealStatusMenu, contactName, checkRentAttr
             }
         }
     })
@@ -133,5 +164,11 @@
     }
     .icon-thumbnail_buy {
         background-color: var(--ion-color-warning);
+    }
+    .product-block {
+        display: flex; 
+        flex-direction: column; 
+        align-items: center;
+        gap: 0.3rem;
     }
 </style>

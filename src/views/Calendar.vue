@@ -60,6 +60,7 @@
                 @closeModal="closeViewChoosenDate"
                 :deals="dealsByChoosenDate"
                 :date="choosenDate"
+                :myContactsArray="myContacts"
                 @viewChoosenDeal="goToChoosenDeal"
                 @createNewDeal="createNewDeal"
                 @goToChoosenContact="goToChoosenContact"
@@ -303,6 +304,10 @@
                 await store.methods.getMyContactsFromDB()
                 myContacts.value = store.state.myContactsArray
             })
+            //
+            // const showNameByID = (contactID) => {
+            //     return contactID
+            // }
             // Передаем в роут данные ко конкретному контакту
             // const getContact = (contactID) => {
             //     const result = myContacts.value.filter(contact => contact.id === +contactID)
