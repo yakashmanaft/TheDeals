@@ -14,7 +14,7 @@
         <ion-content>
             <!-- Маячок о количестве дел -->
             <div class="ion-margin-top ion-text-center">
-                <ion-text color="success" v-if="deals.length > 0">
+                <ion-text color="medium" v-if="deals.length > 0">
                     Запланированные
                 </ion-text>
                 <div class="no-deal" v-if="deals.length === 0">
