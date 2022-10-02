@@ -62,6 +62,7 @@
                 :date="choosenDate"
                 @viewChoosenDeal="goToChoosenDeal"
                 @createNewDeal="createNewDeal"
+                @goToChoosenContact="goToChoosenContact"
             />
             <!-- Модалка по созданию нового дела -->
             <CreateNewDeal
@@ -207,6 +208,13 @@
                 isViewChoosenDateOpened.value = false
                 router.push({name: 'View-Deal', params: { dealId: deal.id, deal: JSON.stringify(deal)}})
             }
+            // Переходим в выбранный в карточке дела контакт
+            const goToChoosenContact = (dealContactID) => {
+                isViewChoosenDateOpened.value = false
+                const result = myContacts.value.filter(contact => contact.id === +dealContactID)
+                const contact = result[0]
+                router.push({name: 'View-Contact', params: { contactId: dealContactID, contact: JSON.stringify(contact) }})
+            }
             // ==============================================================
             // Work with Modal Create New Deal
             const isViewDealModalOpened = ref(false)
@@ -296,23 +304,23 @@
                 myContacts.value = store.state.myContactsArray
             })
             // Передаем в роут данные ко конкретному контакту
-            const getContact = (contactID) => {
-                const result = myContacts.value.filter(contact => contact.id === +contactID)
-                const contact = result[0]
-                return JSON.stringify(contact)
-            }
+            // const getContact = (contactID) => {
+            //     const result = myContacts.value.filter(contact => contact.id === +contactID)
+            //     const contact = result[0]
+            //     return JSON.stringify(contact)
+            // }
             // Подтягиваем name, surname на основании contactID
             // Вынести в отдельный файл
-            const showNameByID = (contactID) => {
-                const result = myContacts.value.filter(contact => contact.id === +contactID)
-                if(result.length !== 0) {
-                    const nameByID = (result[0].contactInfo.surname + ' ' + result[0].contactInfo.name).toString().replace(/"/g, "")
-                    return nameByID;
-                } else if (result.length === 0) {
-                    const nameByID = 'Неизвестный'
-                    return nameByID;
-                }
-            }
+            // const showNameByID = (contactID) => {
+            //     const result = myContacts.value.filter(contact => contact.id === +contactID)
+            //     if(result.length !== 0) {
+            //         const nameByID = (result[0].contactInfo.surname + ' ' + result[0].contactInfo.name).toString().replace(/"/g, "")
+            //         return nameByID;
+            //     } else if (result.length === 0) {
+            //         const nameByID = 'Неизвестный'
+            //         return nameByID;
+            //     }
+            // }
             // 
             const addSubject = (subjectData) => {
                 // console.log(dealData.value.dealType)
@@ -339,7 +347,7 @@
             }
 
             return {
-                menu, user, router, pageTitle, choosenDate, chooseDate, spinner, dataLoaded, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, getContact, showNameByID, addSubject, deleteSubject
+                menu, user, router, pageTitle, choosenDate, chooseDate, spinner, dataLoaded, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact
             }
         }
     })

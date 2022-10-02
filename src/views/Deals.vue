@@ -224,7 +224,7 @@
     import { format, parseISO, formatISO  } from 'date-fns';
     import { ru } from 'date-fns/locale';
     //
-    import { setIconByDealType } from '../helpers/setIconBy';
+    import { setIconByDealType } from '@/helpers/setIconBy';
     import { translateValue } from '@/helpers/translateValue';
     import { setChipOutline } from '@/helpers/setChip';
     import { checkRentAttr } from '@/helpers/checkRentAttr'; 

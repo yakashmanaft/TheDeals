@@ -725,8 +725,10 @@
                     const { error } = await supabase.from('deals').delete().eq('id',currentId);
                     if(error) throw error;
                     router.push({ name: 'Deals' })
+                    alert('Дело удалено')
                 } catch (error) {
-                    alert(`Error: ${error.message}`)
+                    // Удалить если не понадобится
+                    // alert(`Error: ${error.message}`)
                 }
             }
             // меню подтверждения удаления current contact
