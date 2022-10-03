@@ -671,6 +671,9 @@
                 if(isReturnData.length === 0) {
                     // Значит массив атрибутов пустой
                     // При создании он всеравно есть, но изначально пустой
+                    dealWhereChangeStatus.value.dealStatus = 'deal-complete'
+                    alert('Deal: статус дела изменен на ЗАВЕРШЕН')
+                    closeDealPaidMenu()
                 } else if (isReturnData.length !== 0) {
                     // Если массив содержит невозвращенные атрибуты какого-либо предмета в деле
                     if(isReturnData.includes(false)) {

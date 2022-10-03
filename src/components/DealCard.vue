@@ -61,6 +61,7 @@
         </ion-card-content>
         <!-- Модалка внесения средства по оплате -->
         <DealPaidMenu
+            :class="{ 'show-modal': isDealPaidMenuOpened === true}"
             :is-open="isDealPaidMenuOpened"
             :currentDeal="dealWhereChangeStatus"
             :debt="refreshDebtValue()"
@@ -171,6 +172,7 @@
                                 else if (dealWhereChangeStatus.value.dealType === 'buy') {
                                     // Оставляем dealStatus как deal-complete
                                     alert('DealCard: статус дела изменен на "ЗАВЕРШЕНО"')
+                                    // closeDealPaidMenu()
                                 }
                             } else if (debt.value < 0) {
                                 // Оставляем dealStatus как deal-complete
@@ -232,6 +234,7 @@
             }
             //
             const setAmountValue = (amount) => {
+                console.log(isDealPaidMenuOpened.value)
                 if(dealWhereChangeStatus.value.dealPaid === 0){
                     dealWhereChangeStatus.value.dealPaid = +amount
                 } else if (dealWhereChangeStatus.value.dealPaid !== 0) {
@@ -240,51 +243,58 @@
                 culcDealDebt(dealWhereChangeStatus.value.totalDealPrice, dealWhereChangeStatus.value.dealPaid)
                 if(debt.value > 0) {
                     // сообщаем пользователю сколько внесено
-                    alert(`Deal: внесено ${amount} ${currency.value}`)
+                    alert(`DealCard: внесено ${amount} ${currency.value}`)
                     // закрываем dealPaidMenu
                     closeDealPaidMenu()
                     // сохраняем изменения в БД
                     update()
                 } else if (debt.value === 0) {
+                    // уведомляем о количестве внесенных средств
+                    alert(`DealCard: внесено ${amount} ${currency.value}`)
                     // SALE
                     if(dealWhereChangeStatus.value.dealType === 'sale') {
                         // Сейчас делу присвоен статус ЗАВЕРШЕН
-                        // уведомляем о количестве внесенных средств
-                        alert(`Deal: внесено ${amount} ${currency.value}`)
                         // проверяем на наличие долгов по атрибутам
                         isAllAttrReturnedFunc()
+                        // closeDealPaidMenu()
                         // console.log(dealWhereChangeStatus.value.dealType)
                         // updateCurrentDealStatus(dealWhereChangeStatus.value)
                     } 
                     // BUY
                     else if (dealWhereChangeStatus.value.dealType === 'buy') {
-                        // уведомляем о количестве внесенных средств
-                        alert(`Deal: внесено ${amount} ${currency.value}`)
                         // console.log(dealWhereChangeStatus.value.dealType)
-                        // Делу уже присвоен статус ЗАВЕРШЕН
-                        dealWhereChangeStatus.value.dealStatus = 'deal-complete'
-                        alert('Deal: статус дела изменен на "ЗАВЕРШЕНО"')
+                        alert('DealCard: статус дела изменен на "ЗАВЕРШЕНО"')
                         closeDealPaidMenu()
+                        dealWhereChangeStatus.value.dealStatus = 'deal-complete'
+                        //
+                        console.log(isDealPaidMenuOpened.value)
+                        //
                         updateCurrentDealStatus(dealWhereChangeStatus.value)
                         update()
+                        // console.log(isDealPaidMenuOpened.value) 
                     }
                 } else if (debt.value < 0) {
                     // Удалить, если не пригодится
                     alert('Получается переплата... Верно?')
                 }
+                // closeDealPaidMenu()
             }
             //
             const isAllAttrReturned = ref(false)
             const isAllAttrReturnedFunc = () => {
+                // console.log(isDealPaidMenuOpened.value)
                 let dealsListArray = dealWhereChangeStatus.value.dealsList
                 let subjectAttributesArray = dealsListArray.map(item => item.additionalAttributes)
                 // Упрощаем массив, поднимая вложенные массивы в массив верхнего уровня
                 let isReturnedArray = subjectAttributesArray.flat()
-                console.log(isReturnedArray)
+                // console.log(isReturnedArray)
                 let isReturnData = isReturnedArray.map(item => item.isReturned) 
                 if(isReturnData.length === 0) {
                     // Значит массив атрибутов пустой
                     // При создании он всеравно есть, но изначально пустой
+                    dealWhereChangeStatus.value.dealStatus = 'deal-complete'
+                    alert('Deal: статус дела изменен на ЗАВЕРШЕН')
+                    closeDealPaidMenu()
                 } else if (isReturnData.length !== 0) {
                     // Если массив содержит невозвращенные атрибуты какого-либо предмета в деле
                     if(isReturnData.includes(false)) {
@@ -296,11 +306,14 @@
                     } else {
                         // Если содержит все true (то есть всё уже вернули)
                         isAllAttrReturned.value = true
-                        alert('DealCard: статус дела изменен на ЗАВЕРШЕН')
+                        alert('DealCard: статус дела изменен на ЗАВЕРШЕНО')
                         dealWhereChangeStatus.value.dealStatus = 'deal-complete'
+                        // Если dealPaidMenu открыто
                         closeDealPaidMenu()
+                        // console.log(isDealPaidMenuOpened.value)
                     }
                 }
+                // closeDealPaidMenu()
                 // сохраняем изменения в БД
                 updateCurrentDealStatus(dealWhereChangeStatus.value)
                 update()
@@ -413,5 +426,8 @@
     } */
     ion-modal {
         --backdrop-opacity: var(--ion-backdrop-opacity, 0.4)!important;
+    }
+    .display-none {
+        display: none;
     }
 </style>
