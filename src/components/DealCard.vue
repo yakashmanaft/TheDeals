@@ -59,20 +59,44 @@
                 </ion-row>
             </ion-grid>
         </ion-card-content>
+        <!-- Модалка внесения средства по оплате -->
+        <DealPaidMenu
+            :is-open="isDealPaidMenuOpened"
+            :currentDeal="dealWhereChangeStatus"
+            :debt="refreshDebtValue()"
+            :amount="dealPaidAmountValue()"
+            @getAmountValue="setAmountValue"                
+            @closeModal="closeDealPaidMenu"
+            @didDismiss="isDealPaidMenuOpened = false"
+        />
+        <!-- Всплывашка изменения статуса конкретного дела-->
+        <ion-action-sheet
+            :is-open="actionSheetDealStatus"
+            header="Сменить статус дела"
+            :buttons="changeDealStatusMenuButtons"
+            @didDismiss="actionSheetDealStatus = false"
+        >
+        </ion-action-sheet>    
     </ion-card>
 </template>
 
 <script>
     import { defineComponent, ref, watchEffect, onMounted } from 'vue';
+    // import { useRoute, useRouter } from 'vue-router';
+    //
     import store from '../store/index';
     //
-    import { IonCard, IonCardHeader, IonGrid, IonRow, IonThumbnail, IonIcon, IonText, IonCardContent, IonImg, IonLabel } from '@ionic/vue'
+    import { IonCard, IonCardHeader, IonGrid, IonRow, IonThumbnail, IonIcon, IonText, IonCardContent, IonImg, IonLabel, IonActionSheet } from '@ionic/vue'
     //
     import { helpOutline } from 'ionicons/icons';
     //
     import { setIconByDealType } from '@/helpers/setIconBy';
     import { translateValue } from '@/helpers/translateValue';
     import { checkRentAttr } from '@/helpers/checkRentAttr';
+    //
+    import { supabase } from '@/supabase/init';
+    //
+    import DealPaidMenu from '@/components/DealPaidMenu.vue';
     //
     export default defineComponent({
         name: 'DealCard',
@@ -82,16 +106,229 @@
             contactNameByID: String
         },
         components: {
-            IonCard, IonCardHeader, IonGrid, IonRow, IonThumbnail, IonIcon, IonText, IonCardContent, IonImg, IonLabel
+            IonCard, IonCardHeader, IonGrid, IonRow, IonThumbnail, IonIcon, IonText, IonCardContent, IonImg, IonLabel, IonActionSheet, DealPaidMenu
         },
         setup(props, {emit}) {
             //
+            // const route = useRoute();
+            //
+            const currency = ref(store.state.systemCurrency.name)
             const deal = ref()
+            // const currentId = route.params.dealId;
+            // console.log(currentId)
             const contactName = ref();
             const dealStatusList = ref(store.state.dealStatusList)
-            //
+            const dealStatus = ref();
+            const dealWhereChangeStatus = ref()
+            const prevDealStatus = ref()
+            const debt = ref()
+            // Вызываем action sheet меню выбора статуса дела
+            const actionSheetDealStatus = ref(false)
             const openActionSheetDealStatusMenu = (deal, dealStatus) => {
-                alert('DealCard: В разработке...')
+                // открываем action sheet
+                actionSheetDealStatus.value = true
+                // присваиваем переменной значение выбранной deal
+                dealWhereChangeStatus.value = deal
+                // присваиваем переменной исходной значнеие статуса
+                prevDealStatus.value = dealStatus
+                // console.log(deal)
+                // console.log(dealStatus)
+                // updateCurrentDealStatus(deal)
+            }
+            // ======================================= Массив кнопок в меню смены статуса у дела ==================================
+            const changeDealStatusMenuButtons = []
+            // добавляем в массив changeDealStatusMenuButtons объекты из dealStatusList
+            for(let i = 1; i <= dealStatusList.value.length; i++) {
+                changeDealStatusMenuButtons.push({
+                    text: dealStatusList.value[i-1].name,
+                    handler: () => {
+                        dealStatus.value = dealStatusList.value[i-1].value
+                        // помещаем во временную переменную обновленное значение статуса
+                        dealWhereChangeStatus.value.dealStatus = dealStatus.value 
+                        // console.log(`Предыдущий статус: ${prevDealStatus.value}`)
+                        // console.log(`Текущий статус: ${dealStatus.value}`)
+                        // компонент DealPaidMenu
+                        if(dealWhereChangeStatus.value.dealStatus === 'deal-complete') {
+                            culcDealDebt(dealWhereChangeStatus.value.totalDealPrice, dealWhereChangeStatus.value.dealPaid)
+                            if(debt.value > 0) {
+                                if(confirm(`Есть долг по оплате дела. Внести сумму задолженности или её часть?`)) {
+                                    // оставляем старый статус (так как не понятно всю ли сумму внесут по долгу)
+                                    dealWhereChangeStatus.value.dealStatus = prevDealStatus.value
+                                    openDealPaidMenu()
+                                } else {
+                                    // просто оставляем старый статус дела (НЕ меняем на завершен)
+                                    dealWhereChangeStatus.value.dealStatus = prevDealStatus.value
+                                }
+                            } else if (debt.value === 0) {
+                                // SALE
+                                if(dealWhereChangeStatus.value.dealType === 'sale') {
+                                    // Оставляем dealStatus как deal-complete
+                                    // НО проверить на наличие долга по аренде атрибутов
+                                    isAllAttrReturnedFunc()
+                                    // console.log(dealWhereChangeStatus.value.dealType)
+                                } 
+                                // BUY
+                                else if (dealWhereChangeStatus.value.dealType === 'buy') {
+                                    // Оставляем dealStatus как deal-complete
+                                    alert('DealCard: статус дела изменен на "ЗАВЕРШЕНО"')
+                                }
+                            } else if (debt.value < 0) {
+                                // Оставляем dealStatus как deal-complete
+                                // console.log(dealWhereChangeStatus.value.dealType)
+                                alert('DealCard: статус дела изменен на "ЗАВЕРШЕНО"')
+                            }
+                        }
+                        // сохраняем изменения в БД
+                        updateCurrentDealStatus(dealWhereChangeStatus.value)
+                        update()
+                    }
+                })
+            }
+            // Добавляем кнопку отмены (скрытия меню)
+            changeDealStatusMenuButtons.push({
+                text: 'Отменить',
+                role: 'cancel',
+                handler: () => {
+                    console.log('Cancel clicked')
+                }
+            })
+            // Меняем статус прямо на карточке дела
+            const updateCurrentDealStatus = async (deal) => {
+                // Обновляем данные в БД
+                try {
+                    const { error } = await supabase.from('deals').update({
+                        dealStatus: deal.dealStatus
+                    }).eq('id', deal.id)
+                    if(error) throw error;
+                    // refreshData();
+                } catch (error) {
+                    alert(`Error: ${error.message}`);
+                }
+            }
+            // Считаем debt у конкретного дела
+            const culcDealDebt = (totalDealPrice, dealPaid) => {
+                // Пока так
+                debt.value = totalDealPrice - dealPaid
+                return debt.value
+            }
+            // Управление модалкой внесения оплаты
+            const isDealPaidMenuOpened = ref(false)
+            const openDealPaidMenu = () => {
+                // actionSheetDealStatus.value = false
+                isDealPaidMenuOpened.value = true
+                refreshDebtValue()
+            }
+            //
+            const refreshDebtValue = () => {
+                return debt.value
+            }
+            //
+            const closeDealPaidMenu = () => {
+                isDealPaidMenuOpened.value = false
+            }
+            // функция обнуления пропса по начальному значению суммы оплаты (для DealPaidMenu)
+            const dealPaidAmountValue = () => {
+                return 0
+            }
+            //
+            const setAmountValue = (amount) => {
+                if(dealWhereChangeStatus.value.dealPaid === 0){
+                    dealWhereChangeStatus.value.dealPaid = +amount
+                } else if (dealWhereChangeStatus.value.dealPaid !== 0) {
+                    dealWhereChangeStatus.value.dealPaid += +amount
+                }
+                culcDealDebt(dealWhereChangeStatus.value.totalDealPrice, dealWhereChangeStatus.value.dealPaid)
+                if(debt.value > 0) {
+                    // сообщаем пользователю сколько внесено
+                    alert(`Deal: внесено ${amount} ${currency.value}`)
+                    // закрываем dealPaidMenu
+                    closeDealPaidMenu()
+                    // сохраняем изменения в БД
+                    update()
+                } else if (debt.value === 0) {
+                    // SALE
+                    if(dealWhereChangeStatus.value.dealType === 'sale') {
+                        // Сейчас делу присвоен статус ЗАВЕРШЕН
+                        // уведомляем о количестве внесенных средств
+                        alert(`Deal: внесено ${amount} ${currency.value}`)
+                        // проверяем на наличие долгов по атрибутам
+                        isAllAttrReturnedFunc()
+                        // console.log(dealWhereChangeStatus.value.dealType)
+                        // updateCurrentDealStatus(dealWhereChangeStatus.value)
+                    } 
+                    // BUY
+                    else if (dealWhereChangeStatus.value.dealType === 'buy') {
+                        // уведомляем о количестве внесенных средств
+                        alert(`Deal: внесено ${amount} ${currency.value}`)
+                        // console.log(dealWhereChangeStatus.value.dealType)
+                        // Делу уже присвоен статус ЗАВЕРШЕН
+                        dealWhereChangeStatus.value.dealStatus = 'deal-complete'
+                        alert('Deal: статус дела изменен на "ЗАВЕРШЕНО"')
+                        closeDealPaidMenu()
+                        updateCurrentDealStatus(dealWhereChangeStatus.value)
+                        update()
+                    }
+                } else if (debt.value < 0) {
+                    // Удалить, если не пригодится
+                    alert('Получается переплата... Верно?')
+                }
+            }
+            //
+            const isAllAttrReturned = ref(false)
+            const isAllAttrReturnedFunc = () => {
+                let dealsListArray = dealWhereChangeStatus.value.dealsList
+                let subjectAttributesArray = dealsListArray.map(item => item.additionalAttributes)
+                // Упрощаем массив, поднимая вложенные массивы в массив верхнего уровня
+                let isReturnedArray = subjectAttributesArray.flat()
+                console.log(isReturnedArray)
+                let isReturnData = isReturnedArray.map(item => item.isReturned) 
+                if(isReturnData.length === 0) {
+                    // Значит массив атрибутов пустой
+                    // При создании он всеравно есть, но изначально пустой
+                } else if (isReturnData.length !== 0) {
+                    // Если массив содержит невозвращенные атрибуты какого-либо предмета в деле
+                    if(isReturnData.includes(false)) {
+                        isAllAttrReturned.value = false
+                        alert(`DealCard: Вам вернули не все допы по заказу. Статус дела изменен на ДОЛГ`)
+                        dealWhereChangeStatus.value.dealStatus = 'deal-in-debt'
+                        // Если dealPaidMenu открыто
+                        closeDealPaidMenu()
+                    } else {
+                        // Если содержит все true (то есть всё уже вернули)
+                        isAllAttrReturned.value = true
+                        alert('DealCard: статус дела изменен на ЗАВЕРШЕН')
+                        dealWhereChangeStatus.value.dealStatus = 'deal-complete'
+                        closeDealPaidMenu()
+                    }
+                }
+                // сохраняем изменения в БД
+                updateCurrentDealStatus(dealWhereChangeStatus.value)
+                update()
+            }
+            const update = async () => {
+                try {
+                    // spinner.value = true;
+                    // Вынести в store?
+                    console.log(`Deal ${dealWhereChangeStatus.value.id} is updated`);
+                    //
+                    const {error} = await supabase.from('deals').update({
+                        contactID: dealWhereChangeStatus.value.contactID,
+                        dealStatus: dealWhereChangeStatus.value.dealStatus,
+                        executionDate: dealWhereChangeStatus.value.executionDate,
+                        dealsList: dealWhereChangeStatus.value.dealsList,
+                        shipping: dealWhereChangeStatus.value.shipping,
+                        dealPaid: dealWhereChangeStatus.value.dealPaid,
+                        cancelledReason: dealWhereChangeStatus.value.cancelledReason,
+                        totalDealPrice: dealWhereChangeStatus.value.totalDealPrice
+
+                    }).eq('id', dealWhereChangeStatus.value.id);
+                    if(error) throw error;
+                    // Дело успешно обновлено
+                } catch (error) {
+                    alert(`Error: ${error.message}`)
+                }
+                // edit.value = !edit.value;
+                // spinner.value = false;
             }
             //
             watchEffect(() => {
@@ -100,7 +337,7 @@
             })
 
             return {
-                deal, helpOutline, setIconByDealType, translateValue, dealStatusList, openActionSheetDealStatusMenu, contactName, checkRentAttr
+                deal, helpOutline, setIconByDealType, translateValue, dealStatusList, openActionSheetDealStatusMenu, contactName, checkRentAttr, actionSheetDealStatus, changeDealStatusMenuButtons, dealStatus, dealWhereChangeStatus, debt, prevDealStatus, updateCurrentDealStatus, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, refreshDebtValue, closeDealPaidMenu, dealPaidAmountValue, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, update
             }
         }
     })
@@ -170,5 +407,11 @@
         flex-direction: column; 
         align-items: center;
         gap: 0.3rem;
+    }
+    /* ion-modal {
+        backdrop-filter: blur(0.1rem) grayscale(1);
+    } */
+    ion-modal {
+        --backdrop-opacity: var(--ion-backdrop-opacity, 0.4)!important;
     }
 </style>

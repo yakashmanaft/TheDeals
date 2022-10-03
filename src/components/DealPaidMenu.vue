@@ -104,7 +104,7 @@
             })
             //
             const setAmountValue = () => {
-                console.log('clicked')
+                // console.log('clicked')
                 amountValue.value = debt.value
             }
             // функция внесения суммы в счет задолженности
@@ -140,4 +140,7 @@
     .underline-dashed {
         border-bottom: 1px dashed
     }
+    /* ion-modal {
+        --backdrop-opacity: 0
+    } */
 </style>

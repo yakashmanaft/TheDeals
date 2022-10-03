@@ -155,15 +155,15 @@
                 </div>
 
             </div>
-            <!--  -->
+            <!-- Модалка внесения средства по оплате -->
             <DealPaidMenu
                 :is-open="isDealPaidMenuOpened"
-                @didDismiss="isDealPaidMenuOpened = false"
                 :currentDeal="dealWhereChangeStatus"
                 :debt="refreshDebtValue()"
-                @closeModal="closeDealPaidMenu"
                 :amount="dealPaidAmountValue()"
                 @getAmountValue="setAmountValue"
+                @closeModal="closeDealPaidMenu"
+                @didDismiss="isDealPaidMenuOpened = false"
             />
             <!-- Всплывашка изменения статуса конкретного дела-->
             <ion-action-sheet
@@ -543,8 +543,8 @@
                         // console.log(`это handler: ${dealStatus.value}`)
                         // помещаем во временную переменную обновленное значение статуса
                         dealWhereChangeStatus.value.dealStatus = dealStatus.value 
-                        console.log(`Предыдущий статус: ${prevDealStatus.value}`)
-                        console.log(`Текущий статус: ${dealStatus.value}`)
+                        // console.log(`Предыдущий статус: ${prevDealStatus.value}`)
+                        // console.log(`Текущий статус: ${dealStatus.value}`)
                         // компонент DealPaidMenu
                         if(dealWhereChangeStatus.value.dealStatus === 'deal-complete') {
                             culcDealDebt(dealWhereChangeStatus.value.totalDealPrice, dealWhereChangeStatus.value.dealPaid)
@@ -563,12 +563,11 @@
                                     // Оставляем dealStatus как deal-complete
                                     // НО проверить на наличие долга по аренде атрибутов
                                     isAllAttrReturnedFunc()
-                                    console.log(dealWhereChangeStatus.value.dealType)
+                                    // console.log(dealWhereChangeStatus.value.dealType)
                                 } 
                                 // BUY
                                 else if (dealWhereChangeStatus.value.dealType === 'buy') {
                                     // Оставляем dealStatus как deal-complete
-                                    // console.log(dealWhereChangeStatus.value.dealType)
                                     alert('Deal: статус дела изменен на "ЗАВЕРШЕНО"')
                                 }
                             } else if (debt.value < 0) {
@@ -618,6 +617,7 @@
             const dealPaidAmountValue = () => {
                 return 0
             }
+            //
             const setAmountValue = (amount) => {
                 if(dealWhereChangeStatus.value.dealPaid === 0){
                     dealWhereChangeStatus.value.dealPaid = +amount
@@ -630,6 +630,8 @@
                     alert(`Deal: внесено ${amount} ${currency.value}`)
                     // закрываем dealPaidMenu
                     closeDealPaidMenu()
+                    // сохраняем изменения в БД
+                    update()
                 } else if (debt.value === 0) {
                     // SALE
                     if(dealWhereChangeStatus.value.dealType === 'sale') {
@@ -638,7 +640,8 @@
                         alert(`Deal: внесено ${amount} ${currency.value}`)
                         // проверяем на наличие долгов по атрибутам
                         isAllAttrReturnedFunc()
-                        console.log(dealWhereChangeStatus.value.dealType)
+                        // console.log(dealWhereChangeStatus.value.dealType)
+                        // updateCurrentDealStatus(dealWhereChangeStatus.value)
                     } 
                     // BUY
                     else if (dealWhereChangeStatus.value.dealType === 'buy') {
@@ -650,6 +653,7 @@
                         alert('Deal: статус дела изменен на "ЗАВЕРШЕНО"')
                         closeDealPaidMenu()
                         updateCurrentDealStatus(dealWhereChangeStatus.value)
+                        update()
                     }
                 } else if (debt.value < 0) {
                     // Удалить, если не пригодится
@@ -668,7 +672,7 @@
                     // Значит массив атрибутов пустой
                     // При создании он всеравно есть, но изначально пустой
                 } else if (isReturnData.length !== 0) {
-                    // Если массив содержит невозвращенные атрибуты какого-либо предмета дела
+                    // Если массив содержит невозвращенные атрибуты какого-либо предмета в деле
                     if(isReturnData.includes(false)) {
                         isAllAttrReturned.value = false
                         alert(`Deal: Вам вернули не все допы по заказу. Статус дела изменен на ДОЛГ`)
@@ -685,11 +689,38 @@
                 }
                 // сохраняем изменения в БД
                 updateCurrentDealStatus(dealWhereChangeStatus.value)
+                update()
+            }
+            //
+            const update = async () => {
+                try {
+                    // spinner.value = true;
+                    // Вынести в store?
+                    console.log(`Deal ${dealWhereChangeStatus.value.id} is updated`);
+                    //
+                    const {error} = await supabase.from('deals').update({
+                        contactID: dealWhereChangeStatus.value.contactID,
+                        dealStatus: dealWhereChangeStatus.value.dealStatus,
+                        executionDate: dealWhereChangeStatus.value.executionDate,
+                        dealsList: dealWhereChangeStatus.value.dealsList,
+                        shipping: dealWhereChangeStatus.value.shipping,
+                        dealPaid: dealWhereChangeStatus.value.dealPaid,
+                        cancelledReason: dealWhereChangeStatus.value.cancelledReason,
+                        totalDealPrice: dealWhereChangeStatus.value.totalDealPrice
+
+                    }).eq('id', dealWhereChangeStatus.value.id);
+                    if(error) throw error;
+                    // Дело успешно обновлено
+                } catch (error) {
+                    alert(`Error: ${error.message}`)
+                }
+                // edit.value = !edit.value;
+                // spinner.value = false;
             }
 
 
             return {
-                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isViewDealModalOpened, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translateValue, refreshData, myContacts, getContact, showNameByID, checkRentAttr, dealTypesList, dealByType, showDealByType, helpOutline, addSubject, deleteSubject, setIconByDealType, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, dealStatus, dealWhereChangeStatus, prevDealStatus, debt, culcDealDebt, openDealPaidMenu, isDealPaidMenuOpened, refreshDebtValue, closeDealPaidMenu, dealPaidAmountValue, setAmountValue, isAllAttrReturnedFunc, currency, isAllAttrReturned
+                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isViewDealModalOpened, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translateValue, refreshData, myContacts, getContact, showNameByID, checkRentAttr, dealTypesList, dealByType, showDealByType, helpOutline, addSubject, deleteSubject, setIconByDealType, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, dealStatus, dealWhereChangeStatus, prevDealStatus, debt, culcDealDebt, openDealPaidMenu, isDealPaidMenuOpened, refreshDebtValue, closeDealPaidMenu, dealPaidAmountValue, setAmountValue, isAllAttrReturnedFunc, currency, isAllAttrReturned, update
             }
         }
     })
