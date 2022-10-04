@@ -47,7 +47,12 @@
                             x{{item.productQuantity}}
                         </ion-label>
                         <!-- mark where subject has attribute -->
-                        <div v-if="checkRentAttr(item, deal.dealType)" class="absolute mark-atribute"></div>
+                        <div 
+                            v-if="checkRentAttr(item, deal.dealType)" 
+                            class="absolute mark-atribute" 
+                            :class="setMarkerAttrColor(item) ? 'mark-success' : 'mark-warning'"
+                        ></div>
+                            <!-- :class="isAllAttrReturned ? 'mark-success' : 'mark-warning'" -->
                     </div>
                     <div v-if="deal.dealsList.length" class="empty-item"></div>
                     <!-- deal.dealsList is empty array -->
@@ -68,7 +73,7 @@
             :amount="dealPaidAmountValue()"
             @getAmountValue="setAmountValue"                
             @closeModal="closeDealPaidMenu"
-            @didDismiss="isDealPaidMenuOpened = false"
+            @didDismiss="closeDealPaidMenu"
         />
         <!-- Всплывашка изменения статуса конкретного дела-->
         <ion-action-sheet
@@ -123,6 +128,7 @@
             const dealWhereChangeStatus = ref()
             const prevDealStatus = ref()
             const debt = ref()
+
             // Вызываем action sheet меню выбора статуса дела
             const actionSheetDealStatus = ref(false)
             const openActionSheetDealStatusMenu = (deal, dealStatus) => {
@@ -249,6 +255,7 @@
                     // сохраняем изменения в БД
                     update()
                 } else if (debt.value === 0) {
+                    console.log(debt.value)
                     // уведомляем о количестве внесенных средств
                     alert(`DealCard: внесено ${amount} ${currency.value}`)
                     // SALE
@@ -256,6 +263,7 @@
                         // Сейчас делу присвоен статус ЗАВЕРШЕН
                         // проверяем на наличие долгов по атрибутам
                         isAllAttrReturnedFunc()
+                        console.log(isDealPaidMenuOpened.value)
                         // closeDealPaidMenu()
                         // console.log(dealWhereChangeStatus.value.dealType)
                         // updateCurrentDealStatus(dealWhereChangeStatus.value)
@@ -264,10 +272,15 @@
                     else if (dealWhereChangeStatus.value.dealType === 'buy') {
                         // console.log(dealWhereChangeStatus.value.dealType)
                         alert('DealCard: статус дела изменен на "ЗАВЕРШЕНО"')
-                        closeDealPaidMenu()
+                        // dealWhereChangeStatus.value.dealStatus = dealStatus.value
                         dealWhereChangeStatus.value.dealStatus = 'deal-complete'
+                        console.log(dealWhereChangeStatus.value.dealStatus)
+                        // deal.value.dealStatus = dealStatus.value
+                        // deal.debt = 'deal-complete'
+                        closeDealPaidMenu()
                         //
                         console.log(isDealPaidMenuOpened.value)
+                        console.log(dealStatus.value)
                         //
                         updateCurrentDealStatus(dealWhereChangeStatus.value)
                         update()
@@ -298,14 +311,14 @@
                 } else if (isReturnData.length !== 0) {
                     // Если массив содержит невозвращенные атрибуты какого-либо предмета в деле
                     if(isReturnData.includes(false)) {
-                        isAllAttrReturned.value = false
+                        // isAllAttrReturned.value = false
                         alert(`DealCard: Вам вернули не все допы по заказу. Статус дела изменен на ДОЛГ`)
                         dealWhereChangeStatus.value.dealStatus = 'deal-in-debt'
                         // Если dealPaidMenu открыто
                         closeDealPaidMenu()
                     } else {
                         // Если содержит все true (то есть всё уже вернули)
-                        isAllAttrReturned.value = true
+                        // isAllAttrReturned.value = true
                         alert('DealCard: статус дела изменен на ЗАВЕРШЕНО')
                         dealWhereChangeStatus.value.dealStatus = 'deal-complete'
                         // Если dealPaidMenu открыто
@@ -327,6 +340,7 @@
                     const {error} = await supabase.from('deals').update({
                         contactID: dealWhereChangeStatus.value.contactID,
                         dealStatus: dealWhereChangeStatus.value.dealStatus,
+                        // dealStatus: dealStatus.value,
                         executionDate: dealWhereChangeStatus.value.executionDate,
                         dealsList: dealWhereChangeStatus.value.dealsList,
                         shipping: dealWhereChangeStatus.value.shipping,
@@ -343,14 +357,29 @@
                 // edit.value = !edit.value;
                 // spinner.value = false;
             }
+            // раскрашиваем маркер по возврату атрибутов
+            const setMarkerAttrColor = (subject) => {
+                // console.log(subject.additionalAttributes)
+                let subjectAttributesArray = subject.additionalAttributes
+                let isReturnedArray = subjectAttributesArray.flat()
+                console.log(isReturnedArray)
+                let isReturnData = isReturnedArray.map(item => item.isReturned) 
+                console.log(isReturnData)
+                if(isReturnData.includes(false)) {
+                    return false
+                } else {
+                    return true
+                }
+            }
             //
             watchEffect(() => {
                 deal.value = props.deal
+                // setMarkerAttrColor(deal.value)
                 contactName.value = props.contactNameByID
             })
 
             return {
-                deal, helpOutline, setIconByDealType, translateValue, dealStatusList, openActionSheetDealStatusMenu, contactName, checkRentAttr, actionSheetDealStatus, changeDealStatusMenuButtons, dealStatus, dealWhereChangeStatus, debt, prevDealStatus, updateCurrentDealStatus, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, refreshDebtValue, closeDealPaidMenu, dealPaidAmountValue, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, update
+                deal, helpOutline, setIconByDealType, translateValue, dealStatusList, openActionSheetDealStatusMenu, contactName, checkRentAttr, actionSheetDealStatus, changeDealStatusMenuButtons, dealStatus, dealWhereChangeStatus, debt, prevDealStatus, updateCurrentDealStatus, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, refreshDebtValue, closeDealPaidMenu, dealPaidAmountValue, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, update, setMarkerAttrColor
             }
         }
     })
@@ -376,8 +405,15 @@
         right: 0;
         width: 1rem;
         height: 1rem;
-        background-color: var(--ion-color-warning);
+        /* background-color: var(--ion-color-warning); */
+        /* background-color: var(--ion-color-medium); */
         border-radius: 100%
+    }
+    .mark-success {
+        background-color: var(--ion-color-success);
+    }
+    .mark-warning {
+        background-color: var(--ion-color-warning);
     }
     .empty-deal-list_thumbnail {
         height: 64px;

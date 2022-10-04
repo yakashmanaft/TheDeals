@@ -136,7 +136,11 @@
                                                         x{{item.productQuantity}}
                                                     </ion-label>
                                                     <!-- mark where subject has attribute -->
-                                                    <div v-if="checkRentAttr(item, deal.dealType)" class="absolute mark-atribute"></div>
+                                                    <div 
+                                                        v-if="checkRentAttr(item, deal.dealType)" 
+                                                        class="absolute mark-atribute"
+                                                        :class="setMarkerAttrColor(item) ? 'mark-success' : 'mark-warning'"
+                                                    ></div>
                                                 </div>
                                                 <div v-if="deal.dealsList.length" class="empty-item"></div>
                                                 <!-- deal.dealsList is empty array -->
@@ -720,10 +724,23 @@
                 // edit.value = !edit.value;
                 // spinner.value = false;
             }
-
+            // раскрашиваем маркер по возврату атрибутов
+            const setMarkerAttrColor = (subject) => {
+                // console.log(subject.additionalAttributes)
+                let subjectAttributesArray = subject.additionalAttributes
+                let isReturnedArray = subjectAttributesArray.flat()
+                console.log(isReturnedArray)
+                let isReturnData = isReturnedArray.map(item => item.isReturned) 
+                console.log(isReturnData)
+                if(isReturnData.includes(false)) {
+                    return false
+                } else {
+                    return true
+                }
+            }
 
             return {
-                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isViewDealModalOpened, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translateValue, refreshData, myContacts, getContact, showNameByID, checkRentAttr, dealTypesList, dealByType, showDealByType, helpOutline, addSubject, deleteSubject, setIconByDealType, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, dealStatus, dealWhereChangeStatus, prevDealStatus, debt, culcDealDebt, openDealPaidMenu, isDealPaidMenuOpened, refreshDebtValue, closeDealPaidMenu, dealPaidAmountValue, setAmountValue, isAllAttrReturnedFunc, currency, isAllAttrReturned, update
+                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isViewDealModalOpened, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translateValue, refreshData, myContacts, getContact, showNameByID, checkRentAttr, dealTypesList, dealByType, showDealByType, helpOutline, addSubject, deleteSubject, setIconByDealType, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, dealStatus, dealWhereChangeStatus, prevDealStatus, debt, culcDealDebt, openDealPaidMenu, isDealPaidMenuOpened, refreshDebtValue, closeDealPaidMenu, dealPaidAmountValue, setAmountValue, isAllAttrReturnedFunc, currency, isAllAttrReturned, update, setMarkerAttrColor
             }
         }
     })
@@ -775,6 +792,12 @@
         height: 1rem;
         background-color: var(--ion-color-warning);
         border-radius: 100%
+    }
+    .mark-success {
+        background-color: var(--ion-color-success);
+    }
+    .mark-warning {
+        background-color: var(--ion-color-warning);
     }
     .empty-deal-list_thumbnail {
         height: 64px;
