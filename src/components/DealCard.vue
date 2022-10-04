@@ -271,13 +271,13 @@
                     // BUY
                     else if (dealWhereChangeStatus.value.dealType === 'buy') {
                         // console.log(dealWhereChangeStatus.value.dealType)
-                        alert('DealCard: статус дела изменен на "ЗАВЕРШЕНО"')
                         // dealWhereChangeStatus.value.dealStatus = dealStatus.value
-                        dealWhereChangeStatus.value.dealStatus = 'deal-complete'
                         console.log(dealWhereChangeStatus.value.dealStatus)
                         // deal.value.dealStatus = dealStatus.value
                         // deal.debt = 'deal-complete'
                         closeDealPaidMenu()
+                        dealWhereChangeStatus.value.dealStatus = 'deal-complete'
+                        alert('DealCard: статус дела изменен на "ЗАВЕРШЕНО"')
                         //
                         console.log(isDealPaidMenuOpened.value)
                         console.log(dealStatus.value)
@@ -362,9 +362,9 @@
                 // console.log(subject.additionalAttributes)
                 let subjectAttributesArray = subject.additionalAttributes
                 let isReturnedArray = subjectAttributesArray.flat()
-                console.log(isReturnedArray)
+                // console.log(isReturnedArray)
                 let isReturnData = isReturnedArray.map(item => item.isReturned) 
-                console.log(isReturnData)
+                // console.log(isReturnData)
                 if(isReturnData.includes(false)) {
                     return false
                 } else {

@@ -729,9 +729,9 @@
                 // console.log(subject.additionalAttributes)
                 let subjectAttributesArray = subject.additionalAttributes
                 let isReturnedArray = subjectAttributesArray.flat()
-                console.log(isReturnedArray)
+                // console.log(isReturnedArray)
                 let isReturnData = isReturnedArray.map(item => item.isReturned) 
-                console.log(isReturnData)
+                // console.log(isReturnData)
                 if(isReturnData.includes(false)) {
                     return false
                 } else {
