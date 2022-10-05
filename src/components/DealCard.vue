@@ -65,15 +65,15 @@
             </ion-grid>
         </ion-card-content>
         <!-- Модалка внесения средства по оплате -->
+        <!-- :class="{ 'show-modal': isDealPaidMenuOpened === true}" -->
         <DealPaidMenu
-            :class="{ 'show-modal': isDealPaidMenuOpened === true}"
-            :is-open="isDealPaidMenuOpened"
+            :isOpen="isDealPaidMenuOpened"
             :currentDeal="dealWhereChangeStatus"
             :debt="refreshDebtValue()"
             :amount="dealPaidAmountValue()"
             @getAmountValue="setAmountValue"                
             @closeModal="closeDealPaidMenu"
-            @didDismiss="closeDealPaidMenu"
+            @didDismiss="isDealPaidMenuOpened = false"
         />
         <!-- Всплывашка изменения статуса конкретного дела-->
         <ion-action-sheet
@@ -132,14 +132,11 @@
             // Вызываем action sheet меню выбора статуса дела
             const actionSheetDealStatus = ref(false)
             const openActionSheetDealStatusMenu = (deal, dealStatus) => {
-                // открываем action sheet
                 actionSheetDealStatus.value = true
-                // присваиваем переменной значение выбранной deal
-                dealWhereChangeStatus.value = deal
-                // присваиваем переменной исходной значнеие статуса
-                prevDealStatus.value = dealStatus
                 // console.log(deal)
+                dealWhereChangeStatus.value = deal
                 // console.log(dealStatus)
+                prevDealStatus.value = dealStatus
                 // updateCurrentDealStatus(deal)
             }
             // ======================================= Массив кнопок в меню смены статуса у дела ==================================
@@ -162,6 +159,7 @@
                                     // оставляем старый статус (так как не понятно всю ли сумму внесут по долгу)
                                     dealWhereChangeStatus.value.dealStatus = prevDealStatus.value
                                     openDealPaidMenu()
+                                    // closeDealPaidMenu()
                                 } else {
                                     // просто оставляем старый статус дела (НЕ меняем на завершен)
                                     dealWhereChangeStatus.value.dealStatus = prevDealStatus.value
@@ -240,7 +238,7 @@
             }
             //
             const setAmountValue = (amount) => {
-                console.log(isDealPaidMenuOpened.value)
+                // console.log(isDealPaidMenuOpened.value)
                 if(dealWhereChangeStatus.value.dealPaid === 0){
                     dealWhereChangeStatus.value.dealPaid = +amount
                 } else if (dealWhereChangeStatus.value.dealPaid !== 0) {
@@ -263,34 +261,20 @@
                         // Сейчас делу присвоен статус ЗАВЕРШЕН
                         // проверяем на наличие долгов по атрибутам
                         isAllAttrReturnedFunc()
-                        console.log(isDealPaidMenuOpened.value)
-                        // closeDealPaidMenu()
-                        // console.log(dealWhereChangeStatus.value.dealType)
-                        // updateCurrentDealStatus(dealWhereChangeStatus.value)
                     } 
                     // BUY
                     else if (dealWhereChangeStatus.value.dealType === 'buy') {
-                        // console.log(dealWhereChangeStatus.value.dealType)
-                        // dealWhereChangeStatus.value.dealStatus = dealStatus.value
-                        console.log(dealWhereChangeStatus.value.dealStatus)
-                        // deal.value.dealStatus = dealStatus.value
-                        // deal.debt = 'deal-complete'
-                        closeDealPaidMenu()
-                        dealWhereChangeStatus.value.dealStatus = 'deal-complete'
+                        // Костыльно конечно, тем не менее работает. Иначе модалка dealPaidMenu не закрывается
+                        setTimeout(setDealStatusToComplete, 500)
                         alert('DealCard: статус дела изменен на "ЗАВЕРШЕНО"')
-                        //
-                        console.log(isDealPaidMenuOpened.value)
-                        console.log(dealStatus.value)
-                        //
-                        updateCurrentDealStatus(dealWhereChangeStatus.value)
-                        update()
-                        // console.log(isDealPaidMenuOpened.value) 
+                        closeDealPaidMenu()
+                        // updateCurrentDealStatus(dealWhereChangeStatus.value)
+                        // update()
                     }
                 } else if (debt.value < 0) {
                     // Удалить, если не пригодится
                     alert('Получается переплата... Верно?')
                 }
-                // closeDealPaidMenu()
             }
             //
             const isAllAttrReturned = ref(false)
@@ -305,7 +289,9 @@
                 if(isReturnData.length === 0) {
                     // Значит массив атрибутов пустой
                     // При создании он всеравно есть, но изначально пустой
-                    dealWhereChangeStatus.value.dealStatus = 'deal-complete'
+                    // Костыльно конечно, тем не менее работает. Иначе модалка dealPaidMenu не закрывается
+                    setTimeout(setDealStatusToComplete, 500)
+                    // dealWhereChangeStatus.value.dealStatus = 'deal-complete'
                     alert('Deal: статус дела изменен на ЗАВЕРШЕН')
                     closeDealPaidMenu()
                 } else if (isReturnData.length !== 0) {
@@ -320,16 +306,16 @@
                         // Если содержит все true (то есть всё уже вернули)
                         // isAllAttrReturned.value = true
                         alert('DealCard: статус дела изменен на ЗАВЕРШЕНО')
-                        dealWhereChangeStatus.value.dealStatus = 'deal-complete'
+                        // Костыльно конечно, тем не менее работает. Иначе модалка dealPaidMenu не закрывается
+                        setTimeout(setDealStatusToComplete, 500)
                         // Если dealPaidMenu открыто
                         closeDealPaidMenu()
                         // console.log(isDealPaidMenuOpened.value)
                     }
                 }
-                // closeDealPaidMenu()
-                // сохраняем изменения в БД
-                updateCurrentDealStatus(dealWhereChangeStatus.value)
-                update()
+                // // сохраняем изменения в БД
+                // updateCurrentDealStatus(dealWhereChangeStatus.value)
+                // update()
             }
             const update = async () => {
                 try {
@@ -372,14 +358,19 @@
                 }
             }
             //
+            const setDealStatusToComplete = () => {
+                dealWhereChangeStatus.value.dealStatus = 'deal-complete'
+                updateCurrentDealStatus(dealWhereChangeStatus.value)
+                update()
+            }
+            //
             watchEffect(() => {
                 deal.value = props.deal
-                // setMarkerAttrColor(deal.value)
                 contactName.value = props.contactNameByID
             })
 
             return {
-                deal, helpOutline, setIconByDealType, translateValue, dealStatusList, openActionSheetDealStatusMenu, contactName, checkRentAttr, actionSheetDealStatus, changeDealStatusMenuButtons, dealStatus, dealWhereChangeStatus, debt, prevDealStatus, updateCurrentDealStatus, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, refreshDebtValue, closeDealPaidMenu, dealPaidAmountValue, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, update, setMarkerAttrColor
+                deal, helpOutline, setIconByDealType, translateValue, dealStatusList, openActionSheetDealStatusMenu, contactName, checkRentAttr, actionSheetDealStatus, changeDealStatusMenuButtons, dealStatus, dealWhereChangeStatus, debt, prevDealStatus, updateCurrentDealStatus, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, refreshDebtValue, closeDealPaidMenu, dealPaidAmountValue, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, update, setMarkerAttrColor, setDealStatusToComplete
             }
         }
     })
