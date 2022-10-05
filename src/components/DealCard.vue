@@ -50,8 +50,9 @@
                         <div 
                             v-if="checkRentAttr(item, deal.dealType)" 
                             class="absolute mark-atribute" 
-                            :class="setMarkerAttrColor(item) ? 'mark-success' : 'mark-warning'"
-                        ></div>
+                        >
+                            <ion-icon :color="setMarkerAttrColor(item) ? 'success' : 'warning'" :icon="shapes"></ion-icon>
+                        </div>
                             <!-- :class="isAllAttrReturned ? 'mark-success' : 'mark-warning'" -->
                     </div>
                     <div v-if="deal.dealsList.length" class="empty-item"></div>
@@ -94,11 +95,12 @@
     //
     import { IonCard, IonCardHeader, IonGrid, IonRow, IonThumbnail, IonIcon, IonText, IonCardContent, IonImg, IonLabel, IonActionSheet } from '@ionic/vue'
     //
-    import { helpOutline } from 'ionicons/icons';
+    import { helpOutline, shapes } from 'ionicons/icons';
     //
     import { setIconByDealType } from '@/helpers/setIconBy';
     import { translateValue } from '@/helpers/translateValue';
     import { checkRentAttr } from '@/helpers/checkRentAttr';
+    import { setMarkerAttrColor } from '../helpers/setMarkerColor';
     //
     import { supabase } from '@/supabase/init';
     //
@@ -343,20 +345,6 @@
                 // edit.value = !edit.value;
                 // spinner.value = false;
             }
-            // раскрашиваем маркер по возврату атрибутов
-            const setMarkerAttrColor = (subject) => {
-                // console.log(subject.additionalAttributes)
-                let subjectAttributesArray = subject.additionalAttributes
-                let isReturnedArray = subjectAttributesArray.flat()
-                // console.log(isReturnedArray)
-                let isReturnData = isReturnedArray.map(item => item.isReturned) 
-                // console.log(isReturnData)
-                if(isReturnData.includes(false)) {
-                    return false
-                } else {
-                    return true
-                }
-            }
             //
             const setDealStatusToComplete = () => {
                 dealWhereChangeStatus.value.dealStatus = 'deal-complete'
@@ -370,7 +358,7 @@
             })
 
             return {
-                deal, helpOutline, setIconByDealType, translateValue, dealStatusList, openActionSheetDealStatusMenu, contactName, checkRentAttr, actionSheetDealStatus, changeDealStatusMenuButtons, dealStatus, dealWhereChangeStatus, debt, prevDealStatus, updateCurrentDealStatus, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, refreshDebtValue, closeDealPaidMenu, dealPaidAmountValue, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, update, setMarkerAttrColor, setDealStatusToComplete
+                deal, helpOutline, setIconByDealType, translateValue, dealStatusList, openActionSheetDealStatusMenu, contactName, checkRentAttr, actionSheetDealStatus, changeDealStatusMenuButtons, dealStatus, dealWhereChangeStatus, debt, prevDealStatus, updateCurrentDealStatus, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, refreshDebtValue, closeDealPaidMenu, dealPaidAmountValue, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, update, setMarkerAttrColor, setDealStatusToComplete, shapes
             }
         }
     })
@@ -392,20 +380,23 @@
         position: absolute;
     }
     .mark-atribute {
-        top: 0;
-        right: 0;
-        width: 1rem;
-        height: 1rem;
-        /* background-color: var(--ion-color-warning); */
-        /* background-color: var(--ion-color-medium); */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        top: 0rem;
+        right: -0.2rem;
+        width: 1.3rem;
+        height: 1.3rem;
+        background-color: var(--ion-color-light);
         border-radius: 100%
     }
-    .mark-success {
+    /* удалить если не понадобится */
+    /* .mark-success {
         background-color: var(--ion-color-success);
     }
     .mark-warning {
         background-color: var(--ion-color-warning);
-    }
+    } */
     .empty-deal-list_thumbnail {
         height: 64px;
         width: 64px;

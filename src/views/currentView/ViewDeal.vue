@@ -169,7 +169,7 @@
                                 <!-- Кнопка удалить конкретный предмет дела -->
                                 <ion-icon @click.stop="openDeleteSubjectModal(item.id)" class="icon_size icon_del absolute" :icon="closeCircleOutline"></ion-icon>
                                 <!-- item -->
-                                <ion-thumbnail v-if="item.selectedProduct !== ''" style="height: 64px; width: 64px; margin: 0 auto" class="relative">
+                                <ion-thumbnail v-if="item.selectedProduct !== ''" style="height: 64px; width: 64px; margin: 0 auto">
                                     <!-- Если тип дела Продажа -->
                                     <div v-if="currentDeal.dealType === 'sale'">
                                         <ion-img  style="height: 100%" :src="`../img/subjects/sale/${item.selectedProduct}.webp`"></ion-img>
@@ -182,8 +182,9 @@
                                     <div 
                                         v-if="checkRentAttr(item, currentDeal.dealType)" 
                                         class="absolute mark-atribute"
-                                        :class="setMarkerAttrColor(item) ? 'mark-success' : 'mark-warning'"
-                                    ></div>
+                                    >
+                                        <ion-icon size="large" :color="setMarkerAttrColor(item) ? 'success' : 'warning'" :icon="shapes"></ion-icon>
+                                    </div>
                                 </ion-thumbnail>
                                 <!--  -->
                                 <!-- <ion-thumbnail v-if="item.selectedProduct === ''" class="empty-deal-list_thumbnail">
@@ -526,13 +527,14 @@
     import store from '../../store/index';
     import { uid } from 'uid';
     import { IonContent, IonButton, IonActionSheet, IonItemGroup, IonText, IonGrid, IonRow, IonModal, IonItem, IonSearchbar, IonChip, IonCard, IonImg, IonThumbnail, IonLabel, IonIcon, IonInput, IonTextarea, IonList } from '@ionic/vue';
-    import { addCircleOutline, closeCircleOutline, helpOutline } from 'ionicons/icons';
+    import { addCircleOutline, closeCircleOutline, helpOutline, shapes } from 'ionicons/icons';
     //
     import { searchFilter } from '../../helpers/filterMyContacts'; 
     import { setColorByDealType } from '@/helpers/setColorByDealType';
     import { setIconByDealType } from '@/helpers/setIconBy';
     import { translateValue } from '@/helpers/translateValue';
     import { checkRentAttr } from '@/helpers/checkRentAttr';
+    import { setMarkerAttrColor } from '@/helpers/setMarkerColor';
     //
     import Spinner from '../../components/Spinner.vue';
     import ViewHeader from '../../components/headers/HeaderViewCurrent.vue';
@@ -1503,23 +1505,9 @@
                     //Ничего не делаем
                 }
             }
-            // раскрашиваем маркер по возврату атрибутов
-            const setMarkerAttrColor = (subject) => {
-                // console.log(subject.additionalAttributes)
-                let subjectAttributesArray = subject.additionalAttributes
-                let isReturnedArray = subjectAttributesArray.flat()
-                // console.log(isReturnedArray)
-                let isReturnData = isReturnedArray.map(item => item.isReturned) 
-                // console.log(isReturnData)
-                if(isReturnData.includes(false)) {
-                    return false
-                } else {
-                    return true
-                }
-            }
 
             return {
-                currency, spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, translateDealSubjectRecipe, userRecipeArray, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, setPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setNewPersonQty, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, shippingTypeList, dealShippingType, shippingPrice, setProductNotePlaceholder, shippingAddress, editShippingAddress, toggleEditShippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, translateShippingType, translateSelectedProduct, culcSubjectWeight, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, culcBuySubjectWeight, debt, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, nextDealStatus, prevDealStatus, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, refreshDebtValue, dealPaidAmountValue, finishDeal, setMarkerAttrColor
+                currency, spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, translateDealSubjectRecipe, userRecipeArray, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, setPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setNewPersonQty, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, shippingTypeList, dealShippingType, shippingPrice, setProductNotePlaceholder, shippingAddress, editShippingAddress, toggleEditShippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, translateShippingType, translateSelectedProduct, culcSubjectWeight, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, culcBuySubjectWeight, debt, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, nextDealStatus, prevDealStatus, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, refreshDebtValue, dealPaidAmountValue, finishDeal, setMarkerAttrColor, shapes
             }
         }
     })
@@ -1563,31 +1551,15 @@
         left: 0.3rem;
     }
     .mark-atribute {
-        top: 0;
-        right: -0.7rem;
-        width: 1rem;
-        height: 1rem;
-        background-color: var(--ion-color-warning);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        top: 0.8rem;
+        right: 0.8rem;
+        width: 1.3rem;
+        height: 1.3rem;
         border-radius: 100%
     }
-    .mark-success {
-        background-color: var(--ion-color-success);
-    }
-    .mark-warning {
-        background-color: var(--ion-color-warning);
-    }
-    /* .empty-deal-list_thumbnail {
-        height: 64px;
-        width: 64px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background-color: black;
-    } */
-    /* .empty-deal-list_icon {
-        width: 100%;
-        height: 100%
-    } */
     .flex_nowrap {
         flex-wrap: nowrap;
     }

@@ -311,6 +311,13 @@
                                 </ion-thumbnail>
                                 <!--  -->
                                 <ion-text class="absolute" style="bottom: -1rem;">х{{attribute.qty}}</ion-text>
+                                <!-- is attribute returned or not -->
+                                <div 
+                                    v-if="attribute.rentType === 'rent'"
+                                    class="absolute mark-atribute"
+                                >
+                                    <ion-icon style="font-size: 1.1rem;" :icon="setMarkerCurrentAttrColor(attribute) ? checkmark : sync" :color="setMarkerCurrentAttrColor(attribute) ? 'success' : 'warning'"></ion-icon>
+                                </div>
                             </ion-card>
                             <!-- Открываем меню создания предмета к делу -->
                             <ion-card class="ion-padding card-center card-add" @click.stop="searchAttributeMenu = true">
@@ -493,12 +500,13 @@
     import { defineComponent, computed, ref, watchEffect, onMounted, watch } from 'vue';
     import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonSearchbar, IonItem, IonGrid, IonRow, IonThumbnail, IonImg, IonToggle, IonCard, IonIcon, IonActionSheet, IonTextarea, IonInput, IonRange } from '@ionic/vue';
     //
-    import { addOutline, closeCircleOutline, removeCircleOutline, addCircleOutline } from 'ionicons/icons';
+    import { addOutline, closeCircleOutline, removeCircleOutline, addCircleOutline, sync, checkmark } from 'ionicons/icons';
     //
     import { searchDealSubjectFilter } from '../../helpers/filterDealSubject';
     import { searchUserRecipeFilter } from '../../helpers/filterUserRecipe';
     import { sortAlphabetically } from '../../helpers/sortDealSubject';
     import { translateValue } from '@/helpers/translateValue';
+    import { setMarkerCurrentAttrColor } from '../../helpers/setMarkerColor';
     //
     import store from '../../store/index';
     //
@@ -824,7 +832,7 @@
 
 
             return {
-                systemCurrency, userSettings, subjectData, currentDealType, searchRecipeMenu, searchRecipe, chooseRecipe, noRecipe, searchedRecipe, userRecipeArray, showSelectedRecipe, translateProductValue, dealSaleSubjectArray, dealBuySubjectArray, addOutline, closeCircleOutline, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, openDeleteAttributeModal, deleteAttributeFunc, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, currentSubjectAttribute, isItemAlreadyHave, searchAttributeMenu, searchAdditionalAttributes, searchedAdditionalAttributes, dealAdditionalAttributesArray, chooseAttribute, setAttributeRentType, setProductPrice, setProductQty, sumAttributesPriceFunc, productNote, setProductNotePlaceholder, calcTotalSubjectPrice, subjectPrice, newAttribute, sumAttributesPriceValue, subjectQty, removeCircleOutline, addCircleOutline, changeQty, changePersonQty, gramPerPerson, setDiscountRange, subjectDiscount, setIsReturned, addNewAttrToPrice
+                systemCurrency, userSettings, subjectData, currentDealType, searchRecipeMenu, searchRecipe, chooseRecipe, noRecipe, searchedRecipe, userRecipeArray, showSelectedRecipe, translateProductValue, dealSaleSubjectArray, dealBuySubjectArray, addOutline, closeCircleOutline, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, openDeleteAttributeModal, deleteAttributeFunc, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, currentSubjectAttribute, isItemAlreadyHave, searchAttributeMenu, searchAdditionalAttributes, searchedAdditionalAttributes, dealAdditionalAttributesArray, chooseAttribute, setAttributeRentType, setProductPrice, setProductQty, sumAttributesPriceFunc, productNote, setProductNotePlaceholder, calcTotalSubjectPrice, subjectPrice, newAttribute, sumAttributesPriceValue, subjectQty, removeCircleOutline, addCircleOutline, changeQty, changePersonQty, gramPerPerson, setDiscountRange, subjectDiscount, setIsReturned, addNewAttrToPrice, sync, checkmark, setMarkerCurrentAttrColor
             }
         }
     })
@@ -916,15 +924,23 @@
         transition: transform 120ms ease, background 120ms ease; 
     } 
 
-    /* ion-range::part(pin)::before {
-        content: none;
-    } */
-
     ion-range::part(bar) {
         background: #a2d2ff;
     }
 
     ion-range::part(bar-active) {
         background: #bde0fe;
+    }
+
+    .mark-atribute {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        top: 0;
+        right: 0;
+        width: 1.3rem;
+        height: 1.3rem;
+        /* background-color: var(--ion-color-light); */
+        border-radius: 100%
     }
 </style>

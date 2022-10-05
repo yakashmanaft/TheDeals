@@ -139,8 +139,9 @@
                                                     <div 
                                                         v-if="checkRentAttr(item, deal.dealType)" 
                                                         class="absolute mark-atribute"
-                                                        :class="setMarkerAttrColor(item) ? 'mark-success' : 'mark-warning'"
-                                                    ></div>
+                                                    >
+                                                        <ion-icon :color="setMarkerAttrColor(item) ? 'success' : 'warning'" :icon="shapes"></ion-icon>
+                                                    </div>
                                                 </div>
                                                 <div v-if="deal.dealsList.length" class="empty-item"></div>
                                                 <!-- deal.dealsList is empty array -->
@@ -216,7 +217,7 @@
         IonItemGroup,
         IonActionSheet
     } from '@ionic/vue';
-    import { helpOutline } from 'ionicons/icons';
+    import { helpOutline, shapes } from 'ionicons/icons';
     import { defineComponent, ref, computed, onMounted, watch } from 'vue';
     import store from '../store/index';
     import { supabase } from '../supabase/init';
@@ -230,6 +231,7 @@
     import { setChipOutline } from '@/helpers/setChip';
     import { checkRentAttr } from '@/helpers/checkRentAttr'; 
     import { showNameByID } from '@/helpers/setNameByID';
+    import { setMarkerAttrColor } from '@/helpers/setMarkerColor';
     //
     export default defineComponent({
         name: 'Deals',
@@ -724,23 +726,9 @@
                 // edit.value = !edit.value;
                 // spinner.value = false;
             }
-            // раскрашиваем маркер по возврату атрибутов
-            const setMarkerAttrColor = (subject) => {
-                // console.log(subject.additionalAttributes)
-                let subjectAttributesArray = subject.additionalAttributes
-                let isReturnedArray = subjectAttributesArray.flat()
-                // console.log(isReturnedArray)
-                let isReturnData = isReturnedArray.map(item => item.isReturned) 
-                // console.log(isReturnData)
-                if(isReturnData.includes(false)) {
-                    return false
-                } else {
-                    return true
-                }
-            }
 
             return {
-                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isViewDealModalOpened, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translateValue, refreshData, myContacts, getContact, showNameByID, checkRentAttr, dealTypesList, dealByType, showDealByType, helpOutline, addSubject, deleteSubject, setIconByDealType, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, dealStatus, dealWhereChangeStatus, prevDealStatus, debt, culcDealDebt, openDealPaidMenu, isDealPaidMenuOpened, refreshDebtValue, closeDealPaidMenu, dealPaidAmountValue, setAmountValue, isAllAttrReturnedFunc, currency, isAllAttrReturned, update, setMarkerAttrColor
+                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isViewDealModalOpened, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translateValue, refreshData, myContacts, getContact, showNameByID, checkRentAttr, dealTypesList, dealByType, showDealByType, helpOutline, addSubject, deleteSubject, setIconByDealType, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, dealStatus, dealWhereChangeStatus, prevDealStatus, debt, culcDealDebt, openDealPaidMenu, isDealPaidMenuOpened, refreshDebtValue, closeDealPaidMenu, dealPaidAmountValue, setAmountValue, isAllAttrReturnedFunc, currency, isAllAttrReturned, update, setMarkerAttrColor, shapes
             }
         }
     })
@@ -786,19 +774,23 @@
         position: absolute;
     }
     .mark-atribute {
-        top: 0;
-        right: 0;
-        width: 1rem;
-        height: 1rem;
-        background-color: var(--ion-color-warning);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        top: 0rem;
+        right: -0.2rem;
+        width: 1.3rem;
+        height: 1.3rem;
+        background-color: var(--ion-color-light);
         border-radius: 100%
     }
-    .mark-success {
+    /* удалить если не понадобится */
+    /* .mark-success {
         background-color: var(--ion-color-success);
     }
     .mark-warning {
         background-color: var(--ion-color-warning);
-    }
+    } */
     .empty-deal-list_thumbnail {
         height: 64px;
         width: 64px;
