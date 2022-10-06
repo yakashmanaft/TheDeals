@@ -161,6 +161,7 @@
             const chooseDate = () => {
                 // Смотри ion-datetime Events
                 // console.log(formattedDate(choosenDate.value))
+                console.log(choosenDate.value)
                 isViewChoosenDateOpened.value = true
             }
             // 
@@ -173,6 +174,7 @@
                 if(choosenDate.value) {
                     dealsByChoosenDate.value = myDeals.value.filter(deal => formattedDate(deal.executionDate) === formattedDate(choosenDate.value))
                 }
+                console.log(choosenDate.value)
             })
             // фильтруем дела по выбранную дату
             // функция форматирования даты для сравнения даты дела и выбранной даты
@@ -198,10 +200,12 @@
             // Управление модалкой просмотра даты
             const isViewChoosenDateOpened = ref(false)
             //
-            const closeViewChoosenDate = () => {
+            const closeViewChoosenDate = (date) => {
                 isViewChoosenDateOpened.value = false
                 // dealsByChoosenDate.value = []
-                // choosenDate.value = null
+                console.log(date)
+                // choosenDate.value = undefined
+                console.log(choosenDate.value)
             }
             // Переходим в карточку вабранного дела
             const goToChoosenDeal = (deal) => {
@@ -347,9 +351,11 @@
                     productNote: subjectData.productNote,
                 })  
             }
+            //
             const deleteSubject = (id) => {
                 dealData.value.dealsList = dealData.value.dealsList.filter(subject => subject.id !== id);
             }
+            //
 
             return {
                 menu, user, router, pageTitle, choosenDate, chooseDate, spinner, dataLoaded, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact
@@ -362,5 +368,10 @@
     ion-datetime {
         --background: #ffffff;
         --background-rgb: 255,255,255;
+        --title-color: green;
+    }
+
+    ion-datetime:not(.datetime-placeholder) {
+        /* color: #f00; */
     }
 </style>

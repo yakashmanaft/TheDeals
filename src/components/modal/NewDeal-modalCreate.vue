@@ -86,7 +86,10 @@
                     @closeModal="closeModalCalendar()"
                     @updateDate="updateExecutionDate()"
                     @didDismiss="isCalendarOpened = false"
-                />
+                    :date="dealData.executionDate"
+                    />
+                    <!-- :date="currentDeal.executionDate" -->
+                    <!-- :date="dealData.executionDate" -->
             </ion-item-group>
 
             <!-- ============================ Предмет дела =================================== -->

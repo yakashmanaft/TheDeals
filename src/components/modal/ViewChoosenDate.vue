@@ -3,7 +3,7 @@
         <ion-header>
             <ion-toolbar>
                 <ion-buttons slot="start">
-                    <ion-button @click="$emit('closeModal')">Закрыть</ion-button>
+                    <ion-button @click="$emit('closeModal', date)">Закрыть</ion-button>
                 </ion-buttons>
                 <ion-title>{{formattedDate(date)}}</ion-title>
                 <ion-buttons slot="end">
