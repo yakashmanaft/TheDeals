@@ -20,16 +20,6 @@
             <!-- page content -->
 
             <div>
-                <!-- <ion-datetime
-                    minute-values="0,15,30,45"
-                    day-values="5,10,15, 18, 20,25,"
-                    presentation="date"
-                    size="cover"
-                    @ionChange="chooseDate"
-                    v-model="choosenDate"
-                    :first-day-of-week="1"
-                    locale="ru"
-                ></ion-datetime> -->
                 <ion-datetime
                     minute-values="0,15,30,45"
                     presentation="date"
@@ -39,7 +29,7 @@
                     :first-day-of-week="1"
                     locale="ru"
                 ></ion-datetime>
-                <ion-item-group>
+                <!-- <ion-item-group>
                     <div v-if="choosenDate">
                         <ion-text v-if="dealsByChoosenDate.length > 0">
                             Запланированных дел: {{dealsByChoosenDate.length}}
@@ -51,7 +41,7 @@
                     <ion-text v-else>
                         Выберите дату
                     </ion-text>
-                </ion-item-group>
+                </ion-item-group> -->
                 <!-- {{choosenDate}} -->
             </div>
             <!-- Модалка дел по выбранной дате -->
@@ -164,8 +154,12 @@
                 console.log(choosenDate.value)
                 isViewChoosenDateOpened.value = true
             }
+            // Храним данные контакта
+            const myContacts = ref([])
             // 
             onMounted(async () => {
+                await store.methods.getMyContactsFromDB()
+                myContacts.value = store.state.myContactsArray
                 await store.methods.getMyDealsFromBD()
                 myDeals.value = store.state.myDealsArray
                 spinner.value = false
@@ -203,7 +197,7 @@
             const closeViewChoosenDate = (date) => {
                 isViewChoosenDateOpened.value = false
                 // dealsByChoosenDate.value = []
-                console.log(date)
+                // console.log(date)
                 // choosenDate.value = undefined
                 console.log(choosenDate.value)
             }
@@ -302,12 +296,10 @@
                     }
                 }
             }
-            // Храним данные контакта
-            const myContacts = ref([])
-            onMounted( async () => {
-                await store.methods.getMyContactsFromDB()
-                myContacts.value = store.state.myContactsArray
-            })
+            // onMounted( async () => {
+            //     await store.methods.getMyContactsFromDB()
+            //     myContacts.value = store.state.myContactsArray
+            // })
             //
             // const showNameByID = (contactID) => {
             //     return contactID
@@ -373,5 +365,8 @@
 
     ion-datetime:not(.datetime-placeholder) {
         /* color: #f00; */
+    }
+    ion-datetime.datetime-calendar {
+        display: none;
     }
 </style>
