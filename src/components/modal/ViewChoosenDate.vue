@@ -121,8 +121,10 @@
             const date = ref()
             // функция форматирования даты
             const formattedDate = (day) => {
-                const formattedString = format(parseISO(day), 'd MMMM Y', { locale: ru });
-                return formattedString;
+                if(day) {
+                    const formattedString = format(parseISO(day), 'd MMMM Y', { locale: ru });
+                    return formattedString;
+                }
             }
             // Проверяем есть ли отмененные или завершенные дела по выбранной дате
             const checkStatus = (status) => {

@@ -24,25 +24,10 @@
                     minute-values="0,15,30,45"
                     presentation="date"
                     size="cover"
-                    @ionChange="chooseDate"
                     v-model="choosenDate"
                     :first-day-of-week="1"
                     locale="ru"
                 ></ion-datetime>
-                <!-- <ion-item-group>
-                    <div v-if="choosenDate">
-                        <ion-text v-if="dealsByChoosenDate.length > 0">
-                            Запланированных дел: {{dealsByChoosenDate.length}}
-                        </ion-text>
-                        <ion-text v-if="dealsByChoosenDate.length === 0">
-                            Нет запланированных дел
-                        </ion-text>
-                    </div>
-                    <ion-text v-else>
-                        Выберите дату
-                    </ion-text>
-                </ion-item-group> -->
-                <!-- {{choosenDate}} -->
             </div>
             <!-- Модалка дел по выбранной дате -->
             <ViewChoosenDate
@@ -148,12 +133,23 @@
             //
             const dateCreate = ref();
             // функция запускается при клике на дату в календаре
-            const chooseDate = () => {
+            // const chooseDate = (date) => {
+            //     console.log(date)
+            //     if(date !== null || date !== undefined) {
+            //         isViewChoosenDateOpened.value = true
+            //     } else if (!date){
+            //         returnisViewChoosenDateOpened.value = false
+            //     }
                 // Смотри ion-datetime Events
-                // console.log(formattedDate(choosenDate.value))
-                console.log(choosenDate.value)
-                isViewChoosenDateOpened.value = true
-            }
+                // if(choosenDate.value === null) {
+                //     console.log(choosenDate.value)
+                //     // isViewChoosenDateOpened.value = false
+                // } else {
+                //     isViewChoosenDateOpened.value = true
+
+                // }
+                // closeViewChoosenDate()
+            // }
             // Храним данные контакта
             const myContacts = ref([])
             // 
@@ -168,13 +164,15 @@
                 if(choosenDate.value) {
                     dealsByChoosenDate.value = myDeals.value.filter(deal => formattedDate(deal.executionDate) === formattedDate(choosenDate.value))
                 }
-                console.log(choosenDate.value)
+                // console.log(choosenDate.value)
             })
             // фильтруем дела по выбранную дату
             // функция форматирования даты для сравнения даты дела и выбранной даты
             const formattedDate = (day) => {
-                const formattedString = format(parseISO(day), 'd MMMM Y', { locale: ru });
-                return formattedString;
+                if(day) {
+                    const formattedString = format(parseISO(day), 'd MMMM Y', { locale: ru });
+                    return formattedString;
+                }
             }
             //
             // const showdate = () => {
@@ -184,6 +182,10 @@
             const dealsArray = ref([])
             // Когда выбираем дату (choosenDate.value уже имеет значение)
             watch(choosenDate, () => {
+                // console.log(choosenDate.value)
+                if(choosenDate.value) {
+                    isViewChoosenDateOpened.value = true
+                }
                 dealsByChoosenDate.value = myDeals.value.filter(deal => {
                     if(formattedDate(deal.executionDate) === formattedDate(choosenDate.value)) {
                         dealsArray.value.push(deal)
@@ -194,12 +196,12 @@
             // Управление модалкой просмотра даты
             const isViewChoosenDateOpened = ref(false)
             //
-            const closeViewChoosenDate = (date) => {
+            const closeViewChoosenDate = () => {
                 isViewChoosenDateOpened.value = false
                 // dealsByChoosenDate.value = []
                 // console.log(date)
-                // choosenDate.value = undefined
-                console.log(choosenDate.value)
+                choosenDate.value = null
+                // console.log(choosenDate.value)
             }
             // Переходим в карточку вабранного дела
             const goToChoosenDeal = (deal) => {
@@ -347,10 +349,10 @@
             const deleteSubject = (id) => {
                 dealData.value.dealsList = dealData.value.dealsList.filter(subject => subject.id !== id);
             }
-            //
+
 
             return {
-                menu, user, router, pageTitle, choosenDate, chooseDate, spinner, dataLoaded, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact
+                menu, user, router, pageTitle, choosenDate, spinner, dataLoaded, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact
             }
         }
     })
