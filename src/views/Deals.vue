@@ -58,7 +58,7 @@
                     </ion-button>
                 </ion-item-group>
                 <!-- Если по конкретному статусу нет дел -->
-                <div class="no-status-deal" v-if="foundDealsByStatus.length === 0">
+                <div class="no-status-deal height_60vh" v-if="foundDealsByStatus.length === 0">
                     <div v-for="(status, index) in dealStatusList" :key="index">
                         <div v-if="currentDealStatus === status.value">
                             <ion-img class="no-status-deal_img" :src="`img/status/${status.value}.svg`"></ion-img>
@@ -748,11 +748,13 @@
         white-space: nowrap;
     }
     .no-status-deal {
-        /* height: 60vh;  */
         display: flex; 
         flex-direction: column; 
         align-items: center; 
         justify-content: center;
+    }
+    .height_60vh {
+        height: 60vh; 
     }
     .no-status-deal_img {
         width: 50%; 

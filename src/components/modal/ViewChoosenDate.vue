@@ -19,6 +19,7 @@
                 </ion-text>
                 <div class="no-deal" v-if="deals.length === 0">
                     <ion-text color="medium">Нет запланированных дел</ion-text>
+                    <ion-text @click="$emit('setWeekendDay', date)" color="primary" class="ion-margin-top">Отметить как день без дел</ion-text>
                 </div>
             </div>
             <!--  -->
@@ -89,7 +90,7 @@
 
     export default defineComponent({
         name: 'ViewChoosenDate',
-        emit: ['closeModal', 'viewChoosenDeal', 'createNewDeal', 'goToChoosenContact'],
+        emit: ['closeModal', 'viewChoosenDeal', 'createNewDeal', 'goToChoosenContact', 'setWeekendDay'],
         props: {
             deals: Array,
             date: String,

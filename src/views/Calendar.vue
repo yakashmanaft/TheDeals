@@ -27,9 +27,10 @@
                     v-model="choosenDate"
                     :first-day-of-week="1"
                     locale="ru"
-                    ></ion-datetime>
-                    <!-- dayValues="5,10,15,20,25,30" -->
-                </div>
+                ></ion-datetime>
+                <!-- color="primary" -->
+                <!-- dayValues="5,10,15,20,25,30" -->
+            </div>
             <!-- Модалка дел по выбранной дате -->
             <ViewChoosenDate
                 :is-open="isViewChoosenDateOpened"
@@ -40,6 +41,7 @@
                 @viewChoosenDeal="goToChoosenDeal"
                 @createNewDeal="createNewDeal"
                 @goToChoosenContact="goToChoosenContact"
+                @setWeekendDay="setWeekendDayFunc"
             />
             <!-- Модалка по созданию нового дела -->
             <CreateNewDeal
@@ -175,7 +177,7 @@
             watch(choosenDate, () => {
                 // console.log(choosenDate.value)
                 // если выбранная дата === одной из дат в массие дат, указанной как ДЕНЬ БЕЗ ДЕЛ
-                if(formattedDate('2022-10-23T12:04:00+05:00') === formattedDate(choosenDate.value)) {
+                if(formattedDate('2022-10-30T12:04:00+05:00') === formattedDate(choosenDate.value)) {
                     // не даем открывать оконо просмотра дня
                     isViewChoosenDateOpened.value = false
                     // открываем модалку уведомление что дата выбрана как ДЕНЬ БЕЗ ДЕЛ
@@ -355,7 +357,7 @@
                 {
                     text: 'Отменить',
                     handler: () => {
-                        console.log('Нажимаем отменить выходной')
+                        console.log('Отменили День без дел')
                         isViewChoosenDateOpened.value = true
                         // Надо бы удалять из массива "Дни без дел"
                     }
@@ -364,16 +366,26 @@
                     text: 'Назад ',
                     role: 'cancel',
                     handler: () => {
-                        console.log('Cancel clicked')
+                        // console.log('Cancel clicked')
                         // сбрасываем значение выбранную дату, чтобы потвторно можно было кликать на дату
                         choosenDate.value = null
                     }
                 }
             ])
+            //
+            const setWeekendDayFunc = (date) => {
+                console.log(date)
+                // закрывает
+                isViewChoosenDateOpened.value = false
+                //обнуляет
+                choosenDate.value = null
+                //
+                console.log('Отметили как День без дел')
+            }
 
 
             return {
-                menu, user, router, pageTitle, choosenDate, spinner, dataLoaded, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons
+                menu, user, router, pageTitle, choosenDate, spinner, dataLoaded, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc
             }
         }
     })
@@ -389,7 +401,7 @@
     ion-datetime:not(.datetime-placeholder) {
         /* color: #f00; */
     }
-    ion-datetime.datetime-calendar {
+    /* ion-datetime.datetime-calendar {
         display: none;
-    }
+    } */
 </style>
