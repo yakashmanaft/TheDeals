@@ -145,4 +145,8 @@
         align-items: center; 
         justify-content: center;
     }
+
+    .no-data ion-img {
+        width: 50%
+    }
 </style>

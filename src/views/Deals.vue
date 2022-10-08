@@ -34,8 +34,8 @@
             <br>
             <!-- page content -->
             <!-- No data -->
-            <div v-if="(!dataLoaded || myDeals.length === 0) && !spinner" class="no-status-deal ion-padding-horizontal">
-                <ion-img style="height: 30vh;" src="img/common/deals-sticker.webp" alt="нет дел"></ion-img>
+            <div v-if="(!dataLoaded || myDeals.length === 0) && !spinner" class="no-status-deal ion-padding-horizontal no-data">
+                <ion-img src="img/common/deals-sticker.webp" alt="нет дел"></ion-img>
                 <ion-text color="primary"><h2>У вас еще нет дел...</h2></ion-text>
                 <ion-text color="medium">Самое время начать заниматься деятельностью. <br>И создать первое дело!</ion-text>
             </div>
@@ -748,7 +748,7 @@
         white-space: nowrap;
     }
     .no-status-deal {
-        height: 60vh; 
+        /* height: 60vh;  */
         display: flex; 
         flex-direction: column; 
         align-items: center; 
@@ -826,5 +826,8 @@
     }
     .icon-thumbnail_buy {
         background-color: var(--ion-color-warning);
+    }
+    .no-data ion-img {
+        width: 50%
     }
 </style>

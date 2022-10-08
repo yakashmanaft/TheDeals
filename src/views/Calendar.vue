@@ -27,8 +27,9 @@
                     v-model="choosenDate"
                     :first-day-of-week="1"
                     locale="ru"
-                ></ion-datetime>
-            </div>
+                    ></ion-datetime>
+                    <!-- dayValues="5,10,15,20,25,30" -->
+                </div>
             <!-- Модалка дел по выбранной дате -->
             <ViewChoosenDate
                 :is-open="isViewChoosenDateOpened"
@@ -50,6 +51,14 @@
                 @addSubject="addSubject"
                 @deleteSubject="deleteSubject"
             />
+            <!-- Всплывашка об удалении выбранной даты из массива дат "ДЕнь без дел" -->
+            <ion-action-sheet
+                :is-open="actionSheetWeekendDayOpened"
+                header="Это день без дел"
+                :buttons="changeWeekendDayButtons"
+                @didDismiss="actionSheetWeekendDayOpened = false"
+            >
+            </ion-action-sheet>
         </ion-content>
 </template>
 
@@ -77,7 +86,8 @@
         IonIcon,
         IonText,
         IonItemGroup,
-        IonDatetime
+        IonDatetime,
+        IonActionSheet
     } from '@ionic/vue';
     //
     import { menu } from 'ionicons/icons';
@@ -109,7 +119,8 @@
             IonDatetime,
             Spinner,
             ViewChoosenDate,
-            CreateNewDeal
+            CreateNewDeal,
+            IonActionSheet
         },
         setup() {
             // Get user from store
@@ -130,26 +141,10 @@
             const myDeals = ref([]);
             // массив дел под конкретную дату
             const dealsByChoosenDate = ref([])
+            // управление модалкой настройки выходного дня
+            const actionSheetWeekendDayOpened = ref(false)
             //
             const dateCreate = ref();
-            // функция запускается при клике на дату в календаре
-            // const chooseDate = (date) => {
-            //     console.log(date)
-            //     if(date !== null || date !== undefined) {
-            //         isViewChoosenDateOpened.value = true
-            //     } else if (!date){
-            //         returnisViewChoosenDateOpened.value = false
-            //     }
-                // Смотри ion-datetime Events
-                // if(choosenDate.value === null) {
-                //     console.log(choosenDate.value)
-                //     // isViewChoosenDateOpened.value = false
-                // } else {
-                //     isViewChoosenDateOpened.value = true
-
-                // }
-                // closeViewChoosenDate()
-            // }
             // Храним данные контакта
             const myContacts = ref([])
             // 
@@ -174,17 +169,23 @@
                     return formattedString;
                 }
             }
-            //
-            // const showdate = () => {
-
-            // }
             // Массив дел по выбранной дате
             const dealsArray = ref([])
             // Когда выбираем дату (choosenDate.value уже имеет значение)
             watch(choosenDate, () => {
                 // console.log(choosenDate.value)
-                if(choosenDate.value) {
-                    isViewChoosenDateOpened.value = true
+                // если выбранная дата === одной из дат в массие дат, указанной как ДЕНЬ БЕЗ ДЕЛ
+                if(formattedDate('2022-10-23T12:04:00+05:00') === formattedDate(choosenDate.value)) {
+                    // не даем открывать оконо просмотра дня
+                    isViewChoosenDateOpened.value = false
+                    // открываем модалку уведомление что дата выбрана как ДЕНЬ БЕЗ ДЕЛ
+                    actionSheetWeekendDayOpened.value = true
+                    // далее работает функционал из массива changeWeekendDayButtons
+
+                } else {
+                    if(choosenDate.value) {
+                        isViewChoosenDateOpened.value = true
+                    }
                 }
                 dealsByChoosenDate.value = myDeals.value.filter(deal => {
                     if(formattedDate(deal.executionDate) === formattedDate(choosenDate.value)) {
@@ -349,10 +350,30 @@
             const deleteSubject = (id) => {
                 dealData.value.dealsList = dealData.value.dealsList.filter(subject => subject.id !== id);
             }
+            // ============================= Массив кнопок управления ДЕНЬ БЕЗ ДЕЛ ============================================
+            const changeWeekendDayButtons = ref([
+                {
+                    text: 'Отменить',
+                    handler: () => {
+                        console.log('Нажимаем отменить выходной')
+                        isViewChoosenDateOpened.value = true
+                        // Надо бы удалять из массива "Дни без дел"
+                    }
+                },  
+                {
+                    text: 'Назад ',
+                    role: 'cancel',
+                    handler: () => {
+                        console.log('Cancel clicked')
+                        // сбрасываем значение выбранную дату, чтобы потвторно можно было кликать на дату
+                        choosenDate.value = null
+                    }
+                }
+            ])
 
 
             return {
-                menu, user, router, pageTitle, choosenDate, spinner, dataLoaded, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact
+                menu, user, router, pageTitle, choosenDate, spinner, dataLoaded, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons
             }
         }
     })

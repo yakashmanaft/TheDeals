@@ -345,10 +345,13 @@
         height: 50vh;
     }
     .no-data {
-        height: 80vh; 
+        /* height: 80vh;  */
         display: flex; 
         flex-direction: column; 
         align-items: center; 
         justify-content: center;
+    }
+    .no-data ion-img {
+        width: 60%
     }
 </style>

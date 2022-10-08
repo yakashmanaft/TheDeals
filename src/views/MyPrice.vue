@@ -51,9 +51,9 @@
             <!-- page content -->
             <div v-for="(item, index) in userSettings" :key="index">
                 <!-- No data -->
-                <div v-if="!spinner && ((item.userPriceList.length === 0 && item.userAdditionalAttributes.length === 0) || !dataLoaded )" class="no-status-deal ion-padding-horizontal">
-                    <ion-img style="height: 30vh;" src="img/common/price-sticker.webp" alt="нет дел"></ion-img>
-                    <ion-text color="primary"><h2>Ваш прайс пуст...</h2></ion-text>
+                <div v-if="!spinner && ((item.userPriceList.length === 0 && item.userAdditionalAttributes.length === 0) || !dataLoaded )" class="no-status-deal ion-padding-horizontal no-data">
+                    <ion-img src="img/common/price-sticker.webp" alt="нет дел"></ion-img>
+                    <ion-text color="primary"><h2>Ваш прайс пуст</h2></ion-text>
                     <ion-text color="medium">Добавьте продукт</ion-text>
                 </div>
 
@@ -683,6 +683,9 @@
         overflow: scroll;
         --overflow: scroll;
         white-space: nowrap;
+    }
+    .no-data ion-img {
+        width: 50%
     }
 
 </style>
