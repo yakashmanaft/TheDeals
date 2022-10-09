@@ -1,4 +1,5 @@
 <template>
+    <div>
         <!-- Спиннер как имитация загрузки -->
         <Spinner v-if="spinner"/>
 
@@ -62,6 +63,7 @@
             >
             </ion-action-sheet>
         </ion-content>
+    </div>
 </template>
 
 <script>
