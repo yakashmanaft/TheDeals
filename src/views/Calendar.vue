@@ -29,6 +29,7 @@
                     v-model="choosenDate"
                     :first-day-of-week="1"
                     locale="ru"
+                    :is-date-enabled="isWeekday"
                 ></ion-datetime>
                 <!-- color="primary" -->
                 <!-- dayValues="5,10,15,20,25,30" -->
@@ -161,7 +162,7 @@
                 await store.methods.getUserSettingsfromDB()
                 userSettings.value = store.state.userSettings[0]
                 weekendDays.value = userSettings.value.weekendDays
-                console.log(weekendDays.value)
+                // console.log(weekendDays.value)
                 //
                 await store.methods.getMyContactsFromDB()
                 myContacts.value = store.state.myContactsArray
@@ -176,6 +177,10 @@
                     dealsByChoosenDate.value = myDeals.value.filter(deal => formattedDate(deal.executionDate) === formattedDate(choosenDate.value))
                 }
                 // console.log(choosenDate.value)
+                let calendar = document.body.getElementsByTagName('ion-datetime')
+                // console.log(calendar[0].getElementsByTagName('button'))
+                console.log(calendar[0])
+                // getAttribute
             })
             // фильтруем дела по выбранную дату
             // функция форматирования даты для сравнения даты дела и выбранной даты
@@ -198,7 +203,7 @@
                     // открываем модалку уведомление что дата выбрана как ДЕНЬ БЕЗ ДЕЛ
                     actionSheetWeekendDayOpened.value = true
                     // далее работает функционал из массива changeWeekendDayButtons
-
+                    // let choosenDay = document.getElementsByClassName('.calendar-month')
                 } else {
                     if(choosenDate.value) {
                         isViewChoosenDateOpened.value = true
@@ -400,10 +405,28 @@
                     alert(`Error: ${error.message}`)
                 }
             }
+            //
+            const isWeekday = (dateString) => {
+                // if(formattedDate('2022-10-30T12:04:00+05:00') === formattedDate(choosenDate.value)) {
+                // return '2022-10-30T12:04:00+05:00'
+                const date = new Date(dateString);
+                const utcDay = date.getUTCDay();
+                console.log(date)
+                
+                /**
+                 * Date will be enabled if it is not
+                 * Sunday or Saturday
+                 */
+                return utcDay !== 0 && utcDay !== 6;
+                // :host .calendar-day[disabled] {
+                // pointer-events: none;
+                // opacity: 0.4;
+                // }
+            }
 
 
             return {
-                menu, user, router, pageTitle, choosenDate, spinner, dataLoaded, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays
+                menu, user, router, pageTitle, choosenDate, spinner, dataLoaded, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, isWeekday
             }
         }
     })
@@ -414,15 +437,17 @@
         --background: #ffffff;
         --background-rgb: 255,255,255;
         --title-color: green;
+        height: 90vh;
     }
 
-    ion-datetime:not(.datetime-placeholder) {
-        /* color: #f00; */
-    }
+    /* ion-datetime:not(.datetime-placeholder) {
+        color: #f00;
+    } */
     /* ion-datetime.datetime-calendar {
         display: none;
     } */
-    ion-datetime{
-        /* background-color: blue!important */height: 90vh
+    /* Но part же нету в shadow-roots */
+    ion-datetime::part(text) {
+        background-color: red!important
     }
 </style>
