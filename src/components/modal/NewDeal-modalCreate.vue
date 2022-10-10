@@ -12,7 +12,7 @@
                 </ion-buttons>
             </ion-toolbar>
         </ion-header>
-        <ion-content>
+        <ion-content forceOverscroll="false">
             <!-- ============================ Статус дела ========================================= -->
             <!-- Значение статуса дела по умолчанию: Бронь даты, deal-in-booking -->
             <ion-item-group class="ion-text-center ion-padding-horizontal ion-margin-top">

@@ -8,7 +8,7 @@
                 <ion-title class="ion-text-center">Просмотр</ion-title>
             </ion-toolbar>
         </ion-header>
-        <ion-content class="ion-padding">
+        <ion-content class="ion-padding" forceOverscroll="false">
             {{productData}}
             <!-- Вариант типа выбранного блока -->
             <ion-item-group class="ion-margin-bottom">

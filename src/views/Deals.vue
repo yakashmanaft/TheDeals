@@ -28,6 +28,7 @@
             class="ion-page ion-margin-top" 
             id="main"
             type="push"
+            forceOverscroll="false"
         >
             <br>
             <br>

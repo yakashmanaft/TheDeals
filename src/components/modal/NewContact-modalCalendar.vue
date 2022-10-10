@@ -8,7 +8,7 @@
                 <ion-title>Выберите дату</ion-title>
             </ion-toolbar>
         </ion-header>
-        <ion-content>
+        <ion-content >
             <ion-datetime 
                 size="cover"
                 presentation="date"

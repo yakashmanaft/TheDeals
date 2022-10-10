@@ -11,7 +11,7 @@
                 </ion-buttons>
             </ion-toolbar>
         </ion-header>
-        <ion-content class="ion-padding">
+        <ion-content class="ion-padding" forceOverscroll="false">
             {{newProductData}}
             <!-- ============================= Основные данные ===================================== -->
             <!-- Выбор что добавляем в прайс: атрибут или продукт -->

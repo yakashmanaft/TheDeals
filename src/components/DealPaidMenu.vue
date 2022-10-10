@@ -12,7 +12,7 @@
                 </ion-buttons> -->
             </ion-toolbar>
         </ion-header>
-        <ion-content>
+        <ion-content forceOverscroll="false">
             <!-- Заголовок -->
             <ion-item lines="none" class="ion-margin-top">
                 <ion-title size="large" class="ion-no-padding">

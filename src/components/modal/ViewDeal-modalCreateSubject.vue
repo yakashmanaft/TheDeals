@@ -43,7 +43,7 @@
             </div>
         </ion-grid>
         <!--  -->
-        <ion-content>
+        <ion-content forceOverscroll="false">
             {{currentDealType}}
             {{subjectData}}
             <!-- Выбор предмета к делу -->

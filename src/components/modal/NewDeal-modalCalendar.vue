@@ -11,7 +11,7 @@
                 </ion-buttons>
             </ion-toolbar>
         </ion-header>
-        <ion-content>
+        <ion-content forceOverscroll="false">
             <ion-datetime 
                 :prefer-wheel="true"
                 size="cover"

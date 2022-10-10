@@ -14,6 +14,7 @@
             class="ion-page ion-margin-top" 
             id="main"
             type="push" 
+            forceOverscroll="false"
         >
             <br>
             <br>
@@ -421,4 +422,7 @@
     /* ion-datetime.datetime-calendar {
         display: none;
     } */
+    ion-datetime{
+        /* background-color: blue!important */height: 90vh
+    }
 </style>

@@ -11,7 +11,7 @@
                 </ion-buttons>
             </ion-toolbar>
         </ion-header>
-        <ion-content>
+        <ion-content forceOverscroll="false">
             <!-- Маячок о количестве дел -->
             <div class="ion-margin-top ion-text-center">
                 <ion-text color="medium" v-if="deals.length > 0">

@@ -44,7 +44,7 @@
             </div>
         </ion-grid>
         <!--  -->
-        <ion-content :scroll-events="true">
+        <ion-content :scroll-events="true" forceOverscroll="false">
             <!-- {{currentDealType}} -->
             <!-- {{subjectData}} -->
             <!-- ================ Добавленный продукт ======================== -->

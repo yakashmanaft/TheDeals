@@ -12,6 +12,7 @@
             class="ion-page ion-margin-top" 
             id="main"
             type="push" 
+            forceOverscroll="false"
         >
     
             <br>
@@ -640,12 +641,17 @@
             // выбираем дату
             // вывести в отдельный файл (вместе с функцией из CreateNewContact)
             const datepicker = (eventDate) => {
-                if(eventDate === undefined) {
+                if(eventDate) {
+                    if(eventDate === undefined) {
+                        return 'Выберите дату'
+                    }
+                    const data = eventDate
+                    const formattedString = format(parseISO(data), 'd MMMM', { locale: ru });
+                    return formattedString
+                } else {
+
                     return 'Выберите дату'
                 }
-                const data = eventDate
-                const formattedString = format(parseISO(data), 'd MMMM', { locale: ru });
-                return formattedString
             }
 
             // Delete Phone Number of Current Contact
