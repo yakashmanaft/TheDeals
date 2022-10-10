@@ -16,7 +16,7 @@
             <ion-item-group>
                 <!-- Заголовок -->
                 <ion-text>
-                    <h4>Новый рецепт</h4>
+                    <h4>В разработке...</h4>
                 </ion-text>
             </ion-item-group>
         </ion-content>

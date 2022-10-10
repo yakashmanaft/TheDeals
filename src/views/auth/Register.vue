@@ -113,7 +113,9 @@
                 uid: uid(),
                 // Здесь еще нет имейла
                 email: email.value,
-                userPriceList: []
+                userPriceList: [],
+                userAdditionalAttributes: [],
+                weekendDays: []
             })
 
             // Register function

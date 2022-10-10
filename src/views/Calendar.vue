@@ -138,7 +138,8 @@
             // Get user email
             store.methods.setUserEmail()
             const userEmail = ref(store.state.userEmail)
-            console.log(userEmail.value)
+            // console.log(userEmail.value)
+            const userSettings = ref(store.state.userSettings[0])
             //
             const spinner = ref(null);
             const dataLoaded = ref(null);
@@ -151,12 +152,22 @@
             const dateCreate = ref();
             // Храним данные контакта
             const myContacts = ref([])
+            // массив с датами типа День без дел
+            // const weekendDays = ref([formattedDate('2022-10-30T12:04:00+05:00'), formattedDate('2022-10-29T12:04:00+05:00')])
+            const weekendDays = ref([]);
             // 
             onMounted(async () => {
+                await store.methods.getUserSettingsfromDB()
+                userSettings.value = store.state.userSettings[0]
+                weekendDays.value = userSettings.value.weekendDays
+                console.log(weekendDays.value)
+                //
                 await store.methods.getMyContactsFromDB()
                 myContacts.value = store.state.myContactsArray
+                //
                 await store.methods.getMyDealsFromBD()
                 myDeals.value = store.state.myDealsArray
+                //
                 spinner.value = false
                 dataLoaded.value = true 
                 // refreshData()
@@ -179,7 +190,8 @@
             watch(choosenDate, () => {
                 // console.log(choosenDate.value)
                 // если выбранная дата === одной из дат в массие дат, указанной как ДЕНЬ БЕЗ ДЕЛ
-                if(formattedDate('2022-10-30T12:04:00+05:00') === formattedDate(choosenDate.value)) {
+                // if(formattedDate('2022-10-30T12:04:00+05:00') === formattedDate(choosenDate.value)) {
+                if(checkWeekendDays(choosenDate.value)){
                     // не даем открывать оконо просмотра дня
                     isViewChoosenDateOpened.value = false
                     // открываем модалку уведомление что дата выбрана как ДЕНЬ БЕЗ ДЕЛ
@@ -303,33 +315,7 @@
                     }
                 }
             }
-            // onMounted( async () => {
-            //     await store.methods.getMyContactsFromDB()
-            //     myContacts.value = store.state.myContactsArray
-            // })
             //
-            // const showNameByID = (contactID) => {
-            //     return contactID
-            // }
-            // Передаем в роут данные ко конкретному контакту
-            // const getContact = (contactID) => {
-            //     const result = myContacts.value.filter(contact => contact.id === +contactID)
-            //     const contact = result[0]
-            //     return JSON.stringify(contact)
-            // }
-            // Подтягиваем name, surname на основании contactID
-            // Вынести в отдельный файл
-            // const showNameByID = (contactID) => {
-            //     const result = myContacts.value.filter(contact => contact.id === +contactID)
-            //     if(result.length !== 0) {
-            //         const nameByID = (result[0].contactInfo.surname + ' ' + result[0].contactInfo.name).toString().replace(/"/g, "")
-            //         return nameByID;
-            //     } else if (result.length === 0) {
-            //         const nameByID = 'Неизвестный'
-            //         return nameByID;
-            //     }
-            // }
-            // 
             const addSubject = (subjectData) => {
                 // console.log(dealData.value.dealType)
                 dealData.value.dealsList.push({
@@ -359,9 +345,14 @@
                 {
                     text: 'Отменить',
                     handler: () => {
-                        console.log('Отменили День без дел')
+                        // console.log('Отменили День без дел')
                         isViewChoosenDateOpened.value = true
                         // Надо бы удалять из массива "Дни без дел"
+                        // console.log(choosenDate.value)
+                        weekendDays.value = weekendDays.value.filter(day => day.date !== formattedDate(choosenDate.value));
+                        // Обновляем запись в БД
+                        updateWeekendDays()
+                        alert('День без дел отменен')
                     }
                 },  
                 {
@@ -375,19 +366,43 @@
                 }
             ])
             //
-            const setWeekendDayFunc = (date) => {
-                console.log(date)
+            const setWeekendDayFunc = async (date) => {
+                weekendDays.value.push({date: formattedDate(date)})
+                // console.log(weekendDays.value)
+                // обнолвяем запись в БД
+                updateWeekendDays()
                 // закрывает
                 isViewChoosenDateOpened.value = false
                 //обнуляет
                 choosenDate.value = null
                 //
-                console.log('Отметили как День без дел')
+                // console.log('Отметили как День без дел')
+                alert('Отмечено как День без дел')
+            }
+            // проверяем есть ли выбранная дата в массиве дней без дел
+            const checkWeekendDays = (choosenDate) => {
+                if(weekendDays.value.find((item) => item.date === formattedDate(choosenDate)) !== undefined) {
+                    return true
+                } else {
+                    return false
+                }
+            }
+            // update weekend days array in BD
+            const updateWeekendDays = async () => {
+                // обновляем в БД
+                try {
+                    const { error } = await supabase.from('accountSettings').update({
+                        weekendDays: weekendDays.value
+                    }).eq('email', userEmail.value)
+                    if(error) throw error;
+                } catch(error) {
+                    alert(`Error: ${error.message}`)
+                }
             }
 
 
             return {
-                menu, user, router, pageTitle, choosenDate, spinner, dataLoaded, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc
+                menu, user, router, pageTitle, choosenDate, spinner, dataLoaded, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays
             }
         }
     })
