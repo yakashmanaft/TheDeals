@@ -29,9 +29,8 @@
                     v-model="choosenDate"
                     :first-day-of-week="1"
                     locale="ru"
-                    :is-date-enabled="isWeekday"
-                ></ion-datetime>
-                <!-- color="primary" -->
+                    ></ion-datetime>
+                <!-- :is-date-enabled="isWeekday" -->
                 <!-- dayValues="5,10,15,20,25,30" -->
             </div>
             <!-- Модалка дел по выбранной дате -->
@@ -177,10 +176,11 @@
                     dealsByChoosenDate.value = myDeals.value.filter(deal => formattedDate(deal.executionDate) === formattedDate(choosenDate.value))
                 }
                 // console.log(choosenDate.value)
-                let calendar = document.body.getElementsByTagName('ion-datetime')
+                // let calendar = document.body.getElementsByTagName('ion-datetime')
                 // console.log(calendar[0].getElementsByTagName('button'))
-                console.log(calendar[0])
+                // console.log(calendar[0])
                 // getAttribute
+                isWeekday()
             })
             // фильтруем дела по выбранную дату
             // функция форматирования даты для сравнения даты дела и выбранной даты
@@ -406,24 +406,30 @@
                 }
             }
             //
-            const isWeekday = (dateString) => {
-                // if(formattedDate('2022-10-30T12:04:00+05:00') === formattedDate(choosenDate.value)) {
-                // return '2022-10-30T12:04:00+05:00'
-                const date = new Date(dateString);
-                const utcDay = date.getUTCDay();
-                console.log(date)
+            // const isWeekday = (dateString) => {
+            //     // if(formattedDate('2022-10-30T12:04:00+05:00') === formattedDate(choosenDate.value)) {
+            //     // return '2022-10-30T12:04:00+05:00'
+            //     const date = new Date(dateString);
+            //     const utcDay = date.getUTCDay();
+            //     console.log(date)
                 
-                /**
-                 * Date will be enabled if it is not
-                 * Sunday or Saturday
-                 */
-                return utcDay !== 0 && utcDay !== 6;
-                // :host .calendar-day[disabled] {
-                // pointer-events: none;
-                // opacity: 0.4;
-                // }
+            //     /**
+            //      * Date will be enabled if it is not
+            //      * Sunday or Saturday
+            //      */
+            //     return utcDay !== 0 && utcDay !== 6;
+            //     // :host .calendar-day[disabled] {
+            //     // pointer-events: none;
+            //     // opacity: 0.4;
+            //     // }
+            // }
+            const isWeekday = () => {
+                let calendar = document.body.getElementsByTagName('ion-datetime')
+                console.log(calendar[0].shadowRoot)
+                // calendar[0].shadowRoot.querySelector(".datetime-calendar").setAttribute("style","color:red")
+                // console.log(calendar[0].shadowRoot.querySelectorAll("button"))
+                // calendar[0].shadowRoot.querySelector("button").setAttribute("style", "background-color: red")
             }
-
 
             return {
                 menu, user, router, pageTitle, choosenDate, spinner, dataLoaded, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, isWeekday
