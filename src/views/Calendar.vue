@@ -158,6 +158,7 @@
             const weekendDays = ref([]);
             // 
             onMounted(async () => {
+                spinner.value = true
                 await store.methods.getUserSettingsfromDB()
                 userSettings.value = store.state.userSettings[0]
                 weekendDays.value = userSettings.value.weekendDays
@@ -180,7 +181,7 @@
                 // console.log(calendar[0].getElementsByTagName('button'))
                 // console.log(calendar[0])
                 // getAttribute
-                isWeekday()
+                setCalendarStyle()
             })
             // фильтруем дела по выбранную дату
             // функция форматирования даты для сравнения даты дела и выбранной даты
@@ -194,6 +195,7 @@
             const dealsArray = ref([])
             // Когда выбираем дату (choosenDate.value уже имеет значение)
             watch(choosenDate, () => {
+                // setCalendarStyle()
                 // console.log(choosenDate.value)
                 // если выбранная дата === одной из дат в массие дат, указанной как ДЕНЬ БЕЗ ДЕЛ
                 // if(formattedDate('2022-10-30T12:04:00+05:00') === formattedDate(choosenDate.value)) {
@@ -423,16 +425,46 @@
             //     // opacity: 0.4;
             //     // }
             // }
-            const isWeekday = () => {
+            const setCalendarStyle = () => {
                 let calendar = document.body.getElementsByTagName('ion-datetime')
-                console.log(calendar[0].shadowRoot)
+                let dateTimeCalendar = calendar[0].shadowRoot.querySelector('.datetime-calendar')
+                let buttons = dateTimeCalendar.querySelectorAll('.calendar-day')
+                //
+                // console.log(buttons)
                 // calendar[0].shadowRoot.querySelector(".datetime-calendar").setAttribute("style","color:red")
                 // console.log(calendar[0].shadowRoot.querySelectorAll("button"))
-                // calendar[0].shadowRoot.querySelector("button").setAttribute("style", "background-color: red")
+                // for(let i = 0; i <= buttons.length; i++) {
+                //     console.log(i.getAttribute("data-day"))
+
+                // }
+                buttons.forEach(item => {
+                    console.log(item)
+                    // let attrGroup = {
+                    //     // class: 'style'
+                    //     style: {
+                    //         // "background-color": "var(--ion-color-medium)"
+                    //         color: 'red'
+                    //     }
+                    // }
+                    // item.setAttribute("style", "background-color: var(--ion-color-medium)")
+                    // item.setAttribute(`${attrGroup[key]}`)
+                    // item.setAttribute("style", "border-radius: 5px")
+                    // for(let key in attrGroup){
+                    //     item.setAttribute(`${key}`,`${attrGroup[key]}`);
+                    // }
+                    // item.setAttribute('style', 'background-color: var(--ion-color-medium)')
+                    // item.setAttribute('style', 'color: var(--ion-color-light)')
+                    item.style.cssText = `
+                        background-color: var(--ion-color-light);
+                        margin: 0.2rem;
+                        border-radius: 0.5rem;
+                    `
+                    spinner.value = false
+                })
             }
 
             return {
-                menu, user, router, pageTitle, choosenDate, spinner, dataLoaded, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, isWeekday
+                menu, user, router, pageTitle, choosenDate, spinner, dataLoaded, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle
             }
         }
     })
@@ -455,5 +487,10 @@
     /* Но part же нету в shadow-roots */
     ion-datetime::part(text) {
         background-color: red!important
+    }
+    .style {
+        background-color: var(--ion-color-medium);
+        border-width: 0!important;
+        margin: 2px!important;
     }
 </style>
