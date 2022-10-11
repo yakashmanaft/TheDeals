@@ -438,7 +438,7 @@
 
                 // }
                 buttons.forEach(item => {
-                    console.log(item)
+                    // console.log(item)
                     // let attrGroup = {
                     //     // class: 'style'
                     //     style: {
@@ -459,8 +459,8 @@
                         margin: 0.2rem;
                         border-radius: 0.5rem;
                     `
-                    spinner.value = false
                 })
+                spinner.value = false
             }
 
             return {
