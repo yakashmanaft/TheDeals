@@ -29,6 +29,7 @@
                     v-model="choosenDate"
                     :first-day-of-week="1"
                     locale="ru"
+                    @ionChange="setChoosenDateStyle"
                     ></ion-datetime>
                 <!-- :is-date-enabled="isWeekday" -->
                 <!-- dayValues="5,10,15,20,25,30" -->
@@ -154,8 +155,8 @@
             // Храним данные контакта
             const myContacts = ref([])
             // массив с датами типа День без дел
-            // const weekendDays = ref([formattedDate('2022-10-30T12:04:00+05:00'), formattedDate('2022-10-29T12:04:00+05:00')])
             const weekendDays = ref([]);
+            // Переменная для наблюдателя по смене месяцев
             const observer = ref()
             // 
             onMounted(async () => {
@@ -178,7 +179,7 @@
                     dealsByChoosenDate.value = myDeals.value.filter(deal => formattedDate(deal.executionDate) === formattedDate(choosenDate.value))
                 }
                 // запускает функцию отрисовки стилей для дат календаря, исходя из существующих дел и загруженности дня
-                setCalendarStyle()
+                
                 // отслеживаем перелистывания месяцев в календаре
                 const observer = new MutationObserver((mutationRecords) => {
                     if (mutationRecords) {
@@ -201,6 +202,7 @@
                     // при перелистывании месяцев запускаем функцию стилей для дат
                     setCalendarStyle()
                 })
+                setCalendarStyle()
             })
             // фильтруем дела по выбранную дату
             // функция форматирования даты для сравнения даты дела и выбранной даты
@@ -236,6 +238,9 @@
                         return deal
                     }
                 })
+                // ставим стили для выбранной даты
+                // вынести в отдельную функцию
+                // setCalendarStyle()
             })
             // Управление модалкой просмотра даты
             const isViewChoosenDateOpened = ref(false)
@@ -281,6 +286,7 @@
             // При закрытии или открытии modal очищаем шаблон дела
             const setOpen = () => {
                 isViewDealModalOpened.value = !isViewDealModalOpened.value;
+                choosenDate.value = null
                 dealData.value = {
                     uid: uid(),
                     email: userEmail.value,
@@ -444,35 +450,19 @@
             //     // opacity: 0.4;
             //     // }
             // }
+            // 
+            const setChoosenDateStyle = (e) => {
+                //.calendar-day-active
+                let click = e.target.shadowRoot.querySelector('.datetime-calendar')
+                console.log(click.querySelector('.calendar-day-active'))
+            }
+            // та
             const setCalendarStyle = () => {
                 let calendar = document.body.getElementsByTagName('ion-datetime')
                 let dateTimeCalendar = calendar[0].shadowRoot.querySelector('.datetime-calendar')
                 let buttons = dateTimeCalendar.querySelectorAll('.calendar-day')
                 //
-                // console.log(buttons)
-                // calendar[0].shadowRoot.querySelector(".datetime-calendar").setAttribute("style","color:red")
-                // console.log(calendar[0].shadowRoot.querySelectorAll("button"))
-                // for(let i = 0; i <= buttons.length; i++) {
-                //     console.log(i.getAttribute("data-day"))
-
-                // }
                 buttons.forEach(item => {
-                    // console.log(item)
-                    // let attrGroup = {
-                    //     // class: 'style'
-                    //     style: {
-                    //         // "background-color": "var(--ion-color-medium)"
-                    //         color: 'red'
-                    //     }
-                    // }
-                    // item.setAttribute("style", "background-color: var(--ion-color-medium)")
-                    // item.setAttribute(`${attrGroup[key]}`)
-                    // item.setAttribute("style", "border-radius: 5px")
-                    // for(let key in attrGroup){
-                    //     item.setAttribute(`${key}`,`${attrGroup[key]}`);
-                    // }
-                    // item.setAttribute('style', 'background-color: var(--ion-color-medium)')
-                    // item.setAttribute('style', 'color: var(--ion-color-light)')
                     item.style.cssText = `
                         background-color: var(--ion-color-light);
                         margin: 0.2rem;
@@ -483,7 +473,7 @@
             }
 
             return {
-                menu, user, router, pageTitle, choosenDate, spinner, dataLoaded, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle, observer
+                menu, user, router, pageTitle, choosenDate, spinner, dataLoaded, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle, observer, setChoosenDateStyle
             }
         }
     })
