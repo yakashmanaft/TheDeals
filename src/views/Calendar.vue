@@ -156,6 +156,7 @@
             // массив с датами типа День без дел
             // const weekendDays = ref([formattedDate('2022-10-30T12:04:00+05:00'), formattedDate('2022-10-29T12:04:00+05:00')])
             const weekendDays = ref([]);
+            const observer = ref()
             // 
             onMounted(async () => {
                 spinner.value = true
@@ -176,12 +177,30 @@
                 if(choosenDate.value) {
                     dealsByChoosenDate.value = myDeals.value.filter(deal => formattedDate(deal.executionDate) === formattedDate(choosenDate.value))
                 }
-                // console.log(choosenDate.value)
-                // let calendar = document.body.getElementsByTagName('ion-datetime')
-                // console.log(calendar[0].getElementsByTagName('button'))
-                // console.log(calendar[0])
-                // getAttribute
+                // запускает функцию отрисовки стилей для дат календаря, исходя из существующих дел и загруженности дня
                 setCalendarStyle()
+                // отслеживаем перелистывания месяцев в календаре
+                const observer = new MutationObserver((mutationRecords) => {
+                    if (mutationRecords) {
+                        window.dispatchEvent(new CustomEvent('datetimeMonthDidChange', { detail: mutationRecords }));
+                    }
+                });
+                // запускаем наблюдателя
+                observer.observe(
+                    document
+                        .querySelector('ion-datetime')
+                        .shadowRoot.querySelector('.calendar-body'),
+                    {
+                        subtree: true,
+                        childList: true,
+                    }
+                );
+                // запускаем обработчик событий при смене месяца
+                window.addEventListener('datetimeMonthDidChange', (ev) => {
+                    // console.log(ev)
+                    // при перелистывании месяцев запускаем функцию стилей для дат
+                    setCalendarStyle()
+                })
             })
             // фильтруем дела по выбранную дату
             // функция форматирования даты для сравнения даты дела и выбранной даты
@@ -464,7 +483,7 @@
             }
 
             return {
-                menu, user, router, pageTitle, choosenDate, spinner, dataLoaded, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle
+                menu, user, router, pageTitle, choosenDate, spinner, dataLoaded, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle, observer
             }
         }
     })
