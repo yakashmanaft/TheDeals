@@ -202,6 +202,7 @@
                     // при перелистывании месяцев запускаем функцию стилей для дат
                     setCalendarStyle()
                 })
+                //при монтаже запускаем функцию стилей для дат
                 setCalendarStyle()
             })
             // фильтруем дела по выбранную дату
@@ -216,6 +217,7 @@
             const dealsArray = ref([])
             // Когда выбираем дату (choosenDate.value уже имеет значение)
             watch(choosenDate, () => {
+                // setChoosenDateStyle()
                 // setCalendarStyle()
                 // console.log(choosenDate.value)
                 // если выбранная дата === одной из дат в массие дат, указанной как ДЕНЬ БЕЗ ДЕЛ
@@ -241,6 +243,7 @@
                 // ставим стили для выбранной даты
                 // вынести в отдельную функцию
                 // setCalendarStyle()
+                // setChoosenDateStyle()
             })
             // Управление модалкой просмотра даты
             const isViewChoosenDateOpened = ref(false)
@@ -383,6 +386,7 @@
                         // Надо бы удалять из массива "Дни без дел"
                         // console.log(choosenDate.value)
                         weekendDays.value = weekendDays.value.filter(day => day.date !== formattedDate(choosenDate.value));
+                        setCalendarStyle()
                         // Обновляем запись в БД
                         updateWeekendDays()
                         alert('День без дел отменен')
@@ -410,6 +414,7 @@
                 choosenDate.value = null
                 //
                 // console.log('Отметили как День без дел')
+                setCalendarStyle()
                 alert('Отмечено как День без дел')
             }
             // проверяем есть ли выбранная дата в массиве дней без дел
@@ -432,37 +437,53 @@
                     alert(`Error: ${error.message}`)
                 }
             }
-            //
-            // const isWeekday = (dateString) => {
-            //     // if(formattedDate('2022-10-30T12:04:00+05:00') === formattedDate(choosenDate.value)) {
-            //     // return '2022-10-30T12:04:00+05:00'
-            //     const date = new Date(dateString);
-            //     const utcDay = date.getUTCDay();
-            //     console.log(date)
-                
-            //     /**
-            //      * Date will be enabled if it is not
-            //      * Sunday or Saturday
-            //      */
-            //     return utcDay !== 0 && utcDay !== 6;
-            //     // :host .calendar-day[disabled] {
-            //     // pointer-events: none;
-            //     // opacity: 0.4;
-            //     // }
-            // }
-            // 
+            // Если не понадобится - удалить
+            // попытка смены стилей у выбранной даты.... надо ли?
             const setChoosenDateStyle = (e) => {
                 //.calendar-day-active
-                let click = e.target.shadowRoot.querySelector('.datetime-calendar')
-                console.log(click.querySelector('.calendar-day-active'))
+                // let calendar = e.target.shadowRoot.querySelector('.datetime-calendar')
+                let calendar = document.body.getElementsByTagName('ion-datetime')
+                let dateTimeCalendar = calendar[0].shadowRoot.querySelector('.datetime-calendar')
+                let setDayActiveStyle = () => {
+                    let button = dateTimeCalendar.querySelector('.calendar-day-active')
+                    // button.style.cssText = `
+                    //     background-color: var(--ion-color-success);
+                    //     border-radius: 0.5rem;
+                    //     color: white;
+                    // `
+                    console.log(button)
+                }
+                setTimeout(setDayActiveStyle, 300)
             }
-            // та
+            // 
             const setCalendarStyle = () => {
                 let calendar = document.body.getElementsByTagName('ion-datetime')
                 let dateTimeCalendar = calendar[0].shadowRoot.querySelector('.datetime-calendar')
                 let buttons = dateTimeCalendar.querySelectorAll('.calendar-day')
                 //
                 buttons.forEach(item => {
+                    let dayAndMonth = item.getAttribute('aria-label')
+                    let year = item.getAttribute('data-year')
+                    let dateString = `${dayAndMonth} ${year}`
+                    let cutDateString;
+                    // вырезаем в строке нужное значение
+                    if(item.classList.contains('calendar-day-today')) {
+                        cutDateString = dateString.split(', ')[2]
+                    } else {
+                        cutDateString = dateString.split(', ')[1]
+                    }
+                    // находим дни без дел и задаем им стили
+                    if (weekendDays.value.find(weekendDay => weekendDay.date === cutDateString)) {
+                        // console.log(cutDateString)
+                        //
+                        return item.style.cssText = `
+                            background-color: var(--ion-color-light);
+                            opacity: 0.4;
+                            margin: 0.2rem;
+                            border-radius: 0.5rem;
+                        `
+                    } else {}
+
                     item.style.cssText = `
                         background-color: var(--ion-color-light);
                         margin: 0.2rem;

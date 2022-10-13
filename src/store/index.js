@@ -376,6 +376,11 @@ const state = reactive({
       name: 'Коробка под сладости',
       costEstimation: 'perUnit'
     },
+    {
+      value: 'other',
+      name: 'Прочие услуги',
+      costEstimation: 'perUnit'
+    },
   ],
   // type of Shipping
   shippingTypeList: [
