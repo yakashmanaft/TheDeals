@@ -491,14 +491,22 @@
                             color: white;
                             border-radius: 0.5rem;
                         `
-                    } else if(dealQtyByDate.length >= 5) {
+                    } else if(dealQtyByDate.length >= 5 && dealQtyByDate.length < 7) {
                         return item.style.cssText = `
                             background-color: var(--ion-color-warning);
                             margin: 0.2rem;
                             color: white;
                             border-radius: 0.5rem;
                         `
+                    } else if (dealQtyByDate.length >= 7) {
+                        return item.style.cssText = `
+                            background-color: var(--ion-color-danger-tint);
+                            margin: 0.2rem;
+                            color: white;
+                            border-radius: 0.5rem;
+                        `
                     }
+                    // добавить красный индикатор
                     //
                     if(item.getAttribute('disabled') === '') {
                         return item.style.cssText = `
