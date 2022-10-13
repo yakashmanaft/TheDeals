@@ -29,8 +29,8 @@
                     v-model="choosenDate"
                     :first-day-of-week="1"
                     locale="ru"
-                    @ionChange="setChoosenDateStyle"
                     ></ion-datetime>
+                    <!-- @ionChange="setChoosenDateStyle" -->
                 <!-- :is-date-enabled="isWeekday" -->
                 <!-- dayValues="5,10,15,20,25,30" -->
             </div>
@@ -240,10 +240,7 @@
                         return deal
                     }
                 })
-                // ставим стили для выбранной даты
-                // вынести в отдельную функцию
-                // setCalendarStyle()
-                // setChoosenDateStyle()
+                // console.log(dealsArray.value)
             })
             // Управление модалкой просмотра даты
             const isViewChoosenDateOpened = ref(false)
@@ -253,6 +250,7 @@
                 // dealsByChoosenDate.value = []
                 // console.log(date)
                 choosenDate.value = null
+                dealsArray.value = []
                 // console.log(choosenDate.value)
             }
             // Переходим в карточку вабранного дела
@@ -439,22 +437,22 @@
             }
             // Если не понадобится - удалить
             // попытка смены стилей у выбранной даты.... надо ли?
-            const setChoosenDateStyle = (e) => {
-                //.calendar-day-active
-                // let calendar = e.target.shadowRoot.querySelector('.datetime-calendar')
-                let calendar = document.body.getElementsByTagName('ion-datetime')
-                let dateTimeCalendar = calendar[0].shadowRoot.querySelector('.datetime-calendar')
-                let setDayActiveStyle = () => {
-                    let button = dateTimeCalendar.querySelector('.calendar-day-active')
-                    // button.style.cssText = `
-                    //     background-color: var(--ion-color-success);
-                    //     border-radius: 0.5rem;
-                    //     color: white;
-                    // `
-                    console.log(button)
-                }
-                setTimeout(setDayActiveStyle, 300)
-            }
+            // const setChoosenDateStyle = (e) => {
+            //     //.calendar-day-active
+            //     // let calendar = e.target.shadowRoot.querySelector('.datetime-calendar')
+            //     let calendar = document.body.getElementsByTagName('ion-datetime')
+            //     let dateTimeCalendar = calendar[0].shadowRoot.querySelector('.datetime-calendar')
+            //     let setDayActiveStyle = () => {
+            //         let button = dateTimeCalendar.querySelector('.calendar-day-active')
+            //         // button.style.cssText = `
+            //         //     background-color: var(--ion-color-success);
+            //         //     border-radius: 0.5rem;
+            //         //     color: white;
+            //         // `
+            //         console.log(button)
+            //     }
+            //     setTimeout(setDayActiveStyle, 300)
+            // }
             // 
             const setCalendarStyle = () => {
                 let calendar = document.body.getElementsByTagName('ion-datetime')
@@ -483,18 +481,47 @@
                             border-radius: 0.5rem;
                         `
                     } else {}
+                    // раскрашиваем даты в зависимости от кол-ва дел, запланированных на этот день
+                    let dealQtyByDate = myDeals.value.filter(deal => formattedDate(deal.executionDate) === cutDateString)
+                    console.log(dealQtyByDate.length)
+                    if(dealQtyByDate.length > 0 && dealQtyByDate.length < 5) {
+                        return item.style.cssText = `
+                            background-color: var(--ion-color-success);
+                            margin: 0.2rem;
+                            color: white;
+                            border-radius: 0.5rem;
+                        `
+                    } else if(dealQtyByDate.length >= 5) {
+                        return item.style.cssText = `
+                            background-color: var(--ion-color-warning);
+                            margin: 0.2rem;
+                            color: white;
+                            border-radius: 0.5rem;
+                        `
+                    }
+                    //
+                    if(item.getAttribute('disabled') === '') {
+                        return item.style.cssText = `
+                            background-color: var(--ion-color-light);
+                            margin: 0.2rem;
+                            border-radius: 0.5rem;
+                        `
+                    } else {
+                        return item.style.cssText = `
+                            background-color: var(--ion-color-success);
+                            margin: 0.2rem;
+                            color: white;
+                            border-radius: 0.5rem;
+                            opacity: 0.4;
+                        `
+                    }
 
-                    item.style.cssText = `
-                        background-color: var(--ion-color-light);
-                        margin: 0.2rem;
-                        border-radius: 0.5rem;
-                    `
                 })
                 spinner.value = false
             }
 
             return {
-                menu, user, router, pageTitle, choosenDate, spinner, dataLoaded, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle, observer, setChoosenDateStyle
+                menu, user, router, pageTitle, choosenDate, spinner, dataLoaded, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle, observer
             }
         }
     })
