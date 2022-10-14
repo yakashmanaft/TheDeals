@@ -439,24 +439,6 @@
                     alert(`Error: ${error.message}`)
                 }
             }
-            // Если не понадобится - удалить
-            // попытка смены стилей у выбранной даты.... надо ли?
-            // const setChoosenDateStyle = (e) => {
-            //     //.calendar-day-active
-            //     // let calendar = e.target.shadowRoot.querySelector('.datetime-calendar')
-            //     let calendar = document.body.getElementsByTagName('ion-datetime')
-            //     let dateTimeCalendar = calendar[0].shadowRoot.querySelector('.datetime-calendar')
-            //     let setDayActiveStyle = () => {
-            //         let button = dateTimeCalendar.querySelector('.calendar-day-active')
-            //         // button.style.cssText = `
-            //         //     background-color: var(--ion-color-success);
-            //         //     border-radius: 0.5rem;
-            //         //     color: white;
-            //         // `
-            //         console.log(button)
-            //     }
-            //     setTimeout(setDayActiveStyle, 300)
-            // }
             // 
             const setCalendarStyle = () => {
                 let calendar = document.body.getElementsByTagName('ion-datetime')
@@ -487,7 +469,7 @@
                     } else {}
                     // раскрашиваем даты в зависимости от кол-ва дел, запланированных на этот день
                     let dealQtyByDate = myDeals.value.filter(deal => formattedDate(deal.executionDate) === cutDateString)
-                    console.log(dealQtyByDate.length)
+                    // день с легкой загруженностью
                     if(dealQtyByDate.length > 0 && dealQtyByDate.length < 5) {
                         return item.style.cssText = `
                             background-color: var(--ion-color-success);
@@ -495,14 +477,18 @@
                             color: white;
                             border-radius: 0.5rem;
                         `
-                    } else if(dealQtyByDate.length >= 5 && dealQtyByDate.length < 7) {
+                    } 
+                    // день с средней загруженностью
+                    else if(dealQtyByDate.length >= 5 && dealQtyByDate.length < 7) {
                         return item.style.cssText = `
                             background-color: var(--ion-color-warning);
                             margin: 0.2rem;
                             color: white;
                             border-radius: 0.5rem;
                         `
-                    } else if (dealQtyByDate.length >= 7) {
+                    } 
+                    // день с высокой загруженностью
+                    else if (dealQtyByDate.length >= 7) {
                         return item.style.cssText = `
                             background-color: var(--ion-color-danger-tint);
                             margin: 0.2rem;
@@ -510,15 +496,16 @@
                             border-radius: 0.5rem;
                         `
                     }
-                    // добавить красный индикатор
-                    //
+                    // ячейка дат со статусом disabled
                     if(item.getAttribute('disabled') === '') {
                         return item.style.cssText = `
                             background-color: var(--ion-color-light);
                             margin: 0.2rem;
                             border-radius: 0.5rem;
                         `
-                    } else {
+                    } 
+                    // свободные дни
+                    else {
                         return item.style.cssText = `
                             background-color: var(--ion-color-success);
                             margin: 0.2rem;
@@ -527,7 +514,7 @@
                             opacity: 0.4;
                         `
                     }
-
+                    
                 })
                 spinner.value = false
             }
@@ -556,10 +543,5 @@
     /* Но part же нету в shadow-roots */
     ion-datetime::part(text) {
         background-color: red!important
-    }
-    .style {
-        background-color: var(--ion-color-medium);
-        border-width: 0!important;
-        margin: 2px!important;
     }
 </style>
