@@ -438,7 +438,9 @@
                     alert('Deals: Вы не выбрали дату исполнения')
                 } else if(dealData.value.dealType === '') {
                     alert('Deals: Вы не указали тип дела')
-                } else if (!dealData.value.shipping.typeOfShipping && dealData.value.dealType === 'sale') {
+                // } else if (!dealData.value.shipping.typeOfShipping && dealData.value.dealType === 'sale') {
+                } else if (!dealData.value.shipping.typeOfShipping) {
+                // } else if (!dealData.value.shipping.typeOfShipping) {
                     // Если не понадобится - убрать
                     alert('Deals: Вы не указали способ доставки')
                 } else {

@@ -172,8 +172,10 @@
                 await store.methods.getMyDealsFromBD()
                 myDeals.value = store.state.myDealsArray
                 //
-                spinner.value = false
-                dataLoaded.value = true 
+                if(dataLoaded.value = true) {
+                    spinner.value = false
+                } 
+                
                 // refreshData()
                 if(choosenDate.value) {
                     dealsByChoosenDate.value = myDeals.value.filter(deal => formattedDate(deal.executionDate) === formattedDate(choosenDate.value))
@@ -304,6 +306,7 @@
                     dealPaid: 0,
                     cancelledReason: ''
                 }
+                spinner.value = false
             }
             // =============================================================
             // Создаем новое дело
@@ -323,12 +326,13 @@
                 // Если строки Имя Фамилия пустые или не пустые 
                 // использовать валидацию 
                 if(dealData.value.executionDate === ''){
-                    alert('Deals: Вы не выбрали дату исполнения')
+                    alert('Calendar: Вы не выбрали дату исполнения')
                 } else if(dealData.value.dealType === '') {
-                    alert('Deals: Вы не указали тип дела')
-                } else if (!dealData.value.shipping.typeOfShipping && dealData.value.dealType === 'sale') {
+                    alert('Calendar: Вы не указали тип дела')
+                // } else if (!dealData.value.shipping.typeOfShipping && dealData.value.dealType === 'sale') {
+                } else if (!dealData.value.shipping.typeOfShipping) {
                     // Если не понадобится - убрать
-                    alert('Deals: Вы не указали способ доставки')
+                    alert('Calendar: Вы не указали способ доставки')
                 } else {
                     try{
                         // Добавляем в БД инфу по новому контакту

@@ -176,6 +176,7 @@
             </ion-action-sheet>
 
             <!-- ========================== Доставка ================================================= -->
+            <!-- SALE -->
             <ion-item-group class="ion-text-left ion-padding-horizontal" v-if="dealData.dealType === 'sale'">
                 <!-- Заголовок -->
                 <ion-text>
@@ -237,6 +238,7 @@
                     </ion-row>
                 </ion-grid>
             </ion-item-group>
+            <!-- BUY -->
             <ion-item-group class="ion-text-left ion-padding-horizontal" v-if="dealData.dealType === 'buy'">
                 <!-- Заголовок -->
                 <ion-text>
