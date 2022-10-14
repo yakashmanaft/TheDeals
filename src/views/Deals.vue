@@ -409,6 +409,7 @@
             })
             // При закрытии или открытии modal очищаем шаблон дела
             const setOpen = () => {
+                spinner.value = false
                 isViewDealModalOpened.value = !isViewDealModalOpened.value;
                 dealData.value = {
                     uid: uid(),
