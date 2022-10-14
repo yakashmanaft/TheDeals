@@ -7,7 +7,7 @@
                 </ion-buttons>
                 <ion-title class="ion-text-center">Новый предмет</ion-title>
                 <ion-buttons slot="end">
-                    <ion-button @click="$emit('createSubject', subjectData, isAttributesMenuOpened)">Добавить</ion-button>
+                    <ion-button @click="$emit('createSubject', subjectData, isAttributesMenuOpened)">Готово</ion-button>
                 </ion-buttons>
             </ion-toolbar>
         </ion-header>
@@ -912,7 +912,10 @@
     })
 </script>
 
-<style scoped>    
+<style scoped>  
+    /* ion-modal {
+        opacity: 0.95;
+    }   */
     .horizontal-scroll {
         overflow: scroll;
         --overflow: scroll;

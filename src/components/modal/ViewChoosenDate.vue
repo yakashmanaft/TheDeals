@@ -11,15 +11,19 @@
                 </ion-buttons>
             </ion-toolbar>
         </ion-header>
-        <ion-content forceOverscroll="false">
+        <ion-content forceOverscroll="false" style="position: relative">
             <!-- Маячок о количестве дел -->
             <div class="ion-margin-top ion-text-center">
                 <ion-text color="medium" v-if="deals.length > 0">
                     Запланированные
                 </ion-text>
                 <div class="no-deal" v-if="deals.length === 0">
-                    <ion-text color="medium">Нет запланированных дел</ion-text>
-                    <ion-text @click="$emit('setWeekendDay', date)" color="primary" class="ion-margin-top">Отметить как день без дел</ion-text>
+                    <div style="display: flex; flex-direction: column">
+                        <ion-text color="medium">Нет запланированных дел</ion-text>
+                        <ion-text class="ion-margin-top" color="primary" @click="$emit('createNewDeal', date)">Добавить</ion-text>
+                    </div>
+                    <!-- <ion-text style="position: absolute; bottom: 50px" @click="$emit('setWeekendDay', date)" color="primary" class="ion-margin-vertical">Отметить как день без дел</ion-text> -->
+                    <ion-text style="position: absolute; bottom: 50px" @click="$emit('setWeekendDay', date)" color="primary" class="ion-margin-vertical">Сделать этот день выходным</ion-text>
                 </div>
             </div>
             <!--  -->
@@ -169,6 +173,9 @@
 </script>
 
 <style scoped>
+    ion-modal {
+        opacity: 0.95;
+    }
     .no-deal {
         height: 80vh; 
         display: flex; 
@@ -190,4 +197,5 @@
         height: 100%;
         backdrop-filter: blur(20rem) opacity(0.8)
     }
+
 </style>

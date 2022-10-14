@@ -8,7 +8,7 @@
                 </ion-buttons>
                 <ion-title class="ion-text-center">Создать дело</ion-title>
                 <ion-buttons slot="end">
-                    <ion-button @click="$emit('createDeal', dealData)">Создать</ion-button>
+                    <ion-button @click="$emit('createDeal', dealData)">Готово</ion-button>
                 </ion-buttons>
             </ion-toolbar>
         </ion-header>
@@ -1203,6 +1203,9 @@
 </script>
 
 <style scoped>
+    /* ion-modal {
+        opacity: 0.95;
+    }   */
     .horizontal-scroll {
         overflow: scroll;
         --overflow: scroll;

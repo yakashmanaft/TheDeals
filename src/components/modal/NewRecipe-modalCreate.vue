@@ -7,7 +7,7 @@
                 </ion-buttons>
                 <ion-title class="ion-text-center">Новый</ion-title>
                 <ion-buttons slot="end">
-                    <ion-button @click="$emit('createRecipe', recipeData)">Создать</ion-button>
+                    <ion-button @click="$emit('createRecipe', recipeData)">Готово</ion-button>
                 </ion-buttons>
             </ion-toolbar>
         </ion-header>

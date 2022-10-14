@@ -484,9 +484,26 @@
                         Внести
                     </ion-button>
                     <!-- Кнопка Завершить дело (если debt === 0) -->
-                    <ion-button v-if="debt === 0" expand="block" @click="finishDeal" class="ion-margin-top">
+                    <ion-button v-if="debt === 0 && currentDeal.dealStatus !== 'deal-complete'" expand="block" @click="finishDeal" class="ion-margin-top">
                         Завершить дело
                     </ion-button>
+                    <!-- Выполнено -->
+                    <!-- <ion-grid v-if="debt === 0 && currentDeal.dealStatus === 'deal-complete'" class="ion-no-padding ion-margin-top">
+                        <ion-row class="ion-align-items-center ion-justify-content-center">
+                                <ion-col>
+                                    <ion-icon :icon="checkmarkDone" size="large" color="success"></ion-icon>
+                                </ion-col>
+                            </ion-row>
+                        <ion-row>
+                                <ion-col>
+                                    <ion-text color="success">Завершено</ion-text>
+                                </ion-col>
+                        </ion-row>
+                    </ion-grid> -->
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 9rem; height: 9rem; border-radius: 100%; margin: 50px auto; border: 1px solid var(--ion-color-success)">
+                        <ion-icon class="icon-size" :icon="checkmarkDone" size="large" color="success"></ion-icon>
+                        <ion-text color="success">Завершено</ion-text>
+                    </div>
 
                     <!--  -->
                     <DealPaidMenu
@@ -500,13 +517,13 @@
                     />
                 </ion-item-group>
                 
-                <br>
+                <!-- <br>
                 {{currentDeal}}
-                <br>
+                <br> -->
 
                 <!-- ========================== Кнопка удалить дело =================================== -->
                 <!-- Не показываем в режиме edit -->
-                <ion-button @click="setOpen(true)" fill="clear" color="danger">Удалить дело</ion-button>
+                <ion-button @click="setOpen(true)" fill="clear"  color="danger" style="opacity: 0.6" class="ion-margin-bottom ion-margin-horizontal">Удалить дело</ion-button>
                 <!-- Всплывашка подтверждение удаления дела-->
                 <ion-action-sheet
                     :is-open="isOpenRef"
@@ -527,8 +544,8 @@
     import { useRoute, useRouter } from 'vue-router';
     import store from '../../store/index';
     import { uid } from 'uid';
-    import { IonContent, IonButton, IonActionSheet, IonItemGroup, IonText, IonGrid, IonRow, IonModal, IonItem, IonSearchbar, IonChip, IonCard, IonImg, IonThumbnail, IonLabel, IonIcon, IonInput, IonTextarea, IonList } from '@ionic/vue';
-    import { addCircleOutline, closeCircleOutline, helpOutline, shapes } from 'ionicons/icons';
+    import { IonContent, IonButton, IonActionSheet, IonItemGroup, IonText, IonGrid, IonRow, IonCol, IonModal, IonItem, IonSearchbar, IonChip, IonCard, IonImg, IonThumbnail, IonLabel, IonIcon, IonInput, IonTextarea, IonList } from '@ionic/vue';
+    import { addCircleOutline, closeCircleOutline, helpOutline, shapes, checkmarkDone } from 'ionicons/icons';
     //
     import { searchFilter } from '../../helpers/filterMyContacts'; 
     import { setColorByDealType } from '@/helpers/setColorByDealType';
@@ -562,6 +579,7 @@
             IonText,
             IonGrid,
             IonRow,
+            IonCol,
             IonModal,
             IonItem,
             IonSearchbar,
@@ -1508,7 +1526,7 @@
             }
 
             return {
-                currency, spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, translateDealSubjectRecipe, userRecipeArray, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, setPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setNewPersonQty, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, shippingTypeList, dealShippingType, shippingPrice, setProductNotePlaceholder, shippingAddress, editShippingAddress, toggleEditShippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, translateShippingType, translateSelectedProduct, culcSubjectWeight, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, culcBuySubjectWeight, debt, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, nextDealStatus, prevDealStatus, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, refreshDebtValue, dealPaidAmountValue, finishDeal, setMarkerAttrColor, shapes
+                currency, spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, translateDealSubjectRecipe, userRecipeArray, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, setPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setNewPersonQty, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, shippingTypeList, dealShippingType, shippingPrice, setProductNotePlaceholder, shippingAddress, editShippingAddress, toggleEditShippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, translateShippingType, translateSelectedProduct, culcSubjectWeight, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, culcBuySubjectWeight, debt, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, nextDealStatus, prevDealStatus, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, refreshDebtValue, dealPaidAmountValue, finishDeal, setMarkerAttrColor, shapes, checkmarkDone
             }
         }
     })

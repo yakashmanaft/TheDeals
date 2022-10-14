@@ -210,6 +210,7 @@
 
             // При закрытии или открытии modal очищаем шаблон контакта
             const setOpen = () => {
+                spinner.value = false
                 isOpen.value = !isOpen.value;
                 contactData.value = {
                     uid: uid(),

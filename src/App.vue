@@ -69,4 +69,10 @@ nav a.router-link-exact-active {
 a {
   text-decoration: none;
 }
+
+ion-modal {
+  /* opacity: 0.95; */
+  backdrop-filter: blur(2px);
+} 
+
 </style>
