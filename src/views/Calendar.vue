@@ -64,6 +64,8 @@
                 @didDismiss="actionSheetWeekendDayOpened = false"
             >
             </ion-action-sheet>
+            <!--  -->
+            {{userSettings.daySaturation}}
         </ion-content>
     </div>
 </template>

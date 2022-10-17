@@ -46,6 +46,15 @@
                         {{ userSettings.email }}
                     </ion-row>
                 </ion-grid>
+
+                <div>
+                    <p>Загруженность дня</p>
+                    <div v-for="(item, i) in userSettings.daySaturation" :key="i">
+                        {{item.name}}
+                        {{item.qty}}
+                    </div>
+                </div>
+
             </div>
 
         </ion-content>
@@ -137,6 +146,8 @@
             //
             const userSettings = ref(store.state.userSettings[0])
             //
+            // const daySaturation = ref(userSettings.value.daySaturation)
+            //
             const spinner = ref(null)
             const dataLoaded = ref(null)
             //
@@ -147,6 +158,7 @@
                 spinner.value = false;
                 dataLoaded.value = true;
                 // console.log(userSettings.value[0].id)
+                // console.log(daySaturation.value)
             })
 
 
