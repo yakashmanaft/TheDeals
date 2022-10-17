@@ -473,8 +473,7 @@
                     // раскрашиваем даты в зависимости от кол-ва дел, запланированных на этот день
                     let dealQtyByDate = myDeals.value.filter(deal => formattedDate(deal.executionDate) === cutDateString)
                     // день с легкой загруженностью
-                    // low до трех включая 3
-                    // if(dealQtyByDate.length > 0 && dealQtyByDate.length <= 3) {
+                    // при наличии low количества дел
                     if(dealQtyByDate.length > 0 && dealQtyByDate.length <= setSaturationDay('low')) {
                         return item.style.cssText = `
                             background-color: var(--ion-color-success);
@@ -484,8 +483,7 @@
                         `
                     } 
                     // день с средней загруженностью
-                    // medium от трх до семи
-                    // else if(dealQtyByDate.length > 3 && dealQtyByDate.length < 7) {
+                    // количестве между low и high значениями (не включая данные значения)
                         else if(dealQtyByDate.length > setSaturationDay('low') && dealQtyByDate.length < setSaturationDay('high')) {
                         return item.style.cssText = `
                             background-color: var(--ion-color-warning);
@@ -495,8 +493,7 @@
                         `
                     } 
                     // день с высокой загруженностью
-                    // high от семи (включая семь)
-                    // else if (dealQtyByDate.length >= 7) {
+                    // при наличии high количества дел и более
                     else if (dealQtyByDate.length >= setSaturationDay('high')) {
                         return item.style.cssText = `
                             background-color: var(--ion-color-danger-tint);
