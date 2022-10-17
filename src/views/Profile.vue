@@ -28,7 +28,7 @@
         <br>
         <ion-card>
           <ion-text>
-            QR-код
+            QR-визитка
           </ion-text>
           <div>
             <ion-text v-if="isQrAvailable">Qr is Available</ion-text>
