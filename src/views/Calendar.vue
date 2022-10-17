@@ -65,7 +65,7 @@
             >
             </ion-action-sheet>
             <!--  -->
-            {{userSettings.daySaturation}}
+            <!-- {{userSettings.daySaturation}} -->
         </ion-content>
     </div>
 </template>
@@ -458,6 +458,7 @@
                     } else {
                         cutDateString = dateString.split(', ')[1]
                     }
+                    //
                     // находим дни без дел и задаем им стили
                     if (weekendDays.value.find(weekendDay => weekendDay.date === cutDateString)) {
                         // console.log(cutDateString)
@@ -472,7 +473,9 @@
                     // раскрашиваем даты в зависимости от кол-ва дел, запланированных на этот день
                     let dealQtyByDate = myDeals.value.filter(deal => formattedDate(deal.executionDate) === cutDateString)
                     // день с легкой загруженностью
-                    if(dealQtyByDate.length > 0 && dealQtyByDate.length < 5) {
+                    // low до трех включая 3
+                    // if(dealQtyByDate.length > 0 && dealQtyByDate.length <= 3) {
+                    if(dealQtyByDate.length > 0 && dealQtyByDate.length <= setSaturationDay('low')) {
                         return item.style.cssText = `
                             background-color: var(--ion-color-success);
                             margin: 0.2rem;
@@ -481,7 +484,9 @@
                         `
                     } 
                     // день с средней загруженностью
-                    else if(dealQtyByDate.length >= 5 && dealQtyByDate.length < 7) {
+                    // medium от трх до семи
+                    // else if(dealQtyByDate.length > 3 && dealQtyByDate.length < 7) {
+                        else if(dealQtyByDate.length > setSaturationDay('low') && dealQtyByDate.length < setSaturationDay('high')) {
                         return item.style.cssText = `
                             background-color: var(--ion-color-warning);
                             margin: 0.2rem;
@@ -490,7 +495,9 @@
                         `
                     } 
                     // день с высокой загруженностью
-                    else if (dealQtyByDate.length >= 7) {
+                    // high от семи (включая семь)
+                    // else if (dealQtyByDate.length >= 7) {
+                    else if (dealQtyByDate.length >= setSaturationDay('high')) {
                         return item.style.cssText = `
                             background-color: var(--ion-color-danger-tint);
                             margin: 0.2rem;
@@ -519,6 +526,11 @@
                     
                 })
                 spinner.value = false
+            }
+            // проводим расчет цветовой индикации загруженности дня 
+            const setSaturationDay = (level) => {
+                let daySaturation = userSettings.value.daySaturation.find(item => item.name === level)
+                return daySaturation.qty
             }
 
             return {
