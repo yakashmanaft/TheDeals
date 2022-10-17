@@ -5,10 +5,12 @@
             <ion-grid class="ion-no-margin ion-no-padding">
                 <ion-row class="ion-align-items-center">
                     <ion-col>
-                        <!-- Аватар, поидее должен подгружать из настроек аккаунта -->
-                        <ion-avatar class="account-avatar">
-                            <img src="img/common/user-avatar.png">
-                        </ion-avatar>
+                        <router-link :to="{ name: 'Profile'  }">
+                            <!-- Аватар, поидее должен подгружать из настроек аккаунта -->
+                            <ion-avatar class="account-avatar">
+                                <img src="img/common/user-avatar.png">
+                            </ion-avatar>
+                        </router-link>
                     </ion-col>
                 </ion-row>
             </ion-grid>

@@ -123,6 +123,17 @@ const routes = [
     }
   },
   {
+    path: '/profile',
+    name: 'Profile',
+    component: () => import('../views/Profile.vue'),
+    meta: {
+      title: 'Profile',
+      auth: true,
+      translation: 'Профиль',
+      type: 'View'
+    }
+  },
+  {
     path: '/faq',
     name: 'FAQ',
     component: () => import('../views/FAQ.vue'),

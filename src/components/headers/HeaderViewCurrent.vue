@@ -7,7 +7,7 @@
                 <ion-back-button  default-href="home" v-else text="Назад"></ion-back-button>
             </ion-buttons>
             <!-- Если текущий роут View-Deal -->
-            <ion-buttons class="color-primary" slot="end" v-if="route.name !== 'View-Deal'">
+            <ion-buttons class="color-primary" slot="end" v-if="route.name !== 'View-Deal' && route.name !== 'Profile'">
                 <ion-button fill="clear" v-if="edit"  @click="update">Готово</ion-button>
                 <ion-button fill="clear" v-else @click="editMode">Править</ion-button>
             </ion-buttons>
