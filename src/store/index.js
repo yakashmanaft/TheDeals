@@ -481,7 +481,7 @@ const methods = {
     } catch (error) {
       console.log(error);
     }
-  } ,
+  },
   //
   setUserEmail: () => {
     if(state.user) {
