@@ -112,17 +112,6 @@ const routes = [
     }
   },
   {
-    path: '/settings',
-    name: 'Settings',
-    component: () => import('../views/AccountSettings.vue'),
-    meta: {
-      title: 'Settings',
-      auth: true,
-      translation: 'Настройки',
-      type: 'View'
-    }
-  },
-  {
     path: '/profile',
     name: 'Profile',
     component: () => import('../views/Profile.vue'),

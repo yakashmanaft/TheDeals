@@ -1,5 +1,5 @@
 <template>
-    <ion-menu side="start" menu-id="first" content-id="main">
+    <ion-menu side="start" menu-id="first" content-id="main" >
         <!-- menu header -->
         <ion-list-header class="ion-padding-top" lines="full">
             <ion-grid class="ion-no-margin ion-no-padding">
@@ -35,7 +35,7 @@
             </ion-grid>
         </ion-list-header>
         <!-- menu content -->
-        <ion-content class="ion-padding-vertical">
+        <ion-content class="ion-padding-vertical" forceOverscroll="false">
             <ion-list>
                 <ion-item v-for="(item, index) in menuList" :key="index" lines="none" >
                     <ion-icon :icon="`${item.icon}`" color="primary" :alt="`${item.icon}`" class="ion-margin-end"/>
@@ -47,16 +47,13 @@
         <div>
             <ion-list lines="none">
                 <ion-item>
-                    <ion-icon :icon="settingsOutline" color="primary" class="ion-margin-end"></ion-icon>
-                    <router-link :to="{ name: 'Settings' }">Настройки</router-link>
-                </ion-item>
-                <ion-item>
                     <ion-icon :icon="helpCircleOutline" color="primary" class="ion-margin-end"></ion-icon>
                     <router-link :to="{ name: 'FAQ' }">Помощь</router-link>
                 </ion-item>
             </ion-list>
             <!-- Предложение установить сервис в виде приложения -->
             <PWAPrompt/>
+            <br>
         </div>
     </ion-menu>
 </template>
@@ -82,7 +79,7 @@
         IonCol
     } from '@ionic/vue';
     import PWAPrompt from '../components/PWAPrompt.vue';
-    import { exitOutline, settingsOutline, helpCircleOutline } from 'ionicons/icons';
+    import { exitOutline, helpCircleOutline } from 'ionicons/icons';
 
     export default defineComponent({
         name: 'NavigationMenu',
@@ -106,7 +103,7 @@
             const menuList = ref(store.state.menuList)
 
             return {
-                user, router, userEmail, logout, menuList, exitOutline, settingsOutline, helpCircleOutline
+                user, router, userEmail, logout, menuList, exitOutline, helpCircleOutline
             }
         }
     })

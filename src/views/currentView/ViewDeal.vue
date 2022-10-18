@@ -488,19 +488,7 @@
                         Завершить дело
                     </ion-button>
                     <!-- Выполнено -->
-                    <!-- <ion-grid v-if="debt === 0 && currentDeal.dealStatus === 'deal-complete'" class="ion-no-padding ion-margin-top">
-                        <ion-row class="ion-align-items-center ion-justify-content-center">
-                                <ion-col>
-                                    <ion-icon :icon="checkmarkDone" size="large" color="success"></ion-icon>
-                                </ion-col>
-                            </ion-row>
-                        <ion-row>
-                                <ion-col>
-                                    <ion-text color="success">Завершено</ion-text>
-                                </ion-col>
-                        </ion-row>
-                    </ion-grid> -->
-                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 9rem; height: 9rem; border-radius: 100%; margin: 50px auto; border: 1px solid var(--ion-color-success)">
+                    <div v-if="debt === 0 && currentDeal.dealStatus === 'deal-complete'" class="deal-complete_logo">
                         <ion-icon class="icon-size" :icon="checkmarkDone" size="large" color="success"></ion-icon>
                         <ion-text color="success">Завершено</ion-text>
                     </div>
@@ -1587,5 +1575,16 @@
     }
     .border-top {
         border-top: 1px solid var(--ion-color-light);
+    }
+    .deal-complete_logo {
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+        justify-content: center; 
+        width: 9rem; 
+        height: 9rem; 
+        border-radius: 100%; 
+        margin: 50px auto; 
+        border: 1px solid var(--ion-color-success);
     }
 </style>

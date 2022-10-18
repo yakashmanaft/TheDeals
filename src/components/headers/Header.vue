@@ -15,11 +15,7 @@
                             <ion-icon :icon="walletOutline" />
                         </ion-button>
                     </router-link>
-                    <router-link v-if="router.currentRoute._value.meta.type === 'View' && router.currentRoute._value.meta.title === 'Wallet'" :to="{ name: 'Settings' }">
-                        <ion-button color="primary" size="medium" fill="clear" class="ion-no-padding ion-no-margin" >
-                            <ion-icon :icon="settingsOutline" />
-                        </ion-button>
-                    </router-link>
+                    <div v-if="router.currentRoute._value.meta.type === 'View' && router.currentRoute._value.meta.title === 'Wallet'"></div>
                 </ion-row>
             </ion-grid>
         </ion-toolbar>

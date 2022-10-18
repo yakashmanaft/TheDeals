@@ -115,7 +115,17 @@
                 email: email.value,
                 userPriceList: [],
                 userAdditionalAttributes: [],
-                weekendDays: []
+                weekendDays: [],
+                daySaturation: [
+                    {
+                        name: 'low',
+                        qty: 4
+                    },
+                    {
+                        name: 'high',
+                        qty: 8
+                    }
+                ]
             })
 
             // Register function
