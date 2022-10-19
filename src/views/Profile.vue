@@ -40,15 +40,18 @@
 
         <!-- Общая инфа по кошельку -->
         <router-link :to="{ name: 'Wallet' }">
-          <ion-card class="ion-padding">
-            <h5 class="ion-no-margin ion-text-left">Мой Кошелек</h5>
-            <br>
-            <ion-text>Свободных средств: 0,00 RUB</ion-text>
-            <ion-text>Задолженность: 10,00 RUB</ion-text>
-            <!-- Если нет долгов -->
-            <ion-text>Задолженность отсутствует</ion-text>
-            <br>
-            В разработке...
+          <ion-card class="ion-no-padding ion-text-left">
+            <ion-card-header>
+              <ion-card-title>Мой Кошелек</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              {{myDeals.length}}
+              <br>
+              <ion-text>Свободных средств: 0,00 {{ currency }}</ion-text><br>
+              <ion-text>Задолженность: 10,00 {{ currency }}</ion-text><br>
+              <!-- Если нет долгов -->
+              <ion-text>Задолженность отсутствует</ion-text>
+            </ion-card-content>
           </ion-card>
         </router-link>
 
@@ -112,12 +115,13 @@
         </ion-card>
 
         <!-- Реферальная ссылка для приглашения -->
-        <ion-card class="ion-padding ion-text-left">
-          <ion-card-header class="ion-no-padding">
+        <ion-card class="ion-no-padding ion-text-left">
+          <ion-card-header>
             <ion-card-title class="ion-no-margin ion-text-left">Пригласить друга</ion-card-title>
           </ion-card-header>
-          <br>
-          <ion-text>В разработке...</ion-text>
+          <ion-card-content>
+            <ion-text>В разработке...</ion-text>
+          </ion-card-content>
         </ion-card>
       </div>
     </ion-content>
@@ -143,6 +147,8 @@
       Spinner, ViewHeader, IonContent, IonText, IonCard, IonAvatar, IonIcon, IonGrid, IonRow, IonCardHeader, IonCardTitle, IonCardContent, IonChip
     },
     setup() {
+      // Currency
+      const currency = ref(store.state.systemCurrency.name)
       // Get user from store
       const user = computed(() => store.state.user);
       //
@@ -154,16 +160,21 @@
       const userEmail = ref(store.state.userEmail)
       console.log(userEmail.value)
       //
+      const myDeals = ref([]);
+      //
       const spinner = ref(null);
       const dataLoaded = ref(null);
       const isQrAvailable = ref();
       // Подтягиваем список дел из store
       spinner.value = true;
       //
-      onMounted(() => {
-        spinner.value = false
+      onMounted( async () => {
+        await store.methods.getMyDealsFromBD();
+        myDeals.value = store.state.myDealsArray;
+        spinner.value = false;
         dataLoaded.value = true;
         // 
+        calculateBalance()
         isQrAvailable.value = false
       })
       // массив загруженности дня, который на данный момент хранится в БД
@@ -260,9 +271,27 @@
       const editBusinessCard = () => {
         alert('Вы пытаетесь редактировать QR-визитку. Функционал в разработке...')
       }
+      //
+      const availableBalance = ref();
+      const myDebt = ref();
+      const debtToMe = ref();
+      //
+      const calculateBalance = () => {
+        console.log('calculate...')
+        // console.log(myDeals.value.filter(item => item.dealType === 'buy'))
+        // console.log(myDeals.value.filter(item => item.dealType === 'sale'))
+        myDeals.value.forEach(item => {
+          if(item.dealType === 'sale') {
+            console.log(`Мне должны: ${item.totalDealPrice - item.dealPaid}`)
+          } else if (item.dealType === 'buy') {
+            console.log(`Моя задолженность: ${item.totalDealPrice - item.dealPaid}`)
+          }
+        })
+        
+      }
 
       return {
-        spinner, user, router, dataLoaded, userSettings, userEmail, isQrAvailable, removeCircleOutline, addCircleOutline, changeDaySaturationQty, daySaturation, setCountQtyButtonDecreaseColor, setCountQtyButtonAddColor, translateDaySaturationName, openBusinessCard, addBusinessCard, editBusinessCard
+        spinner, user, router, dataLoaded, userSettings, userEmail, isQrAvailable, removeCircleOutline, addCircleOutline, changeDaySaturationQty, daySaturation, setCountQtyButtonDecreaseColor, setCountQtyButtonAddColor, translateDaySaturationName, openBusinessCard, addBusinessCard, editBusinessCard, myDeals, availableBalance, myDebt, debtToMe, currency
       }
     }
   })
