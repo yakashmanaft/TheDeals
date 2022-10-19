@@ -53,43 +53,69 @@
         </router-link>
 
         <!-- QR-визитка -->
-        <ion-card class="ion-padding">
-          <h5 class="ion-no-margin ion-text-left">QR-визитка</h5>
-          <br>
-          <div>
-            <ion-text v-if="isQrAvailable">Qr is Available</ion-text>
-            <ion-text v-else>Qr is not Available</ion-text>
-          </div>
-          <ion-text>
-            Моя визитная карточка с реквизитами
-          </ion-text>
-          <br>
-          В разработке...
+        <ion-card class="ion-padding" @click="openBusinessCard()">
+          <ion-card-header class="ion-no-padding">
+            <ion-grid class="ion-no-padding">
+              <ion-row class="ion-align-items-center ion-justify-content-between">
+                <ion-card-title class="ion-no-margin ion-text-left">QR-визитка</ion-card-title>
+                <div>
+                  <!-- Если QR-визитка в наличии -->
+                  <ion-text v-if="isQrAvailable" color="primary" style="font-size: 16px;" @click.prevent.stop="editBusinessCard()">Править</ion-text>
+                  <!-- Если QR-визитки еще создавалось -->
+                  <ion-chip v-else class="ion-no-margin" @click.prevent.stop="addBusinessCard()" color="primary">Добавить</ion-chip>
+                </div>
+              </ion-row>
+            </ion-grid>
+          </ion-card-header>
+          <ion-card-content class="ion-no-padding">
+            <ion-grid class="ion-no-padding ion-margin-top ion-text-left">
+
+              <ion-text>
+                Моя визитная карточка с реквизитами
+              </ion-text>
+            </ion-grid>
+          </ion-card-content>
         </ion-card>
 
         <!-- Настройки загруженности дня -->
         <ion-card class="ion-padding">
-          <h5 class="ion-no-margin ion-text-left">Настройки загруженности дня</h5>
-          <br>
-          <ion-grid class="ion-no-padding">
-            <ion-row v-for="(item, i) in userSettings.daySaturation" :key="i" class="ion-align-items-center ion-justify-content-between">
-              {{item.name}}
+          <ion-card-header class="ion-no-padding">
+            <ion-card-title class="ion-no-margin ion-text-left">Загруженность дня</ion-card-title>
+          </ion-card-header>
+          <ion-card-content class="ion-no-padding">
+            <ion-grid class="ion-no-padding ion-margin-top" v-for="(item, i) in userSettings.daySaturation" :key="i" >
+              <ion-row class="ion-align-items-center ion-justify-content-between">
+                <ion-text color="primary">
+                  {{ translateDaySaturationName(item.name) }}
+                </ion-text>
+                <!--  -->
+                <div style="display: flex; align-items: center">
+                  <!-- Subtract -->
+                  <ion-icon :color="setCountQtyButtonDecreaseColor(item)" :icon="removeCircleOutline" @click="changeDaySaturationQty('sub', item, i)" class="countQty_button"></ion-icon>
+                  <!-- Show data -->
+                  <ion-text class="ion-padding-horizontal countQty_count" color="primary">{{item.qty}}</ion-text>
+                  <!-- Add -->
+                  <ion-icon :color="setCountQtyButtonAddColor(item)" :icon="addCircleOutline" @click="changeDaySaturationQty('add', item, i)" class="countQty_button"></ion-icon>
+                </div>
+              </ion-row>
               <!--  -->
-              <div style="display: flex; align-items: center">
-                <!-- Subtract -->
-                <ion-icon :color="setCountQtyButtonColor(item.qty)" :icon="removeCircleOutline" @click="changeDaySaturationQty('sub', item, i)" class="countQty_button"></ion-icon>
-                <!-- Show data -->
-                <ion-text class="ion-padding-horizontal countQty_count" color="primary">{{item.qty}}</ion-text>
-                <!-- Add -->
-                <ion-icon color="primary" :icon="addCircleOutline" @click="changeDaySaturationQty('add', item, i)" class="countQty_button"></ion-icon>
-              </div>
-            </ion-row>
-          </ion-grid>
+              <ion-row class="ion-text-left ion-margin-top">
+                <ion-text v-if="item.name === 'low'">
+                  Количество дел, которое вы с легкостью можете выполнить
+                </ion-text>
+                <ion-text v-else>
+                  Количество дел, выполнить которое нужно очень постараться
+                </ion-text>
+              </ion-row>
+            </ion-grid>
+          </ion-card-content>
         </ion-card>
 
         <!-- Реферальная ссылка для приглашения -->
-        <ion-card class="ion-padding">
-          <h5 class="ion-no-margin ion-text-left">Пригласить друга</h5>
+        <ion-card class="ion-padding ion-text-left">
+          <ion-card-header class="ion-no-padding">
+            <ion-card-title class="ion-no-margin ion-text-left">Пригласить друга</ion-card-title>
+          </ion-card-header>
           <br>
           <ion-text>В разработке...</ion-text>
         </ion-card>
@@ -108,13 +134,13 @@
   import Spinner from '../components/Spinner.vue';
   import ViewHeader from '../components/headers/HeaderViewCurrent.vue';
   //
-  import { IonContent, IonText, IonCard, IonAvatar, IonIcon, IonGrid, IonRow } from '@ionic/vue';
+  import { IonContent, IonText, IonCard, IonAvatar, IonIcon, IonGrid, IonRow, IonCardHeader, IonCardTitle, IonCardContent, IonChip } from '@ionic/vue';
   import { removeCircleOutline, addCircleOutline } from 'ionicons/icons';
 
   export default defineComponent({
     name: 'Profile',
     components: {
-      Spinner, ViewHeader, IonContent, IonText, IonCard, IonAvatar, IonIcon, IonGrid, IonRow
+      Spinner, ViewHeader, IonContent, IonText, IonCard, IonAvatar, IonIcon, IonGrid, IonRow, IonCardHeader, IonCardTitle, IonCardContent, IonChip
     },
     setup() {
       // Get user from store
@@ -137,28 +163,27 @@
       onMounted(() => {
         spinner.value = false
         dataLoaded.value = true;
-        //
+        // 
         isQrAvailable.value = false
       })
       // массив загруженности дня, который на данный момент хранится в БД
       const daySaturation = ref(userSettings.value.daySaturation)
       const changeDaySaturationQty = (action, item, i) => {
-        // console.log(item.name === 'low')
         // Если кликаем на варианту с нижним порогом загруженности
         if(item.name === 'low') {
-          if(action === 'sub' && item.qty > 1) {
+          if(action === 'sub' && item.qty > 1 ) {
             item.qty--
             daySaturation.value[i].qty = item.qty
             updateDaySaturation()
-          } else if (action === 'add') {
+          } else if (action === 'add' && item.qty < daySaturation.value[1].qty) {
             item.qty++
             daySaturation.value[i].qty = item.qty
             updateDaySaturation()
           }
         } 
         // Если кликаем на варианту с верхним порогом загруженности
-        else if (item.name === 'high' && item.qty > 1) {
-          if(action === 'sub') {
+        else if (item.name === 'high') {
+          if(action === 'sub' && item.qty > daySaturation.value[0].qty) {
             item.qty--
             daySaturation.value[i].qty = item.qty
             updateDaySaturation()
@@ -184,17 +209,60 @@
           }
           spinner.value = false;
       }
-      //
-      const setCountQtyButtonColor = (qty) => {
-        if(qty < 2) {
-          return 'light'
-        } else {
+      // меняем стили кнопок для уменьшения количества 
+      const setCountQtyButtonDecreaseColor = (item) => {
+        if(item.name === 'low') {
+          if(item.qty < 2) {
+            return 'light'
+          } else {
+            return 'primary'
+          }
+        } else if (item.name === 'high') {
+          if(item.qty === daySaturation.value[0].qty) {
+            return 'light'
+          } else {
+            return 'primary'
+          }
+        }
+      }
+      // меняем стили кнопок для увеличения количества 
+      const setCountQtyButtonAddColor = (item) => {
+        if(item.name === 'low') {
+          if(item.qty === daySaturation.value[1].qty) {
+            return 'light'
+          } else {
+            return 'primary'
+          }
+        } else if (item.name === 'high') {
           return 'primary'
         }
       }
+      //
+      const translateDaySaturationName = (itemName) => {
+        if(itemName === 'low') {
+          return 'Низкая нагрузка'
+        } else if (itemName === 'high') {
+          return 'Высокая нагрузка'
+        }
+        
+      }
+      // открываем модкалку с QR-визиткой
+      const openBusinessCard = () => {
+        if (isQrAvailable.value) {
+          alert('Вы пытаетесь открыть QR-визитку. Не получится. Функционал в разработке...')
+        }
+      }
+      //
+      const addBusinessCard = () => {
+        alert('Вы пытаетесь создать QR-визитку. Функционал в разработке...')
+      }
+      //
+      const editBusinessCard = () => {
+        alert('Вы пытаетесь редактировать QR-визитку. Функционал в разработке...')
+      }
 
       return {
-        spinner, user, router, dataLoaded, userSettings, userEmail, isQrAvailable, removeCircleOutline, addCircleOutline, changeDaySaturationQty, daySaturation, setCountQtyButtonColor
+        spinner, user, router, dataLoaded, userSettings, userEmail, isQrAvailable, removeCircleOutline, addCircleOutline, changeDaySaturationQty, daySaturation, setCountQtyButtonDecreaseColor, setCountQtyButtonAddColor, translateDaySaturationName, openBusinessCard, addBusinessCard, editBusinessCard
       }
     }
   })
