@@ -45,11 +45,9 @@
               <ion-card-title>Мой Кошелек</ion-card-title>
             </ion-card-header>
             <ion-card-content>
-              {{myDeals.length}}
-              <br>
-              <ion-text>Свободных средств: 0,00 {{ currency }}</ion-text><br>
-              <ion-text>Моя задолженность: 10,00 {{ currency }}</ion-text><br>
-              <ion-text>Мне должны: 10,00 {{ currency }}</ion-text><br>
+              <ion-text>Свободных средств: {{availableBalance.toFixed(2)}} {{ currency }}</ion-text><br>
+              <ion-text>Моя задолженность: {{myDebt.toFixed(2)}} {{ currency }}</ion-text><br>
+              <ion-text>Мне должны: {{debtToMe.toFixed(2)}} {{ currency }}</ion-text><br>
               <!-- Если нет долгов -->
               <!-- <ion-text>Задолженность отсутствует</ion-text> -->
             </ion-card-content>
@@ -273,25 +271,44 @@
         alert('Вы пытаетесь редактировать QR-визитку. Функционал в разработке...')
       }
       //
-      const availableBalance = ref();
-      const myDebt = ref();
-      const debtToMe = ref();
+      const availableBalance = ref(0);
+      const myDebt = ref(0);
+      const debtToMe = ref(0);
       //
       const calculateBalance = () => {
         console.log('calculate...')
-        // console.log(myDeals.value.filter(item => item.dealType === 'buy'))
-        // console.log(myDeals.value.filter(item => item.dealType === 'sale'))
-        let availableBalanceArray = []
+        // Массив сумм, которые мне уже вносили по делам продаж
+        let payMeArray = []
+        let payMe = 0
+        // Массив сумм, которые я уже вносил по делам закупок
+        let iPayArray = []
+        let iPay = 0
+        // Массив моих задолженностей
+        let myDebtsArray = []
+        let myDebts = 0
+        // Массив покупательских задолженностей
+        let debtsToMeArray = []
+        let debtsToMe = 0
+        //
         myDeals.value.forEach(item => {
           if(item.dealType === 'sale') {
-            console.log(`Мне должны: ${item.totalDealPrice - item.dealPaid}`)
-            // console.log(`Свободные средства: ${item.dealPaid}`)
-            availableBalanceArray.push(item.dealPaid)
+            payMeArray.push(item.dealPaid)
+            debtsToMeArray.push(item.totalDealPrice - item.dealPaid)
           } else if (item.dealType === 'buy') {
-            console.log(`Моя задолженность: ${item.totalDealPrice - item.dealPaid}`)
+            iPayArray.push(item.dealPaid)
+            myDebtsArray.push(item.totalDealPrice - item.dealPaid)
           }
         })
-        console.log(availableBalanceArray)
+        // суммируем значения в массивах, считаем текущий баланс
+        payMe = payMeArray.reduce((a, b) => a + b, 0)
+        iPay = iPayArray.reduce((a, b) => a + b, 0)
+        availableBalance.value = payMe - iPay
+        // 
+        myDebts = myDebtsArray.reduce((a, b) => a + b, 0)
+        myDebt.value = myDebts
+        //
+        debtsToMe = debtsToMeArray.reduce((a, b) => a + b, 0)
+        debtToMe.value = debtsToMe 
       }
 
       return {
