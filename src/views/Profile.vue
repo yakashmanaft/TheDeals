@@ -48,9 +48,10 @@
               {{myDeals.length}}
               <br>
               <ion-text>Свободных средств: 0,00 {{ currency }}</ion-text><br>
-              <ion-text>Задолженность: 10,00 {{ currency }}</ion-text><br>
+              <ion-text>Моя задолженность: 10,00 {{ currency }}</ion-text><br>
+              <ion-text>Мне должны: 10,00 {{ currency }}</ion-text><br>
               <!-- Если нет долгов -->
-              <ion-text>Задолженность отсутствует</ion-text>
+              <!-- <ion-text>Задолженность отсутствует</ion-text> -->
             </ion-card-content>
           </ion-card>
         </router-link>
@@ -280,14 +281,17 @@
         console.log('calculate...')
         // console.log(myDeals.value.filter(item => item.dealType === 'buy'))
         // console.log(myDeals.value.filter(item => item.dealType === 'sale'))
+        let availableBalanceArray = []
         myDeals.value.forEach(item => {
           if(item.dealType === 'sale') {
             console.log(`Мне должны: ${item.totalDealPrice - item.dealPaid}`)
+            // console.log(`Свободные средства: ${item.dealPaid}`)
+            availableBalanceArray.push(item.dealPaid)
           } else if (item.dealType === 'buy') {
             console.log(`Моя задолженность: ${item.totalDealPrice - item.dealPaid}`)
           }
         })
-        
+        console.log(availableBalanceArray)
       }
 
       return {
