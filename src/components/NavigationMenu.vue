@@ -135,7 +135,7 @@
     }
 
     .account-avatar {
-        width: 4rem;
-        height: 4rem;
+        width: 5rem;
+        height: 5rem;
     }
 </style>

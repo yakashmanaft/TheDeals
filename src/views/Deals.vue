@@ -327,7 +327,7 @@
             // функция форматирования даты для сравнения даты дела и даты дня
             const formattedDate = (day) => {
                 const formattedString = format(parseISO(day), 'd MMMM Y', { locale: ru });
-                     formattedString;
+                return formattedString;
             }
             // Выбранный по умолчанию статус дел при загрузке экрана
             const currentDealStatus = ref('deal-in-booking');

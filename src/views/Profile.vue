@@ -16,7 +16,6 @@
     >
       <br>
       <br>
-      <br>
       <!-- page content -->
       <!-- No data -->
       <div v-if="(!dataLoaded || userSettings.length === 0) && !spinner">
@@ -26,17 +25,35 @@
       <div v-if="dataLoaded && userSettings.length !== 0">
         <br>
         <!-- Смена аватарки и прочие общие данные по аккаунту -->
-        <ion-card class="ion-no-margin ion-margin-horizontal ion-padding">
-          <!-- Аватар, поидее должен подгружать из настроек аккаунта -->
+        <!-- <ion-card class="ion-no-margin ion-margin-horizontal ion-padding">
           <ion-avatar class="account-avatar">
               <img src="img/common/user-avatar.png">
           </ion-avatar>
-          {{ userSettings.uid }}
-          {{ userEmail }}
+          uid: {{ userSettings.uid }} <br>
+          email: {{ userEmail }} <br>
           Зарегистрирован: {{ userSettings.created_at }}
-          <br>
-          В разработке...
-        </ion-card>
+        </ion-card> -->
+        <!-- Общая инфа по аккаунту -->
+        <ion-grid class="ion-no-padding">
+          <!--  -->
+          <ion-row class="ion-justify-content-center">
+            <ion-avatar class="account-avatar" @click="changeAvatar()">
+              <img src="img/common/user-avatar.png">
+            </ion-avatar>
+          </ion-row>
+          <!--  -->
+          <ion-row class="ion-justify-content-center ion-margin-top">
+            <ion-text>Uid: {{ userSettings.uid }}</ion-text>
+          </ion-row>
+          <!--  -->
+          <ion-row class="ion-justify-content-center">
+            <ion-text>Email: {{ userEmail }}</ion-text>
+          </ion-row>
+          <!--  -->
+          <ion-row class="ion-justify-content-center">
+            <ion-text>Зарегистрирован: {{formattedDate(userSettings.created_at)}}</ion-text>
+          </ion-row>
+        </ion-grid>
 
         <!-- Общая инфа по кошельку -->
         <router-link :to="{ name: 'Wallet' }">
@@ -44,12 +61,18 @@
             <ion-card-header>
               <ion-card-title>Мой Кошелек</ion-card-title>
             </ion-card-header>
-            <ion-card-content>
-              <ion-text>Свободных средств: {{availableBalance.toFixed(2)}} {{ currency }}</ion-text><br>
-              <ion-text>Моя задолженность: {{myDebt.toFixed(2)}} {{ currency }}</ion-text><br>
-              <ion-text>Мне должны: {{debtToMe.toFixed(2)}} {{ currency }}</ion-text><br>
-              <!-- Если нет долгов -->
-              <!-- <ion-text>Задолженность отсутствует</ion-text> -->
+            <ion-card-content style="display: flex; flex-direction: column; gap: 16px;">
+              <!--  -->
+              <div style="background-color: var(--ion-color-success); border-radius: 0.6rem; padding: 16px; color: #fff; display: flex; justify-content: space-between; align-items: center;">
+                <span>Баланс:</span>
+                <span style="white-space: nowrap; font-size: 24px;">{{availableBalance.toFixed(2)}} {{ currency }}</span>
+              </div>
+              <!--  -->
+              <div class="ion-text-right" style="display: flex; flex-direction: column;">
+                <ion-text v-if="myDebt > 0">Моя задолженность: {{myDebt.toFixed(2)}} {{ currency }}</ion-text>
+                <ion-text v-if="debtToMe > 0">Мне должны: {{debtToMe.toFixed(2)}} {{ currency }}</ion-text>
+                <ion-text v-if="myDebt === 0 && debtToMe === 0">Долги отсутствуют</ion-text>
+              </div>
             </ion-card-content>
           </ion-card>
         </router-link>
@@ -139,6 +162,9 @@
   //
   import { IonContent, IonText, IonCard, IonAvatar, IonIcon, IonGrid, IonRow, IonCardHeader, IonCardTitle, IonCardContent, IonChip } from '@ionic/vue';
   import { removeCircleOutline, addCircleOutline } from 'ionicons/icons';
+  //
+  import { format, parseISO } from 'date-fns';
+  import { ru } from 'date-fns/locale'
 
   export default defineComponent({
     name: 'Profile',
@@ -310,9 +336,18 @@
         debtsToMe = debtsToMeArray.reduce((a, b) => a + b, 0)
         debtToMe.value = debtsToMe 
       }
+      // Функционал по смене автарки
+      const changeAvatar = () => {
+        alert('Вы хотите сменить аватарку? Функционал в разработке...')
+      }
+      //
+      const formattedDate = (day) => {
+        const formattedString = format(parseISO(day), 'd MMMM Y', { locale: ru });
+        return formattedString;
+      }
 
       return {
-        spinner, user, router, dataLoaded, userSettings, userEmail, isQrAvailable, removeCircleOutline, addCircleOutline, changeDaySaturationQty, daySaturation, setCountQtyButtonDecreaseColor, setCountQtyButtonAddColor, translateDaySaturationName, openBusinessCard, addBusinessCard, editBusinessCard, myDeals, availableBalance, myDebt, debtToMe, currency
+        spinner, user, router, dataLoaded, userSettings, userEmail, isQrAvailable, removeCircleOutline, addCircleOutline, changeDaySaturationQty, daySaturation, setCountQtyButtonDecreaseColor, setCountQtyButtonAddColor, translateDaySaturationName, openBusinessCard, addBusinessCard, editBusinessCard, myDeals, availableBalance, myDebt, debtToMe, currency, changeAvatar, formattedDate
       }
     }
   })
@@ -324,5 +359,9 @@
     }
     .countQty_button {
         font-size: 32px;
+    }
+    .account-avatar {
+      width: 6rem;
+      height: 6rem;
     }
 </style>
