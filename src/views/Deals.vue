@@ -43,7 +43,7 @@
             <!-- Data -->
             <div v-if="dataLoaded && myDeals.length !== 0">
                 <!-- ======================================= Статусы дел ================================ -->
-                <ion-list class="horizontal-scroll ion-margin-top">
+                <ion-list class="horizontal-scroll">
                     <ion-chip v-for="(status, index) in dealStatusList" :key="index" @click="setDealStatus(status.value)" :color="setChipColor(status.value)" :outline="setChipOutline(status.value, currentDealStatus)">
                         <ion-label>{{ status.name }} <span v-if="status.value !== 'deal-cancelled' && status.value !== 'deal-complete'">{{countDealByStatus(status.value)}}</span></ion-label>
                     </ion-chip>

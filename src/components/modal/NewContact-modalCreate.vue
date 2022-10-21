@@ -36,7 +36,7 @@
             </ion-item-group>
 
             <!-- ====================== Phones =========================== -->
-            <ion-item-group>
+            <ion-item-group class="ion-margin-top">
                 <!-- Заголовок -->
                 <ion-text>
                     <h4 class="ion-no-margin ion-margin-top">Телефоны</h4>
@@ -322,5 +322,8 @@
 
     .margin-top {
         margin-top: 10px;
+    }
+    ion-item {
+        --padding-start: 0;
     }
 </style>

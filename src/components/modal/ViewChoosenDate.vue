@@ -23,7 +23,7 @@
                         <ion-text class="ion-margin-top" color="primary" @click="$emit('createNewDeal', date)">Добавить</ion-text>
                     </div>
                     <!-- <ion-text style="position: absolute; bottom: 50px" @click="$emit('setWeekendDay', date)" color="primary" class="ion-margin-vertical">Отметить как день без дел</ion-text> -->
-                    <ion-text style="position: absolute; bottom: 50px" @click="$emit('setWeekendDay', date)" color="primary" class="ion-margin-vertical">Сделать этот день выходным</ion-text>
+                    <ion-text style="position: absolute; bottom: 5rem" @click="$emit('setWeekendDay', date)" color="primary" class="ion-margin-vertical">Сделать этот день выходным</ion-text>
                 </div>
             </div>
             <!--  -->
@@ -173,9 +173,9 @@
 </script>
 
 <style scoped>
-    ion-modal {
+    /* ion-modal {
         opacity: 0.95;
-    }
+    } */
     .no-deal {
         height: 80vh; 
         display: flex; 
@@ -184,9 +184,9 @@
         justify-content: center;
     }
     .deal-cover {
-        box-shadow: none;
+        /* box-shadow: none; */
         position: relative;
-        background-color: var(--ion-color-light)
+        /* background-color: var(--ion-color-light) */
     }
     .deal-cover:after {
         content: '';

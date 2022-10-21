@@ -11,7 +11,7 @@
 
         <ion-content 
             :scroll-events="true"
-            class="ion-page ion-margin-top" 
+            class="ion-page" 
             id="main"
             type="push" 
             forceOverscroll="false"
