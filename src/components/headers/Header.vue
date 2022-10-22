@@ -21,6 +21,9 @@
                 <ion-menu-toggle v-if="router.currentRoute._value.meta.title === 'Calendar'">
                     <ion-icon :icon="menu" class/>
                 </ion-menu-toggle>
+                <ion-button class="color-primary" v-if="router.currentRoute._value.meta.title === 'Wallet'" @click="goToPay()">
+                    <ion-icon :icon="qrCodeOutline"></ion-icon>
+                </ion-button>
             </ion-buttons>
         </ion-toolbar>
     </ion-header>
@@ -31,7 +34,7 @@
     import { computed } from 'vue';
     import { useRouter } from 'vue-router';
     import { IonHeader, IonMenuToggle, IonToolbar, IonIcon, IonGrid, IonRow, IonText, IonButtons, IonButton, IonBackButton, IonTitle } from '@ionic/vue';
-    import { menu, walletOutline, settingsOutline } from 'ionicons/icons';
+    import { menu, walletOutline, settingsOutline, qrCodeOutline } from 'ionicons/icons';
 
     export default {
         name: 'Header',
@@ -46,9 +49,13 @@
             const goToWallet = () => {
                 router.push({ name: 'Wallet' })
             }
+            //
+            const goToPay = () => {
+                alert('Сканируйте qr-код, чтобы оплатить. В разработке...')
+            }
 
             return {
-                user, router, menu, walletOutline, settingsOutline, goToWallet
+                user, router, menu, walletOutline, settingsOutline, goToWallet, qrCodeOutline, goToPay
             }
         }
     }

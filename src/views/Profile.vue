@@ -24,15 +24,6 @@
       <!-- Data -->
       <div v-if="dataLoaded && userSettings.length !== 0">
         <br>
-        <!-- Смена аватарки и прочие общие данные по аккаунту -->
-        <!-- <ion-card class="ion-no-margin ion-margin-horizontal ion-padding">
-          <ion-avatar class="account-avatar">
-              <img src="img/common/user-avatar.png">
-          </ion-avatar>
-          uid: {{ userSettings.uid }} <br>
-          email: {{ userEmail }} <br>
-          Зарегистрирован: {{ userSettings.created_at }}
-        </ion-card> -->
         <!-- Общая инфа по аккаунту -->
         <ion-grid class="ion-no-padding">
           <!--  -->
