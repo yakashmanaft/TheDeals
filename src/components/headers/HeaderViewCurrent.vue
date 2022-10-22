@@ -4,7 +4,7 @@
         <ion-toolbar color="white">
             <ion-buttons class="color-primary" slot="start">
                 <ion-button fill="clear" v-if="edit" @click="cancelEdit">Отмена</ion-button>
-                <ion-back-button  default-href="home" v-else text="Назад"></ion-back-button>
+                <ion-back-button  default-href="calendar" v-else text="Назад"></ion-back-button>
             </ion-buttons>
             <!-- Если текущий роут View-Deal -->
             <ion-buttons class="color-primary" slot="end" v-if="route.name !== 'View-Deal' && route.name !== 'Profile'">

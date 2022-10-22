@@ -41,14 +41,14 @@ const state = reactive({
   // Список модулей для отображения в меню
   menuList : [
       {
+        name: 'Calendar',
+        title: 'Календарь',
+        icon: calendarOutline
+      },
+      {
           name: 'Deals',
           title: 'Все мои дела',
           icon: clipboardOutline
-      },
-      {
-          name: 'Calendar',
-          title: 'Календарь',
-          icon: calendarOutline
       },
       {
           name: 'Contacts',

@@ -37,7 +37,7 @@
         <!-- menu content -->
         <ion-content class="ion-padding-vertical" forceOverscroll="false">
             <ion-list>
-                <ion-item v-for="(item, index) in menuList" :key="index" lines="none" >
+                <ion-item v-for="(item, index) in menuList" :key="index" lines="none" :class="{ 'current-route': item.title === currentRoute }">
                     <ion-icon :icon="`${item.icon}`" color="primary" :alt="`${item.icon}`" class="ion-margin-end"/>
                     <router-link :to="{ name: `${item.name}` }"> {{ item.title }}</router-link>
                 </ion-item> 
@@ -86,8 +86,13 @@
         components: {
             IonIcon, IonMenu, IonListHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonText, PWAPrompt, IonAvatar, IonGrid, IonRow, IonCol
         },
-        props: [],
-        setup() {
+        props: {
+            currentRoute: String,
+        },
+        setup(props, {emit}) {
+            //
+            const currentRoute = ref(props.currentRoute)
+            // console.log(props.currentRoute)
             // Get user from store
             const user = computed(() => store.state.user);
             // Setup ref to router
@@ -105,7 +110,7 @@
             const menuType = ref('overlay')
 
             return {
-                user, router, userEmail, logout, menuList, exitOutline, helpCircleOutline, menuType
+                user, router, userEmail, logout, menuList, exitOutline, helpCircleOutline, menuType, currentRoute
             }
         }
     })
@@ -139,5 +144,8 @@
     .account-avatar {
         width: 5rem;
         height: 5rem;
+    }
+    .current-route {
+        font-weight: bold
     }
 </style>

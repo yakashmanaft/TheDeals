@@ -4,7 +4,9 @@
         <Spinner v-if="spinner"/>
 
         <!-- Navigation Menu -->
-        <navigation-menu/>
+        <navigation-menu
+            :currentRoute="pageTitle"
+        />
 
         <!-- page header -->
         <Header :title="pageTitle" />
