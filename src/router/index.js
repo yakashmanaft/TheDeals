@@ -83,6 +83,16 @@ const routes = [
     }
   },
   {
+    path: '/view-recipe/:recipeId',
+    name: 'View-Recipe',
+    component: () => import('../views/currentView/ViewRecipe.vue'),
+    meta: {
+      title: 'View Recipe',
+      auth: true,
+      type: 'CurrentView'
+    }
+  },
+  {
     path: '/price-list',
     name: 'MyPrice',
     component: () => import('../views/MyPrice.vue'),

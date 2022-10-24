@@ -48,7 +48,6 @@
         >
             <br>
             <br>
-            <br>
             <!-- page content -->
             <div v-for="(item, index) in userSettings" :key="index">
                 <!-- No data -->

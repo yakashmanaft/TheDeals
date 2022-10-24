@@ -10,7 +10,7 @@
                     <ion-icon :icon="walletOutline" />
                 </ion-button>
                 <!-- КНОПКА НАЗАД, Если текущий роут НЕ Calendar -->
-                <ion-back-button v-if="router.currentRoute._value.meta.title !== 'Calendar'" default-href="calendar" text="Назад"></ion-back-button>
+                <ion-back-button v-if="router.currentRoute._value.meta.title !== 'Calendar'" default-href="/" text="Назад"></ion-back-button>
             </ion-buttons>
 
             <!-- ЗАГОЛОВОК В СЕРЕДИНЕ -->

@@ -30,18 +30,28 @@
         >
             <br>
             <br>
-            <br>
             <!-- page content -->
             <!-- No data -->
             <div v-if="(!dataLoaded || myRecipes.length === 0) && !spinner" class="no-data ion-padding-horizontal">
                 <ion-img src="img/common/recipe-sticker.webp" alt="нет контактов"></ion-img>
                 <ion-text color="primary"><h2>У вас еще нет рецептов...</h2></ion-text>
-                <ion-text color="medium">Начните пополнять коллекцию рецептов уже сейчас</ion-text>
+                <ion-text color="medium">Добавьте свой рецепт или выберите в <span style="color: var(--ion-color-primary)" @click="goToRecipesStore()">магазине</span></ion-text>
             </div>
 
             <!-- Data -->
             <div v-if="dataLoaded && myRecipes.length !== 0">
                 <ion-searchbar class="ion-text-left" placeholder="Поиск..." v-model="search"></ion-searchbar>
+                <div v-for="recipe in myRecipes" :key="recipe.id" class="ion-margin-top">
+                    <router-link
+                        :to="{ name: 'View-Recipe', params: {
+                            recipeId: recipe.id,
+                            recipeUid: recipe.uid,
+                            recipe: JSON.stringify(recipe)
+                        } }"
+                    >
+                        {{recipe}}
+                    </router-link>
+                </div>
             </div>
 
         </ion-content>
@@ -88,14 +98,20 @@
             console.log(userEmail.value)
             // Get page title
             const pageTitle = router.currentRoute._value.meta.translation;
-
             //
             const spinner = ref(null);
             const dataLoaded = ref(null);
             const myRecipes = ref([])
 
-            //Смотри примеры в myContact
-            // Подтягиваем список контактов из store
+            // Подтягиваем список рецептов из store
+            spinner.value = true;
+            //
+            onMounted(async () => {
+                await store.methods.getUserRecipesFromBD();
+                myRecipes.value = store.state.userRecipeArray;
+                spinner.value = false
+                dataLoaded.value = true;
+            })
 
             // функция поиска контакта с помощью search
             const search = ref('');
@@ -108,31 +124,58 @@
             const recipeData = ref({
                 uid: uid(),
                 email: userEmail.value,
-                recipeName: ''
+                value: '',
+                name: ''
             })
 
             // При закрытии или открытии modal очищаем шаблон рецепта
             const setOpen = () => {
                 isOpen.value = !isOpen.value;
+                spinner.value = false
+                // searchRecipe.value = ''
                 recipeData.value = {
                     uid: uid(),
                     email: userEmail.value,
-                    recipeName: ''
+                    value: '',
+                    name: ''
                 }
             }
 
             // Создаем новый рецепт
-            const createNew = (newRecipeData) => {
+            const createNew = async (newRecipeData) => {
                 // принимаем инфу по рецепту из modal
                 recipeData.value = newRecipeData
-                // spinner.value = true;
-                console.log(recipeData.value)
-                // закрываем modal
-                isOpen.value = false
+                spinner.value = true;
+                // Если есть пустые строки
+                // Использовать валидацию
+                if(recipeData.value.recipeName === '') {
+                    alert('Recipes: Вы не указали название рецепта')
+                } else {
+                    try {
+                        // Добавляем в БД инфу по новому контакту
+                        const { error } = await supabase.from('userRecipes').insert([recipeData.value])
+                        if(error) throw error;
+                        await store.methods.getUserRecipesFromBD();
+                        myRecipes.value = store.state.userRecipeArray;
+                        // ищем созданный новый рецепт в массиве всех рецептов в store (по uid)
+                        const newRecipe = myRecipes.value.find(el => el.uid === recipeData.value.uid) 
+                        // Сбрасываем заполненные данные и закрываем модалку
+                        // переходим на страницу созданного нового контакта
+                        router.push({ name: 'View-Recipe', params: { recipeId: newRecipe.id, recipe: JSON.stringify(newRecipe)}})
+                        // console.log(newRecipe)
+                        setOpen()
+                    } catch (error) {
+                        alert(`Error: ${error.message}`)
+                    }
+                }
+            }
+            //
+            const goToRecipesStore = () => {
+                alert('Recipes: Магазин в разработке...')
             }
 
             return {
-                user, router, pageTitle, spinner, dataLoaded, myRecipes, search, isOpen, recipeData, setOpen, createNew
+                user, router, pageTitle, spinner, dataLoaded, myRecipes, search, isOpen, recipeData, setOpen, createNew, goToRecipesStore
             }
         }  
     })

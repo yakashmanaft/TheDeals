@@ -146,6 +146,7 @@
         height: 5rem;
     }
     .current-route {
-        font-weight: bold
+        font-weight: bold;
+        color: var(--ion-color-primary)
     }
 </style>

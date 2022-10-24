@@ -186,36 +186,41 @@ const state = reactive({
     },
   ],
   //User recipes list
-  userRecipeArray: [
-    {
-        value: 'red-velvet',
-        name: 'Красный бархат'
-    },
-    {
-        value: 'milk-girl',
-        name: 'Молочная девочка',
-    },
-    {
-        value: 'swiss-meringue',
-        name: 'Швейцарская меренга',
-        target: ['meringue']
-    },
-    {
-        value: 'banana-with-gouda',
-        name: 'Банановый с гаудой',
-        target: ['cake'],
-        productSize: {
-            concept: 'diameter',
-            measure: 'centimeters',
-            quantity: 17
-        },
-        ingredient: [
-            {
-                name: 'Шоколадно-банановый бисквит',
-            }
-        ]
-    },
-  ],
+  userRecipeArray: [],
+  // userRecipeArray: [
+  //   {
+  //       value: 'red-velvet',
+  //       name: 'Красный бархат'
+  //   },
+  //   {
+  //       value: 'milk-girl',
+  //       name: 'Молочная девочка',
+  //   },
+  //   {
+  //       value: 'swiss-meringue',
+  //       name: 'Швейцарская меренга',
+  //       target: ['meringue']
+  //   },
+  //   {
+  //       value: 'banana-with-gouda',
+  //       name: 'Банановый с гаудой',
+  //       target: ['cake'],
+  //       productSize: {
+  //           concept: 'diameter',
+  //           measure: 'centimeters',
+  //           quantity: 17
+  //       },
+  //       ingredient: [
+  //           {
+  //               name: 'Шоколадно-банановый бисквит',
+  //           }
+  //       ]
+  //   },
+  //   {
+  //     value: 'creamy-pear',
+  //     name: 'Сливочная груша'
+  //   }
+  // ],
   // deal SALE Subject List
   dealSaleSubjectArray: [
     {
@@ -269,7 +274,7 @@ const state = reactive({
       costEstimation: 'perUnit'
     }
   ],
-  // deal BUY subject list
+  // deal BUY subject list by DEALS
   dealBuySubjectArray: [
     {
       value: 'sugar',
@@ -393,7 +398,7 @@ const state = reactive({
       name: 'Доставка'
     }
   ],
-  // list of additional attributes
+  // list of additional attributes by DEALS
   additionalAttributesList: [
     {
       value: 'cake-stand',
@@ -481,6 +486,13 @@ const methods = {
     } catch (error) {
       console.log(error);
     }
+  },
+  // Забираем из БД user recipes list
+  getUserRecipesFromBD: async () => {
+      let { data: userRecipes, error } = await supabase.from('userRecipes').select('*');
+      if (error) throw error;
+      // Устанавливаем значение переменной userRecipeArray в state
+      state.userRecipeArray = userRecipes;
   },
   //
   setUserEmail: () => {

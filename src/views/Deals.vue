@@ -430,7 +430,7 @@
             }
             // Создаем новую сделку
             const createNew = async (newDealData) => {
-                // принимаем инфу по контакту из modal
+                // принимаем инфу по делу из modal
                 dealData.value = newDealData
                 spinner.value = true;
                 // Если строки Имя Фамилия пустые или не пустые 
@@ -446,8 +446,7 @@
                     alert('Deals: Вы не указали способ доставки')
                 } else {
                     try{
-                        // Добавляем в БД инфу по новому контакту
-                        // Скорей всего надо будет вынести в store или нет
+                        // Добавляем в БД инфу по новому делу
                         const { error } = await supabase.from('deals').insert([dealData.value])
                         if(error) throw error;
                         // обновляем массив в store

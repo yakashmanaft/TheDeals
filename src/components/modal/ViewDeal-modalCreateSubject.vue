@@ -1,6 +1,8 @@
 <template>
     <ion-modal>
-
+        <!-- Спиннер как имитация загрузки -->
+        <Spinner v-if="spinner"/>
+        <!--  -->
         <ion-header translucent="true">
             <ion-toolbar>
                 <ion-buttons slot="start">
@@ -86,10 +88,10 @@
                         </ion-button>
                     </ion-grid>
                     <!-- Модалка для выбор (Выбор / поиск рецепта для предмета) -->
-                    <ion-modal :isOpen="searchRecipeMenu">
+                    <ion-modal :isOpen="searchRecipeMenu" >
                         <ion-searchbar class="ion-text-left" placeholder="Поиск..." v-model="searchRecipe" show-cancel-button="always" cancelButtonText="Отменить" @ionCancel="searchRecipeMenu = false">
                         </ion-searchbar>
-                        <ion-content style="height: 90vh">
+                        <ion-content style="height: 90vh; position: relative;">
                             <!-- Если не хотим указывать рецепт -->
                             <ion-item v-if="searchedRecipe.length > 0" @click="chooseRecipe(noRecipe)">Без рецепта</ion-item>
                             <!-- Выбираем из списка рецептов ПОЛЬЗОВАТЕЛЯ -->
@@ -111,17 +113,25 @@
                                         </ion-row>
                                     </ion-grid>
                                 </ion-item>
-                                <br>
-                                <br>
-                                <ion-item lines="none">
-                                    <ion-text class="ion-padding-horizontal">
-                                        Если вы хотите добавить рецепт, которого нет в вашей книге десертов - ищите в магазине рецептов :) 
-                                    </ion-text>
-                                </ion-item>
+                                <!-- Если не хотим указывать рецепт -->
+                                <!-- <ion-item lines="none" @click="chooseRecipe(noRecipe)">Без рецепта</ion-item> -->
+                                <!--  -->
+                                <div class="ion-padding-horizontal" style="display: flex; flex-direction: column; position: absolute; top: 40%;">
+                                    <ion-text class="ion-text-center">Если вы хотите добавить рецепт, которого нет в вашей книге десертов</ion-text>
+                                    <ion-button color="dark" class="ion-margin-top" @click="goToRecipesStore()">Купить в магазине</ion-button>
+                                </div>
                             </div>
                         </ion-content>
                     </ion-modal>
                 </ion-item-group>
+
+                <!-- Модалка создания нового рецепта -->
+                <CreateNewRecipe
+                    :is-open="isModalCreateNewRecipeOpened" 
+                    @closeModal="setOpen"   
+                    @createRecipe="createNew"
+                    :recipeData="recipeData"
+                />
 
                 <!-- ЦЕНА ПРЕДМЕТА -->
                 <ion-item-group class="ion-margin-horizontal ion-padding-bottom border-bottom ion-margin-top">
@@ -521,6 +531,8 @@
     import { helpOutline, addOutline, closeCircleOutline, removeCircleOutline, addCircleOutline } from 'ionicons/icons';
     //
     import ViewPriceProduct from '../modal/ViewPriceProduct-modalViewProduct.vue'
+    import CreateNewRecipe from '../../components/modal/NewRecipe-modalCreate.vue'
+    import Spinner from '../Spinner.vue'
     //
     import { searchDealSubjectFilter } from '../../helpers/filterDealSubject';
     import { searchUserRecipeFilter } from '../../helpers/filterUserRecipe';
@@ -528,6 +540,9 @@
     import { translateValue } from '@/helpers/translateValue';
     //
     import store from '../../store/index';
+    import { uid } from 'uid';
+    import { supabase } from '../../supabase/init';
+    import { useRouter } from 'vue-router';
     //
     export default defineComponent({
         name: 'CreateDealSubject',
@@ -561,9 +576,18 @@
             IonActionSheet,
             ViewPriceProduct,
             IonInput, 
-            IonRange
+            IonRange,
+            CreateNewRecipe,
+            Spinner
         },
         setup(props, {emit}) {
+            //
+            const spinner = ref(null);
+            // Setup ref to router
+            const router = useRouter();
+            // Get user email
+            store.methods.setUserEmail()
+            const userEmail = ref(store.state.userEmail)
             //
             const currentSubjectAttribute = ref()
             // Валюта отображения
@@ -582,13 +606,19 @@
             //
             const userSettings = ref(store.state.userSettings)
             //
+            const searchedRecipe = ref([])
+            //
             onMounted( async() => {
                 await store.methods.getUserSettingsfromDB();
                 userSettings.value = store.state.userSettings
+                //
+                await store.methods.getUserRecipesFromBD();
+                userRecipeArray.value = store.state.userRecipeArray;
                 // console.log(userSettings.value[0].userPriceList)
                 dealSaleSubjectArray.value = userSettings.value[0].userPriceList
                 dealAdditionalAttributesArray.value = userSettings.value[0].userAdditionalAttributes
                 //
+                searchedRecipeFunc()
             })
             //
             const showSelectedProduct = (selectedProduct) => {
@@ -650,10 +680,14 @@
                 }
             }) 
             // РЕЦЕПТ ПОЛЬЗОВАТЕЛЯ (фильтр для поиска и сортировки по алфавиту)
-            const searchedRecipe = computed(() => {
+            // const searchedRecipe = computed(() => {
+            //     const sortedUserRecipeArray = sortAlphabetically(userRecipeArray.value);
+            //     return searchUserRecipeFilter(sortedUserRecipeArray, searchRecipe.value)
+            // })
+            const searchedRecipeFunc = async () => {
                 const sortedUserRecipeArray = sortAlphabetically(userRecipeArray.value);
-                return searchUserRecipeFilter(sortedUserRecipeArray, searchRecipe.value)
-            })
+                return searchedRecipe.value = searchUserRecipeFilter(sortedUserRecipeArray, searchRecipe.value)
+            }
             // ПОЛЬЗОВАТЕЛЬСКИЕ ДОП АТРИБУТЫ К ПРОДУКТУ ПРОДАЖИ
             const searchedAdditionalAttributes = computed(() => {
                 const sortedDealAdditionalAttributesArray = sortAlphabetically(dealAdditionalAttributesArray.value);
@@ -866,6 +900,10 @@
             watch(searchSelectedProduct, (SelectedProduct) => {
                 console.log(SelectedProduct)
             })
+            //
+            watch(searchRecipe, () => {
+                searchedRecipeFunc()
+            })
             // функционал управления кнопками добавить / вычесть
             const changeQty = (action) => {
                 // subjectQty.value = subjectData.value.productQuantity
@@ -906,7 +944,8 @@
             }
             //
             const addNewRecipe = () => {
-                alert('ViewDeal-modalCreateSubject: функционал в разработке (addNewRecipe)')
+                // alert('ViewDeal-modalCreateSubject: функционал в разработке (addNewRecipe)')
+                isModalCreateNewRecipeOpened.value = true;
             }
             //
             const addNewSubjectToPrice = () => {
@@ -928,9 +967,70 @@
                     }
                 }
             }
+            //
+            const goToRecipesStore = () => {
+                alert('ViewDeal-modalCreateSubject: Магазин в разработке...')
+            }
+            // =======================================================================================
+            // Work with Modal Create New Recipe
+            const isModalCreateNewRecipeOpened = ref(false)
+            // Изменяемый шаблон нового рецепты
+            const recipeData = ref({
+                uid: uid(),
+                email: userEmail.value,
+                value: '',
+                name: ''
+            })
+            // При закрытии или открытии modal очищаем шаблон рецепта
+            const setOpen = () => {
+                isModalCreateNewRecipeOpened.value = !isModalCreateNewRecipeOpened.value;
+                searchRecipe.value = ''
+                recipeData.value = {
+                    uid: uid(),
+                    email: userEmail.value,
+                    value: '',
+                    name: ''
+                }
+                searchedRecipeFunc()
+            }
+            // Создаем новый рецепт
+            const createNew = async (newRecipeData) => {
+                // console.log(recipeData.value)
+                // принимаем инфу по рецепту из modal
+                recipeData.value = newRecipeData
+                // spinner.value = true;
+                // Если есть пустые строки
+                // Использовать валидацию
+                if(recipeData.value.name === '') {
+                    alert('Recipes: Вы не указали название рецепта')
+                } else {
+                    try {
+                        // Добавляем в БД инфу по новому контакту
+                        const { error } = await supabase.from('userRecipes').insert([recipeData.value])
+                        if(error) throw error;
+                        // обновляем массив в store
+                        await store.methods.getUserRecipesFromBD();
+                        recipeData.value = store.state.userRecipeArray;
+                        userRecipeArray.value = store.state.userRecipeArray;
+                        // ищем созданное новый рецепт в массиве всех рецептов в store (по uid)
+                        // const newRecipe = recipeData.value.find(el => el.uid === recipeData.value.uid)
+                        // закрываем modal
+                        // isModalCreateNewRecipeOpened.value = false
+                        // переходим на страницу созданного рецепта
+                        // router.push()
+                        console.log(recipeData.value)
+                        // searchedRecipeFunc()
+                    } catch (error) {
+                        alert(`Error: ${error.message}`)
+                    }
+                    // Сбрасываем заполненные данные и закрываем модалку
+                    setOpen()
+                }
+
+            }
 
             return {
-                dealSaleSubjectArray, dealBuySubjectArray, helpOutline, addOutline, showSelectedProduct, searchSubjectMenu, searchSelectedProduct, currentDealType, translateValue, searchedSubject, choose, searchRecipeMenu, searchRecipe, userRecipeArray, chooseRecipe, showSelectedRecipe, searchedRecipe, noRecipe, searchAttributeMenu, searchAdditionalAttributes, dealAdditionalAttributesArray, searchedAdditionalAttributes, chooseAttribute, closeCircleOutline, isAttributesMenuOpened, toggleAttributesMenu, openDeleteAttributeModal, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, systemCurrency, currentSubjectAttribute, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, isItemAlreadyHave, setAttributeRentType, sumAttributesPriceFunc, newAttribute, setProductQty, calcTotalSubjectPrice, setProductPrice, subjectPrice, subjectQty, removeCircleOutline, addCircleOutline, countQtyButtonColor, changeQty, changePersonQty, countPersonQtyButtonColor, gramPerPerson, setDiscountRange, subjectDiscount, addNewAttrToPrice, addNewRecipe, addNewSubjectToPrice, setAddButtonColor
+                dealSaleSubjectArray, dealBuySubjectArray, helpOutline, addOutline, showSelectedProduct, searchSubjectMenu, searchSelectedProduct, currentDealType, translateValue, searchedSubject, choose, searchRecipeMenu, searchRecipe, userRecipeArray, chooseRecipe, showSelectedRecipe, searchedRecipe, noRecipe, searchAttributeMenu, searchAdditionalAttributes, dealAdditionalAttributesArray, searchedAdditionalAttributes, chooseAttribute, closeCircleOutline, isAttributesMenuOpened, toggleAttributesMenu, openDeleteAttributeModal, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, systemCurrency, currentSubjectAttribute, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, isItemAlreadyHave, setAttributeRentType, sumAttributesPriceFunc, newAttribute, setProductQty, calcTotalSubjectPrice, setProductPrice, subjectPrice, subjectQty, removeCircleOutline, addCircleOutline, countQtyButtonColor, changeQty, changePersonQty, countPersonQtyButtonColor, gramPerPerson, setDiscountRange, subjectDiscount, addNewAttrToPrice, addNewRecipe, addNewSubjectToPrice, setAddButtonColor, goToRecipesStore, isModalCreateNewRecipeOpened, recipeData, setOpen, userEmail,createNew, spinner, router, searchedRecipeFunc
             }
         }
     })

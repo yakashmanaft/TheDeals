@@ -35,8 +35,6 @@
             type="push" 
             forceOverscroll="false"
         >
-
-            <br>
             <br>
             <br>
             <!-- page content -->
