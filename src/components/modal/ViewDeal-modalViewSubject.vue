@@ -11,40 +11,9 @@
                 </ion-buttons> -->
             </ion-toolbar>
         </ion-header>
-        <!-- ============================ СТОИМОСТЬ ПРЕДМЕТА ПОКАЗЫВАЕМ ========================== -->
-         <!--  -->
-        <ion-grid class="ion-no-padding ion-padding-horizontal" >
-            <div class="border-bottom">
-            <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap ion-margin-top ion-margin-bottom">
-                    <!-- <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                        Итого по предмету
-                    </ion-button> -->
-                    <div style="display: flex; flex-direction: column">
-                        <ion-text color="medium">
-                            Итого по предмету
-                        </ion-text>
-                        <div style="font-size: 0.8rem" v-if="currentDealType === 'sale' && (subjectData.additionalAttributes.length !== 0 || subjectData.subjectDiscount > 0)">
-                            <ion-text>С учетом:</ion-text>
-                            <ion-text v-if="subjectData.additionalAttributes.length !== 0" color="primary" style="text-decoration: underline;" >
-                                допов
-                            </ion-text>
-                            <ion-text v-if="subjectData.subjectDiscount > 0" color="primary" style="text-decoration: underline;">
-                                скидок
-                            </ion-text>
-                        </div>
-                    </div>
-                    <!--  -->
-                    <div>
-                        <ion-button  color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                            <ion-text style="font-size: 32px; color: black; font-weight: bold">{{subjectData.totalSubjectPrice}}</ion-text>
-                        </ion-button>
-                        <ion-text color="medium">{{systemCurrency.name}}</ion-text>
-                    </div>
-                </ion-row>
-            </div>
-        </ion-grid>
+        
         <!--  -->
-        <ion-content :scroll-events="true" forceOverscroll="false">
+        <ion-content forceOverscroll="false" style="position: relative;">
             <!-- {{currentDealType}} -->
             <!-- {{subjectData}} -->
             <!-- ================ Добавленный продукт ======================== -->
@@ -505,6 +474,34 @@
             <br>
             <br>
         </ion-content>
+
+        <!-- ============================ СТОИМОСТЬ ПРЕДМЕТА ПОКАЗЫВАЕМ ========================== -->
+        <ion-grid class="ion-padding border-top" style="position: absolute; bottom: 0; left: 0; width: 100%; background-color: #fff; z-index: 999999">
+            <!--  -->
+            <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
+                <div style="display: flex; flex-direction: column">
+                    <ion-text color="medium">
+                        Итого по предмету
+                    </ion-text>
+                    <div style="font-size: 0.8rem" v-if="currentDealType === 'sale' && (subjectData.additionalAttributes.length !== 0 || subjectData.subjectDiscount > 0)">
+                        <ion-text>С учетом:</ion-text>
+                        <ion-text v-if="subjectData.additionalAttributes.length !== 0" color="primary" style="text-decoration: underline;" >
+                            допов
+                        </ion-text>
+                        <ion-text v-if="subjectData.subjectDiscount > 0" color="primary" style="text-decoration: underline;">
+                            скидок
+                        </ion-text>
+                    </div>
+                </div>
+                <!--  -->
+                <div>
+                    <ion-button  color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                        <ion-text style="font-size: 32px; color: black; font-weight: bold">{{subjectData.totalSubjectPrice}}</ion-text>
+                    </ion-button>
+                    <ion-text color="medium">{{systemCurrency.name}}</ion-text>
+                </div>
+            </ion-row>
+        </ion-grid>
     </ion-modal>
 </template>
 
@@ -557,6 +554,8 @@
             //
             const userSettings = ref(store.state.userSettings)
             //
+            const searchedRecipe = ref([])
+            //
             onMounted( async() => {
                 // if(userSettings.value[0].userAdditionalAttributes) {
                 //     await store.methods.getUserSettingsfromDB();
@@ -566,6 +565,11 @@
                 await store.methods.getUserSettingsfromDB();
                 userSettings.value = store.state.userSettings
                 dealAdditionalAttributesArray.value = userSettings.value[0].userAdditionalAttributes
+                //
+                await store.methods.getUserRecipesFromBD();
+                userRecipeArray.value = store.state.userRecipeArray;
+                //
+                searchedRecipeFunc()
             })
             //
             const searchRecipeMenu = ref(false);
@@ -575,10 +579,10 @@
             // массив ПОЛЬЗОВАТЕЛЯ с вариантами рецептов (Временно в сторе)
             const userRecipeArray = ref(store.state.userRecipeArray)
             // РЕЦЕПТ ПОЛЬЗОВАТЕЛЯ (фильтр для поиска и сортировки по алфавиту)
-            const searchedRecipe = computed(() => {
+            const searchedRecipeFunc = () => {
                 const sortedUserRecipeArray = sortAlphabetically(userRecipeArray.value);
-                return searchUserRecipeFilter(sortedUserRecipeArray, searchRecipe.value)
-            })
+                return searchedRecipe.value = searchUserRecipeFilter(sortedUserRecipeArray, searchRecipe.value)
+            }
             // ПОЛЬЗОВАТЕЛЬСКИЕ ДОП АТРИБУТЫ К ПРОДУКТУ ПРОДАЖИ
             const searchedAdditionalAttributes = computed(() => {
                 const sortedDealAdditionalAttributesArray = sortAlphabetically(dealAdditionalAttributesArray.value);
@@ -807,6 +811,10 @@
             watch(personQty, (qty) => {
                 emit('getPersonQty', +qty)
             })
+            //
+            watch(searchRecipe, () => {
+                searchedRecipeFunc()
+            })
             // функционал управления кнопками добавить / вычесть
             // const countQtyButtonColor = ref('')
             const changeQty = (action) => {
@@ -843,6 +851,10 @@
             watch(subjectDiscount, (discount) => {
                 emit('getSubjectDiscount', +discount)
             })
+            //
+            const goToRecipesStore = () => {
+                alert('ViewDeal-modalViewSubject: Магазин в разработке...')
+            }
             // =======================================================================================
             // Work with Modal Create New Recipe
             const isModalCreateNewRecipeOpened = ref(false)
@@ -912,7 +924,7 @@
 
 
             return {
-                systemCurrency, userSettings, subjectData, currentDealType, searchRecipeMenu, searchRecipe, chooseRecipe, noRecipe, searchedRecipe, userRecipeArray, showSelectedRecipe, translateProductValue, dealSaleSubjectArray, dealBuySubjectArray, addOutline, closeCircleOutline, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, openDeleteAttributeModal, deleteAttributeFunc, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, currentSubjectAttribute, isItemAlreadyHave, searchAttributeMenu, searchAdditionalAttributes, searchedAdditionalAttributes, dealAdditionalAttributesArray, chooseAttribute, setAttributeRentType, setProductPrice, setProductQty, sumAttributesPriceFunc, productNote, setProductNotePlaceholder, calcTotalSubjectPrice, subjectPrice, newAttribute, sumAttributesPriceValue, subjectQty, removeCircleOutline, addCircleOutline, changeQty, changePersonQty, gramPerPerson, setDiscountRange, subjectDiscount, setIsReturned, addNewAttrToPrice, sync, checkmark, setMarkerCurrentAttrColor, addNewRecipe, isModalCreateNewRecipeOpened, setOpen, recipeData, createNew
+                systemCurrency, userSettings, subjectData, currentDealType, searchRecipeMenu, searchRecipe, chooseRecipe, noRecipe, searchedRecipe, userRecipeArray, showSelectedRecipe, translateProductValue, dealSaleSubjectArray, dealBuySubjectArray, addOutline, closeCircleOutline, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, openDeleteAttributeModal, deleteAttributeFunc, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, currentSubjectAttribute, isItemAlreadyHave, searchAttributeMenu, searchAdditionalAttributes, searchedAdditionalAttributes, dealAdditionalAttributesArray, chooseAttribute, setAttributeRentType, setProductPrice, setProductQty, sumAttributesPriceFunc, productNote, setProductNotePlaceholder, calcTotalSubjectPrice, subjectPrice, newAttribute, sumAttributesPriceValue, subjectQty, removeCircleOutline, addCircleOutline, changeQty, changePersonQty, gramPerPerson, setDiscountRange, subjectDiscount, setIsReturned, addNewAttrToPrice, sync, checkmark, setMarkerCurrentAttrColor, addNewRecipe, isModalCreateNewRecipeOpened, setOpen, recipeData, createNew, goToRecipesStore, searchedRecipeFunc
             }
         }
     })

@@ -494,29 +494,30 @@
 
         <!-- Плашка общей стомоимсти subject -->
         <ion-grid class="ion-padding border-top" style="position: absolute; bottom: 0; left: 0; width: 100%; background-color: #fff; z-index: 999999">
-                <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
-                    <div style="display: flex; flex-direction: column">
-                        <ion-text color="medium">
-                            Итого по предмету
+            <!--  -->
+            <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
+                <div style="display: flex; flex-direction: column">
+                    <ion-text color="medium">
+                        Итого по предмету
+                    </ion-text>
+                    <div style="font-size: 0.8rem" v-if="currentDealType === 'sale' && (subjectData.additionalAttributes.length !== 0 || subjectData.subjectDiscount > 0)" >
+                        <ion-text>С учетом:</ion-text>
+                        <ion-text v-if="subjectData.additionalAttributes.length !== 0" color="primary" style="text-decoration: underline;" >
+                            допов
                         </ion-text>
-                        <div style="font-size: 0.8rem" v-if="currentDealType === 'sale' && (subjectData.additionalAttributes.length !== 0 || subjectData.subjectDiscount > 0)" >
-                            <ion-text>С учетом:</ion-text>
-                            <ion-text v-if="subjectData.additionalAttributes.length !== 0" color="primary" style="text-decoration: underline;" >
-                                допов
-                            </ion-text>
-                            <ion-text v-if="subjectData.subjectDiscount > 0" color="primary" style="text-decoration: underline;">
-                                скидки
-                            </ion-text>
-                        </div>
+                        <ion-text v-if="subjectData.subjectDiscount > 0" color="primary" style="text-decoration: underline;">
+                            скидки
+                        </ion-text>
                     </div>
-                    <!--  -->
-                    <div>
-                        <ion-button  color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                            <ion-text style="font-size: 32px; color: black; font-weight: bold">{{subjectData.totalSubjectPrice}}</ion-text>
-                        </ion-button>
-                        <ion-text color="medium">{{systemCurrency.name}}</ion-text>
-                    </div>
-                </ion-row>
+                </div>
+                <!--  -->
+                <div>
+                    <ion-button  color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                        <ion-text style="font-size: 32px; color: black; font-weight: bold">{{subjectData.totalSubjectPrice}}</ion-text>
+                    </ion-button>
+                    <ion-text color="medium">{{systemCurrency.name}}</ion-text>
+                </div>
+            </ion-row>
             <!-- Кнопка добавить subject к делу -->
             <ion-button expand="block" :color="setAddButtonColor()" @click="$emit('createSubject', subjectData, isAttributesMenuOpened)" class="ion-margin-top">
                 Добавить к делу
@@ -684,7 +685,7 @@
             //     const sortedUserRecipeArray = sortAlphabetically(userRecipeArray.value);
             //     return searchUserRecipeFilter(sortedUserRecipeArray, searchRecipe.value)
             // })
-            const searchedRecipeFunc = async () => {
+            const searchedRecipeFunc = () => {
                 const sortedUserRecipeArray = sortAlphabetically(userRecipeArray.value);
                 return searchedRecipe.value = searchUserRecipeFilter(sortedUserRecipeArray, searchRecipe.value)
             }
