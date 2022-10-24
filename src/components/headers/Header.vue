@@ -14,16 +14,18 @@
             </ion-buttons>
 
             <!-- ЗАГОЛОВОК В СЕРЕДИНЕ -->
-            <ion-title v-if="router.currentRoute._value.meta.title === 'Calendar'">{{ title }}</ion-title>
+            <ion-title >{{ title }}</ion-title>
 
             <!-- КНОПКИ СПРАВА -->
             <ion-buttons slot="end">
-                <ion-menu-toggle v-if="router.currentRoute._value.meta.title === 'Calendar'">
-                    <ion-icon :icon="menu" class/>
-                </ion-menu-toggle>
+                <!-- QR -->
                 <ion-button class="color-primary" v-if="router.currentRoute._value.meta.title === 'Wallet'" @click="goToPay()">
                     <ion-icon :icon="qrCodeOutline"></ion-icon>
                 </ion-button>
+                <!-- BURGER -->
+                <ion-menu-toggle v-if="router.currentRoute._value.meta.title === 'Calendar'">
+                    <ion-icon :icon="menu" class/>
+                </ion-menu-toggle>
             </ion-buttons>
         </ion-toolbar>
     </ion-header>

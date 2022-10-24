@@ -37,9 +37,9 @@
         <!-- menu content -->
         <ion-content class="ion-padding-vertical" forceOverscroll="false">
             <ion-list>
-                <ion-item v-for="(item, index) in menuList" :key="index" lines="none" :class="{ 'current-route': item.title === currentRoute }">
+                <ion-item v-for="(item, index) in menuList" :key="index" lines="none" >
                     <ion-icon :icon="`${item.icon}`" color="primary" :alt="`${item.icon}`" class="ion-margin-end"/>
-                    <router-link :to="{ name: `${item.name}` }"> {{ item.title }}</router-link>
+                    <router-link :to="{ name: `${item.name}` }" :class="{ 'current-route': item.title === currentRoute }"> {{ item.title }}</router-link>
                 </ion-item> 
             </ion-list>
         </ion-content>
@@ -60,7 +60,7 @@
 
 <script>
     import store from '../store/index';
-    import { defineComponent, ref, computed } from 'vue';
+    import { defineComponent, ref, computed, watchEffect } from 'vue';
     import { supabase } from '../supabase/init';
     import { useRouter } from 'vue-router';
     import { 
@@ -87,12 +87,11 @@
             IonIcon, IonMenu, IonListHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonText, PWAPrompt, IonAvatar, IonGrid, IonRow, IonCol
         },
         props: {
-            currentRoute: String,
+            title: String,
         },
         setup(props, {emit}) {
             //
-            const currentRoute = ref(props.currentRoute)
-            // console.log(props.currentRoute)
+            const currentRoute = ref(props.title)
             // Get user from store
             const user = computed(() => store.state.user);
             // Setup ref to router
@@ -108,6 +107,11 @@
             const menuList = ref(store.state.menuList)
             //
             const menuType = ref('overlay')
+            //
+            watchEffect(() => {
+                currentRoute.value = props.title;
+            })
+            console.log(currentRoute.value)
 
             return {
                 user, router, userEmail, logout, menuList, exitOutline, helpCircleOutline, menuType, currentRoute

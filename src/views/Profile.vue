@@ -4,7 +4,9 @@
     <Spinner v-if="spinner"/>
 
     <!-- page header -->
-    <ViewHeader />
+    <ViewHeader 
+      :title="pageTitle"
+    />
 
     <!-- page-content -->
     <ion-content
@@ -167,10 +169,13 @@
       const currency = ref(store.state.systemCurrency.name)
       // Get user from store
       const user = computed(() => store.state.user);
-      //
-      const userSettings = ref(store.state.userSettings[0])
       // Setup ref to router
       const router = useRouter();
+      // Page title
+      const pageTitle = router.currentRoute._value.meta.translation;
+      console.log(pageTitle.value)
+      //
+      const userSettings = ref(store.state.userSettings[0])
       // Get user email
       store.methods.setUserEmail()
       const userEmail = ref(store.state.userEmail)
@@ -338,7 +343,7 @@
       }
 
       return {
-        spinner, user, router, dataLoaded, userSettings, userEmail, isQrAvailable, removeCircleOutline, addCircleOutline, changeDaySaturationQty, daySaturation, setCountQtyButtonDecreaseColor, setCountQtyButtonAddColor, translateDaySaturationName, openBusinessCard, addBusinessCard, editBusinessCard, myDeals, availableBalance, myDebt, debtToMe, currency, changeAvatar, formattedDate
+        spinner, user, router, dataLoaded, userSettings, userEmail, isQrAvailable, removeCircleOutline, addCircleOutline, changeDaySaturationQty, daySaturation, setCountQtyButtonDecreaseColor, setCountQtyButtonAddColor, translateDaySaturationName, openBusinessCard, addBusinessCard, editBusinessCard, myDeals, availableBalance, myDebt, debtToMe, currency, changeAvatar, formattedDate, pageTitle
       }
     }
   })

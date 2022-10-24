@@ -6,7 +6,9 @@
         <Header :title="pageTitle" />
 
         <!-- page navigation menu -->
-        <navigation-menu/>
+        <navigation-menu
+            :title="pageTitle"
+        />
 
         <!-- Кнопка перехода к созданию нового контакта -->
         <create-button @click="setOpen"/>

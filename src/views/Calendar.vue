@@ -5,7 +5,7 @@
 
         <!-- Navigation Menu -->
         <navigation-menu
-            :currentRoute="pageTitle"
+            :title="pageTitle"
         />
 
         <!-- page header -->

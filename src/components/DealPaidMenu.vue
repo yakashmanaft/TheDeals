@@ -1,5 +1,5 @@
 <template>
-    <ion-modal :initial-breakpoint="0.5">
+    <ion-modal :initial-breakpoint="0.6">
         <ion-header translucent="true">
             <ion-toolbar>
                 <ion-buttons slot="end">
@@ -13,6 +13,14 @@
             </ion-toolbar>
         </ion-header>
         <ion-content forceOverscroll="false">
+            <!-- Баланс -->
+            <ion-item v-if="currentDeal.dealType === 'buy'" lines="none" class="ion-margin-top">
+                <ion-grid>
+                    <ion-row>
+                        <ion-text>Баланс:</ion-text>
+                    </ion-row>
+                </ion-grid>
+            </ion-item>
             <!-- Заголовок -->
             <ion-item lines="none" class="ion-margin-top">
                 <ion-title size="large" class="ion-no-padding">
