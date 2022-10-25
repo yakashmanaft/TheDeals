@@ -1,5 +1,5 @@
 <template>
-    <ion-modal :initial-breakpoint="0.6">
+    <ion-modal :initial-breakpoint="setInitialBreakpoint()">
         <ion-header translucent="true">
             <ion-toolbar>
                 <ion-buttons slot="end">
@@ -15,7 +15,7 @@
         <ion-content forceOverscroll="false">
             <!-- Баланс -->
             <ion-item v-if="currentDeal.dealType === 'buy'" lines="none" class="ion-margin-top">
-                <ion-grid>
+                <ion-grid class="ion-no-padding">
                     <ion-row>
                         <ion-text>Баланс:</ion-text>
                     </ion-row>
@@ -91,13 +91,6 @@
             const debt = ref()
             //
             // const amount = ref()
-            // 
-            watchEffect(() => {
-                currentDeal.value = props.currentDeal
-                debt.value = props.debt
-                // amount.value = props.amount
-                amountValue.value = props.amount
-            })
             //
             
             // текущий долг по делу
@@ -125,9 +118,30 @@
                     alert('Вносимая сумма не может быть ниже нуля')
                 }
             }
+            //
+            const setInitialBreakpoint = () => {
+                // console.log(currentDeal.value.dealType)
+                // if(currentDeal.value.dealType) {
+                //     if(currentDeal.value.dealType === 'buy') {
+                //         return 0.6
+                //     } else if(currentDeal.value.dealType === 'sale') {
+                //         return 0.4
+                //     }
+                // } else {
+                //     return 0.6
+                // }
+                return 0.6 
+            }
+            // 
+            watchEffect(() => {
+                currentDeal.value = props.currentDeal
+                debt.value = props.debt
+                // amount.value = props.amount
+                amountValue.value = props.amount
+            })
 
             return {
-                currentDeal, amountValue, currency, setAmountValue, getAmountValueFunc
+                currentDeal, amountValue, currency, setAmountValue, getAmountValueFunc, setInitialBreakpoint
             }
         } 
     })

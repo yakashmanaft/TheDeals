@@ -481,7 +481,7 @@
                     
                     <!-- Кнопка внести средства -->
                     <ion-button v-if="debt > 0" @click="openDealPaidMenu" expand="block" class="ion-margin-top">
-                        <span v-if="currentDeal.dealType === 'buy'">Внести</span>  
+                        <span v-if="currentDeal.dealType === 'buy'">Внести оплату</span>  
                         <span v-else>Получить оплату</span>    
                     </ion-button>
                     <!-- Кнопка Завершить дело (если debt === 0) -->
