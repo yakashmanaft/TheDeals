@@ -226,6 +226,7 @@
                             </ion-button>
                             <!--  -->
                             <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                <!-- subjectPrice -->
                                 <ion-input type="number" v-model="subjectPrice" inputmode="decimal" :value="subjectData.price" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
                             </ion-button>
                         </ion-row>
@@ -391,7 +392,7 @@
                             </ion-button>
                             <!--  -->
                             <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                                <ion-input type="number" v-model="subjectPrice" inputmode="decimal" :value="subjectData.price" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
+                                <ion-input type="number" v-model="subjectData.price" inputmode="decimal" :value="subjectData.price" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
                             </ion-button>
                         </ion-row>
                         <!-- Фактический вес -->
@@ -531,7 +532,9 @@
             subjectData: Object,
             currentDealType: String,
             countQtyButtonColor: String,
-            countPersonQtyButtonColor: String
+            countPersonQtyButtonColor: String,
+            currentSubjectPrice: Number,
+            personGram: Number
         },
         components: {
             IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonSearchbar, IonItem, IonGrid, IonRow, IonThumbnail, IonImg, IonToggle, IonCard, IonIcon, IonActionSheet, ViewPriceProduct, IonTextarea, IonInput, IonRange, CreateNewRecipe
@@ -619,7 +622,7 @@
             }
             // Заглушка под предмет продажи "БЕЗ РЕЦЕПТА"
             const noRecipe = ref({
-                value: 'no-recipe',
+                value: 'Без рецепта',
                 name: 'Без рецепта'
             })
             // ======================== Удаление конкретного атрибута у предмета ========================
@@ -660,9 +663,9 @@
             }
 
             const showSelectedRecipe = (selectedRecipe) => {
-                if(subjectData.value.recipe === 'no-recipe') {
+                if(subjectData.value.recipe === 'Без рецепта') {
                     return 'Без рецепта'
-                }else if(subjectData.value.recipe !== '' && subjectData.value.recipe !== 'no-recipe') {
+                }else if(subjectData.value.recipe !== '' && subjectData.value.recipe !== 'Без рецепта') {
                     return translateValue(selectedRecipe, userRecipeArray.value)
                 } else {
                     return 'Не выбрано'
@@ -680,13 +683,6 @@
             }
             // ============================ Проверяем добавлен ли уже атрибут к продукту
             const isItemAlreadyHave = ref();
-
-            //
-            watchEffect(() => {
-                subjectData.value = props.subjectData;
-                currentDealType.value = props.currentDealType;
-                // countQtyButtonColor.value = props.countQtyButtonColor
-            })
             //
             // const countQtyButtonColor = ref();
             //
@@ -789,13 +785,17 @@
             }
             // следим за изменениями price
             const subjectPrice = ref()
+            // subjectQty.value = subjectData.value.productQuantity
+            // subjectPrice.value = subjectData.value.price
             watch(subjectPrice, (price) => {
+                subjectPrice.value = price
                 // console.log(subjectPrice.value)
                 emit('getSubjectPrice', +price);
             })
             // следим за изменениями gramPerPerson
             const gramPerPerson = ref();
             watch(gramPerPerson, (gram) => {
+                gramPerPerson.value = gram
                 // console.log(gramPerPerson.value)
                 emit('getGramPerPerson', +gram)
             })
@@ -803,7 +803,7 @@
             const subjectQty = ref();
             // const countQtyButtonColor = ref();
             watch(subjectQty, (qty) => {
-                // console.log(subjectQty.value)
+                console.log(subjectQty.value)
                 emit('getSubjectQty', +qty);
             })
             // следим за изменениями personQty
@@ -921,10 +921,18 @@
                 // alert('ViewDeal-modalCreateSubject: функционал в разработке (addNewRecipe)')
                 isModalCreateNewRecipeOpened.value = true;
             }
+            //
+            watchEffect(() => {
+                subjectData.value = props.subjectData;
+                currentDealType.value = props.currentDealType;
+                // countQtyButtonColor.value = props.countQtyButtonColor
+                subjectPrice.value = props.currentSubjectPrice
+                gramPerPerson.value = props.personGram
+            })
 
 
             return {
-                systemCurrency, userSettings, subjectData, currentDealType, searchRecipeMenu, searchRecipe, chooseRecipe, noRecipe, searchedRecipe, userRecipeArray, showSelectedRecipe, translateProductValue, dealSaleSubjectArray, dealBuySubjectArray, addOutline, closeCircleOutline, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, openDeleteAttributeModal, deleteAttributeFunc, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, currentSubjectAttribute, isItemAlreadyHave, searchAttributeMenu, searchAdditionalAttributes, searchedAdditionalAttributes, dealAdditionalAttributesArray, chooseAttribute, setAttributeRentType, setProductPrice, setProductQty, sumAttributesPriceFunc, productNote, setProductNotePlaceholder, calcTotalSubjectPrice, subjectPrice, newAttribute, sumAttributesPriceValue, subjectQty, removeCircleOutline, addCircleOutline, changeQty, changePersonQty, gramPerPerson, setDiscountRange, subjectDiscount, setIsReturned, addNewAttrToPrice, sync, checkmark, setMarkerCurrentAttrColor, addNewRecipe, isModalCreateNewRecipeOpened, setOpen, recipeData, createNew, goToRecipesStore, searchedRecipeFunc
+                systemCurrency, userSettings, subjectData, currentDealType, searchRecipeMenu, searchRecipe, chooseRecipe, noRecipe, searchedRecipe, userRecipeArray, showSelectedRecipe, translateProductValue, dealSaleSubjectArray, dealBuySubjectArray, addOutline, closeCircleOutline, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, openDeleteAttributeModal, deleteAttributeFunc, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, currentSubjectAttribute, isItemAlreadyHave, searchAttributeMenu, searchAdditionalAttributes, searchedAdditionalAttributes, dealAdditionalAttributesArray, chooseAttribute, setAttributeRentType, setProductPrice, setProductQty, sumAttributesPriceFunc, productNote, setProductNotePlaceholder, calcTotalSubjectPrice, subjectPrice, newAttribute, sumAttributesPriceValue, subjectQty, removeCircleOutline, addCircleOutline, changeQty, changePersonQty, gramPerPerson, setDiscountRange, subjectDiscount, setIsReturned, addNewAttrToPrice, sync, checkmark, setMarkerCurrentAttrColor, addNewRecipe, isModalCreateNewRecipeOpened, setOpen, recipeData, createNew, goToRecipesStore, searchedRecipeFunc 
             }
         }
     })

@@ -446,10 +446,50 @@ const state = reactive({
       name: 'Возвращен',
       value: true
     }
-  ]
+  ],
+  // Переменные для кошелька
+  availableBalance: 0,
+  myDebt: 0,
+  debtToMe: 0
 });
 
 const methods = {
+  // Расчитываем балансы кошельке пользвоателя
+  calculateBalance(myDeals) {
+    // Массив сумм, которые мне уже вносили по делам продаж
+    let payMeArray = [];
+    let payMe = 0;
+    // Массив сумм, которые я уже вносил по делам закупок
+    let iPayArray = [];
+    let iPay = 0;
+    // Массив моих задолженностей
+    let myDebtsArray = [];
+    let myDebts = 0;
+    // Массив покупательских задолженностей
+    let debtsToMeArray = [];
+    let debtsToMe = 0;
+    //
+    myDeals.forEach(item => {
+      if(item.dealType === 'sale') {
+          payMeArray.push(item.dealPaid);
+          debtsToMeArray.push(item.totalDealPrice - item.dealPaid);
+      } else if (item.dealType === 'buy') {
+          iPayArray.push(item.dealPaid);
+          myDebtsArray.push(item.totalDealPrice - item.dealPaid);
+      }
+    });
+    // суммируем значения в массивах, считаем текущий баланс
+    payMe = payMeArray.reduce((a, b) => a + b, 0);
+    iPay = iPayArray.reduce((a, b) => a + b, 0);
+    state.availableBalance = payMe - iPay;
+    // store.methods.setAvailableBalanceValue(payMe, iPay)
+    // 
+    myDebts = myDebtsArray.reduce((a, b) => a + b, 0);
+    state.myDebt = myDebts;
+    //
+    debtsToMe = debtsToMeArray.reduce((a, b) => a + b, 0);
+    state.debtToMe = debtsToMe ;
+  },
   // Устанавливаем пользователя
   setUser(payload) {
     state.user = payload ? payload.user : null;
@@ -499,7 +539,7 @@ const methods = {
     if(state.user) {
       state.userEmail = state.user.email;
     }
-  }
+  },
 };
 
 export default {

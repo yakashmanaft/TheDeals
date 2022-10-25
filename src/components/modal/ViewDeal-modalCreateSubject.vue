@@ -639,9 +639,9 @@
             }
             //
             const showSelectedRecipe = (selectedRecipe) => {
-                if(subjectData.value.recipe !== '' && subjectData.value.recipe === 'no-recipe') {
+                if(subjectData.value.recipe !== '' && subjectData.value.recipe === 'Без рецепта') {
                     return 'Без рецепта'
-                }else if(subjectData.value.recipe !== '' && subjectData.value.recipe !== 'no-recipe') {
+                }else if(subjectData.value.recipe !== '' && subjectData.value.recipe !== 'Без рецепта') {
                     return translateValue(selectedRecipe, userRecipeArray.value)
                 } else {
                     return 'Не выбрано'
@@ -765,7 +765,7 @@
             }
             // Заглушка под предмет продажи "БЕЗ РЕЦЕПТА"
             const noRecipe = ref({
-                value: 'no-recipe',
+                value: 'Без рецепта',
                 name: 'Без рецепта'
             })
             // ======================================== Удаление конкретного атрибута у предмета ==========================================

@@ -12,6 +12,8 @@
             @closeModal="isViewDealSubjectOpened = false;"
             :subjectData="currentDealSubject"
             :currentDealType="currentDeal.dealType"
+            :currentSubjectPrice="currentPriceSubject"
+            :personGram="personPortionGram"
             @updateBD="updateBD"
             @getSubjectPrice="setSubjectPrice"
             @getGramPerPerson="setGramPerPerson"
@@ -166,7 +168,7 @@
                     <ion-grid class="ion-no-padding">
                         <ion-row class="ion-nowrap horizontal-scroll">
                             <!-- Карточки предметов заказа -->
-                            <ion-card @click.stop="openCurrentDealSubject(index)" class="ion-padding ion-text-center card-center relative" v-for="(item, index) in currentDeal.dealsList" :key="item.id">
+                            <ion-card @click.stop="openCurrentDealSubject(index, item)" class="ion-padding ion-text-center card-center relative" v-for="(item, index) in currentDeal.dealsList" :key="item.id">
                                 <!-- Кнопка удалить конкретный предмет дела -->
                                 <ion-icon @click.stop="openDeleteSubjectModal(item.id)" class="icon_size icon_del absolute" :icon="closeCircleOutline"></ion-icon>
                                 <!-- item -->
@@ -194,7 +196,7 @@
                                 <ion-label style="font-size: 12px">
                                     x{{item.productQuantity}}
                                 </ion-label>
-                                <ion-text v-if="currentDeal.dealType === 'sale'" style="white-space: normal">{{ translateDealSubjectRecipe(item.recipe) }}</ion-text>
+                                <ion-text v-if="currentDeal.dealType === 'sale'" style="white-space: normal">{{ item.recipe }}</ion-text>
                             </ion-card>
                             <!-- Добавить еще предмет к заказу -->
                             <ion-card class="ion-padding card-center card-add" @click="openCreateSubjectModal()">
@@ -371,7 +373,7 @@
     
                                 <!-- Описание скидок и вывод название рецептов пока есть толкьо в режиме sale -->
                                 <ion-row class="ion-justify-content-between ion-align-items-center">
-                                    <ion-text color="medium">{{ translateDealSubjectRecipe(item.recipe) }}</ion-text>
+                                    <ion-text color="medium">{{ item.recipe }}</ion-text>
                                     <ion-text v-if="item.subjectDiscount > 0" color="medium">С учетом скидки {{ item.subjectDiscount }}%</ion-text>
                                     <ion-text v-else color="medium">Без скидки</ion-text>
                                 </ion-row>
@@ -503,12 +505,13 @@
                         :debt="refreshDebtValue()"
                         :amount="dealPaidAmountValue()"
                         @getAmountValue="setAmountValue"
+                        :balance="availableBalance"
                     />
                 </ion-item-group>
                 
-                <!-- <br>
+                <br>
                 {{currentDeal}}
-                <br> -->
+                <br>
 
                 <!-- ========================== Кнопка удалить дело =================================== -->
                 <!-- Не показываем в режиме edit -->
@@ -612,6 +615,22 @@
             })
             // Проверяем на возврат атрибутов
             const isAllAttrReturned = ref(false);
+            // Временно обзавем данные
+            const myDeals = ref([]);
+            //
+            // const userRecipeArray = ref(store.state.userRecipeArray)
+            //
+            const availableBalance = ref(0);
+            //
+            onMounted(async () => {
+                if(currentDeal.value.dealType === 'buy') {
+                    await store.methods.getMyDealsFromBD();
+                    myDeals.value = store.state.myDealsArray;
+                    // запускаем функцию расчета баланса кошелька из store
+                    store.methods.calculateBalance(myDeals.value)
+                    availableBalance.value = store.state.availableBalance
+                } 
+            })
             //
             const showNameByID = (contactID) => {
                 const result = myContacts.value.filter(contact => contact.id === +contactID)
@@ -838,13 +857,20 @@
             }
             // ================================ управление current deal subject ===================================
             const currentDealSubject = ref()
+            const currentPriceSubject = ref()
+            const personPortionGram = ref()
             // открываем view current deal item
             const isViewDealSubjectOpened = ref(false);
-            const openCurrentDealSubject = (index) => {
+            const openCurrentDealSubject = (index, item) => {
                 isViewDealSubjectOpened.value = true;
+                //
                 currentDealSubject.value = currentDeal.value.dealsList[index];
-                setCountQtyButtonColor(currentDealSubject.value.productQuantity)
-                setCountPersonQtyButtonColor(currentDealSubject.value.personQuantity)
+                currentPriceSubject.value = item.price
+                personPortionGram.value = item.gramPerPerson
+                // console.log(item)
+                //
+                setCountQtyButtonColor(currentDealSubject.value.productQuantity);
+                setCountPersonQtyButtonColor(currentDealSubject.value.personQuantity);
             }
             // Вызываем action sheet меню выбор
             const actionSheetDealStatus = ref(false)
@@ -946,16 +972,17 @@
                 }
             }
             // Переводчик названий рецептов
-            const userRecipeArray = ref(store.state.userRecipeArray)
-            const translateDealSubjectRecipe = (value) => {
-                if (currentDeal.value.dealType === 'sale') {
-                    if(value === 'no-recipe' || value === ''){
-                        return 'Без рецепта'
-                    } else {
-                        return translateValue(value, userRecipeArray.value)
-                    }
-                }
-            }
+            // const translateDealSubjectRecipe = (value) => {
+            //     if (currentDeal.value.dealType === 'sale') {
+            //         if(value === 'no-recipe' || value === ''){
+            //             return 'Без рецепта'
+            //         } else {
+            //             console.log(userRecipeArray.value)
+            //             return translateValue(value, userRecipeArray.value)
+            //             // return value
+            //         }
+            //     }
+            // }
             // Переводчик названий типов доставки
             const translateShippingType = (value) => {
                 if(value) {
@@ -1441,6 +1468,11 @@
                 } else if (currentDeal.value.dealPaid !== 0) {
                     currentDeal.value.dealPaid += +amount
                 }
+                // if(amount > availableBalance.value) {
+                //     alert('ViewDeal: недостаточно средств на балансе')
+                // } else {
+                //     culcDealDebt(currentDeal.value.totalDealPrice, currentDeal.value.dealPaid)
+                // }
                 culcDealDebt(currentDeal.value.totalDealPrice, currentDeal.value.dealPaid)
                 if (debt.value < 0) {
                     // Удалить, если не пригодится
@@ -1456,7 +1488,12 @@
                     } 
                     // BUY
                     else if (currentDeal.value.dealType === 'buy') {
+                        console.log(availableBalance.value)
                         // уведомляем о количестве внесенных средств
+                        // if(amount > availableBalance.value) {
+                        //     alert('ViewDeal: недостаточно средств на балансе')
+                        // } else {
+                        // }
                         alert(`ViewDeal: внесено ${amount} ${currency.value}`)
                         // Уведомляем о смене статуса
                         // alert('ViewDeal: статус дела изменен на Завершено')
@@ -1515,7 +1552,7 @@
             }
 
             return {
-                currency, spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, translateDealSubjectRecipe, userRecipeArray, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, setPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setNewPersonQty, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, shippingTypeList, dealShippingType, shippingPrice, setProductNotePlaceholder, shippingAddress, editShippingAddress, toggleEditShippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, translateShippingType, translateSelectedProduct, culcSubjectWeight, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, culcBuySubjectWeight, debt, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, nextDealStatus, prevDealStatus, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, refreshDebtValue, dealPaidAmountValue, finishDeal, setMarkerAttrColor, shapes, checkmarkDone
+                currency, spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, setPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setNewPersonQty, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, shippingTypeList, dealShippingType, shippingPrice, setProductNotePlaceholder, shippingAddress, editShippingAddress, toggleEditShippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, translateShippingType, translateSelectedProduct, culcSubjectWeight, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, culcBuySubjectWeight, debt, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, nextDealStatus, prevDealStatus, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, refreshDebtValue, dealPaidAmountValue, finishDeal, setMarkerAttrColor, shapes, checkmarkDone, availableBalance, currentPriceSubject, personPortionGram
             }
         }
     })

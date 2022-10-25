@@ -18,6 +18,7 @@
                 <ion-grid class="ion-no-padding">
                     <ion-row>
                         <ion-text>Баланс:</ion-text>
+                        <ion-text>{{ walletBalance }}</ion-text>
                     </ion-row>
                 </ion-grid>
             </ion-item>
@@ -75,7 +76,8 @@
         props: {
             currentDeal: Object,
             debt: Number,
-            amount: Number
+            amount: Number,
+            balance: Number
         },
         components: {
             IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItem, IonInput, IonLabel, IonGrid, IonRow, IonText
@@ -90,7 +92,7 @@
             //
             const debt = ref()
             //
-            // const amount = ref()
+            const walletBalance = ref()
             //
             
             // текущий долг по делу
@@ -110,27 +112,27 @@
             }
             // функция внесения суммы в счет задолженности
             const getAmountValueFunc = () => {
-                if(amountValue.value === 0) {
-                    alert('Вносимая сумма должна быть больше нуля')
-                } else if(amountValue.value > 0){
-                    emit('getAmountValue', amountValue.value)
-                } else if (amountValue.value < 0) {
-                    alert('Вносимая сумма не может быть ниже нуля')
+                if(amountValue.value > walletBalance.value && currentDeal.value.dealType === 'buy') {
+                    alert('DealPaidMenu: Недостаточно средств на балансе')
+                } else {
+                    if(amountValue.value === 0) {
+                        alert('Вносимая сумма должна быть больше нуля')
+                    } else if(amountValue.value > 0){
+                        emit('getAmountValue', amountValue.value)
+                    } else if (amountValue.value < 0) {
+                        alert('Вносимая сумма не может быть ниже нуля')
+                    }
                 }
             }
             //
             const setInitialBreakpoint = () => {
-                // console.log(currentDeal.value.dealType)
-                // if(currentDeal.value.dealType) {
-                //     if(currentDeal.value.dealType === 'buy') {
-                //         return 0.6
-                //     } else if(currentDeal.value.dealType === 'sale') {
-                //         return 0.4
-                //     }
-                // } else {
-                //     return 0.6
-                // }
-                return 0.6 
+                if(currentDeal.value !== undefined) {
+                    if(currentDeal.value.dealType === 'buy') {
+                        return 0.6 
+                    } else {
+                        return 0.5
+                    }
+                }
             }
             // 
             watchEffect(() => {
@@ -138,10 +140,11 @@
                 debt.value = props.debt
                 // amount.value = props.amount
                 amountValue.value = props.amount
+                walletBalance.value = props.balance
             })
 
             return {
-                currentDeal, amountValue, currency, setAmountValue, getAmountValueFunc, setInitialBreakpoint
+                currentDeal, amountValue, currency, setAmountValue, getAmountValueFunc, setInitialBreakpoint, walletBalance
             }
         } 
     })

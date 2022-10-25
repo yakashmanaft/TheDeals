@@ -126,7 +126,7 @@
                             <ion-label style="font-size: 12px">
                                 x{{item.productQuantity}}
                             </ion-label>
-                            <ion-text style="white-space: normal">{{ translateDealSubjectRecipe(item.recipe) }}</ion-text>
+                            <ion-text style="white-space: normal">{{ item.recipe }}</ion-text>
                         </ion-card>
                         <!-- Открываем меню создания предмета к делу -->
                         <ion-card class="ion-padding card-center card-add" @click="openCreateSubjectModal()">
@@ -325,7 +325,7 @@
 
                             <!-- Описание скидок и вывод название рецептов пока есть толкьо в режиме sale -->
                             <ion-row class="ion-justify-content-between ion-align-items-center">
-                                <ion-text color="medium">{{ translateDealSubjectRecipe(item.recipe) }}</ion-text>
+                                <ion-text color="medium">{{ item.recipe }}</ion-text>
                                 <ion-text v-if="item.subjectDiscount > 0" color="medium">С учетом скидки</ion-text>
                                 <ion-text v-else color="medium">Без скидки</ion-text>
                             </ion-row>
@@ -352,7 +352,7 @@
                     <ion-list v-if="dealData.dealsList.length === 0" style="font-size: 0.8rem" class="border-bottom ion-padding-bottom ion-margin-bottom">
                         Нет предметов в деле
                     </ion-list>
-                    <!-- ЕСЛИ ПРЕДМЕТОВ ЕСТЬ -->
+                    <!-- ЕСЛИ ПРЕДМЕТЫ ЕСТЬ -->
                     <ion-list v-for="item in dealData.dealsList" :key="item.id" style="font-size: 0.8rem" class="border-bottom ion-padding-bottom ion-margin-bottom">
                          <ion-grid class="ion-no-padding">
 
@@ -697,16 +697,18 @@
                 setCountPersonQtyButtonColor(currentDealSubject.value.personQuantity)
             }
             // Переводчик названий рецептов
-            const userRecipeArray = ref(store.state.userRecipeArray)
-            const translateDealSubjectRecipe = (value) => {
-                if(dealData.value.dealType === 'sale') {
-                    if(value === 'no-recipe' || value === '') {
-                        return 'Без рецепта'
-                    } else {
-                        return translateValue(value, userRecipeArray.value)
-                    }
-                }
-            }
+            // const userRecipeArray = ref(store.state.userRecipeArray)
+            // const translateDealSubjectRecipe = (value) => {
+            //     // console.log(value)
+            //     if(dealData.value.dealType === 'sale') {
+            //         if(value === 'no-recipe' || value === '') {
+            //             return 'Без рецепта'
+            //         } else {
+            //             console.log(userRecipeArray.value)
+            //             return translateValue(value, userRecipeArray.value)
+            //         }
+            //     }
+            // }
             // 
             const currentDealType = ref('');
             watchEffect(() => {
@@ -1204,7 +1206,7 @@
             }
 
             return {
-                currency, dealContact, dealContactID , searchContactMenu, choose, isCalendarOpened, closeModalCalendar, updateExecutionDate, datepicker, myContactsArray, searchDealContact, searchedContacts, dealTypes, addCircleOutline, closeCircleOutline, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, openDeleteSubjectModal, subjectToDelete, deleteDealSubjectButtons, addNewSubject, deleteSubject, dealData, currentDealSubject, isViewDealSubjectOpened, openCurrentDealSubject, checkRentAttr, setColorByDealType, setIconByDealType, translateDealSubjectRecipe, userRecipeArray, currentDealType, isAttributesMenuOpened, setNewSubjectPrice, calcNewSubjectTotalPrice, sumAttributesPriceValue, setSumAttributesPriceValue, setSubjectPrice, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, calcSubjectTotalPrice, setNewSubjectQty, setPersonQty, setNewPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, setChipColor, shippingTypeList, dealShippingType, shippingPrice, shippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, calcTotalDealPrice, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, translateSelectedProduct, culcSubjectWeight, culcBuySubjectWeight, culcDealDebt, setAmountValue, debt, refreshDebtValue, dealPaidAmountValue, setAddButtonColor
+                currency, dealContact, dealContactID , searchContactMenu, choose, isCalendarOpened, closeModalCalendar, updateExecutionDate, datepicker, myContactsArray, searchDealContact, searchedContacts, dealTypes, addCircleOutline, closeCircleOutline, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, openDeleteSubjectModal, subjectToDelete, deleteDealSubjectButtons, addNewSubject, deleteSubject, dealData, currentDealSubject, isViewDealSubjectOpened, openCurrentDealSubject, checkRentAttr, setColorByDealType, setIconByDealType, currentDealType, isAttributesMenuOpened, setNewSubjectPrice, calcNewSubjectTotalPrice, sumAttributesPriceValue, setSumAttributesPriceValue, setSubjectPrice, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, calcSubjectTotalPrice, setNewSubjectQty, setPersonQty, setNewPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, setChipColor, shippingTypeList, dealShippingType, shippingPrice, shippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, calcTotalDealPrice, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, translateSelectedProduct, culcSubjectWeight, culcBuySubjectWeight, culcDealDebt, setAmountValue, debt, refreshDebtValue, dealPaidAmountValue, setAddButtonColor
             }
         }
     })
