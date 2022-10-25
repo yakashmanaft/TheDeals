@@ -3,15 +3,20 @@
         <ion-header>
             <ion-toolbar>
                 <ion-buttons slot="start">
-                    <ion-button @click="$emit('closeModal', date)">Закрыть</ion-button>
+                    <ion-button @click="$emit('closeModal')">Закрыть</ion-button>
                 </ion-buttons>
                 <ion-title>{{formattedDate(date)}}</ion-title>
                 <ion-buttons slot="end">
-                    <ion-button @click="$emit('createNewDeal', date)">Добавить</ion-button>
+                    <!-- <ion-button @click="$emit('createNewDeal', date)">Добавить</ion-button> -->
                 </ion-buttons>
             </ion-toolbar>
         </ion-header>
         <ion-content forceOverscroll="false" style="position: relative">
+
+            <!-- Кнопка перехода к созданию нового дела -->
+            <!-- <CreateButton @click="$emit('createNewDeal', date)"/> -->
+            <CreateButton @click="$emit('createNewDeal', date)" style="bottom: 3rem"/>
+            
             <!-- Маячок о количестве дел -->
             <div class="ion-margin-top ion-text-center">
                 <ion-text color="medium" v-if="deals.length > 0">
@@ -20,10 +25,11 @@
                 <div class="no-deal" v-if="deals.length === 0">
                     <div style="display: flex; flex-direction: column">
                         <ion-text color="medium">Нет запланированных дел</ion-text>
-                        <ion-text class="ion-margin-top" color="primary" @click="$emit('createNewDeal', date)">Добавить</ion-text>
+                        <!-- <ion-text class="ion-margin-top" color="primary" @click="$emit('createNewDeal', date)">Добавить</ion-text> -->
+                        <ion-text @click="$emit('setWeekendDay', date)" color="primary" class="ion-margin-vertical">Сделать этот день выходным</ion-text>
                     </div>
                     <!-- <ion-text style="position: absolute; bottom: 50px" @click="$emit('setWeekendDay', date)" color="primary" class="ion-margin-vertical">Отметить как день без дел</ion-text> -->
-                    <ion-text style="position: absolute; bottom: 5rem" @click="$emit('setWeekendDay', date)" color="primary" class="ion-margin-vertical">Сделать этот день выходным</ion-text>
+                    <!-- <ion-text style="position: absolute; bottom: 5rem" @click="$emit('setWeekendDay', date)" color="primary" class="ion-margin-vertical">Сделать этот день выходным</ion-text> -->
                 </div>
             </div>
             <!--  -->
@@ -89,6 +95,7 @@
     import { helpOutline } from 'ionicons/icons';
     //
     import DealCard from '../DealCard.vue';
+    import CreateButton from '../CreateButton.vue';
     //
     import { showNameByID } from '../../helpers/setNameByID'
 
@@ -116,6 +123,7 @@
             IonThumbnail,
             IonIcon,
             DealCard,
+            CreateButton
         },
         setup(props, {emit}) {
             // Setup ref to router

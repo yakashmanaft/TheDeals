@@ -8,11 +8,12 @@
                 </ion-buttons>
                 <ion-title class="ion-text-center">Создать дело</ion-title>
                 <ion-buttons slot="end">
-                    <ion-button @click="$emit('createDeal', dealData)">Готово</ion-button>
+                    <!-- <ion-button @click="$emit('createDeal', dealData)">Создать</ion-button> -->
                 </ion-buttons>
             </ion-toolbar>
         </ion-header>
         <ion-content forceOverscroll="false">
+            <!-- {{availableBalance}} -->
             <!-- ============================ Статус дела ========================================= -->
             <!-- Значение статуса дела по умолчанию: Бронь даты, deal-in-booking -->
             <ion-item-group class="ion-text-center ion-padding-horizontal ion-margin-top">
@@ -28,6 +29,7 @@
                     <h4>Тип дела</h4>
                 </ion-text>
                 <!-- Выбор типа дела -->
+                <!-- {{ dealData.executionDate }} -->
                 <ion-chip :color="setColorByDealType(dealData.dealType)" class="ion-no-margin">
                     <ion-icon class="ion-no-margin" v-if="dealData.dealType !== ''" :icon="setIconByDealType(dealData.dealType)"></ion-icon>
                     <ion-label>
@@ -107,7 +109,7 @@
                 <ion-grid class="ion-no-padding">
                     <ion-row class="ion-nowrap horizontal-scroll">
                         <!-- Карточки предметов заказа -->
-                        <ion-card @click.stop="openCurrentDealSubject(index)" class="ion-padding ion-text-center card-center relative" v-for="(item, index) in dealData.dealsList" :key="item.id">
+                        <ion-card @click.stop="openCurrentDealSubject(index, item)" class="ion-padding ion-text-center card-center relative" v-for="(item, index) in dealData.dealsList" :key="item.id">
                             <!-- Кнопка удалить конкретный предмет дела -->
                             <ion-icon @click.stop="openDeleteSubjectModal(item.id)" class="icon_size icon_del absolute" :icon="closeCircleOutline"></ion-icon>
                             <!-- Item -->
@@ -154,6 +156,8 @@
                             @closeModal="isViewDealSubjectOpened = false"
                             :subjectData="currentDealSubject"
                             :currentDealType="dealData.dealType"
+                            :currentSubjectPrice="currentPriceSubject"
+                            :personGram="personPortionGram"
                             @getSubjectPrice="setSubjectPrice"
                             @getGramPerPerson="setGramPerPerson"
                             @getSumAttributesPriceValue="setSumAttributesPriceValue"
@@ -257,7 +261,9 @@
                             </ion-chip>
                         </ion-row>
                 </ion-grid>
+
                 <!-- Стоимость доставки -->
+
                 <!-- Вариант с доставкой -->
                 <ion-grid v-if="dealData.shipping.typeOfShipping === 'shipping-delivery'" class="ion-no-padding">
                     <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
@@ -288,7 +294,7 @@
             </ion-item-group>
             
             <!-- ============================ ИТОГ ==================================================== -->
-            <ion-item-group v-if="dealData.dealType !== ''" class="ion-text-left ion-padding-horizontal">
+            <ion-item-group class="ion-text-left ion-padding-horizontal">
                 <!-- Заголовок -->
                 <ion-text>
                     <h4>Итого</h4>
@@ -434,14 +440,17 @@
                     </ion-row>
                 </ion-grid>
 
-                <!-- Кнопка внести средства -->
-                <ion-button  v-if="debt > 0" color="dark" @click="openDealPaidMenu" expand="block" class="ion-margin-top">
-                    Внести предоплату
-                </ion-button>
-                <!-- Кнопка дубляж СОЗДАТЬ ДЕЛО -->
-                <ion-button :color="setAddButtonColor()" expand="block" class="ion-margin-top" @click="$emit('createDeal', dealData)">
-                    Создать дело
-                </ion-button>
+                <!-- КНОПКИ СОЗДАТЬ && ОПЛАТИТЬ -->
+                <div class="ion-padding border-top" style="position: fixed; bottom: 0; left: 0; width: 100%; background-color: #fff; z-index: 999999">
+                    <!-- Кнопка внести средства -->
+                    <ion-button  v-if="debt > 0" color="dark" @click="openDealPaidMenu" expand="block" class="ion-margin-top">
+                        Внести предоплату
+                    </ion-button>
+                    <!-- Кнопка дубляж СОЗДАТЬ ДЕЛО -->
+                    <ion-button :color="setAddButtonColor()" expand="block" class="ion-margin-top" @click="$emit('createDeal', dealData)">
+                        Создать дело
+                    </ion-button>
+                </div>
 
                 <!--  -->
                 <DealPaidMenu
@@ -452,6 +461,7 @@
                     :debt="refreshDebtValue()"
                     :amount="dealPaidAmountValue()"
                     @getAmountValue="setAmountValue"
+                    :balance="availableBalance"
                 />
             </ion-item-group>
 
@@ -492,7 +502,8 @@
         emits: ['date-updated', 'closeModal', 'createDeal', 'updateDate', 'addSubject', 'deleteSubject'],
         props: {
             dealData: Object,
-            myContacts: Array
+            myContacts: Array,
+            walletBalance: Number
         },
         components: {
             IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonInput, ModalCalendar, IonSearchbar, IonItem, Select, IonChip, IonIcon, IonCard, CreateDealSubject, ViewDealSubject, IonActionSheet, IonThumbnail, IonImg, IonLabel, IonTextarea, IonList, DealPaidMenu
@@ -514,6 +525,20 @@
                 dealContactID.value = contact.id
                 searchContactMenu.value = false
             }
+            // Временно обзавем данные
+            const myDeals = ref([]);
+            //
+            const availableBalance = ref(0);
+            //
+            // onMounted(async () => {
+            //     if(dealData.value.dealType === 'buy') {
+            //         await store.methods.getMyDealsFromBD();
+            //         myDeals.value = store.state.myDealsArray;
+            //         // запускаем функцию расчета баланса кошелька из store
+            //         store.methods.calculateBalance(myDeals.value)
+            //         availableBalance.value = store.state.availableBalance
+            //     } 
+            // })
             // следим за изменениями в ID и передаем наверх
             watch(dealContactID, (currentValue) => {
                 emit('date-updated', {currentValue})
@@ -688,11 +713,17 @@
 
             // =================================== Управление current deal subject ===============================
             const currentDealSubject = ref();
+            const currentPriceSubject = ref()
+            const personPortionGram = ref()
             // открываем view current deal item
             const isViewDealSubjectOpened = ref(false);
-            const openCurrentDealSubject = (index) => {
+            const openCurrentDealSubject = (index, item) => {
                 isViewDealSubjectOpened.value = true;
+                //
                 currentDealSubject.value = dealData.value.dealsList[index];
+                currentPriceSubject.value = item.price
+                personPortionGram.value = item.gramPerPerson
+                //
                 setCountQtyButtonColor(currentDealSubject.value.productQuantity)
                 setCountPersonQtyButtonColor(currentDealSubject.value.personQuantity)
             }
@@ -715,6 +746,7 @@
                 myContactsArray.value = props.myContacts;
                 dealData.value = props.dealData;
                 currentDealType.value = props.dealData.dealType;
+                availableBalance.value = props.walletBalance;
             });
             //
             currentDealType.value = dealData.value.dealType
@@ -1206,7 +1238,7 @@
             }
 
             return {
-                currency, dealContact, dealContactID , searchContactMenu, choose, isCalendarOpened, closeModalCalendar, updateExecutionDate, datepicker, myContactsArray, searchDealContact, searchedContacts, dealTypes, addCircleOutline, closeCircleOutline, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, openDeleteSubjectModal, subjectToDelete, deleteDealSubjectButtons, addNewSubject, deleteSubject, dealData, currentDealSubject, isViewDealSubjectOpened, openCurrentDealSubject, checkRentAttr, setColorByDealType, setIconByDealType, currentDealType, isAttributesMenuOpened, setNewSubjectPrice, calcNewSubjectTotalPrice, sumAttributesPriceValue, setSumAttributesPriceValue, setSubjectPrice, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, calcSubjectTotalPrice, setNewSubjectQty, setPersonQty, setNewPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, setChipColor, shippingTypeList, dealShippingType, shippingPrice, shippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, calcTotalDealPrice, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, translateSelectedProduct, culcSubjectWeight, culcBuySubjectWeight, culcDealDebt, setAmountValue, debt, refreshDebtValue, dealPaidAmountValue, setAddButtonColor
+                currency, dealContact, dealContactID , searchContactMenu, choose, isCalendarOpened, closeModalCalendar, updateExecutionDate, datepicker, myContactsArray, searchDealContact, searchedContacts, dealTypes, addCircleOutline, closeCircleOutline, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, openDeleteSubjectModal, subjectToDelete, deleteDealSubjectButtons, addNewSubject, deleteSubject, dealData, currentDealSubject, isViewDealSubjectOpened, openCurrentDealSubject, checkRentAttr, setColorByDealType, setIconByDealType, currentDealType, isAttributesMenuOpened, setNewSubjectPrice, calcNewSubjectTotalPrice, sumAttributesPriceValue, setSumAttributesPriceValue, setSubjectPrice, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, calcSubjectTotalPrice, setNewSubjectQty, setPersonQty, setNewPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, setChipColor, shippingTypeList, dealShippingType, shippingPrice, shippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, calcTotalDealPrice, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, translateSelectedProduct, culcSubjectWeight, culcBuySubjectWeight, culcDealDebt, setAmountValue, debt, refreshDebtValue, dealPaidAmountValue, setAddButtonColor, currentPriceSubject, personPortionGram, availableBalance, myDeals
             }
         }
     })

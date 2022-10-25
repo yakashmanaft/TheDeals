@@ -10,7 +10,7 @@
                 </ion-buttons>
                 <ion-title class="ion-text-center">Новый предмет</ion-title>
                 <ion-buttons slot="end">
-                    <ion-button @click="$emit('createSubject', subjectData, isAttributesMenuOpened)">Готово</ion-button>
+                    <!-- <ion-button @click="$emit('createSubject', subjectData, isAttributesMenuOpened)">Готово</ion-button> -->
                 </ion-buttons>
             </ion-toolbar>
         </ion-header>
@@ -498,7 +498,7 @@
             <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
                 <div style="display: flex; flex-direction: column">
                     <ion-text color="medium">
-                        Итого по предмету
+                        Итого по предмету:
                     </ion-text>
                     <div style="font-size: 0.8rem" v-if="currentDealType === 'sale' && (subjectData.additionalAttributes.length !== 0 || subjectData.subjectDiscount > 0)" >
                         <ion-text>С учетом:</ion-text>

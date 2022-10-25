@@ -30,8 +30,8 @@
             :isOpen="isCreateNewSubjectOpened"
             @closeModal="closeCreateSubjectModal"
             :subjectData="currentSubject"
-            @createSubject="addNewSubject"
             :currentDealType="currentDeal.dealType"
+            @createSubject="addNewSubject"
             @getSubjectPrice="setNewSubjectPrice"
             @getGramPerPerson="setNewGramPerPerson"
             @getSubjectQty="setNewSubjectQty"
@@ -480,16 +480,26 @@
                             <ion-text>{{ (culcDealDebt(currentDeal.totalDealPrice, currentDeal.dealPaid)).toFixed(2) }} {{ currency }}</ion-text>
                         </ion-row>
                     </ion-grid>
-                    
-                    <!-- Кнопка внести средства -->
-                    <ion-button v-if="debt > 0" @click="openDealPaidMenu" expand="block" class="ion-margin-top">
-                        <span v-if="currentDeal.dealType === 'buy'">Внести оплату</span>  
-                        <span v-else>Получить оплату</span>    
-                    </ion-button>
-                    <!-- Кнопка Завершить дело (если debt === 0) -->
-                    <ion-button v-if="debt === 0 && currentDeal.dealStatus !== 'deal-complete'" expand="block" @click="finishDeal" class="ion-margin-top">
-                        Завершить дело
-                    </ion-button>
+                    <!-- КНОПКИ ЗАВЕРШЕНИЯ ДЕЛА -->
+                    <div class="ion-padding border-top" style="position: fixed; bottom: 0; left: 0; width: 100%; background-color: #fff; z-index: 999999">
+                        <!--  -->
+                        <ion-grid v-if="debt > 0">
+                            <ion-row class="ion-justify-content-between ion-align-items-center">
+                                <ion-text color="medium">Остаток к оплате:</ion-text>
+                                <ion-text style="font-size: 32px; color: black; font-weight: bold">{{(culcDealDebt(currentDeal.totalDealPrice, currentDeal.dealPaid)).toFixed(2)}}</ion-text>
+                            </ion-row>
+                        </ion-grid>
+                        <!-- Кнопка внести средства -->
+                        <ion-button v-if="debt > 0" @click="openDealPaidMenu" expand="block" class="ion-margin-top">
+                            <span v-if="currentDeal.dealType === 'buy'">Внести оплату</span>  
+                            <span v-else>Получить оплату</span>    
+                        </ion-button>
+                        <!-- Кнопка Завершить дело (если debt === 0) -->
+                        <ion-button v-if="debt === 0 && currentDeal.dealStatus !== 'deal-complete'" expand="block" @click="finishDeal" class="ion-margin-top">
+                            Завершить дело
+                        </ion-button>
+
+                    </div>
                     <!-- Выполнено -->
                     <div v-if="debt === 0 && currentDeal.dealStatus === 'deal-complete'" class="deal-complete_logo">
                         <ion-icon class="icon-size" :icon="checkmarkDone" size="large" color="success"></ion-icon>
@@ -742,7 +752,7 @@
                     if(error) throw error;
                     // Дело успешно обновлено
                 } catch (error) {
-                    alert(`Error: ${error.message}`)
+                    // alert(`Error: ${error.message}`)
                 }
                 // edit.value = !edit.value;
                 spinner.value = false;
@@ -757,8 +767,9 @@
                 try {
                     const { error } = await supabase.from('deals').delete().eq('id',currentId);
                     if(error) throw error;
-                    router.push({ name: 'Deals' })
-                    alert('Дело удалено')
+                    // router.push({ name: 'Deals' })
+                    router.go(-1)
+                    alert('Vuew Deal: Дело удалено')
                 } catch (error) {
                     // Удалить если не понадобится
                     // alert(`Error: ${error.message}`)
@@ -1518,6 +1529,7 @@
                 if(isReturnData.length === 0) {
                     // Значит массив атрибутов пустой
                     // При создании он всеравно есть, но изначально пустой
+                    alert('ViewDeal: статус дела изменен на ЗАВЕРШЕН')
                  } else if (isReturnData.length !== 0) {
                     // Если массив содержит невозвращенные атрибуты какого-либо предмета дела
                     if(isReturnData.includes(false)) {

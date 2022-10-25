@@ -12,7 +12,7 @@
         <Header :title="pageTitle"/>
 
         <!-- Кнопка перехода к созданию нового дела -->
-        <create-button @click="setOpen"/>
+        <CreateButton @click="setOpen"/>
 
         <!-- popup создания нового дела -->
         <CreateNewDeal

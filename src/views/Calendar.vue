@@ -57,6 +57,7 @@
                 :myContacts="myContacts"
                 @addSubject="addSubject"
                 @deleteSubject="deleteSubject"
+                :walletBalance="availableBalance"
             />
             <!-- Всплывашка об удалении выбранной даты из массива дат "ДЕнь без дел" -->
             <ion-action-sheet
@@ -162,6 +163,8 @@
             const weekendDays = ref([]);
             // Переменная для наблюдателя по смене месяцев
             const observer = ref()
+            //
+            const availableBalance = ref(0)
             // 
             onMounted(async () => {
                 spinner.value = true
@@ -175,6 +178,9 @@
                 //
                 await store.methods.getMyDealsFromBD()
                 myDeals.value = store.state.myDealsArray
+                // запускаем функцию расчета баланса кошелька из store
+                store.methods.calculateBalance(myDeals.value)
+                availableBalance.value = store.state.availableBalance
                 //
                 if(dataLoaded.value = true) {
                     spinner.value = false
@@ -293,7 +299,8 @@
             // При закрытии или открытии modal очищаем шаблон дела
             const setOpen = () => {
                 isViewDealModalOpened.value = !isViewDealModalOpened.value;
-                choosenDate.value = null
+                isViewChoosenDateOpened.value = true
+                // choosenDate.value = null
                 dealData.value = {
                     uid: uid(),
                     email: userEmail.value,
@@ -346,12 +353,16 @@
                         // обновляем массив в store
                         await store.methods.getMyDealsFromBD();
                         myDeals.value = store.state.myDealsArray
-                        // ищем созданное новое дело в массиве всех дел в store (по uid)
-                        const newDeal = myDeals.value.find(el => el.uid === dealData.value.uid)
                         // закрываем modal
                         isViewDealModalOpened.value = false;
-                        // переходим на страницу созданного нового контакта
-                        router.push({name: 'View-Deal', params: { dealId: newDeal.id, deal: JSON.stringify(newDeal)}})
+                        // на свякий - тормозим спинер
+                        spinner.value = false;
+                        // Оставляем модалку выбранного дня открытой
+                        isViewChoosenDateOpened.value = true
+                        // если выбранная дата еще есть, а она есть - обновляем контент к показу
+                        if(choosenDate.value) {
+                            dealsByChoosenDate.value = myDeals.value.filter(deal => formattedDate(deal.executionDate) === formattedDate(choosenDate.value))
+                        }
                     } catch (error) {
                         alert(`Error: ${error.message}`)
                     }
@@ -533,7 +544,7 @@
             }
 
             return {
-                menu, user, router, pageTitle, choosenDate, spinner, dataLoaded, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle, observer
+                menu, user, router, pageTitle, choosenDate, spinner, dataLoaded, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle, observer, availableBalance
             }
         }
     })
