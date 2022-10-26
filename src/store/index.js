@@ -289,7 +289,7 @@ const state = reactive({
     {
       value: 'sugar-powder',
       name: 'Сахарная пудра',
-      costEstimation: 'perKilogram'
+      costEstimation: 'per100gram'
     },
     {
       value: 'nuts',

@@ -77,7 +77,8 @@
             currentDeal: Object,
             debt: Number,
             amount: Number,
-            balance: Number
+            balance: Number,
+            isDealPaidMenuOpenedValue: Boolean
         },
         components: {
             IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItem, IonInput, IonLabel, IonGrid, IonRow, IonText
@@ -94,6 +95,7 @@
             //
             const walletBalance = ref()
             //
+            const isDealPaidMenuOpened = ref()
             
             // текущий долг по делу
             // проверяем какое значение вписывает пользователь
@@ -105,6 +107,21 @@
                     amountValue.value = ''
                 }
             })
+            //
+            const myDeals = ref([])
+            //
+            watch(isDealPaidMenuOpened, () => {
+                // console.log(isDealPaidMenuOpened.value)
+                refreshWalletBalance()
+            })
+            //
+            const refreshWalletBalance = async () => {
+                await store.methods.getMyDealsFromBD();
+                myDeals.value = store.state.myDealsArray;
+                // запускаем функцию расчета баланса кошелька из store
+                store.methods.calculateBalance(myDeals.value)
+                walletBalance.value = store.state.availableBalance
+            }
             //
             const setAmountValue = () => {
                 // console.log('clicked')
@@ -141,10 +158,11 @@
                 // amount.value = props.amount
                 amountValue.value = props.amount
                 walletBalance.value = props.balance
+                isDealPaidMenuOpened.value = props.isDealPaidMenuOpenedValue
             })
 
             return {
-                currentDeal, amountValue, currency, setAmountValue, getAmountValueFunc, setInitialBreakpoint, walletBalance
+                currentDeal, amountValue, currency, setAmountValue, getAmountValueFunc, setInitialBreakpoint, walletBalance, myDeals, refreshWalletBalance
             }
         } 
     })

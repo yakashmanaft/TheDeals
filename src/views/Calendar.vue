@@ -363,6 +363,23 @@
                         if(choosenDate.value) {
                             dealsByChoosenDate.value = myDeals.value.filter(deal => formattedDate(deal.executionDate) === formattedDate(choosenDate.value))
                         }
+                        //
+                        dealData.value = {
+                            uid: uid(),
+                            email: userEmail.value,
+                            dealType: '',
+                            dealStatus:"deal-in-booking",
+                            contactID: '000',
+                            dealsList: [],
+                            shipping: {
+                                typeOfShipping: '',
+                                shippingPrice: 0
+                            },
+                            totalDealPrice: 0,
+                            executionDate: '',
+                            dealPaid: 0,
+                            cancelledReason: ''
+                        }
                     } catch (error) {
                         alert(`Error: ${error.message}`)
                     }

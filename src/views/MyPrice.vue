@@ -168,7 +168,7 @@
         
                 </div>
             </div>
-
+            <br>
             <!-- Всплывашка подтверждение удаления продукта из прайса листа пользователя -->
             <ion-action-sheet
                 :is-open="deleteProductAction"
@@ -320,8 +320,10 @@
                 console.log(item.price)
             }
             //
-            const closeProductInfo = () => {
+            const closeProductInfo = (productData) => {
                 isViewCurrentProductOpened.value = false
+                // console.log(productData)
+                updateUserPriceListDB()
             }
 
             // ======================== Удаление конкретного продукта из прайса ===========================================

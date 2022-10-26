@@ -3,7 +3,7 @@
         <ion-header translucent="true">
             <ion-toolbar>
                 <ion-buttons slot="start">
-                    <ion-button @click="$emit('closeModal')">Закрыть</ion-button>
+                    <ion-button @click="$emit('closeModal', productData)">Закрыть</ion-button>
                 </ion-buttons>
                 <ion-title class="ion-text-center">Просмотр</ion-title>
             </ion-toolbar>
@@ -18,14 +18,19 @@
                             <ion-icon :icon="setIconByBlockToShow(blockToShow)"></ion-icon>
                             <ion-label>{{translateValue(blockToShow, priceChipList)}}</ion-label>
                         </ion-chip>
+                    </ion-row>
+
+                    <!-- Интерфейс статуса возврата арендуемых атрибутов -->
+                    <ion-row v-if="blockToShow === 'attributes' && productData.rentType === 'rent' && mode === 'sale'" class="ion-margin-top">
                         <!--  -->
-                        <ion-button v-if="blockToShow === 'attributes' && productData.rentType === 'rent' && mode === 'sale'" color="primary" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                        <Select
-                            :data="rentTypeInfo" 
-                            :placeholder="translateValue(productData.isReturned, rentTypeInfo)"
-                            @date-updated="(selected) => showIsReturned = selected.currentValue"
-                        />
-                        </ion-button>
+                        <ion-chip  class="ion-no-margin" :color="setColorByIsReturned(productData.isReturned)">
+                            <ion-icon :icon="setIconByIsReturned(productData.isReturned)"></ion-icon>
+                            <Select
+                                :data="rentTypeInfo" 
+                                :placeholder="translateValue(productData.isReturned, rentTypeInfo)"
+                                @date-updated="(selected) => showIsReturned = selected.currentValue"
+                            />
+                        </ion-chip>
                     </ion-row>
                 </ion-grid>
             </ion-item-group>
@@ -142,7 +147,9 @@
     //
     import store from '../../store/index';
     //
-    import { setIconByBlockToShow } from '../../helpers/setIconBy';
+    import { setIconByBlockToShow } from '@/helpers/setIconBy';
+    import { setIconByIsReturned } from '@/helpers/setIconBy';
+    import { setColorByIsReturned } from '@/helpers/setColorBy';
     import { translateValue } from '@/helpers/translateValue';
     //
     export default defineComponent({
@@ -152,7 +159,8 @@
             productData: Object,
             blockToShow: String,
             mode: String,
-            currentProductPrice: Number
+            currentProductPrice: Number,
+            // currentAttributePrice: Number
         },
         components: {
             IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonThumbnail, IonImg, Select, IonInput, IonChip, IonLabel, IonIcon
@@ -186,18 +194,13 @@
                     return 'Аренда'
                 }
             }
-            //
-            watchEffect(() => {
-                productData.value = props.productData;
-                productPrice.value = props.currentProductPrice
-            });
             // следим за изменениями значения costEstimation, price, rentType у текущего предмета в прайсе и emit наверх
             watch (costEstimation, (costEstimationType) => {
                 emit('getCostEstimation', costEstimationType)
             })
             //
             watch(productPrice, (price) => {
-                console.log(productPrice.value)
+                // console.log(productPrice.value)
                 emit('getProductPrice', +price)
             })
             //
@@ -246,9 +249,14 @@
             watch(showIsReturned, (value) => {
                 emit('getIsReturned', value)
             })
+            //
+            watchEffect(() => {
+                productData.value = props.productData;
+                productPrice.value = props.currentProductPrice
+            });
             
             return {
-                productData, priceEstimationType, priceAttributeType, priceCalcType, costEstimation, rentType, currency, productPrice, productQty, productTotalPrice, setIconByBlockToShow, translateValue, priceChipList, setNameByBlockToShow, changeQty, setProductQty, removeCircleOutline, addCircleOutline, countQtyButtonColor, rentTypeInfo, showIsReturned
+                productData, priceEstimationType, priceAttributeType, priceCalcType, costEstimation, rentType, currency, productPrice, productQty, productTotalPrice, setIconByBlockToShow, translateValue, priceChipList, setNameByBlockToShow, changeQty, setProductQty, removeCircleOutline, addCircleOutline, countQtyButtonColor, rentTypeInfo, showIsReturned, setIconByIsReturned, setColorByIsReturned
             }
         }
     })

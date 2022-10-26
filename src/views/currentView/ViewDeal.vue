@@ -369,8 +369,7 @@
                                 <!-- per100gram -->
                                 <ion-row v-if="item.costEstimation === 'per100gram'" class="ion-justify-content-between ion-align-items-center">
                                     <ion-text>{{ translateSelectedProduct(item.selectedProduct) }}</ion-text>
-                                    <!-- <ion-text>{{ (item.productQuantity).toFixed(2) }} * {{ (item.price).toFixed(2) }} = {{ item.subjectPrice }} </ion-text> -->
-                                    В разработке
+                                    <ion-text>{{ (item.productQuantity).toFixed(2) }} * {{ (item.price).toFixed(2) }} = {{ (item.subjectPrice).toFixed(2) }} </ion-text>
                                 </ion-row>
     
                                 <!-- Описание скидок и вывод название рецептов пока есть толкьо в режиме sale -->
@@ -421,8 +420,7 @@
                                 <!-- per100gram -->
                                 <ion-row v-if="item.costEstimation === 'per100gram'" class="ion-justify-content-between ion-align-items-center">
                                     <ion-text>{{ translateSelectedProduct(item.selectedProduct) }}</ion-text>
-                                    <!-- <ion-text>{{ (item.productQuantity).toFixed(2) }} * {{ (item.price).toFixed(2) }} = {{ item.subjectPrice }} </ion-text> -->
-                                    В разработке
+                                    <ion-text>{{ (item.productQuantity).toFixed(2) }} * {{ (item.price).toFixed(2) }} = {{ (item.subjectPrice).toFixed(2) }} </ion-text>
                                 </ion-row >
 
                                 <!-- Указатель типа расчета цены -->
@@ -483,24 +481,28 @@
                         </ion-row>
                     </ion-grid>
                     <!-- КНОПКИ ЗАВЕРШЕНИЯ ДЕЛА -->
-                    <div style="position: fixed; bottom: 0; left: 0; width: 100%; background-color: #fff; z-index: 999999">
+                    <!-- ЕСЛИ DEBT > 0 -->
+                    <div v-if="debt > 0" class="ion-padding border-top" style="position: fixed; bottom: 0; left: 0; width: 100%; background-color: #fff; z-index: 999999">
                         <!--  -->
-                        <ion-grid class="ion-padding border-top" v-if="debt > 0">
+                        <ion-grid>
                             <ion-row class="ion-justify-content-between ion-align-items-center">
                                 <ion-text color="medium">Остаток к оплате:</ion-text>
                                 <ion-text style="font-size: 32px; color: black; font-weight: bold">{{(culcDealDebt(currentDeal.totalDealPrice, currentDeal.dealPaid)).toFixed(2)}}</ion-text>
                             </ion-row>
                         </ion-grid>
                         <!-- Кнопка внести средства -->
-                        <ion-button v-if="debt > 0" @click="openDealPaidMenu" expand="block" class="ion-margin-top">
+                        <ion-button @click="openDealPaidMenu" expand="block" class="">
                             <span v-if="currentDeal.dealType === 'buy'">Внести оплату</span>  
                             <span v-else>Получить оплату</span>    
                         </ion-button>
+                    </div>
+                    <!-- ЕСЛИ DEBT === 0 -->
+                    <div v-if="debt === 0 && currentDeal.dealStatus !== 'deal-complete'" class="ion-padding border-top" style="position: fixed; bottom: 0; left: 0; width: 100%; background-color: #fff; z-index: 999999">
                         <!-- Кнопка Завершить дело (если debt === 0) -->
-                        <ion-button v-if="debt === 0 && currentDeal.dealStatus !== 'deal-complete'" expand="block" @click="finishDeal" class="ion-margin-top">
+                        <ion-button  expand="block" @click="finishDeal" class="ion-margin-top">
                             Завершить дело
                         </ion-button>
-
+                    
                     </div>
                     <!-- Выполнено -->
                     <div v-if="debt === 0 && currentDeal.dealStatus === 'deal-complete'" class="deal-complete_logo">
@@ -515,7 +517,8 @@
                         @closeModal="closeDealPaidMenu"
                         :currentDeal="currentDeal"
                         :debt="refreshDebtValue()"
-                        :amount="dealPaidAmountValue()"
+                        :amount="0"
+                        :isDealPaidMenuOpenedValue="isDealPaidMenuOpened"
                         @getAmountValue="setAmountValue"
                         :balance="availableBalance"
                     />
@@ -558,7 +561,7 @@
     import { addCircleOutline, closeCircleOutline, helpOutline, shapes, checkmarkDone } from 'ionicons/icons';
     //
     import { searchFilter } from '../../helpers/filterMyContacts'; 
-    import { setColorByDealType } from '@/helpers/setColorByDealType';
+    import { setColorByDealType } from '@/helpers/setColorBy';
     import { setIconByDealType } from '@/helpers/setIconBy';
     import { translateValue } from '@/helpers/translateValue';
     import { checkRentAttr } from '@/helpers/checkRentAttr';
@@ -984,7 +987,9 @@
                     alert('ViewDeal: Вы не выбрали предмет дела')
                 } else if(currentDeal.value.dealType === 'sale' && currentSubject.value.recipe === '') {
                     alert('ViewDeal: Вы не указали рецепт')
-                } else {
+                } else if (currentDeal.value.dealType === 'buy' && currentSubject.value.costEstimation === 'perKilogram' &&    currentSubject.value.gramPerPerson === 0) {
+                    alert('ViewDeal Вы не указали фактический вес')
+                }else {
                     currentDeal.value.dealsList.push(currentSubject.value); 
                     isCreateNewSubjectOpened.value = false;
                     update();
@@ -1072,7 +1077,7 @@
                         // calcSubjectTotalPrice()
                         // update();
                     } else if (currentDealSubject.value.costEstimation === 'per100gram') {
-                        console.log('В разработке')
+                        currentDealSubject.value.subjectPrice = +(currentDealSubject.value.price * currentDealSubject.value.productQuantity * ((100 - currentDealSubject.value.subjectDiscount) / 100)).toFixed(0)
                     }
                 } else if (currentDeal.value.dealType === 'buy') {
                     currentDealSubject.value.price = price;
@@ -1082,7 +1087,7 @@
                     } else if (currentDealSubject.value.costEstimation === 'perUnit') {
                         currentDealSubject.value.subjectPrice = +(currentDealSubject.value.price * currentDealSubject.value.productQuantity).toFixed(2)
                     } else if (currentDealSubject.value.costEstimation === 'per100gram') {
-                        console.log('В разработке')
+                        currentDealSubject.value.subjectPrice = +(currentDealSubject.value.price * currentDealSubject.value.productQuantity).toFixed(2)
                     }
                 }
                 calcSubjectTotalPrice()
@@ -1104,7 +1109,7 @@
                         // calcSubjectTotalPrice()
                         // update();
                     } else if (currentDealSubject.value.costEstimation === 'per100gram') {
-                        console.log('В разработке')
+                        currentDealSubject.value.subjectPrice = +(currentDealSubject.value.price * currentDealSubject.value.productQuantity * ((100 - currentDealSubject.value.subjectDiscount) / 100)).toFixed(0)
                     }
                 } else if (currentDeal.value.dealType === 'buy') {
                     currentDealSubject.value.gramPerPerson = gram;
@@ -1114,7 +1119,7 @@
                     } else if (currentDealSubject.value.costEstimation === 'perUnit') {
                         currentDealSubject.value.subjectPrice = +(currentDealSubject.value.price * currentDealSubject.value.productQuantity).toFixed(2)
                     } else if (currentDealSubject.value.costEstimation === 'per100gram') {
-                        console.log('В разработке')
+                        currentDealSubject.value.subjectPrice = +(currentDealSubject.value.price * currentDealSubject.value.productQuantity).toFixed(2)
                     }
                 }
                 calcSubjectTotalPrice()
@@ -1137,7 +1142,7 @@
                         // calcSubjectTotalPrice()
                         // update();
                     } else if (currentDealSubject.value.costEstimation === 'per100gram') {
-                        console.log('В разработке')
+                        currentDealSubject.value.subjectPrice = +(currentDealSubject.value.price * currentDealSubject.value.productQuantity * ((100 - currentDealSubject.value.subjectDiscount) / 100)).toFixed(0)
                     }
                 } else if (currentDeal.value.dealType === 'buy') {
                     currentDealSubject.value.productQuantity = qty;
@@ -1147,7 +1152,7 @@
                     } else if (currentDealSubject.value.costEstimation === 'perUnit') {
                         currentDealSubject.value.subjectPrice = +(currentDealSubject.value.price * currentDealSubject.value.productQuantity).toFixed(2)
                     } else if (currentDealSubject.value.costEstimation === 'per100gram') {
-                        console.log('В разработке')
+                        currentDealSubject.value.subjectPrice = +(currentDealSubject.value.price * currentDealSubject.value.productQuantity).toFixed(2)
                     }
                 }
                 setCountQtyButtonColor(qty)
@@ -1190,7 +1195,7 @@
                         // calcSubjectTotalPrice()
                         // update();
                     } else if (currentDealSubject.value.costEstimation === 'per100gram') {
-                        console.log('В разработке')
+                        currentDealSubject.value.subjectPrice = +(currentDealSubject.value.price * currentDealSubject.value.productQuantity * ((100 - currentDealSubject.value.subjectDiscount) / 100)).toFixed(0)
                     }
                 } else if (currentDeal.value.dealType === 'buy') {
                     // Если не понадобится - удалить
@@ -1231,7 +1236,7 @@
                         currentSubject.value.subjectPrice = +(currentSubject.value.price * currentSubject.value.productQuantity * ((100 - currentSubject.value.subjectDiscount) / 100)).toFixed(0)
                         // calcNewSubjectTotalPrice()   
                     } else if (currentSubject.value.costEstimation === 'per100gram') {
-                        console.log('В разработке')
+                        currentSubject.value.subjectPrice = +(currentSubject.value.price * currentSubject.value.productQuantity * ((100 - currentSubject.value.subjectDiscount) / 100)).toFixed(0)
                     }
                 } else if (currentDeal.value.dealType === 'buy') {
                     currentSubject.value.price = price;
@@ -1241,7 +1246,7 @@
                     } else if (currentSubject.value.costEstimation === 'perUnit') {
                         currentSubject.value.subjectPrice = +(currentSubject.value.price * currentSubject.value.productQuantity).toFixed(2)
                     } else if (currentSubject.value.costEstimation === 'per100gram') {
-                        console.log('В разработке')
+                        currentSubject.value.subjectPrice = +(currentSubject.value.price * currentSubject.value.productQuantity).toFixed(2)
                     }
                 }
                 calcNewSubjectTotalPrice()
@@ -1259,7 +1264,7 @@
                         currentSubject.value.subjectPrice = +(currentSubject.value.price * currentSubject.value.productQuantity * ((100 - currentSubject.value.subjectDiscount) / 100)).toFixed(0)
                         // calcNewSubjectTotalPrice()
                     } else if (currentSubject.value.costEstimation === 'per100gram') {
-                        console.log('В разработке')
+                        currentSubject.value.subjectPrice = +(currentSubject.value.price * currentSubject.value.productQuantity * ((100 - currentSubject.value.subjectDiscount) / 100)).toFixed(0)
                     }
                 } else if (currentDeal.value.dealType === 'buy') {
                     currentSubject.value.gramPerPerson = gram;
@@ -1269,7 +1274,7 @@
                     } else if (currentSubject.value.costEstimation === 'perUnit') {
                         currentSubject.value.subjectPrice = +(currentSubject.value.price * currentSubject.value.productQuantity).toFixed(0)
                     } else if (currentSubject.value.costEstimation === 'per100gram') {
-                        console.log('В разработке')
+                        currentSubject.value.subjectPrice = +(currentSubject.value.price * currentSubject.value.productQuantity).toFixed(0)
                     }
                 }
                 calcNewSubjectTotalPrice()
@@ -1287,7 +1292,7 @@
                         currentSubject.value.subjectPrice = +(currentSubject.value.price * currentSubject.value.productQuantity * ((100 - currentSubject.value.subjectDiscount) / 100)).toFixed(0)
                         // calcNewSubjectTotalPrice()
                     } else if (currentSubject.value.costEstimation === 'per100gram') {
-                        console.log('В разработке')
+                        currentSubject.value.subjectPrice = +(currentSubject.value.price * currentSubject.value.productQuantity * ((100 - currentSubject.value.subjectDiscount) / 100)).toFixed(0)
                     }
                 } else if (currentDeal.value.dealType === 'buy') {
                     currentSubject.value.productQuantity = qty;
@@ -1297,7 +1302,7 @@
                     } else if (currentSubject.value.costEstimation === 'perUnit') {
                         currentSubject.value.subjectPrice = +(currentSubject.value.price * currentSubject.value.productQuantity).toFixed(0)
                     } else if (currentSubject.value.costEstimation === 'per100gram') {
-                        console.log('В разработке')
+                        currentSubject.value.subjectPrice = +(currentSubject.value.price * currentSubject.value.productQuantity).toFixed(0)
                     }
                 }
                 calcNewSubjectTotalPrice()
@@ -1334,7 +1339,7 @@
                         currentSubject.value.subjectPrice = +(currentSubject.value.price * currentSubject.value.productQuantity * ((100 - currentSubject.value.subjectDiscount) / 100)).toFixed(0)
                         // calcNewSubjectTotalPrice()
                     } else if (currentSubject.value.costEstimation === 'per100gram') {
-                        console.log('В разработке')
+                        currentSubject.value.subjectPrice = +(currentSubject.value.price * currentSubject.value.productQuantity * ((100 - currentSubject.value.subjectDiscount) / 100)).toFixed(0)
                     }
                 } else if (currentDeal.value.dealType === 'buy') {
                     // Если не понадобится - удалить
@@ -1464,7 +1469,7 @@
             //
             const openDealPaidMenu = () => {
                 // culcDealDebt(currentDeal.value.totalDealPrice, currentDeal.value.dealPaid)
-                dealPaidAmountValue()
+                // dealPaidAmountValue()
                 isDealPaidMenuOpened.value = true
                 refreshDebtValue()
             }
@@ -1487,12 +1492,11 @@
                 } else if (currentDeal.value.dealPaid !== 0) {
                     currentDeal.value.dealPaid += +amount
                 }
-                // if(amount > availableBalance.value) {
-                //     alert('ViewDeal: недостаточно средств на балансе')
-                // } else {
-                //     culcDealDebt(currentDeal.value.totalDealPrice, currentDeal.value.dealPaid)
-                // }
                 culcDealDebt(currentDeal.value.totalDealPrice, currentDeal.value.dealPaid)
+                // запускаем функцию расчета баланса кошелька из store
+                // store.methods.calculateBalance(myDeals.value)
+                // availableBalance.value = store.state.availableBalance
+                //
                 if (debt.value < 0) {
                     // Удалить, если не пригодится
                     alert('Получается переплата... Верно?')

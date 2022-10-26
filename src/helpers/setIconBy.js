@@ -1,4 +1,4 @@
-import { bagHandleOutline, cubeOutline, constructOutline } from 'ionicons/icons';
+import { bagHandleOutline, cubeOutline, constructOutline, checkmark, sync } from 'ionicons/icons';
 
 export const setIconByDealType = (dealType) => {
     if(dealType === 'sale') {
@@ -15,3 +15,11 @@ export const setIconByBlockToShow = (blockToShow) => {
         return constructOutline;
     }
 };
+
+export const setIconByIsReturned = (attrisReturned) => {
+    if (attrisReturned === true) {
+        return checkmark;
+    } else if (attrisReturned === false) {
+        return sync;
+    }
+}; 
