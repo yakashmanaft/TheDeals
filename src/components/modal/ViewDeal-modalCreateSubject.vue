@@ -17,8 +17,8 @@
 
         <!--  -->
         <ion-content forceOverscroll="false" style="position: relative">
-            <!-- {{currentDealType}}
-            {{subjectData}} -->
+            {{currentDealType}}
+            {{subjectData}}
             <!-- Выбор предмета к делу -->
             <ion-item-group class="ion-padding-horizontal">
                 <!-- заголовок -->
@@ -961,12 +961,14 @@
                         return 'light'
                     }
                 } else if(currentDealType.value === 'buy') {
-                    if(subjectData.value.selectedProduct) {
+                    if (subjectData.value.costEstimation === 'perKilogram' && subjectData.value.gramPerPerson === 0){
+                        return 'light'
+                    } else if(subjectData.value.selectedProduct ) {
                         return 'warning'
                     } else {
                         return 'light'
                     }
-                }
+                } 
             }
             //
             const goToRecipesStore = () => {

@@ -4,7 +4,9 @@
         <Spinner v-if="spinner"/>
 
         <!-- page header -->
-        <ViewHeader />
+        <ViewHeader 
+            @openDeleteMenu="setOpen(true)"
+        />
 
         <!-- view deal subject -->
         <ViewDealSubject 
@@ -481,9 +483,9 @@
                         </ion-row>
                     </ion-grid>
                     <!-- КНОПКИ ЗАВЕРШЕНИЯ ДЕЛА -->
-                    <div class="ion-padding border-top" style="position: fixed; bottom: 0; left: 0; width: 100%; background-color: #fff; z-index: 999999">
+                    <div style="position: fixed; bottom: 0; left: 0; width: 100%; background-color: #fff; z-index: 999999">
                         <!--  -->
-                        <ion-grid v-if="debt > 0">
+                        <ion-grid class="ion-padding border-top" v-if="debt > 0">
                             <ion-row class="ion-justify-content-between ion-align-items-center">
                                 <ion-text color="medium">Остаток к оплате:</ion-text>
                                 <ion-text style="font-size: 32px; color: black; font-weight: bold">{{(culcDealDebt(currentDeal.totalDealPrice, currentDeal.dealPaid)).toFixed(2)}}</ion-text>
@@ -518,22 +520,28 @@
                         :balance="availableBalance"
                     />
                 </ion-item-group>
-                
-                <br>
-                {{currentDeal}}
+                <!-- {{currentDeal}} -->
                 <br>
 
-                <!-- ========================== Кнопка удалить дело =================================== -->
+                <!-- ========================== Удалить дело =================================== -->
                 <!-- Не показываем в режиме edit -->
-                <ion-button @click="setOpen(true)" fill="clear"  color="danger" style="opacity: 0.6" class="ion-margin-bottom ion-margin-horizontal">Удалить дело</ion-button>
+                <!-- <ion-button @click="setOpen(true)" fill="clear"  color="danger" style="opacity: 0.6" class="ion-margin-bottom ion-margin-horizontal">Удалить дело</ion-button> -->
                 <!-- Всплывашка подтверждение удаления дела-->
                 <ion-action-sheet
                     :is-open="isOpenRef"
-                    header="Точно удалить?"
+                    header="Вы хотите удалить дело?"
                     :buttons="deleteDealButtons"
                     @didDismiss="setOpen(false)"
                 >
                 </ion-action-sheet>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
             </div>
         </ion-content>
 

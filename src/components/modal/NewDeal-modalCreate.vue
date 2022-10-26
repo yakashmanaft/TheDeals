@@ -466,7 +466,13 @@
             </ion-item-group>
 
             <br>
-            {{dealData}}
+            <!-- {{dealData}} -->
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
             <br>
             <br>
             <br>
@@ -684,6 +690,8 @@
                     alert('NewDeal-modalCreate: Вы не выбрали предмет дела')
                 } else if(dealData.value.dealType === 'sale' && currentSubject.value.recipe === '') {
                     alert('NewDeal-modalCreate: Вы не указали рецепт')
+                } else if (dealData.value.dealType === 'buy' && currentSubject.value.costEstimation === 'perKilogram' && currentSubject.value.gramPerPerson === 0) {
+                    alert('NewDeal-modalCreate: Вы не указали фактический вес')
                 } else {
                     currentSubject.value = subjectData
                     emit('addSubject', currentSubject.value)
