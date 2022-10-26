@@ -14,7 +14,7 @@
             <!-- Если текущий роут View-DEal -->
             <ion-buttons v-if="route.name === 'View-Deal'" slot="end" @click="$emit('openDeleteMenu')">
                 <ion-button>
-                    <ion-icon :icon="trashBinOutline" color="danger"></ion-icon>
+                    <ion-icon :icon="trashOutline" color="danger"></ion-icon>
                 </ion-button>
             </ion-buttons>
         </ion-toolbar>
@@ -26,7 +26,7 @@
     import { useRoute } from 'vue-router';
     import store from '../../store/index';
     //
-    import { trashBinOutline } from 'ionicons/icons';
+    import { trashOutline } from 'ionicons/icons';
     //
     import { IonHeader, IonToolbar, IonButtons, IonButton, IonBackButton, IonIcon } from '@ionic/vue';
 
@@ -47,7 +47,7 @@
             const route = useRoute();
 
             return {
-                route, trashBinOutline
+                route, trashOutline
             }
         }
     })

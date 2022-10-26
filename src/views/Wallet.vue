@@ -55,7 +55,7 @@
                 <br>
                 Мне должны в {{ currency }} <br>
                 {{debtToMe.toFixed(2)}} 
-                <ion-card class="ion-padding">
+                <ion-card class="ion-padding" @click="goTo()">
                     <ion-row class="ion-justify-content-between ion-align-items-center">
                         <div class="ion-text-left">
                             <ion-text style="font-size: 1.2rem; font-weight: bold">Аналитика бизнеса</ion-text><br>
@@ -183,9 +183,13 @@
                 alert('Хотите оплатить? В разработке...')
             }
             console.log(store.state.availableBalance)
+            //
+            const goTo = () => {
+                alert('Wallet: в разработке...')
+            }
 
             return {
-                menu, user, router, pageTitle, myDeals, spinner, dataLoaded, currency, availableBalance, myDebt, debtToMe, statsChartOutline, putInWallet, makeAPay
+                menu, user, router, pageTitle, myDeals, spinner, dataLoaded, currency, availableBalance, myDebt, debtToMe, statsChartOutline, putInWallet, makeAPay, goTo
             }
         }
     })

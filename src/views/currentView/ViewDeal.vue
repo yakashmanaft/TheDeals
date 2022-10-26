@@ -93,6 +93,18 @@
                     </ion-grid>
                 </ion-item-group>
 
+                <!-- =================================== Важность дела ====================================== -->
+                <ion-item-group class="ion-text-left ion-padding-horizontal">
+                    <!-- Заголовок -->
+                    <ion-text>
+                        <h4>Важность дела</h4>
+                    </ion-text>
+                    <!--  -->
+                    <StarRaiting
+                        :value="1"
+                    />
+                </ion-item-group>
+
                 <!-- ============================== Контакт по делу ====================================== -->
                 <ion-item-group class="ion-text-left ion-padding-horizontal">
                     <!-- Заголовок -->
@@ -573,7 +585,8 @@
     import ModalCalendar from '../../components/modal/NewDeal-modalCalendar.vue';
     import ViewDealSubject from '../../components/modal/ViewDeal-modalViewSubject.vue';
     import CreateDealSubject from '../../components/modal/ViewDeal-modalCreateSubject.vue';
-    import DealPaidMenu from '../../components/DealPaidMenu.vue'
+    import DealPaidMenu from '../../components/DealPaidMenu.vue';
+    import StarRaiting from '../../components/StarRaiting.vue';
     //
     import { format, parseISO } from 'date-fns';
     import { ru } from 'date-fns/locale'
@@ -607,7 +620,8 @@
             IonInput,
             IonTextarea, 
             IonList,
-            DealPaidMenu
+            DealPaidMenu,
+            StarRaiting
         }, 
         setup() {
             // Currency
