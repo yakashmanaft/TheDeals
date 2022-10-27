@@ -104,6 +104,17 @@ const routes = [
     }
   },
   {
+    path: '/warehouse',
+    name: 'Warehouse',
+    component: () => import('../views/Warehouse.vue'),
+    meta: {
+      title: 'Warehouse',
+      auth: true,
+      translation: 'Мой склад',
+      type: 'View'
+    }
+  },
+  {
     path: '/login',
     name: 'Login',
     component: Login,

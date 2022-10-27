@@ -101,7 +101,8 @@
                     </ion-text>
                     <!--  -->
                     <StarRaiting
-                        :value="1"
+                        :value="dealImportance"
+                        @getRatingValue="setRatingValue"
                     />
                 </ion-item-group>
 
@@ -771,7 +772,8 @@
                         shipping: currentDeal.value.shipping,
                         dealPaid: currentDeal.value.dealPaid,
                         cancelledReason: currentDeal.value.cancelledReason,
-                        totalDealPrice: currentDeal.value.totalDealPrice
+                        totalDealPrice: currentDeal.value.totalDealPrice,
+                        dealImportance: dealImportance.value
 
                     }).eq('id', currentId);
                     if(error) throw error;
@@ -789,16 +791,26 @@
             
             // ================================== delete current deal function ===============================
             const deleteDeal = async () => {
-                try {
-                    const { error } = await supabase.from('deals').delete().eq('id',currentId);
-                    if(error) throw error;
-                    // router.push({ name: 'Deals' })
-                    router.go(-1)
-                    alert('Vuew Deal: Дело удалено')
-                } catch (error) {
-                    // Удалить если не понадобится
-                    // alert(`Error: ${error.message}`)
-                }
+                if(currentDeal.value.dealPaid > 0) {
+                    alert('ViewDeal: Мы не удаляем дела, по которым уже были транзакции')
+                } else if (currentDeal.value.dealPaid === 0) {
+                    if(currentDeal.value.dealStatus === 'deal-complete') {
+                        alert('ViewDeal: Мы не удаляем завершенные дела. Используем для статистики в вашем кошельке.')
+                    } else if (currentDeal.value.dealStatus === 'deal-cancelled') {
+                        alert('ViewDeal: Мы не удаляем отмененные дела. Используем для статистики в вашем кошельке.')
+                    } else {
+                        try {
+                            const { error } = await supabase.from('deals').delete().eq('id',currentId);
+                            if(error) throw error;
+                            // router.push({ name: 'Deals' })
+                            router.go(-1)
+                            alert('Vuew Deal: Дело удалено')
+                        } catch (error) {
+                            // Удалить если не понадобится
+                            // alert(`Error: ${error.message}`)
+                        }
+                    } 
+                } 
             }
             // меню подтверждения удаления current contact
             const isOpenRef = ref(false);
@@ -1588,9 +1600,19 @@
                     //Ничего не делаем
                 }
             }
+            // ================================ ВАЖНОСТЬ ДЕЛА =================================
+            //const currentDeal = ref(JSON.parse(info.deal))
+            const dealImportance = ref(currentDeal.value.dealImportance)
+            //
+            const setRatingValue = (ratingValue) => {
+                // console.log(ratingValue)
+                dealImportance.value = ratingValue
+                update()
+            }
+
 
             return {
-                currency, spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, setPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setNewPersonQty, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, shippingTypeList, dealShippingType, shippingPrice, setProductNotePlaceholder, shippingAddress, editShippingAddress, toggleEditShippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, translateShippingType, translateSelectedProduct, culcSubjectWeight, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, culcBuySubjectWeight, debt, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, nextDealStatus, prevDealStatus, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, refreshDebtValue, dealPaidAmountValue, finishDeal, setMarkerAttrColor, shapes, checkmarkDone, availableBalance, currentPriceSubject, personPortionGram
+                currency, spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, setPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setNewPersonQty, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, shippingTypeList, dealShippingType, shippingPrice, setProductNotePlaceholder, shippingAddress, editShippingAddress, toggleEditShippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, translateShippingType, translateSelectedProduct, culcSubjectWeight, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, culcBuySubjectWeight, debt, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, nextDealStatus, prevDealStatus, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, refreshDebtValue, dealPaidAmountValue, finishDeal, setMarkerAttrColor, shapes, checkmarkDone, availableBalance, currentPriceSubject, personPortionGram, dealImportance, setRatingValue
             }
         }
     })

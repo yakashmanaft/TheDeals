@@ -30,9 +30,13 @@
         <ion-grid class="ion-no-padding">
           <!--  -->
           <ion-row class="ion-justify-content-center">
+            <!-- https://habr.com/ru/company/timeweb/blog/648761/ -->
+            <!-- https://habr.com/ru/company/timeweb/blog/660183/ -->
             <ion-avatar class="account-avatar" @click="changeAvatar()">
               <img src="img/common/user-avatar.png">
             </ion-avatar>
+              <!-- <br>
+              <input type="file" ref="file" @change="handleFileUpload()"> -->
           </ion-row>
           <!--  -->
           <ion-row class="ion-justify-content-center ion-margin-top">
@@ -47,6 +51,24 @@
             <ion-text>Зарегистрирован: {{formattedDate(userSettings.created_at)}}</ion-text>
           </ion-row>
         </ion-grid>
+
+        <!-- Инфа по подписке -->
+        <ion-card class="ion-no-padding ion-text-left">
+          <ion-card-header>
+              <ion-grid class="ion-no-padding">
+                <ion-row class="ion-align-items-center ion-justify-content-between">
+                  <ion-card-title>Подписка</ion-card-title>
+                  <ion-chip class="ion-no-margin" @click="renewSubscription()" color="primary">Тарифы</ion-chip>
+                </ion-row>
+              </ion-grid>
+            </ion-card-header>
+            <!--  -->
+            <ion-card-content>
+              Пробный период<br>
+              Действует до 27.10.2022
+              <!-- Подписка истекла -->
+            </ion-card-content>
+        </ion-card>
 
         <!-- Общая инфа по кошельку -->
         <router-link :to="{ name: 'Wallet' }">
@@ -281,16 +303,16 @@
       // открываем модкалку с QR-визиткой
       const openBusinessCard = () => {
         if (isQrAvailable.value) {
-          alert('Вы пытаетесь открыть QR-визитку. Не получится. Функционал в разработке...')
+          alert('Profile: Вы пытаетесь открыть QR-визитку. Не получится. Функционал в разработке...')
         }
       }
       //
       const addBusinessCard = () => {
-        alert('Вы пытаетесь создать QR-визитку. Функционал в разработке...')
+        alert('Profile: Вы пытаетесь создать QR-визитку. Функционал в разработке...')
       }
       //
       const editBusinessCard = () => {
-        alert('Вы пытаетесь редактировать QR-визитку. Функционал в разработке...')
+        alert('Profile: Вы пытаетесь редактировать QR-визитку. Функционал в разработке...')
       }
       //
       const availableBalance = ref(0);
@@ -298,7 +320,7 @@
       const debtToMe = ref(0);
       //
       const calculateBalance = () => {
-        console.log('calculate...')
+        // console.log('calculate...')
         // Массив сумм, которые мне уже вносили по делам продаж
         let payMeArray = []
         let payMe = 0
@@ -334,16 +356,26 @@
       }
       // Функционал по смене автарки
       const changeAvatar = () => {
-        alert('Вы хотите сменить аватарку? Функционал в разработке...')
+        alert('Profile: Вы хотите сменить аватарку? Функционал в разработке...')
       }
       //
       const formattedDate = (day) => {
         const formattedString = format(parseISO(day), 'd MMMM Y', { locale: ru });
         return formattedString;
       }
+      // функционал по продлению подписки
+      const renewSubscription = () => {
+        alert('Profile: хотите продлить подписку? В разработке...')
+      }
+      // ============================== Работа с аватаркой ============================
+      const file = ref(null)
+      const handleFileUpload = async () => {
+        console.log("selected file",file.value.files)
+      }
+
 
       return {
-        spinner, user, router, dataLoaded, userSettings, userEmail, isQrAvailable, removeCircleOutline, addCircleOutline, changeDaySaturationQty, daySaturation, setCountQtyButtonDecreaseColor, setCountQtyButtonAddColor, translateDaySaturationName, openBusinessCard, addBusinessCard, editBusinessCard, myDeals, availableBalance, myDebt, debtToMe, currency, changeAvatar, formattedDate, pageTitle
+        spinner, user, router, dataLoaded, userSettings, userEmail, isQrAvailable, removeCircleOutline, addCircleOutline, changeDaySaturationQty, daySaturation, setCountQtyButtonDecreaseColor, setCountQtyButtonAddColor, translateDaySaturationName, openBusinessCard, addBusinessCard, editBusinessCard, myDeals, availableBalance, myDebt, debtToMe, currency, changeAvatar, formattedDate, pageTitle, renewSubscription, file, handleFileUpload
       }
     }
   })

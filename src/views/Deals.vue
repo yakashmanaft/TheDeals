@@ -407,7 +407,8 @@
                 totalDealPrice: 0,
                 executionDate: '',
                 dealPaid: 0,
-                cancelledReason: ''
+                cancelledReason: '',
+                dealImportance: 1
             })
             // При закрытии или открытии modal очищаем шаблон дела
             const setOpen = () => {
@@ -427,10 +428,11 @@
                     totalDealPrice: 0,
                     executionDate: '',
                     dealPaid: 0,
-                    cancelledReason: ''
+                    cancelledReason: '',
+                    dealImportance: 1
                 }
             }
-            // Создаем новую сделку
+            // Создаем новую дело
             const createNew = async (newDealData) => {
                 // принимаем инфу по делу из modal
                 dealData.value = newDealData
@@ -720,7 +722,8 @@
                         shipping: dealWhereChangeStatus.value.shipping,
                         dealPaid: dealWhereChangeStatus.value.dealPaid,
                         cancelledReason: dealWhereChangeStatus.value.cancelledReason,
-                        totalDealPrice: dealWhereChangeStatus.value.totalDealPrice
+                        totalDealPrice: dealWhereChangeStatus.value.totalDealPrice,
+                        dealImportance: dealWhereChangeStatus.value.dealImportance
 
                     }).eq('id', dealWhereChangeStatus.value.id);
                     if(error) throw error;

@@ -30,12 +30,26 @@
                 </ion-text>
                 <!-- Выбор типа дела -->
                 <!-- {{ dealData.executionDate }} -->
-                <ion-chip :color="setColorByDealType(dealData.dealType)" class="ion-no-margin">
+                <ion-chip :color="setColorByDealType(dealData.dealType)" class="ion-no-margin ion-margin-bottom">
                     <ion-icon class="ion-no-margin" v-if="dealData.dealType !== ''" :icon="setIconByDealType(dealData.dealType)"></ion-icon>
                     <ion-label>
                         <Select :data="dealTypes" :placeholder="`Укажите тип дела`" @date-updated="(selected) => currentDealType = selected.currentValue"/>
                     </ion-label>
                 </ion-chip>
+            </ion-item-group>
+
+            <!-- ============================ Важность дела ================================== -->
+            <ion-item-group class="ion-text-left ion-padding-horizontal">
+                <!-- Заголовок -->
+                <ion-text>
+                    <h4>Важность дела</h4>
+                </ion-text>
+                <!--  -->
+                <!-- :value="dealImportance" -->
+                <StarRaiting
+                    :value="dealImportance"
+                    @getRatingValue="setRatingValue"
+                />
             </ion-item-group>
 
             <!-- ============================ Контакт по делу ===================================== -->
@@ -464,7 +478,7 @@
             </ion-item-group>
 
             <br>
-            <!-- {{dealData}} -->
+            {{dealData}}
             <br>
             <br>
             <br>
@@ -493,6 +507,7 @@
     import CreateDealSubject from '../modal/ViewDeal-modalCreateSubject.vue';
     import ViewDealSubject from '../modal/ViewDeal-modalViewSubject.vue';
     import DealPaidMenu from '../DealPaidMenu.vue';
+    import StarRaiting from '../StarRaiting.vue'
     //
     import { format, parseISO } from 'date-fns';
     import { ru } from 'date-fns/locale'
@@ -511,7 +526,7 @@
             walletBalance: Number
         },
         components: {
-            IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonInput, ModalCalendar, IonSearchbar, IonItem, Select, IonChip, IonIcon, IonCard, CreateDealSubject, ViewDealSubject, IonActionSheet, IonThumbnail, IonImg, IonLabel, IonTextarea, IonList, DealPaidMenu
+            IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonInput, ModalCalendar, IonSearchbar, IonItem, Select, IonChip, IonIcon, IonCard, CreateDealSubject, ViewDealSubject, IonActionSheet, IonThumbnail, IonImg, IonLabel, IonTextarea, IonList, DealPaidMenu, StarRaiting
         },
         setup(props, { emit }) {
             // Currency
@@ -749,11 +764,13 @@
             // }
             // 
             const currentDealType = ref('');
+            const dealImportance = ref()
             watchEffect(() => {
                 myContactsArray.value = props.myContacts;
                 dealData.value = props.dealData;
                 currentDealType.value = props.dealData.dealType;
                 availableBalance.value = props.walletBalance;
+                dealImportance.value = props.dealData.dealImportance
             });
             //
             currentDealType.value = dealData.value.dealType
@@ -773,7 +790,7 @@
                 // dealData.value.executionDate = ''
                 dealData.value.dealPaid = 0
                 dealData.value.cancelledReason = ''
-                //
+                dealData.value.dealImportance = 1
             })
 
             // ================================== New Deal Modal Create Subject ============================================
@@ -1245,9 +1262,18 @@
                     return 'light'
                 }
             }
+            // Важность дела
+            const setRatingValue = (ratingValue) => {
+                // console.log(ratingValue)
+                dealImportance.value = ratingValue
+            }
+            //
+            watch(dealImportance, () => {
+                dealData.value.dealImportance = dealImportance.value
+            })
 
             return {
-                currency, dealContact, dealContactID , searchContactMenu, choose, isCalendarOpened, closeModalCalendar, updateExecutionDate, datepicker, myContactsArray, searchDealContact, searchedContacts, dealTypes, addCircleOutline, closeCircleOutline, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, openDeleteSubjectModal, subjectToDelete, deleteDealSubjectButtons, addNewSubject, deleteSubject, dealData, currentDealSubject, isViewDealSubjectOpened, openCurrentDealSubject, checkRentAttr, setColorByDealType, setIconByDealType, currentDealType, isAttributesMenuOpened, setNewSubjectPrice, calcNewSubjectTotalPrice, sumAttributesPriceValue, setSumAttributesPriceValue, setSubjectPrice, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, calcSubjectTotalPrice, setNewSubjectQty, setPersonQty, setNewPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, setChipColor, shippingTypeList, dealShippingType, shippingPrice, shippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, calcTotalDealPrice, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, translateSelectedProduct, culcSubjectWeight, culcBuySubjectWeight, culcDealDebt, setAmountValue, debt, refreshDebtValue, dealPaidAmountValue, setAddButtonColor, currentPriceSubject, personPortionGram, availableBalance, myDeals
+                currency, dealContact, dealContactID , searchContactMenu, choose, isCalendarOpened, closeModalCalendar, updateExecutionDate, datepicker, myContactsArray, searchDealContact, searchedContacts, dealTypes, addCircleOutline, closeCircleOutline, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, openDeleteSubjectModal, subjectToDelete, deleteDealSubjectButtons, addNewSubject, deleteSubject, dealData, currentDealSubject, isViewDealSubjectOpened, openCurrentDealSubject, checkRentAttr, setColorByDealType, setIconByDealType, currentDealType, isAttributesMenuOpened, setNewSubjectPrice, calcNewSubjectTotalPrice, sumAttributesPriceValue, setSumAttributesPriceValue, setSubjectPrice, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, calcSubjectTotalPrice, setNewSubjectQty, setPersonQty, setNewPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, setChipColor, shippingTypeList, dealShippingType, shippingPrice, shippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, calcTotalDealPrice, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, translateSelectedProduct, culcSubjectWeight, culcBuySubjectWeight, culcDealDebt, setAmountValue, debt, refreshDebtValue, dealPaidAmountValue, setAddButtonColor, currentPriceSubject, personPortionGram, availableBalance, myDeals, setRatingValue, dealImportance
             }
         }
     })

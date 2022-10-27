@@ -33,7 +33,7 @@
     //
     export default defineComponent({
         name: 'Star-raitng',
-        emits: [],
+        emits: ['getRatingValue'],
         props: {
             name: String,
             value: null,
@@ -59,8 +59,8 @@
             })
             //
             watch(value, () => {
-                // value.value отправляем в БД для изменения цифры важности дела
-                console.log(value.value)
+                // console.log(value.value)
+                emit('getRatingValue', value.value)
             })
 
             return {

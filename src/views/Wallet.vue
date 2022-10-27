@@ -40,21 +40,20 @@
                         <ion-button color="dark" @click="makeAPay()">Оплатить</ion-button>
                     </ion-row>
                 </ion-grid>
-                <br>
-                <br>
-                <ion-grid class="ion-no-padding">
+                <!-- Переместить в раздел уже конкретно об аналитике -->
+                <!-- <ion-grid class="ion-no-padding">
                     <ion-row>
-                        Количество дел: {{ myDeals.length }}
-                        
+                        Количество дел (всего): {{ myDeals.length }} <br>
+                        Бронь даты: {{ bookingDeals.length }}<br>
+                        В процессе: {{ dealsInProcess.length }} <br>
+                        В доставке: {{ deliveryDeals.length }} <br>
+                        Дела с долгом: {{ debtDeals.length }} <br>
+                        Завершенные: {{ completeDeals.length }} <br>
+                        Отмененные: {{ cancelledDeals.length }} <br>
                     </ion-row>
-                </ion-grid>
+                </ion-grid> -->
                 <br>
-                Моя задолженность в {{ currency }} <br>
-                {{myDebt.toFixed(2)}}
-                <br>
-                <br>
-                Мне должны в {{ currency }} <br>
-                {{debtToMe.toFixed(2)}} 
+                <!--  -->
                 <ion-card class="ion-padding" @click="goTo()">
                     <ion-row class="ion-justify-content-between ion-align-items-center">
                         <div class="ion-text-left">
@@ -66,6 +65,21 @@
                         </div>
                     </ion-row>
                 </ion-card>
+                <!--  -->
+                <ion-grid class="ion-text-left ion-padding-horizontal ion-margin-horizontal">
+                    <ion-row class="ion-justify-content-between">
+                        <ion-text>Моя задолженность</ion-text>
+                        <ion-text color="primary" @click="goToChoosenDeals">{{myDebt.toFixed(2)}} {{ currency }}</ion-text>
+                    </ion-row>
+                </ion-grid>
+                <!--  -->
+                <ion-grid class="ion-text-left ion-padding-horizontal ion-margin-horizontal ion-margin-top">
+                    <ion-row class="ion-justify-content-between">
+                        <ion-text>Мне должны</ion-text>
+                        <ion-text color="primary" @click="goToChoosenDeals">{{debtToMe.toFixed(2)}} {{ currency }}</ion-text>
+                    </ion-row>
+                </ion-grid>
+
             </div>
         </ion-content>
     </div>
@@ -116,8 +130,14 @@
             //
             const spinner = ref(null)
             const dataLoaded = ref(null);
-            // Временно обзавем данные
+            // Все дела
             const myDeals = ref([]);
+            const bookingDeals = ref([]);
+            const dealsInProcess = ref([]);
+            const debtDeals = ref([]);
+            const deliveryDeals = ref([]);
+            const completeDeals = ref([]);
+            const cancelledDeals = ref([]);
             // Подтягиваем список дел из store
             spinner.value = true;
             //
@@ -136,6 +156,8 @@
                 availableBalance.value = store.state.availableBalance
                 myDebt.value = store.state.myDebt
                 debtToMe.value = store.state.debtToMe
+                //
+
             })
             // 
             // const calculateBalance = () => {
@@ -187,9 +209,13 @@
             const goTo = () => {
                 alert('Wallet: в разработке...')
             }
+            //
+            const goToChoosenDeals = () => {
+                alert('Wallet: хотите перейти к просмотру? В разработке...')
+            }
 
             return {
-                menu, user, router, pageTitle, myDeals, spinner, dataLoaded, currency, availableBalance, myDebt, debtToMe, statsChartOutline, putInWallet, makeAPay, goTo
+                menu, user, router, pageTitle, myDeals, spinner, dataLoaded, currency, availableBalance, myDebt, debtToMe, statsChartOutline, putInWallet, makeAPay, goTo, dealsInProcess, completeDeals, cancelledDeals, bookingDeals, deliveryDeals, debtDeals, goToChoosenDeals
             }
         }
     })

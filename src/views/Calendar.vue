@@ -294,7 +294,8 @@
                 // executionDate: dateCreate.value,
                 executionDate: '',
                 dealPaid: 0,
-                cancelledReason: ''
+                cancelledReason: '',
+                dealImportance: 1
             })
             // При закрытии или открытии modal очищаем шаблон дела
             const setOpen = () => {
@@ -315,7 +316,8 @@
                     totalDealPrice: 0,
                     executionDate: '',
                     dealPaid: 0,
-                    cancelledReason: ''
+                    cancelledReason: '',
+                    dealImportance: 1
                 }
                 spinner.value = false
             }
@@ -334,6 +336,7 @@
                 // принимаем инфу по контакту из modal
                 dealData.value = newDealData
                 spinner.value = true;
+                // console.log(dealData.value)
                 // Если строки Имя Фамилия пустые или не пустые 
                 // использовать валидацию 
                 if(dealData.value.executionDate === ''){
@@ -359,7 +362,7 @@
                         spinner.value = false;
                         // Оставляем модалку выбранного дня открытой
                         isViewChoosenDateOpened.value = true
-                        // если выбранная дата еще есть, а она есть - обновляем контент к показу
+                        // если выбранная дата еще есть, а она есть - обновляем контент к показу по этой дате
                         if(choosenDate.value) {
                             dealsByChoosenDate.value = myDeals.value.filter(deal => formattedDate(deal.executionDate) === formattedDate(choosenDate.value))
                         }
@@ -378,7 +381,8 @@
                             totalDealPrice: 0,
                             executionDate: '',
                             dealPaid: 0,
-                            cancelledReason: ''
+                            cancelledReason: '',
+                            dealImportance: 1
                         }
                     } catch (error) {
                         alert(`Error: ${error.message}`)
