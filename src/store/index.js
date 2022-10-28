@@ -391,6 +391,11 @@ const state = reactive({
       name: 'Прочие услуги',
       costEstimation: 'perUnit'
     },
+    {
+      value: 'employees-salary',
+      name: 'Зарплата сотрудникам',
+      costEstimation: 'perUnit'
+    },
   ],
   // type of Shipping
   shippingTypeList: [

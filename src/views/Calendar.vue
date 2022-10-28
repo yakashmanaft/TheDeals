@@ -384,6 +384,8 @@
                             cancelledReason: '',
                             dealImportance: 1
                         }
+                        //
+                        setCalendarStyle()
                     } catch (error) {
                         alert(`Error: ${error.message}`)
                     }
@@ -504,11 +506,44 @@
                             border-radius: 0.5rem;
                         `
                     } else {}
-                    // раскрашиваем даты в зависимости от кол-ва дел, запланированных на этот день
-                    let dealQtyByDate = myDeals.value.filter(deal => formattedDate(deal.executionDate) === cutDateString)
+                    // раскрашиваем даты в зависимости от кол-ва дел, запланированных на этот день и их коэффициентов важности
+                    // Определяем коэффициента загруженности
+                    let workloadValue;
+                    (() => {
+                        const workloadFunc = () => {
+                            let dealByDate = myDeals.value.filter(deal => formattedDate(deal.executionDate) === cutDateString)
+                            //
+                            let ratioArray = []
+                            dealByDate.forEach(item => {
+                                ratioArray.push(item.dealImportance)
+                            })
+                            let newRatioArray = []
+                            ratioArray.forEach(rating => {
+                                if(rating === 5) {
+                                    rating = 3
+                                } else if (rating === 4) {
+                                    rating = 2.5
+                                } else if (rating === 3) {
+                                    rating = 2
+                                } else if (rating === 2) {
+                                    rating = 1.5
+                                } else if (rating === 1) {
+                                    rating = 1
+                                }
+                                newRatioArray.push(rating)
+
+                            })
+                            // console.log(newRatioArray)
+                            workloadValue = newRatioArray.reduce((a, b) => a + b, 0)
+                            // return workloadValue = dealByDate.length
+                            return workloadValue
+                        } 
+                        workloadFunc()
+                    })()
+
                     // день с легкой загруженностью
                     // при наличии low количества дел
-                    if(dealQtyByDate.length > 0 && dealQtyByDate.length <= setSaturationDay('low')) {
+                    if(workloadValue  > 0 && workloadValue  <= setSaturationDay('low')) {
                         return item.style.cssText = `
                             background-color: var(--ion-color-success);
                             margin: 0.2rem;
@@ -518,7 +553,7 @@
                     } 
                     // день с средней загруженностью
                     // количестве между low и high значениями (не включая данные значения)
-                        else if(dealQtyByDate.length > setSaturationDay('low') && dealQtyByDate.length < setSaturationDay('high')) {
+                        else if(workloadValue  > setSaturationDay('low') && workloadValue  < setSaturationDay('high')) {
                         return item.style.cssText = `
                             background-color: var(--ion-color-warning);
                             margin: 0.2rem;
@@ -528,7 +563,7 @@
                     } 
                     // день с высокой загруженностью
                     // при наличии high количества дел и более
-                    else if (dealQtyByDate.length >= setSaturationDay('high')) {
+                    else if (workloadValue  >= setSaturationDay('high')) {
                         return item.style.cssText = `
                             background-color: var(--ion-color-danger-tint);
                             margin: 0.2rem;
