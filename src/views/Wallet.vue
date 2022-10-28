@@ -160,43 +160,6 @@
 
             })
             // 
-            // const calculateBalance = () => {
-            //     console.log('calculate...')
-            //     // Массив сумм, которые мне уже вносили по делам продаж
-            //     let payMeArray = []
-            //     let payMe = 0
-            //     // Массив сумм, которые я уже вносил по делам закупок
-            //     let iPayArray = []
-            //     let iPay = 0
-            //     // Массив моих задолженностей
-            //     let myDebtsArray = []
-            //     let myDebts = 0
-            //     // Массив покупательских задолженностей
-            //     let debtsToMeArray = []
-            //     let debtsToMe = 0
-            //     //
-            //     myDeals.value.forEach(item => {
-            //         if(item.dealType === 'sale') {
-            //             payMeArray.push(item.dealPaid)
-            //             debtsToMeArray.push(item.totalDealPrice - item.dealPaid)
-            //         } else if (item.dealType === 'buy') {
-            //             iPayArray.push(item.dealPaid)
-            //             myDebtsArray.push(item.totalDealPrice - item.dealPaid)
-            //         }
-            //     })
-            //     // суммируем значения в массивах, считаем текущий баланс
-            //     payMe = payMeArray.reduce((a, b) => a + b, 0)
-            //     iPay = iPayArray.reduce((a, b) => a + b, 0)
-            //     availableBalance.value = payMe - iPay
-            //     // store.methods.setAvailableBalanceValue(payMe, iPay)
-            //     // 
-            //     myDebts = myDebtsArray.reduce((a, b) => a + b, 0)
-            //     myDebt.value = myDebts
-            //     //
-            //     debtsToMe = debtsToMeArray.reduce((a, b) => a + b, 0)
-            //     debtToMe.value = debtsToMe 
-            // }
-            //
             const putInWallet = () => {
                 alert('Хотите пополнить кошелек? В разработке...')
             }
