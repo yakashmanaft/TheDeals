@@ -53,7 +53,7 @@ import {
 
 export default defineComponent({
   name: "CreateRecipe",
-  emits: ['closeModal'],
+  emits: ['closeModal', 'createRecipe'],
   props: {
     recipeData: Object,
   },

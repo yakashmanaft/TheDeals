@@ -226,7 +226,7 @@
                 <!-- Всплывашка подтверждение удаления предмета заказа -->
                 <ion-action-sheet
                     :is-open="deleteSubject"
-                    header="Точно удалить?"
+                    header="Вы хотите удалить предмет заказа?"
                     :buttons="deleteDealSubjectButtons"
                     @didDismiss="deleteSubject = false"
                 >
@@ -804,7 +804,7 @@
                             if(error) throw error;
                             // router.push({ name: 'Deals' })
                             router.go(-1)
-                            alert('Vuew Deal: Дело удалено')
+                            alert('View Deal: Дело удалено')
                         } catch (error) {
                             // Удалить если не понадобится
                             // alert(`Error: ${error.message}`)
