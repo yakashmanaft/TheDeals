@@ -14,6 +14,14 @@
         <!-- Кнопка перехода к созданию нового дела -->
         <CreateButton @click="setOpen"/>
 
+        <!-- Модалка создания нового предмета -->
+        <CreateNewItem
+            :is-open="isOpen"
+            @closeModal="setOpen"
+            @createItem="createItem"
+            :itemData="itemData"
+        />
+
         <ion-content
             :scroll-events="true"
             class="ion-page ion-margin-top" 
@@ -34,7 +42,23 @@
 
             <!-- Data -->
             <div v-if="dataLoaded && myItems.length !== 0">
-                Чета есть
+                <!-- Поиск -->
+                <ion-searchbar class="ion-text-left" placeholder="Поиск..." v-model="search"></ion-searchbar>
+                <!-- Данные -->
+                <div v-for="item in myItems" :key="item.id" class="ion-margin-top">
+                    <router-link
+                        :to="{
+                            name: 'View-warehouse-item', 
+                            params: { 
+                                itemId: item.id, 
+                                itemUid: item.uid,
+                                item: JSON.stringify(item)
+                            }
+                        }"
+                    >
+                        {{item}}
+                    </router-link>
+                </div>
             </div>
         </ion-content>
     </div>
@@ -45,18 +69,20 @@
     import store from '../store/index';
     import { supabase } from '../supabase/init';
     import { useRouter } from 'vue-router';
+    import { uid } from 'uid';
     //
-    import { IonContent, IonImg, IonText } from '@ionic/vue'
+    import { IonContent, IonImg, IonText, IonSearchbar } from '@ionic/vue'
     //
     import Spinner from '@/components/Spinner.vue';
     import NavigationMenu from '@/components/NavigationMenu.vue';
     import Header from '@/components/headers/Header.vue';
     import CreateButton from '../components/CreateButton.vue';
+    import CreateNewItem from '../components/modal/NewWarehouseItem-modalCreate.vue';
 
     export default defineComponent({
         name: 'Warehouse',
         components: {
-            IonContent, Spinner, NavigationMenu, Header, CreateButton, IonImg, IonText
+            IonContent, Spinner, NavigationMenu, Header, CreateButton, IonImg, IonText, CreateNewItem, IonSearchbar
         },
         setup() {
             //
@@ -79,51 +105,79 @@
             // Get page title
             const pageTitle = router.currentRoute._value.meta.translation;
             //
-            onMounted(() => {
+            onMounted( async () => {
+                await store.methods.getUserWarehouseItemsFromDB()
+                myItems.value = store.state.userWarehouseArray;
+                //
                 spinner.value = false
                 dataLoaded.value = true;
             })
+            // функция поиска контакта с помощью search
+            const search = ref('');
+
+            // =====================================
+            // Work with Modal Create New Recipe
+            const isOpen = ref(false);
             //
             const itemData = ref({
-                // uid: uid(),
-                // email: userEmail.value,
-                // dealType: '',
-                // dealStatus: "deal-in-booking",
-                // contactID: '000',
-                // dealsList: [],
-                // shipping: '',
-                // totalDealPrice: 0,
-                // executionDate: '',
-                // dealPaid: 0,
-                // cancelledReason: '',
-                // dealImportance: 1
+                uid: uid(),
+                email: userEmail.value,
+                name: '',
+                catalogNumber: ''
             })
             // При закрытии или открытии modal очищаем шаблон дела
             const setOpen = () => {
                 spinner.value = false
-                alert('Warehouse: В разработке...')
-                // isViewDealModalOpened.value = !isViewDealModalOpened.value;
-                // dealData.value = {
-                //     uid: uid(),
-                //     email: userEmail.value,
-                //     dealType: '',
-                //     dealStatus:"deal-in-booking",
-                //     contactID: '000',
-                //     dealsList: [],
-                //     shipping: {
-                //         typeOfShipping: '',
-                //         shippingPrice: 0
-                //     },
-                //     totalDealPrice: 0,
-                //     executionDate: '',
-                //     dealPaid: 0,
-                //     cancelledReason: '',
-                //     dealImportance: 1
-                // }
+                // alert('Warehouse: В разработке...')
+                isOpen.value = !isOpen.value;
+                itemData.value = {
+                    uid: uid(),
+                    email: userEmail.value,
+                    name: '',
+                    catalogNumber: ''
+                }
+            }
+            //
+            // const closeCreateItemModal = () => {
+            //     isOpen.value = false;
+            //     itemData.value = {}
+            // }
+            // Создаем новый предмет
+            const createItem = async (newItemData) => {
+                // Принимаем инфу по предмету из модалки
+                itemData.value = newItemData
+                // имитируем загрузку
+                spinner.value = true;
+                // Если есть пустые строки
+                // Использовать валидацию
+                if(newItemData.name === '') {
+                    alert('Warehouse: Вы не указали название предмета')
+                } else if(newItemData.catalogNumber === '') {
+                    alert('Warehouse: Вы не указали каталожный номер')
+                }else {
+                    try {
+                        // Добавляем в БД инфу по новому предмету
+                        const { error } = await supabase.from('userWarehouse').insert([itemData.value])
+                        if(error) throw error;
+                        //
+                        await store.methods.getUserWarehouseItemsFromDB();
+                        myItems.value = store.state.userWarehouseArray;
+                        // ищем созданный новый предмет в массиве всех предметов в store (по uid)
+                        const newItem = myItems.value.find(el => el.uid === itemData.value.uid)
+                        // Сбрасываем заполненные данные и закрываем модалку
+                        setOpen()
+                        // переходим на страницу созданного нового контакта
+                        router.push({ name: 'View-warehouse-item', params: { itemId: newItem.id, item: JSON.stringify(newItem)} })
+                    } catch (error) {
+                        alert(`Error: ${error.message}`)
+                    }
+                    // console.log('Предмет создан')
+                    // console.log(newItemData)
+                }
             }
 
             return {
-                itemData, dataLoaded, spinner, setOpen, currency, user, pageTitle, myItems
+                itemData, dataLoaded, spinner, setOpen, currency, user, pageTitle, myItems, isOpen, createItem, search
             }
         }
     })

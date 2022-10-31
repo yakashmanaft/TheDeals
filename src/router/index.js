@@ -115,6 +115,16 @@ const routes = [
     }
   },
   {
+    path: '/view-warehouse/:itemId',
+    name: 'View-warehouse-item',
+    component: () => import('../views/currentView/ViewWarehouseItem.vue'),
+    meta: {
+      title: 'View Warehouse Item',
+      auth: true,
+      type: 'CurrentView'
+    }
+  },
+  {
     path: '/login',
     name: 'Login',
     component: Login,

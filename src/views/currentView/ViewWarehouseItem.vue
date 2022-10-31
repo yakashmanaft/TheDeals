@@ -27,7 +27,7 @@
             <!-- Data -->
             <div>
                 <ion-item-group>
-                    {{currentRecipe}}
+                    {{ currentItem }}
                 </ion-item-group>
             </div>
 
@@ -45,22 +45,23 @@
     import ViewHeader from '../../components/headers/HeaderViewCurrent.vue'
 
     export default defineComponent({
-        name: 'View-recipe',
+        name: 'View-warehouse-item',
         components: {
             ViewHeader, Spinner, IonContent, IonItemGroup
         },
-        setup() {
+        setup () {
             //
             const route = useRoute();
             const router = useRouter();
             // Get current info of route
             const currentId = route.params.dealId;
             const info = route.params;
-            const currentRecipe = ref(JSON.parse(info.recipe))
+            const currentItem = ref(JSON.parse(info.item))
             //
             const spinner = ref(null);
+
             return {
-                route, router, spinner, currentRecipe, currentId, info
+                route, router, spinner, currentId, info, currentItem
             }
         }
     })

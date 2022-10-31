@@ -227,6 +227,8 @@ const state = reactive({
   //   }
   // ],
   // deal SALE Subject List
+  // User warehouse list
+  userWarehouseArray: [],
   dealSaleSubjectArray: [
     {
       value: 'cake',
@@ -543,6 +545,12 @@ const methods = {
       if (error) throw error;
       // Устанавливаем значение переменной userRecipeArray в state
       state.userRecipeArray = userRecipes;
+  },
+  // Забирвем из БД user warehouse item list
+  getUserWarehouseItemsFromDB: async () => {
+    let {data: userWarehouse, error } = await supabase.from('userWarehouse').select('*');
+    if(error) throw error;
+    state.userWarehouseArray = userWarehouse;
   },
   //
   setUserEmail: () => {

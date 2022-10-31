@@ -3,7 +3,7 @@
     <ion-header translucent="true">
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-button @click="$emit('closeModal')">Отменить</ion-button>
+          <ion-button @click="closeThisModal">Отменить</ion-button>
         </ion-buttons>
         <ion-title class="ion-text-center">Новый</ion-title>
         <ion-buttons slot="end">
@@ -53,6 +53,7 @@ import {
 
 export default defineComponent({
   name: "CreateRecipe",
+  emits: ['closeModal'],
   props: {
     recipeData: Object,
   },
@@ -81,6 +82,13 @@ export default defineComponent({
         recipeData.value.value = recipeName
     });
     //
+    const closeThisModal = () => {
+      emit('closeModal', 
+        recipeName.value = '',
+        recipeValue.value = ''
+      )
+    }
+    //
     watchEffect(() => {
       recipeData.value = props.recipeData;
     });
@@ -88,7 +96,8 @@ export default defineComponent({
     return {
       recipeData,
       recipeName,
-      recipeValue
+      recipeValue,
+      closeThisModal
     };
   },
 });

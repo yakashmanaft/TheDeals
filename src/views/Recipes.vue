@@ -42,7 +42,9 @@
 
             <!-- Data -->
             <div v-if="dataLoaded && myRecipes.length !== 0">
+                <!-- Поиск -->
                 <ion-searchbar class="ion-text-left" placeholder="Поиск..." v-model="search"></ion-searchbar>
+                <!-- Данные -->
                 <div v-for="recipe in myRecipes" :key="recipe.id" class="ion-margin-top">
                     <router-link
                         :to="{ name: 'View-Recipe', params: {
@@ -150,7 +152,7 @@
                 spinner.value = true;
                 // Если есть пустые строки
                 // Использовать валидацию
-                if(recipeData.value.recipeName === '') {
+                if(newRecipeData.name === '') {
                     alert('Recipes: Вы не указали название рецепта')
                 } else {
                     try {
@@ -162,10 +164,10 @@
                         // ищем созданный новый рецепт в массиве всех рецептов в store (по uid)
                         const newRecipe = myRecipes.value.find(el => el.uid === recipeData.value.uid) 
                         // Сбрасываем заполненные данные и закрываем модалку
+                        setOpen()
                         // переходим на страницу созданного нового контакта
                         router.push({ name: 'View-Recipe', params: { recipeId: newRecipe.id, recipe: JSON.stringify(newRecipe)}})
                         // console.log(newRecipe)
-                        setOpen()
                     } catch (error) {
                         alert(`Error: ${error.message}`)
                     }
