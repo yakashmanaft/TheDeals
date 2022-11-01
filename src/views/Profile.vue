@@ -28,13 +28,23 @@
         <br>
         <!-- Общая инфа по аккаунту -->
         <ion-grid class="ion-no-padding">
+          <ion-row>
+            <avatar v-model:path="avatar_url" @upload="updateProfile"></avatar>
+            <!-- <Avatar/> -->
+            <!-- <form class="form-widget" @submit.prevent="updateProfile">
+
+            <Avatar v-model:path="avatar_url" @upload="updateProfile" size="10" />
+
+
+          </form> -->
+          </ion-row>
           <!--  -->
           <ion-row class="ion-justify-content-center">
             <!-- https://habr.com/ru/company/timeweb/blog/648761/ -->
             <!-- https://habr.com/ru/company/timeweb/blog/660183/ -->
-            <ion-avatar class="account-avatar" @click="changeAvatar()">
+            <!-- <ion-avatar class="account-avatar" @click="changeAvatar()">
               <img src="img/common/user-avatar.png">
-            </ion-avatar>
+            </ion-avatar> -->
               <!-- <br>
               <input type="file" ref="file" @change="handleFileUpload()"> -->
           </ion-row>
@@ -174,6 +184,7 @@
   //
   import Spinner from '../components/Spinner.vue';
   import ViewHeader from '../components/headers/HeaderViewCurrent.vue';
+  import Avatar from '../components/Avatar.vue';
   //
   import { IonContent, IonText, IonCard, IonAvatar, IonIcon, IonGrid, IonRow, IonCardHeader, IonCardTitle, IonCardContent, IonChip } from '@ionic/vue';
   import { removeCircleOutline, addCircleOutline } from 'ionicons/icons';
@@ -184,9 +195,11 @@
   export default defineComponent({
     name: 'Profile',
     components: {
-      Spinner, ViewHeader, IonContent, IonText, IonCard, IonAvatar, IonIcon, IonGrid, IonRow, IonCardHeader, IonCardTitle, IonCardContent, IonChip
+      Spinner, ViewHeader, IonContent, IonText, IonCard, IonAvatar, IonIcon, IonGrid, IonRow, IonCardHeader, IonCardTitle, IonCardContent, IonChip, Avatar
     },
     setup() {
+      //
+      const avatar_url = ref()
       // Currency
       const currency = ref(store.state.systemCurrency.name)
       // Get user from store
@@ -195,7 +208,7 @@
       const router = useRouter();
       // Page title
       const pageTitle = router.currentRoute._value.meta.translation;
-      console.log(pageTitle.value)
+      console.log(pageTitle)
       //
       const userSettings = ref(store.state.userSettings[0])
       // Get user email
@@ -355,9 +368,9 @@
         debtToMe.value = debtsToMe 
       }
       // Функционал по смене автарки
-      const changeAvatar = () => {
-        alert('Profile: Вы хотите сменить аватарку? Функционал в разработке...')
-      }
+      // const changeAvatar = () => {
+      //   alert('Profile: Вы хотите сменить аватарку? Функционал в разработке...')
+      // }
       //
       const formattedDate = (day) => {
         const formattedString = format(parseISO(day), 'd MMMM Y', { locale: ru });
@@ -372,10 +385,14 @@
       const handleFileUpload = async () => {
         console.log("selected file",file.value.files)
       }
+      //
+      const updateProfile = () => {
+        console.log('123')
+      }
 
 
       return {
-        spinner, user, router, dataLoaded, userSettings, userEmail, isQrAvailable, removeCircleOutline, addCircleOutline, changeDaySaturationQty, daySaturation, setCountQtyButtonDecreaseColor, setCountQtyButtonAddColor, translateDaySaturationName, openBusinessCard, addBusinessCard, editBusinessCard, myDeals, availableBalance, myDebt, debtToMe, currency, changeAvatar, formattedDate, pageTitle, renewSubscription, file, handleFileUpload
+        spinner, user, router, dataLoaded, userSettings, userEmail, isQrAvailable, removeCircleOutline, addCircleOutline, changeDaySaturationQty, daySaturation, setCountQtyButtonDecreaseColor, setCountQtyButtonAddColor, translateDaySaturationName, openBusinessCard, addBusinessCard, editBusinessCard, myDeals, availableBalance, myDebt, debtToMe, currency, formattedDate, pageTitle, renewSubscription, file, handleFileUpload, avatar_url, updateProfile
       }
     }
   })
@@ -388,8 +405,8 @@
     .countQty_button {
         font-size: 32px;
     }
-    .account-avatar {
+    /* .account-avatar {
       width: 6rem;
       height: 6rem;
-    }
+    } */
 </style>

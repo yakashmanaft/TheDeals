@@ -7,10 +7,13 @@
                     <ion-col>
                         <router-link :to="{ name: 'Profile'  }">
                             <!-- Аватар, поидее должен подгружать из настроек аккаунта -->
-                            <ion-avatar class="account-avatar">
-                                <img src="img/common/user-avatar.png">
+                            <ion-avatar >
+                                <img v-if="avatar_url" class="account-avatar" :src="`https://vpgbroyeiswutvsserbi.supabase.co/storage/v1/object/public/avatars/${avatar_url}`">
+                                <img v-else src="img/common/user-avatar.png">
                             </ion-avatar>
                         </router-link>
+                        <!-- {{avatar_full_path}} -->
+                        <!-- {{avatar_url}} -->
                     </ion-col>
                 </ion-row>
             </ion-grid>
@@ -60,7 +63,7 @@
 
 <script>
     import store from '../store/index';
-    import { defineComponent, ref, computed, watchEffect } from 'vue';
+    import { defineComponent, ref, computed, watchEffect, onMounted } from 'vue';
     import { supabase } from '../supabase/init';
     import { useRouter } from 'vue-router';
     import { 
@@ -88,10 +91,12 @@
         },
         props: {
             title: String,
+            avatar: String
         },
         setup(props, {emit}) {
             //
             const currentRoute = ref(props.title)
+            const avatar_url = ref(props.avatar)
             // Get user from store
             const user = computed(() => store.state.user);
             // Setup ref to router
@@ -110,11 +115,12 @@
             //
             watchEffect(() => {
                 currentRoute.value = props.title;
+                avatar_url.value = props.avatar
             })
             console.log(currentRoute.value)
 
             return {
-                user, router, userEmail, logout, menuList, exitOutline, helpCircleOutline, menuType, currentRoute
+                user, router, userEmail, logout, menuList, exitOutline, helpCircleOutline, menuType, currentRoute, avatar_url
             }
         }
     })
@@ -144,10 +150,15 @@
         font-size: 1rem; 
         font-weight: 500;
     }
+    ion-avatar {
+        height: 5rem;
+        width: 5rem;
+        display: block
+    }
 
     .account-avatar {
-        width: 5rem;
-        height: 5rem;
+        width: 100%;
+        height: 100%;
     }
     .current-route {
         font-weight: bold;
