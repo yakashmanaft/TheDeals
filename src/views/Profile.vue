@@ -28,7 +28,7 @@
         <br>
         <!-- Общая инфа по аккаунту -->
         <ion-grid class="ion-no-padding">
-          <ion-row>
+          <ion-row class="ion-justify-content-center">
             <avatar v-model:path="avatar_url" @upload="updateProfile"></avatar>
             <!-- <Avatar/> -->
             <!-- <form class="form-widget" @submit.prevent="updateProfile">

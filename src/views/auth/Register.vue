@@ -125,7 +125,8 @@
                         name: 'high',
                         qty: 8
                     }
-                ]
+                ],
+                avatar_url: null
             })
 
             // Register function

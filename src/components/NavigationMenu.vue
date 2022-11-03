@@ -7,13 +7,16 @@
                     <ion-col>
                         <router-link :to="{ name: 'Profile'  }">
                             <!-- Аватар, поидее должен подгружать из настроек аккаунта -->
-                            <ion-avatar >
-                                <img v-if="avatar_url" class="account-avatar" :src="`https://vpgbroyeiswutvsserbi.supabase.co/storage/v1/object/public/avatars/${avatar_url}`">
-                                <img v-else src="img/common/user-avatar.png">
+                            <ion-avatar v-if="avatar_url">
+                                <!-- Если в БД есть запись url -->
+                                <img class="account-avatar" :src="`https://vpgbroyeiswutvsserbi.supabase.co/storage/v1/object/public/avatars/${avatar_url}`">
+                            </ion-avatar>
+
+                            <!-- Если null -->
+                            <ion-avatar v-else class="no-avatar">
+                                <ion-icon style="font-size: 2rem;" color="light" :icon="person"></ion-icon>
                             </ion-avatar>
                         </router-link>
-                        <!-- {{avatar_full_path}} -->
-                        <!-- {{avatar_url}} -->
                     </ion-col>
                 </ion-row>
             </ion-grid>
@@ -82,7 +85,7 @@
         IonCol
     } from '@ionic/vue';
     import PWAPrompt from '../components/PWAPrompt.vue';
-    import { exitOutline, helpCircleOutline } from 'ionicons/icons';
+    import { exitOutline, helpCircleOutline, person } from 'ionicons/icons';
 
     export default defineComponent({
         name: 'NavigationMenu',
@@ -120,7 +123,7 @@
             console.log(currentRoute.value)
 
             return {
-                user, router, userEmail, logout, menuList, exitOutline, helpCircleOutline, menuType, currentRoute, avatar_url
+                user, router, userEmail, logout, menuList, exitOutline, helpCircleOutline, menuType, currentRoute, avatar_url, person
             }
         }
     })
@@ -163,5 +166,11 @@
     .current-route {
         font-weight: bold;
         color: var(--ion-color-primary)
+    }
+    .no-avatar {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: var(--ion-color-medium)
     }
 </style>
