@@ -123,7 +123,9 @@
                 uid: uid(),
                 email: userEmail.value,
                 name: '',
-                catalogNumber: ''
+                catalogNumber: '',
+                subjectQty: 1,
+                categories: []
             })
             // При закрытии или открытии modal очищаем шаблон дела
             const setOpen = () => {
@@ -134,7 +136,9 @@
                     uid: uid(),
                     email: userEmail.value,
                     name: '',
-                    catalogNumber: ''
+                    catalogNumber: '',
+                    subjectQty: 1,
+                    categories: []
                 }
             }
             //

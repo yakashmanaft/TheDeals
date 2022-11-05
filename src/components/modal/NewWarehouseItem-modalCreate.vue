@@ -14,6 +14,7 @@
         <ion-content class="ion-padding" forceOverscroll="false">
             <!-- ============================= Основные данные ===================================== -->
             {{ itemData }}
+
             <!-- Название предмета  -->
             <ion-item-group>
                 <!-- Заголовок -->
@@ -27,11 +28,12 @@
                     placeholder="Укажите название предмета"
                 ></ion-input>
             </ion-item-group>
+
             <!-- Каталожный номер -->
             <ion-item-group>
                 <!-- Заголовок -->
                 <ion-text>
-                    <h4>Каталожный номер</h4>
+                    <h4>Каталожный номер (Артикул)</h4>
                 </ion-text>
                 <!--  -->
                 <ion-input
@@ -40,13 +42,76 @@
                     placeholder="Укажите каталожный номер"
                 ></ion-input>
             </ion-item-group>
+
+            <!-- Кол-во -->
+            <ion-item-group>
+                <!-- Заголовок -->
+                <ion-text>
+                    <h4>Кол-во</h4>
+                </ion-text>
+                <!--  -->
+                <ion-grid class="ion-no-padding">
+                    <ion-row class="ion-align-items-center">
+                        <!-- Substract -->
+                        <ion-icon :icon="removeCircleOutline" class="countQty_button" :color="itemData.subjectQty > 1 ? 'primary' : 'light'" @click="changeSubjectQty('sub')"></ion-icon>
+                        <!-- Qty -->
+                        <ion-text class="ion-margin-horizontal countQty_count" color="primary">{{ itemData.subjectQty }}</ion-text>
+                        <!-- Add -->
+                        <ion-icon :icon="addCircleOutline" class="countQty_button" color="primary" @click="changeSubjectQty('add')"></ion-icon>
+                    </ion-row>
+                </ion-grid>
+            </ion-item-group>
+
+            <!-- Категория предмета -->
+            <ion-item-group>
+                <!-- Заголовок -->
+                <ion-text>
+                    <h4>Категории предмета</h4>
+                </ion-text>
+                <!--  -->
+                <ion-grid class="ion-no-padding">
+                    <!-- Добавленная категория -->
+                    <ion-chip class="ion-no-margin ion-margin-top ion-margin-end" color="primary" style="position: relative; overflow: visible">Кузов
+                        <!-- Кнопка удалить выбранную категорию у предмета -->
+                        <ion-icon :icon="closeCircleOutline" style="position: absolute; right: -0.2rem; top: 0;" color="medium"></ion-icon>
+                    </ion-chip>
+
+                    <!-- Добавленная категория -->
+                    <ion-chip class="ion-no-margin ion-margin-top ion-margin-end" color="primary" style="position: relative; overflow: visible">Электрика
+                        <!-- Кнопка удалить выбранную категорию у предмета -->
+                        <ion-icon :icon="closeCircleOutline" style="position: absolute; right: -0.2rem; top: 0;" color="medium"></ion-icon>
+                    </ion-chip>
+
+                    <!-- Добавленная категория -->
+                    <ion-chip class="ion-no-margin ion-margin-top ion-margin-end" color="primary" style="position: relative; overflow: visible">Трансмиссия
+                        <!-- Кнопка удалить выбранную категорию у предмета -->
+                        <ion-icon :icon="closeCircleOutline" style="position: absolute; right: -0.2rem; top: 0;" color="medium"></ion-icon>
+                    </ion-chip>
+
+                    <!-- Добавленная категория -->
+                    <ion-chip class="ion-no-margin ion-margin-top ion-margin-end" color="primary" style="position: relative; overflow: visible">Салон
+                        <!-- Кнопка удалить выбранную категорию у предмета -->
+                        <ion-icon :icon="closeCircleOutline" style="position: absolute; right: -0.2rem; top: 0;" color="medium"></ion-icon>
+                    </ion-chip>
+
+                    <!-- Добавленная категория -->
+                    <ion-chip class="ion-no-margin ion-margin-top ion-margin-end" color="primary" style="position: relative; overflow: visible">Пластик
+                        <!-- Кнопка удалить выбранную категорию у предмета -->
+                        <ion-icon :icon="closeCircleOutline" style="position: absolute; right: -0.2rem; top: 0;" color="medium"></ion-icon>
+                    </ion-chip>
+
+                    <!-- Кнопка добавить категорию -->
+                    <ion-chip class="ion-no-margin ion-margin-top ion-margin-end" color="primary" outline="true">Добавить</ion-chip>
+                </ion-grid>
+            </ion-item-group>
         </ion-content>
     </ion-modal>
 </template>
 
 <script>
 import { defineComponent, ref, watch, watchEffect  } from "vue";
-import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonInput } from "@ionic/vue";
+import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonInput, IonGrid, IonRow, IonIcon, IonChip } from "@ionic/vue";
+import { removeCircleOutline, addCircleOutline, closeCircleOutline } from 'ionicons/icons'
 
     export default defineComponent({
         name: 'CreateItem',
@@ -55,7 +120,7 @@ import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonCo
             itemData: Object
         }, 
         components: {
-            IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonInput
+            IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonInput, IonGrid, IonRow, IonIcon, IonChip
         }, 
         setup (props, { emit }) {
             //
@@ -78,17 +143,31 @@ import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonCo
                 )
             }
             //
+            // const countSubjectQtyButtonColor = ref('primary')
+            const changeSubjectQty = (action) => {
+                if(action === 'sub' && itemData.value.subjectQty > 1) {
+                    itemData.value.subjectQty--
+                } else if (action === 'add') {
+                    itemData.value.subjectQty++
+                }
+            }
+            //
             watchEffect(() => {
                 itemData.value = props.itemData
             }) 
 
             return {
-                itemData, itemName, catalogNumber, closeThisModal
+                itemData, itemName, catalogNumber, closeThisModal, removeCircleOutline, addCircleOutline, changeSubjectQty, closeCircleOutline
             }
         }
     })
 </script>
 
 <style scoped>
-
+    .countQty_button {
+        font-size: 32px;
+    }
+    .countQty_count {
+        font-size: 24px;
+    }
 </style>
