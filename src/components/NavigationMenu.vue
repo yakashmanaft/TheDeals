@@ -58,7 +58,7 @@
                 </ion-item>
             </ion-list>
             <!-- Предложение установить сервис в виде приложения -->
-            <PWAPrompt/>
+            <PWAPrompt class="ion-margin-top"/>
             <br>
         </div>
     </ion-menu>

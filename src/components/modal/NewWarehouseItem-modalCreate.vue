@@ -141,7 +141,7 @@
 
 <script>
 import { defineComponent, ref, watch, watchEffect  } from "vue";
-import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonInput, IonGrid, IonRow, IonIcon, IonChip } from "@ionic/vue";
+import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonInput, IonGrid, IonRow, IonIcon, IonChip, IonSearchbar } from "@ionic/vue";
 import { removeCircleOutline, addCircleOutline, closeCircleOutline } from 'ionicons/icons'
 
     export default defineComponent({
@@ -151,7 +151,7 @@ import { removeCircleOutline, addCircleOutline, closeCircleOutline } from 'ionic
             itemData: Object
         }, 
         components: {
-            IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonInput, IonGrid, IonRow, IonIcon, IonChip
+            IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonInput, IonGrid, IonRow, IonIcon, IonChip, IonSearchbar
         }, 
         setup (props, { emit }) {
             //
