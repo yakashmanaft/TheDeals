@@ -101,9 +101,40 @@
                     </ion-chip>
 
                     <!-- Кнопка добавить категорию -->
-                    <ion-chip class="ion-no-margin ion-margin-top ion-margin-end" color="primary" outline="true">Добавить</ion-chip>
+                    <ion-chip class="ion-no-margin ion-margin-top ion-margin-end" color="primary" outline="true" @click.stop="searchWarehouseCategoriesMenu = true">Добавить</ion-chip>
+
                 </ion-grid>
             </ion-item-group>
+
+            <!-- Модалка по выбору / поиску категорий  -->
+            <ion-modal :isOpen="searchWarehouseCategoriesMenu">
+                <ion-searchbar
+                    class="ion-text-left"
+                    placeholder="Поиск..."
+                    v-model="searchWarehouseCategories"
+                    show-cancel-button="always"
+                    cancelButtonText="Отменить"
+                    @ionCancel="searchWarehouseCategoriesMenu = false"    
+                ></ion-searchbar>
+                <!--  -->
+                <ion-content style="height: 90vh" class="ion-padding-horizontal">
+                    <!-- Если есть данные -->
+
+                    <!-- Если ничего подходящего нет или нет данных -->
+                    <div v-if="searchWarehouseCategories.length <= 0" class="ion-margin-top">
+                        <ion-grid class="ion-no-padding">
+                            <ion-row class="ion-justify-content-between ion-align-items-center">
+                                <ion-text color="medium">
+                                    Ничего не найдено
+                                </ion-text>
+                                <ion-text color="primary" @click="addNewCategory">
+                                    Добавить
+                                </ion-text>
+                            </ion-row>
+                        </ion-grid>
+                    </div>
+                </ion-content>
+            </ion-modal>
         </ion-content>
     </ion-modal>
 </template>
@@ -152,12 +183,19 @@ import { removeCircleOutline, addCircleOutline, closeCircleOutline } from 'ionic
                 }
             }
             //
+            const searchWarehouseCategoriesMenu = ref(false)
+            const searchWarehouseCategories = ref('')
+            //
+            const addNewCategory = () => {
+                alert('NewWarehouseItem-modalCreate: функционал в разработке (addNewCategory)')
+            }
+            //
             watchEffect(() => {
                 itemData.value = props.itemData
             }) 
 
             return {
-                itemData, itemName, catalogNumber, closeThisModal, removeCircleOutline, addCircleOutline, changeSubjectQty, closeCircleOutline
+                itemData, itemName, catalogNumber, closeThisModal, removeCircleOutline, addCircleOutline, changeSubjectQty, closeCircleOutline, searchWarehouseCategoriesMenu, searchWarehouseCategories, addNewCategory
             }
         }
     })

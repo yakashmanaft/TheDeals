@@ -158,7 +158,9 @@
                     alert('Warehouse: Вы не указали название предмета')
                 } else if(newItemData.catalogNumber === '') {
                     alert('Warehouse: Вы не указали каталожный номер')
-                }else {
+                } else if(newItemData.categories.length === 0) {
+                    alert('Warehouse: Добавьте хотя бы одну категорию')
+                } else {
                     try {
                         // Добавляем в БД инфу по новому предмету
                         const { error } = await supabase.from('userWarehouse').insert([itemData.value])
