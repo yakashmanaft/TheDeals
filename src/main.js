@@ -21,8 +21,8 @@ import '@ionic/vue/css/text-transformation.css';
 import '@ionic/vue/css/flex-utils.css';
 import '@ionic/vue/css/display.css';
 
-import { defineCustomElements } from '@ionic/pwa-elements/loader';
-defineCustomElements(window);
+// import { defineCustomElements } from '@ionic/pwa-elements/loader';
+// defineCustomElements(window);
 
 createApp(App).use(store).use(router).use(IonicVue).mount('#app');
 
