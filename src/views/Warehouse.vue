@@ -45,32 +45,40 @@
                 <!-- Поиск -->
                 <ion-searchbar class="ion-text-left" placeholder="Поиск..." v-model="search"></ion-searchbar>
                 <!-- Данные -->
-                <div v-for="item in myItems" :key="item.id" class="ion-margin-top">
-                    <router-link
-                        :to="{
-                            name: 'View-warehouse-item', 
-                            params: { 
-                                itemId: item.id, 
-                                itemUid: item.uid,
-                                item: JSON.stringify(item)
-                            }
-                        }"
-                    >
-                        {{item}}
-                    </router-link>
-                </div>
-                <div class="ion-margin-horizontal">
+                <div>
                     <!--  -->
-                    <div v-for="category in warehouseCategoriesArray" class="ion-margin-top">
-                        {{category.name}}
-                        
-                        <!-- <div class="ion-padding-start" v-for="item in myItems" :key="item.id">
+                    <div v-if="search !== ''" class="ion-margin-horizontal">
+                        <div v-for="(item, index) in searchedItem" :key="index">
                             {{item.name}}
-                        </div> -->
-                        <!--  -->
-                        <div class="ion-padding-start" v-for="item in filteredMyItemsFunc(category)" :key="item.id">
-                            {{item.name}}
-                            {{item.categories}}
+                        </div>
+                    </div>
+                    <!--  -->
+                    <ion-item lines="none" v-if="searchedItem.length <= 0">
+                        <ion-text color="medium">Ничего не найдено</ion-text>
+                    </ion-item>
+                    <!--  -->
+                    <div v-else>
+                        <div v-for="(category, index) in warehouseCategoriesArray" :key="index" class="ion-margin-top ion-margin-horizontal">
+                            {{category}}
+                            
+                            <!-- <div class="ion-padding-start" v-for="item in myItems" :key="item.id">
+                                {{item.name}}
+                            </div> -->
+                            <!--  -->
+                            <div class="ion-padding-start" v-for="(item, index) in filteredMyItemsFunc(category)" :key="index">
+                                <router-link
+                                    :to="{
+                                        name: 'View-warehouse-item',
+                                        params: {
+                                            itemId: item.id,
+                                            itemUid: item.uid,
+                                            item: JSON.stringify(item)
+                                        }
+                                    }"
+                                >
+                                    {{item.name}}
+                                </router-link>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -86,18 +94,20 @@
     import { useRouter } from 'vue-router';
     import { uid } from 'uid';
     //
-    import { IonContent, IonImg, IonText, IonSearchbar } from '@ionic/vue'
+    import { IonContent, IonImg, IonText, IonSearchbar, IonItem } from '@ionic/vue'
     //
     import Spinner from '@/components/Spinner.vue';
     import NavigationMenu from '@/components/NavigationMenu.vue';
     import Header from '@/components/headers/Header.vue';
     import CreateButton from '../components/CreateButton.vue';
     import CreateNewItem from '../components/modal/NewWarehouseItem-modalCreate.vue';
+    // 
+    import { searchWarehouseItemFilter  } from '../helpers/filterUserWarehouseItems.js'
 
     export default defineComponent({
         name: 'Warehouse',
         components: {
-            IonContent, Spinner, NavigationMenu, Header, CreateButton, IonImg, IonText, CreateNewItem, IonSearchbar
+            IonContent, Spinner, NavigationMenu, Header, CreateButton, IonImg, IonText, CreateNewItem, IonSearchbar, IonItem
         },
         setup() {
             //
@@ -131,8 +141,12 @@
                 //
                 warehouseCategoriesArray.value = store.state.warehouseCategoriesArray
             })
-            // функция поиска контакта с помощью search
+            // функция поиска предмета по складу с помощью search
             const search = ref('');
+            const searchedItem = computed(() => {
+                return searchWarehouseItemFilter(myItems.value, search.value)
+                // return myItems.value
+            })
 
             // =====================================
             // Work with Modal Create New Recipe
@@ -201,23 +215,24 @@
                 }
             }
             //
-            const filteredMyItems = ref([])
+            // const filteredMyItems = ref([])
             const filteredMyItemsFunc = (category) => {
-                console.log(category)
+                // console.log(`Категория: ${category}`)
                 // myItems.value.forEach(item => console.log(item.categories.includes(category.name)))
+                let filteredMyItems = []
                 myItems.value.forEach(item => {
-                    console.log(item.categories)
-                    // console.log(category)
-                    // if(item.categories.includes({name: 'Кузов'})) {
-                        // console.log(item.categories)
-                    // } 
+                    // console.log(item.categories.includes(category))
+                    if(item.categories.includes(category)) {
+                        filteredMyItems.push(item)
+                    }
                 })
 
-                // return myItems.value
+                return filteredMyItems
             }
 
+
             return {
-                itemData, dataLoaded, spinner, setOpen, currency, user, pageTitle, myItems, isOpen, createItem, search, warehouseCategoriesArray, filteredMyItems, filteredMyItemsFunc
+                itemData, dataLoaded, spinner, setOpen, currency, user, pageTitle, myItems, isOpen, createItem, search, warehouseCategoriesArray, filteredMyItemsFunc, searchedItem
             }
         }
     })

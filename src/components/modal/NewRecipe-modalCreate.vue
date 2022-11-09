@@ -29,6 +29,7 @@
           type="text"
           v-model="recipeName"
           placeholder="Укажите название рецепта"
+          autocapitalize="on"
         ></ion-input>
       </ion-item-group>
     </ion-content>

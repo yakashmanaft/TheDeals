@@ -2,6 +2,6 @@
 export const searchWarehouseCategoryFilter = (arrayToFilter, search) => {
     return arrayToFilter.filter((category) => {
   
-        return (category.name.toLowerCase().indexOf(search.toLowerCase()) != -1);
+        return (category.toLowerCase().indexOf(search.toLowerCase()) != -1);
     });
 };

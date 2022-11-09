@@ -26,6 +26,7 @@
                     type="text"
                     v-model="itemName"
                     placeholder="Укажите название предмета"
+                    autocapitalize="on"
                 ></ion-input>
             </ion-item-group>
 
@@ -72,8 +73,8 @@
                 <ion-grid class="ion-no-padding">
 
                     <!-- Добавленная категория -->
-                    <ion-chip v-for="category in itemData.categories" class="ion-no-margin ion-margin-top ion-margin-end" color="primary" style="position: relative; overflow: visible">
-                        {{ category.name }}
+                    <ion-chip v-for="category, index in itemData.categories" :key="index" class="ion-no-margin ion-margin-top ion-margin-end" color="primary" style="position: relative; overflow: visible">
+                        {{ category }}
                         <!-- Кнопка удалить выбранную категорию у предмета -->
                         <ion-icon :icon="closeCircleOutline" style="position: absolute; right: -0.2rem; top: 0;" color="medium" @click.stop="openDeleteCategoryModal(category)"></ion-icon>
                     </ion-chip>
@@ -108,7 +109,7 @@
                     <ion-item v-for="(category) in searchedhWarehouseCategories" :key="category.id" @click="choosenCategory(category)">
                         <ion-grid class="ion-no-padding">
                             <ion-row class="ion-justify-content-between ion-align-items-center">
-                                <ion-text>{{ category.name }}</ion-text>
+                                <ion-text>{{ category }}</ion-text>
                             </ion-row>
                         </ion-grid>
                     </ion-item>
@@ -139,7 +140,7 @@ import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonCo
 import { removeCircleOutline, addCircleOutline, closeCircleOutline } from 'ionicons/icons'
 //
 import { searchWarehouseCategoryFilter } from '../../helpers/filterWarehouseCategories';
-import { sortAlphabetically } from "../../helpers/sortDealSubject";
+import { sortAlphabeticallyWarhouseItem } from "../../helpers/sortDealSubject";
 //
 import store from '../../store/index';
 // import { uid } from 'uid';
@@ -198,7 +199,7 @@ import store from '../../store/index';
             const searchWarehouseCategories = ref('')
             // ПОЛЬЗОВАТЕЛЬСКИЕ КАТЕГОРИИ
             const searchedhWarehouseCategories = computed(() => {
-                const sortedWarehouseCategoriesArray = sortAlphabetically(userWarehouseCategories.value)
+                const sortedWarehouseCategoriesArray = sortAlphabeticallyWarhouseItem(userWarehouseCategories.value)
                 return searchWarehouseCategoryFilter(sortedWarehouseCategoriesArray, searchWarehouseCategories.value)
             })
             //
@@ -210,14 +211,16 @@ import store from '../../store/index';
             // Переменная для категории к добавлению
             const newCategory = ref()
             const choosenCategory = (category) => {
-                isCategoryAlreadyAdded.value = itemData.value.categories.find(item => item.name === category.name)
+                isCategoryAlreadyAdded.value = itemData.value.categories.find(item => item === category)
                 if(isCategoryAlreadyAdded.value !== undefined) {
                     alert('NewWarehouseItem-modalCreate: категория уже добавлена к предмету')
                 } else {
                     searchWarehouseCategoriesMenu.value = false
-                    newCategory.value = {
-                        name: category.name
-                    }
+                    // newCategory.value = {
+                    //     name: category.name
+                    // }
+                    newCategory.value = category
+                    console.log(newCategory.value)
                     itemData.value.categories.push(newCategory.value)
                 }
             }
@@ -252,7 +255,7 @@ import store from '../../store/index';
                 deleteCategory.value = true
             }
             const deleteCategoruFunc = (category) => {
-                itemData.value.categories = itemData.value.categories.filter(item => item.name !== category.name)
+                itemData.value.categories = itemData.value.categories.filter(item => item !== category)
             }
             //
             watchEffect(() => {
