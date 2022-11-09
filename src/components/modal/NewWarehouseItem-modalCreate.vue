@@ -100,6 +100,10 @@
                         <ion-icon :icon="closeCircleOutline" style="position: absolute; right: -0.2rem; top: 0;" color="medium"></ion-icon>
                     </ion-chip>
 
+                    <ion-chip v-for="category in itemData.categories">
+                        {{ category.name }}
+                    </ion-chip>
+
                     <!-- Кнопка добавить категорию -->
                     <ion-chip class="ion-no-margin ion-margin-top ion-margin-end" color="primary" outline="true" @click.stop="searchWarehouseCategoriesMenu = true">Добавить</ion-chip>
 
@@ -117,11 +121,17 @@
                     @ionCancel="searchWarehouseCategoriesMenu = false"    
                 ></ion-searchbar>
                 <!--  -->
-                <ion-content style="height: 90vh" class="ion-padding-horizontal">
+                <ion-content style="height: 90vh">
                     <!-- Если есть данные -->
-
+                    <ion-item v-for="category in searchedhWarehouseCategories" :key="category.id" @click="choosenCategory(category)">
+                        <ion-grid class="ion-no-padding">
+                            <ion-row class="ion-justify-content-between ion-align-items-center">
+                                <ion-text>{{ category.name }}</ion-text>
+                            </ion-row>
+                        </ion-grid>
+                    </ion-item>
                     <!-- Если ничего подходящего нет или нет данных -->
-                    <div v-if="searchWarehouseCategories.length <= 0" class="ion-margin-top">
+                    <div v-if="searchedhWarehouseCategories.length <= 0" class="ion-margin-top">
                         <ion-grid class="ion-no-padding">
                             <ion-row class="ion-justify-content-between ion-align-items-center">
                                 <ion-text color="medium">
@@ -140,9 +150,17 @@
 </template>
 
 <script>
-import { defineComponent, ref, watch, watchEffect  } from "vue";
-import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonInput, IonGrid, IonRow, IonIcon, IonChip, IonSearchbar } from "@ionic/vue";
+import { defineComponent, ref, computed, watch, watchEffect, onMounted  } from "vue";
+//
+import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonInput, IonGrid, IonRow, IonIcon, IonChip, IonSearchbar, IonItem } from "@ionic/vue";
 import { removeCircleOutline, addCircleOutline, closeCircleOutline } from 'ionicons/icons'
+//
+import { searchWarehouseCategoryFilter } from '../../helpers/filterWarehouseCategories';
+import { sortAlphabetically } from "../../helpers/sortDealSubject";
+//
+import store from '../../store/index';
+// import { uid } from 'uid';
+// import { supabase } from '../../supabase/init';
 
     export default defineComponent({
         name: 'CreateItem',
@@ -151,13 +169,23 @@ import { removeCircleOutline, addCircleOutline, closeCircleOutline } from 'ionic
             itemData: Object
         }, 
         components: {
-            IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonInput, IonGrid, IonRow, IonIcon, IonChip, IonSearchbar
+            IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonInput, IonGrid, IonRow, IonIcon, IonChip, IonSearchbar, IonItem
         }, 
         setup (props, { emit }) {
             //
             const itemData = ref();
             const itemName = ref('')
             const catalogNumber = ref();
+            // Массив пользователя с вариантам категорий для предметов на складе
+            const userWarehouseCategories = ref();
+            const userSettings = ref(store.state.userSettings)
+            //
+            onMounted( async () => {
+                await store.methods.getUserSettingsfromDB();
+                userSettings.value = store.state.userSettings;
+                //
+                userWarehouseCategories.value = userSettings.value[0].userWarehouseCategories
+            })
             //
             watch(itemName, () => {
                 itemData.value.name = itemName.value
@@ -185,9 +213,31 @@ import { removeCircleOutline, addCircleOutline, closeCircleOutline } from 'ionic
             //
             const searchWarehouseCategoriesMenu = ref(false)
             const searchWarehouseCategories = ref('')
+            // ПОЛЬЗОВАТЕЛЬСКИЕ КАТЕГОРИИ
+            const searchedhWarehouseCategories = computed(() => {
+                const sortedWarehouseCategoriesArray = sortAlphabetically(userWarehouseCategories.value)
+                return searchWarehouseCategoryFilter(sortedWarehouseCategoriesArray, searchWarehouseCategories.value)
+                // return searchWarehouseCategories.value
+            })
             //
             const addNewCategory = () => {
                 alert('NewWarehouseItem-modalCreate: функционал в разработке (addNewCategory)')
+            }
+            // Проверяем добавлена уже категория к предмету или нет
+            const isCategoryAlreadyAdded = ref();
+            // Переменная для категории к добавлению
+            const newCategory = ref()
+            const choosenCategory = (category) => {
+                isCategoryAlreadyAdded.value = itemData.value.categories.find(item => item.name === category.name)
+                if(isCategoryAlreadyAdded.value !== undefined) {
+                    alert('NewWarehouseItem-modalCreate: категория уже добавлена к предмету')
+                } else {
+                    searchWarehouseCategoriesMenu.value = false
+                    newCategory.value = {
+                        name: category.name
+                    }
+                    itemData.value.categories.push(newCategory.value)
+                }
             }
             //
             watchEffect(() => {
@@ -195,7 +245,7 @@ import { removeCircleOutline, addCircleOutline, closeCircleOutline } from 'ionic
             }) 
 
             return {
-                itemData, itemName, catalogNumber, closeThisModal, removeCircleOutline, addCircleOutline, changeSubjectQty, closeCircleOutline, searchWarehouseCategoriesMenu, searchWarehouseCategories, addNewCategory
+                itemData, itemName, catalogNumber, closeThisModal, removeCircleOutline, addCircleOutline, changeSubjectQty, closeCircleOutline, searchWarehouseCategoriesMenu, searchWarehouseCategories, addNewCategory, searchedhWarehouseCategories, userWarehouseCategories, userSettings, choosenCategory, newCategory, isCategoryAlreadyAdded
             }
         }
     })

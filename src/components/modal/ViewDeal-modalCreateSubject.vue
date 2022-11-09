@@ -667,7 +667,7 @@
             //
             onMounted( async() => {
                 await store.methods.getUserSettingsfromDB();
-                userSettings.value = store.state.userSettings
+                userSettings.value = store.state.userSettings;
                 //
                 await store.methods.getUserRecipesFromBD();
                 userRecipeArray.value = store.state.userRecipeArray;

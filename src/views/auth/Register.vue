@@ -115,6 +115,7 @@
                 email: email.value,
                 userPriceList: [],
                 userAdditionalAttributes: [],
+                userWarehouseCategories: [],
                 weekendDays: [],
                 daySaturation: [
                     {

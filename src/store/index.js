@@ -462,7 +462,26 @@ const state = reactive({
   // Переменные для кошелька
   availableBalance: 0,
   myDebt: 0,
-  debtToMe: 0
+  debtToMe: 0,
+  // Переменны по складу
+  // Массив возможных категорий, которые предлагает сервис
+  warehouseCategoriesArray: [
+    {
+      name: 'Кузов'
+    },
+    {
+      name: 'Электрика'
+    },
+    {
+      name: 'Трансмиссия'
+    },
+    {
+      name: 'Салон'
+    },
+    {
+      name: 'Пластик'
+    }
+  ]
 });
 
 const methods = {
