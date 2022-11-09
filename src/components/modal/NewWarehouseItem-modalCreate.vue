@@ -70,44 +70,26 @@
                 </ion-text>
                 <!--  -->
                 <ion-grid class="ion-no-padding">
-                    <!-- Добавленная категория -->
-                    <ion-chip class="ion-no-margin ion-margin-top ion-margin-end" color="primary" style="position: relative; overflow: visible">Кузов
-                        <!-- Кнопка удалить выбранную категорию у предмета -->
-                        <ion-icon :icon="closeCircleOutline" style="position: absolute; right: -0.2rem; top: 0;" color="medium"></ion-icon>
-                    </ion-chip>
 
                     <!-- Добавленная категория -->
-                    <ion-chip class="ion-no-margin ion-margin-top ion-margin-end" color="primary" style="position: relative; overflow: visible">Электрика
-                        <!-- Кнопка удалить выбранную категорию у предмета -->
-                        <ion-icon :icon="closeCircleOutline" style="position: absolute; right: -0.2rem; top: 0;" color="medium"></ion-icon>
-                    </ion-chip>
-
-                    <!-- Добавленная категория -->
-                    <ion-chip class="ion-no-margin ion-margin-top ion-margin-end" color="primary" style="position: relative; overflow: visible">Трансмиссия
-                        <!-- Кнопка удалить выбранную категорию у предмета -->
-                        <ion-icon :icon="closeCircleOutline" style="position: absolute; right: -0.2rem; top: 0;" color="medium"></ion-icon>
-                    </ion-chip>
-
-                    <!-- Добавленная категория -->
-                    <ion-chip class="ion-no-margin ion-margin-top ion-margin-end" color="primary" style="position: relative; overflow: visible">Салон
-                        <!-- Кнопка удалить выбранную категорию у предмета -->
-                        <ion-icon :icon="closeCircleOutline" style="position: absolute; right: -0.2rem; top: 0;" color="medium"></ion-icon>
-                    </ion-chip>
-
-                    <!-- Добавленная категория -->
-                    <ion-chip class="ion-no-margin ion-margin-top ion-margin-end" color="primary" style="position: relative; overflow: visible">Пластик
-                        <!-- Кнопка удалить выбранную категорию у предмета -->
-                        <ion-icon :icon="closeCircleOutline" style="position: absolute; right: -0.2rem; top: 0;" color="medium"></ion-icon>
-                    </ion-chip>
-
-                    <ion-chip v-for="category in itemData.categories">
+                    <ion-chip v-for="category in itemData.categories" class="ion-no-margin ion-margin-top ion-margin-end" color="primary" style="position: relative; overflow: visible">
                         {{ category.name }}
+                        <!-- Кнопка удалить выбранную категорию у предмета -->
+                        <ion-icon :icon="closeCircleOutline" style="position: absolute; right: -0.2rem; top: 0;" color="medium" @click.stop="openDeleteCategoryModal(category)"></ion-icon>
                     </ion-chip>
 
                     <!-- Кнопка добавить категорию -->
                     <ion-chip class="ion-no-margin ion-margin-top ion-margin-end" color="primary" outline="true" @click.stop="searchWarehouseCategoriesMenu = true">Добавить</ion-chip>
 
                 </ion-grid>
+
+                <!-- Всплывашка подтверждение удаления категории предмета -->
+                <ion-action-sheet
+                    :isOpen="deleteCategory"
+                    header="Удалить категорию"
+                    :buttons="deleteCategoryButtons"
+                    @didDismiss="deleteCategory = false"
+                ></ion-action-sheet>
             </ion-item-group>
 
             <!-- Модалка по выбору / поиску категорий  -->
@@ -123,15 +105,16 @@
                 <!--  -->
                 <ion-content style="height: 90vh">
                     <!-- Если есть данные -->
-                    <ion-item v-for="category in searchedhWarehouseCategories" :key="category.id" @click="choosenCategory(category)">
+                    <ion-item v-for="(category) in searchedhWarehouseCategories" :key="category.id" @click="choosenCategory(category)">
                         <ion-grid class="ion-no-padding">
                             <ion-row class="ion-justify-content-between ion-align-items-center">
                                 <ion-text>{{ category.name }}</ion-text>
                             </ion-row>
                         </ion-grid>
                     </ion-item>
+
                     <!-- Если ничего подходящего нет или нет данных -->
-                    <div v-if="searchedhWarehouseCategories.length <= 0" class="ion-margin-top">
+                    <div v-if="searchedhWarehouseCategories.length <= 0" class="ion-margin-top ion-margin-horizontal">
                         <ion-grid class="ion-no-padding">
                             <ion-row class="ion-justify-content-between ion-align-items-center">
                                 <ion-text color="medium">
@@ -152,7 +135,7 @@
 <script>
 import { defineComponent, ref, computed, watch, watchEffect, onMounted  } from "vue";
 //
-import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonInput, IonGrid, IonRow, IonIcon, IonChip, IonSearchbar, IonItem } from "@ionic/vue";
+import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonInput, IonGrid, IonRow, IonIcon, IonChip, IonSearchbar, IonItem, IonActionSheet } from "@ionic/vue";
 import { removeCircleOutline, addCircleOutline, closeCircleOutline } from 'ionicons/icons'
 //
 import { searchWarehouseCategoryFilter } from '../../helpers/filterWarehouseCategories';
@@ -169,7 +152,7 @@ import store from '../../store/index';
             itemData: Object
         }, 
         components: {
-            IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonInput, IonGrid, IonRow, IonIcon, IonChip, IonSearchbar, IonItem
+            IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonInput, IonGrid, IonRow, IonIcon, IonChip, IonSearchbar, IonItem, IonActionSheet
         }, 
         setup (props, { emit }) {
             //
@@ -217,7 +200,6 @@ import store from '../../store/index';
             const searchedhWarehouseCategories = computed(() => {
                 const sortedWarehouseCategoriesArray = sortAlphabetically(userWarehouseCategories.value)
                 return searchWarehouseCategoryFilter(sortedWarehouseCategoriesArray, searchWarehouseCategories.value)
-                // return searchWarehouseCategories.value
             })
             //
             const addNewCategory = () => {
@@ -239,13 +221,46 @@ import store from '../../store/index';
                     itemData.value.categories.push(newCategory.value)
                 }
             }
+            // ============================ Удаление категории у предмета ===============================================
+            // Вызываем action sheet уведомление в качестве подтверждения
+            const deleteCategory = ref(false);
+            // Храним категорию предмета к удалению
+            const categoryToDelete = ref();
+            // Кнопка action sheet для подтверждения удаления
+            const deleteCategoryButtons = [
+                {
+                    text: 'Удалить',
+                    role: 'destructive',
+                    data: {
+                        type: 'delete'
+                    },
+                    handler: () => {
+                        deleteCategoruFunc(categoryToDelete.value)
+                    }
+                },
+                {
+                    text: 'Отменить',
+                    role: 'cancel',
+                    handler: () => {
+                        console.log('Cancel clicked')
+                    }
+                }
+            ]
+            //удаляем current category в предмете (обнолвений в БД здесь не производится)
+            const openDeleteCategoryModal = (category) => {
+                categoryToDelete.value = category;
+                deleteCategory.value = true
+            }
+            const deleteCategoruFunc = (category) => {
+                itemData.value.categories = itemData.value.categories.filter(item => item.name !== category.name)
+            }
             //
             watchEffect(() => {
                 itemData.value = props.itemData
             }) 
 
             return {
-                itemData, itemName, catalogNumber, closeThisModal, removeCircleOutline, addCircleOutline, changeSubjectQty, closeCircleOutline, searchWarehouseCategoriesMenu, searchWarehouseCategories, addNewCategory, searchedhWarehouseCategories, userWarehouseCategories, userSettings, choosenCategory, newCategory, isCategoryAlreadyAdded
+                itemData, itemName, catalogNumber, closeThisModal, removeCircleOutline, addCircleOutline, changeSubjectQty, closeCircleOutline, searchWarehouseCategoriesMenu, searchWarehouseCategories, addNewCategory, searchedhWarehouseCategories, userWarehouseCategories, userSettings, choosenCategory, newCategory, isCategoryAlreadyAdded, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, deleteCategoruFunc
             }
         }
     })

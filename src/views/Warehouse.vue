@@ -41,7 +41,7 @@
             </div>
 
             <!-- Data -->
-            <div v-if="dataLoaded && myItems.length !== 0">
+            <div v-if="dataLoaded && myItems.length !== 0" class="ion-text-left ion-margin-bottom">
                 <!-- Поиск -->
                 <ion-searchbar class="ion-text-left" placeholder="Поиск..." v-model="search"></ion-searchbar>
                 <!-- Данные -->
@@ -58,6 +58,21 @@
                     >
                         {{item}}
                     </router-link>
+                </div>
+                <div class="ion-margin-horizontal">
+                    <!--  -->
+                    <div v-for="category in warehouseCategoriesArray" class="ion-margin-top">
+                        {{category.name}}
+                        
+                        <!-- <div class="ion-padding-start" v-for="item in myItems" :key="item.id">
+                            {{item.name}}
+                        </div> -->
+                        <!--  -->
+                        <div class="ion-padding-start" v-for="item in filteredMyItemsFunc(category)" :key="item.id">
+                            {{item.name}}
+                            {{item.categories}}
+                        </div>
+                    </div>
                 </div>
             </div>
         </ion-content>
@@ -105,12 +120,16 @@
             // Get page title
             const pageTitle = router.currentRoute._value.meta.translation;
             //
+            const warehouseCategoriesArray = ref([])
+            //
             onMounted( async () => {
                 await store.methods.getUserWarehouseItemsFromDB()
                 myItems.value = store.state.userWarehouseArray;
                 //
                 spinner.value = false
                 dataLoaded.value = true;
+                //
+                warehouseCategoriesArray.value = store.state.warehouseCategoriesArray
             })
             // функция поиска контакта с помощью search
             const search = ref('');
@@ -181,9 +200,24 @@
                     // console.log(newItemData)
                 }
             }
+            //
+            const filteredMyItems = ref([])
+            const filteredMyItemsFunc = (category) => {
+                console.log(category)
+                // myItems.value.forEach(item => console.log(item.categories.includes(category.name)))
+                myItems.value.forEach(item => {
+                    console.log(item.categories)
+                    // console.log(category)
+                    // if(item.categories.includes({name: 'Кузов'})) {
+                        // console.log(item.categories)
+                    // } 
+                })
+
+                // return myItems.value
+            }
 
             return {
-                itemData, dataLoaded, spinner, setOpen, currency, user, pageTitle, myItems, isOpen, createItem, search
+                itemData, dataLoaded, spinner, setOpen, currency, user, pageTitle, myItems, isOpen, createItem, search, warehouseCategoriesArray, filteredMyItems, filteredMyItemsFunc
             }
         }
     })

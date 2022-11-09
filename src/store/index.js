@@ -480,6 +480,9 @@ const state = reactive({
     },
     {
       name: 'Пластик'
+    },
+    {
+      name: 'Без категории'
     }
   ]
 });

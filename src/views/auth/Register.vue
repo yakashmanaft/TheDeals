@@ -115,7 +115,9 @@
                 email: email.value,
                 userPriceList: [],
                 userAdditionalAttributes: [],
-                userWarehouseCategories: [],
+                userWarehouseCategories: [{
+                    name: 'Без категории'
+                }],
                 weekendDays: [],
                 daySaturation: [
                     {
