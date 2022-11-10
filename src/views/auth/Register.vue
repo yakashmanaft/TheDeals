@@ -39,28 +39,50 @@
             <!-- Форма ввода логина и пароля -->
             <form @submit.prevent='register()'>
                 <!-- Email -->
-                <ion-input 
+                <!-- <ion-input 
                     placeholder="Enter Email / Введите имейл"
                     type="email" 
                     v-model="email"    
                     class="ion-text-start ion-padding-vertical ion-padding-horizontal"
-                ></ion-input>
+                ></ion-input> -->
+
+                <ion-item id="email" fill="solid" ref="item" class="ion-no-padding">
+                    <ion-label color="primary" position="floating">Адрес эл.почты</ion-label>
+                    <ion-input type="email" @ionInput="validate" @ionBlur="markTouched" v-model="email" ></ion-input>
+                    <ion-note v-if="email" slot="helper" color="success">Корректный адрес</ion-note>
+                    <ion-note slot="error">Некорректный адрес</ion-note>
+                </ion-item>
     
                 <!-- Password -->
-                <ion-input 
+                <!-- <ion-input 
                     placeholder="Enter password / Введите пароль"
                     type="password" 
                     v-model="password"   
                     class="ion-text-start ion-padding-vertical ion-padding-horizontal" 
-                ></ion-input>
+                ></ion-input> -->
+
+                <ion-item fill="solid" ref="item" class="ion-no-padding">
+                    <ion-label color="primary" position="floating">Пароль</ion-label>
+                    <ion-input type="password" v-model="password"></ion-input>
+                </ion-item>
 
                 <!-- Confirm Password -->
-                <ion-input 
+                <!-- <ion-input 
                     placeholder="Confirm password / Повторите пароль"
                     type="password" 
                     v-model="confirmPassword"   
                     class="ion-text-start ion-padding-vertical ion-padding-horizontal" 
-                ></ion-input>
+                ></ion-input> -->
+
+                <ion-item id="confirmPassword" fill="solid" ref="item" class="ion-no-padding">
+                    <ion-label color="primary" position="floating">Повтор пароля</ion-label>
+                    <ion-input type="password" @ionInput="confirmPasswordValidate" @ionBlur="markTouched" v-model="confirmPassword"></ion-input>
+                    <ion-note v-if="confirmPassword" slot="helper" color="success">Совпадает</ion-note>
+                    <ion-note slot="error">Не совпадает</ion-note>
+                </ion-item>
+
+                <br>
+                <br>
     
                 <!-- Button -->
                 <ion-button 
@@ -183,8 +205,53 @@
                 }
             }
 
+            //
+            const validateEmail = (email) => {
+                // return email.match(/^(?=.{1,254}$)(?=.{1,64}@)[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/);
+
+                return email.match(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)
+            }
+
+            //
+            const validateConfirmPassword = (confirmPassword) => {
+                return confirmPassword.match(password.value)
+            }
+
+            //
+            const validate = (ev) => {
+                // const item = document.querySelector('ion-item');
+                const item = document.getElementById('email')
+                const value = ev.target.value;
+                item.classList.remove('ion-valid');
+                item.classList.remove('ion-invalid');
+
+                if (value === "") return;
+
+                validateEmail(value) ? item.classList.add('ion-valid') : item.classList.add('ion-invalid');
+            }
+
+            //
+            const confirmPasswordValidate = (ev) => {
+                // const item = document.querySelector('ion-item');
+                const item = document.getElementById('confirmPassword')
+                const value = ev.target.value;
+                item.classList.remove('ion-valid');
+                item.classList.remove('ion-invalid');
+
+                if (value === "") return;
+
+                validateConfirmPassword(value) ? item.classList.add('ion-valid') : item.classList.add('ion-invalid');
+            }
+
+            //
+            const markTouched = () => {
+                const item = document.querySelector('ion-item');
+                item.classList.add('ion-touched');
+            }
+
+
             return {
-                email, password, confirmPassword, spinner, confirmRequire, confirmRequireFunc, errorMsg, register, isOpenRef, isOpenRef, setOpen, userAccountSetting, createAccountSettings
+                email, password, confirmPassword, spinner, confirmRequire, confirmRequireFunc, errorMsg, register, isOpenRef, isOpenRef, setOpen, userAccountSetting, createAccountSettings, validateEmail, validate, markTouched, validateConfirmPassword, confirmPasswordValidate
             }
         }
     })

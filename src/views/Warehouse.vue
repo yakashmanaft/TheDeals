@@ -31,7 +31,6 @@
         >
             <br>
             <br>
-            <br>
             <!-- page content -->
             <!-- No data -->
             <div v-if="(!dataLoaded || myItems.length === 0) && !spinner" class="no-status-deal ion-padding-horizontal no-data">
@@ -42,30 +41,62 @@
 
             <!-- Data -->
             <div v-if="dataLoaded && myItems.length !== 0" class="ion-text-left ion-margin-bottom">
+
                 <!-- Поиск -->
                 <ion-searchbar class="ion-text-left" placeholder="Поиск..." v-model="search"></ion-searchbar>
-                <!-- Данные -->
-                <div>
-                    <!--  -->
-                    <div v-if="search !== ''" class="ion-margin-horizontal">
-                        <div v-for="(item, index) in searchedItem" :key="index">
-                            {{item.name}}
-                        </div>
-                    </div>
-                    <!--  -->
-                    <ion-item lines="none" v-if="searchedItem.length <= 0">
-                        <ion-text color="medium">Ничего не найдено</ion-text>
+
+                <!-- Вывод списка предметов при поиске-->
+                <router-link
+                    v-if="search !== ''"
+                    v-for="(item, index) in searchedItem" :key="index"
+                    :to="{
+                        name: 'View-warehouse-item',
+                        params: {
+                            itemId: item.id,
+                            itemUid: item.uid,
+                            item: JSON.stringify(item)
+                        }
+                    }"
+                >
+                    <ion-item lines="none" class="ion-no-padding ion-margin-horizontal">
+                        <ion-grid>
+                            <ion-row class="ion-justify-content-between ion-align-items-center">
+                                <ion-text color="primary">
+                                    {{item.name}}
+                                </ion-text>
+                                <ion-text>
+                                    {{item.subjectQty}}
+                                </ion-text>
+                            </ion-row>
+                        </ion-grid>
                     </ion-item>
-                    <!--  -->
-                    <div v-else>
-                        <div v-for="(category, index) in warehouseCategoriesArray" :key="index" class="ion-margin-top ion-margin-horizontal">
-                            {{category}}
-                            
-                            <!-- <div class="ion-padding-start" v-for="item in myItems" :key="item.id">
-                                {{item.name}}
-                            </div> -->
-                            <!--  -->
-                            <div class="ion-padding-start" v-for="(item, index) in filteredMyItemsFunc(category)" :key="index">
+                </router-link>
+
+                <div v-if="search !== '' && searchedItem.length > 0" class="line-divider ion-margin-horizontal"></div>
+
+                <!-- Вывод информации при отсутствии схожих поиску результатов-->
+                <ion-item lines="none" v-if="searchedItem.length <= 0 && searchedCategory.length <= 0">
+                    <ion-text color="medium">Ничего не найдено</ion-text>
+                </ion-item>
+
+                <!-- Вывод категорий и завернутых в них предметов -->
+                <div v-else>
+                    <div v-for="(category, index) in searchedCategory" :key="index" class="ion-no-padding ion-margin-horizontal" @click.stop="expendList(index)">
+                        <ion-item lines="none" class="ion-no-padding" v-if="filteredMyItemsFunc(category).length !== 0">
+                            <ion-grid>
+                                <ion-row class="ion-justify-content-between ion-align-items-center">
+                                    <ion-text style="font-weight: bold">
+                                        {{category}}
+                                    </ion-text>
+                                    <ion-text>
+                                        {{filteredMyItemsFunc(category).length}}
+                                    </ion-text>
+                                </ion-row>
+                            </ion-grid>
+                        </ion-item>
+
+                        <div :id="index" style="display: none">
+                            <div v-for="(item, idx) in filteredMyItemsFunc(category)" :key="idx" lines="none" class="ion-no-padding">
                                 <router-link
                                     :to="{
                                         name: 'View-warehouse-item',
@@ -76,12 +107,24 @@
                                         }
                                     }"
                                 >
-                                    {{item.name}}
+                                    <ion-item lines="none" class="ion-no-padding">
+                                        <ion-grid>
+                                            <ion-row class="ion-justify-content-between ion-align-items-center">
+                                                <ion-text color="primary">
+                                                    {{item.name}}
+                                                </ion-text>
+                                                <ion-text>
+                                                    {{item.subjectQty}}
+                                                </ion-text>
+                                            </ion-row>
+                                        </ion-grid>
+                                    </ion-item>
                                 </router-link>
                             </div>
                         </div>
                     </div>
                 </div>
+
             </div>
         </ion-content>
     </div>
@@ -94,7 +137,7 @@
     import { useRouter } from 'vue-router';
     import { uid } from 'uid';
     //
-    import { IonContent, IonImg, IonText, IonSearchbar, IonItem } from '@ionic/vue'
+    import { IonContent, IonImg, IonText, IonSearchbar, IonItem, IonList, IonGrid, IonRow, IonItemDivider } from '@ionic/vue'
     //
     import Spinner from '@/components/Spinner.vue';
     import NavigationMenu from '@/components/NavigationMenu.vue';
@@ -102,12 +145,13 @@
     import CreateButton from '../components/CreateButton.vue';
     import CreateNewItem from '../components/modal/NewWarehouseItem-modalCreate.vue';
     // 
-    import { searchWarehouseItemFilter  } from '../helpers/filterUserWarehouseItems.js'
+    import { searchWarehouseItemFilter  } from '../helpers/filterUserWarehouseItems.js';
+    import { searchWarehouseCategoryFilter } from '../helpers/filterWarehouseCategories.js';
 
     export default defineComponent({
         name: 'Warehouse',
         components: {
-            IonContent, Spinner, NavigationMenu, Header, CreateButton, IonImg, IonText, CreateNewItem, IonSearchbar, IonItem
+            IonContent, Spinner, NavigationMenu, Header, CreateButton, IonImg, IonText, CreateNewItem, IonSearchbar, IonItem, IonList, IonGrid, IonRow, IonItemDivider
         },
         setup() {
             //
@@ -146,6 +190,9 @@
             const searchedItem = computed(() => {
                 return searchWarehouseItemFilter(myItems.value, search.value)
                 // return myItems.value
+            })
+            const searchedCategory = computed(() => {
+                return searchWarehouseCategoryFilter(warehouseCategoriesArray.value, search.value)
             })
 
             // =====================================
@@ -215,10 +262,7 @@
                 }
             }
             //
-            // const filteredMyItems = ref([])
             const filteredMyItemsFunc = (category) => {
-                // console.log(`Категория: ${category}`)
-                // myItems.value.forEach(item => console.log(item.categories.includes(category.name)))
                 let filteredMyItems = []
                 myItems.value.forEach(item => {
                     // console.log(item.categories.includes(category))
@@ -229,10 +273,22 @@
 
                 return filteredMyItems
             }
+            //
+            const expendList = (index) => {
+                let el = document.getElementById(index)
+                if(document.getElementById(index)) {
+
+                    if(el.style.display == 'none') {
+                            el.style.display = 'block'
+                        } else {
+                            el.style.display = 'none'
+                    }
+                }
+            }
 
 
             return {
-                itemData, dataLoaded, spinner, setOpen, currency, user, pageTitle, myItems, isOpen, createItem, search, warehouseCategoriesArray, filteredMyItemsFunc, searchedItem
+                itemData, dataLoaded, spinner, setOpen, currency, user, pageTitle, myItems, isOpen, createItem, search, warehouseCategoriesArray, filteredMyItemsFunc, searchedItem, searchedCategory, expendList
             }
         }
     })
@@ -264,5 +320,14 @@
     }
     .no-data ion-img {
         width: 50%;
+    }
+    .display-none {
+        display: none;
+    }
+    .display-block {
+        display: block
+    }
+    .line-divider {
+        border: 0.05rem solid var(--ion-color-light);
     }
 </style>

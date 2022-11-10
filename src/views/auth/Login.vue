@@ -28,21 +28,34 @@
             <!-- Форма ввода логина и пароля -->
             <form @submit.prevent='login()'>
                 <!-- Email -->
-                <ion-input 
+                <!-- <ion-input 
                     placeholder="Enter Email / Введите имейл"
                     type="email" 
                     v-model="email"    
                     class="ion-text-start ion-padding-vertical ion-padding-horizontal"
-                ></ion-input>
+                ></ion-input> -->
+
+                <ion-item fill="solid" ref="item" class="ion-no-padding">
+                    <ion-label color="primary" position="floating">Адрес эл.почты</ion-label>
+                    <ion-input type="email" @ionInput="validate" @ionBlur="markTouched" v-model="email" ></ion-input>
+                    <ion-note v-if="email" slot="helper" color="success">Корректный адрес</ion-note>
+                    <ion-note slot="error">Некорректный адрес</ion-note>
+                </ion-item>
     
                 <!-- Password -->
-                <ion-input 
+                <!-- <ion-input 
                     placeholder="Enter password / Введите пароль"
                     type="password" 
                     v-model="password"   
                     class="ion-text-start ion-padding-vertical ion-padding-horizontal" 
-                ></ion-input>
-    
+                ></ion-input> -->
+
+                <ion-item fill="solid" ref="item" class="ion-no-padding">
+                    <ion-label color="primary" position="floating">Пароль</ion-label>
+                    <ion-input type="password" v-model="password"></ion-input>
+                </ion-item>
+                <br>
+                <br>
                 <!-- Button -->
                 <ion-button 
                     class="ion-margin-vertical"
@@ -70,12 +83,12 @@
     import { ref, defineComponent } from 'vue';
     import { supabase } from '../../supabase/init';
     import { useRouter } from 'vue-router';
-    import { IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert } from '@ionic/vue';
+    import { IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert, IonNote } from '@ionic/vue';
     import Spinner from '../../components/Spinner.vue'
 
     export default defineComponent ({
         name: 'login',
-        components: { IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert, Spinner },
+        components: { IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert, Spinner, IonNote },
         setup() {
             // Create data / vars
             const router = useRouter();
@@ -109,8 +122,32 @@
             // show alert of errorMsg
             const setOpen = () => isOpenRef.value = !isOpenRef.value; 
 
+            //
+            const validateEmail = (email) => {
+                // return email.match(/^(?=.{1,254}$)(?=.{1,64}@)[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/);
+
+                return email.match(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)
+            }
+
+            //
+            const validate = (ev) => {
+                const item = document.querySelector('ion-item');
+                const value = ev.target.value;
+                item.classList.remove('ion-valid');
+                item.classList.remove('ion-invalid');
+
+                if (value === "") return;
+
+                validateEmail(value) ? item.classList.add('ion-valid') : item.classList.add('ion-invalid');
+            }
+
+            const markTouched = () => {
+                const item = document.querySelector('ion-item');
+                item.classList.add('ion-touched');
+            }
+
             return {
-                email, password, errorMsg, login, spinner, isOpenRef, setOpen
+                email, password, errorMsg, login, spinner, isOpenRef, setOpen, validateEmail, validate, markTouched
             }
         }
     })
