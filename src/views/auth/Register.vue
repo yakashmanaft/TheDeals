@@ -137,9 +137,8 @@
                 email: email.value,
                 userPriceList: [],
                 userAdditionalAttributes: [],
-                userWarehouseCategories: [{
-                    name: 'Без категории'
-                }],
+                userWarehouseCategories: ['Без категории'],
+                userRecipesCategories: ['Без категории'],
                 weekendDays: [],
                 daySaturation: [
                     {
