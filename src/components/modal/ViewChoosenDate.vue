@@ -58,7 +58,7 @@
                     :deal="deal"
                     @getContact="setContact"
                     :contactNameByID="showNameByID(deal.contactID, myContacts)"
-                    class="deal-cover"
+                    class="deal-cover deal-cover-success"
                 />
             </div>
             <!-- Если Отменены -->
@@ -72,7 +72,7 @@
                     :deal="deal"
                     @getContact="setContact"
                     :contactNameByID="showNameByID(deal.contactID, myContacts)"
-                    class="deal-cover"
+                    class="deal-cover deal-cover-cancelled"
                 />
             </div>
             <br>
@@ -203,7 +203,17 @@
         left: 0;
         width: 100%;
         height: 100%;
-        backdrop-filter: blur(20rem) opacity(0.8)
+        backdrop-filter: blur(10rem) opacity(0.7)
+    }
+
+    .deal-cover-cancelled:after {
+        content: '';
+        background-color: rgba(100, 77, 4, 10%);
+    }
+
+    .deal-cover-success:after {
+        content: '';
+        background-color: rgba(45, 211, 111, 20%);
     }
 
 </style>
