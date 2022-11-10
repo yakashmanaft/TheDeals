@@ -72,6 +72,7 @@
                     </ion-item>
                 </router-link>
 
+                <!-- Полоска разделитель -->
                 <div v-if="search !== '' && searchedItem.length > 0" class="line-divider ion-margin-horizontal"></div>
 
                 <!-- Вывод информации при отсутствии схожих поиску результатов-->

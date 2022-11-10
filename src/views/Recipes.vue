@@ -41,21 +41,46 @@
             </div>
 
             <!-- Data -->
-            <div v-if="dataLoaded && myRecipes.length !== 0">
+            <div v-if="dataLoaded && myRecipes.length !== 0" class="ion-text-left ion-margin-bottom">
+
                 <!-- Поиск -->
                 <ion-searchbar class="ion-text-left" placeholder="Поиск..." v-model="search"></ion-searchbar>
-                <!-- Данные -->
-                <div v-for="recipe in myRecipes" :key="recipe.id" class="ion-margin-top">
-                    <router-link
-                        :to="{ name: 'View-Recipe', params: {
+
+                <!-- Вывод списка -->
+                <router-link
+                    v-if="search !== ''"
+                    v-for="(recipe, index) in searchedRecipe" :key="index"
+                    :to="{ name: 'View-Recipe', 
+                            params: {
                             recipeId: recipe.id,
                             recipeUid: recipe.uid,
                             recipe: JSON.stringify(recipe)
-                        } }"
-                    >
-                        {{recipe}}
-                    </router-link>
-                </div>
+                        } 
+                    }"
+                >
+                    <ion-item lines="none" class="ion-no-padding ion-margin-horizontal">
+                        <ion-grid>
+                            <ion-row class="ion-justify-content-between ion-align-items-center">
+                                <ion-text color="primary">
+                                    {{recipe.name}}
+                                </ion-text>
+                                <ion-text>
+                                    <!-- Не понятно что тут помещать )) -->
+                                </ion-text>
+                            </ion-row>
+                        </ion-grid>
+                    </ion-item>
+                </router-link>
+                
+                <!-- Полоска разделитель -->
+                <div v-if="search !== '' && searchedRecipe.length > 0" class="line-divider ion-margin-horizontal"></div>
+
+                <!-- Вывод информации при отсутствии схожих поиску результатов-->
+                <ion-item lines="none" v-if="searchedRecipe.length <= 0 && searchedCategory.length <= 0">
+                <!-- <ion-item lines="none" v-if="searchedRecipe.length <= 0"> -->
+                    <ion-text color="medium">Ничего не найдено</ion-text>
+                </ion-item>
+
             </div>
 
         </ion-content>
@@ -69,13 +94,16 @@
     import CreateButton from '@/components/CreateButton.vue';
     import CreateNewRecipe from '@/components/modal/NewRecipe-modalCreate.vue';
     //
-    import { IonContent, IonSearchbar, IonImg, IonText } from '@ionic/vue'
+    import { IonContent, IonSearchbar, IonImg, IonText, IonItem, IonGrid, IonRow } from '@ionic/vue'
     //
     import { defineComponent, ref, computed, onMounted } from 'vue';
     import store from '../store/index';
     import { supabase } from '../supabase/init';
     import { useRouter } from 'vue-router';
     import { uid } from 'uid';
+    //
+    import { searchWarehouseItemFilter } from '../helpers/filterUserWarehouseItems.js';
+    import { searchWarehouseCategoryFilter } from '../helpers/filterWarehouseCategories.js';
 
     export default defineComponent({
         name: 'Recipes',
@@ -89,7 +117,10 @@
             IonContent,
             IonSearchbar,
             IonImg,
-            IonText
+            IonText,
+            IonItem,
+            IonGrid,
+            IonRow
         },
         setup() {
             // Get user from store
@@ -106,6 +137,8 @@
             const spinner = ref(null);
             const dataLoaded = ref(null);
             const myRecipes = ref([])
+            //
+            const recipesCategoriesArray = ref([])
 
             // Подтягиваем список рецептов из store
             spinner.value = true;
@@ -113,12 +146,21 @@
             onMounted(async () => {
                 await store.methods.getUserRecipesFromBD();
                 myRecipes.value = store.state.userRecipeArray;
+                //
                 spinner.value = false
                 dataLoaded.value = true;
+                //
+                recipesCategoriesArray.value = store.state.recipesCategoriesArray
             })
 
-            // функция поиска контакта с помощью search
+            // функция поиска рецепта с помощью search
             const search = ref('');
+            const searchedRecipe = computed(() => {
+                return searchWarehouseItemFilter(myRecipes.value, search.value)
+            })
+            const searchedCategory = computed(() => {
+                return searchWarehouseCategoryFilter(recipesCategoriesArray.value, search.value)
+            })
 
             // =====================================
             // Work with Modal Create New Recipe
@@ -129,7 +171,9 @@
                 uid: uid(),
                 email: userEmail.value,
                 value: '',
-                name: ''
+                name: '',
+                categories: [],
+                recipeAuthorEmail: ''
             })
 
             // При закрытии или открытии modal очищаем шаблон рецепта
@@ -141,7 +185,9 @@
                     uid: uid(),
                     email: userEmail.value,
                     value: '',
-                    name: ''
+                    name: '',
+                    categories: [],
+                    recipeAuthorEmail: ''
                 }
             }
 
@@ -154,7 +200,11 @@
                 // Использовать валидацию
                 if(newRecipeData.name === '') {
                     alert('Recipes: Вы не указали название рецепта')
-                } else {
+                } 
+                // else if (newRecipeData.categories.length === 0) {
+                //     alert('Recips: Добавьте хотя бы одну категорию')
+                // } 
+                else {
                     try {
                         // Добавляем в БД инфу по новому контакту
                         const { error } = await supabase.from('userRecipes').insert([recipeData.value])
@@ -179,7 +229,7 @@
             }
 
             return {
-                user, router, pageTitle, spinner, dataLoaded, myRecipes, search, isOpen, recipeData, setOpen, createNew, goToRecipesStore
+                user, router, pageTitle, spinner, dataLoaded, myRecipes, search, isOpen, recipeData, setOpen, createNew, goToRecipesStore, searchedRecipe, recipesCategoriesArray, searchedCategory
             }
         }  
     })

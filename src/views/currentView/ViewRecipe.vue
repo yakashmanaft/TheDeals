@@ -29,6 +29,11 @@
                 <ion-item-group>
                     {{currentRecipe}}
                 </ion-item-group>
+                <!--  -->
+                <br>
+                <ion-item-group>
+                    Автор рецепта {{currentRecipe.recipeAuthorEmail}}
+                </ion-item-group>
                 <!-- Кнопка удалить -->
                 <ion-button fill="clear" color="danger" @click="openDeleteMenu">Удалить</ion-button>
                 <!-- Всплывашка подтверждение удаления рецепта -->
