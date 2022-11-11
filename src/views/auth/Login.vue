@@ -164,4 +164,9 @@
         font-size: 70px;
         font-weight: bold;
     }
+
+    ion-item{
+        --inner-padding-end: 0px;
+        --padding-start:0px
+    }
 </style>

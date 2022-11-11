@@ -81,6 +81,11 @@
                     <ion-text color="medium">Ничего не найдено</ion-text>
                 </ion-item>
 
+                <!-- Вывод категорий и звернутых в них рецептов -->
+                <div v-else>
+                    1
+                </div>
+
             </div>
 
         </ion-content>

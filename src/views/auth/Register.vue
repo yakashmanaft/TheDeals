@@ -111,14 +111,14 @@
     import { ref, defineComponent } from 'vue';
     import { supabase } from '../../supabase/init';
     import { useRouter } from 'vue-router';
-    import { IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert } from '@ionic/vue';
+    import { IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert, IonNote } from '@ionic/vue';
     import Spinner from '../../components/Spinner.vue';
     //
     import { uid } from 'uid';
 
     export default defineComponent ({
         name: 'register',
-        components: { IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert, Spinner },
+        components: { IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert, Spinner, IonNote },
         setup() {
             // Create data / vars
             const router = useRouter();
@@ -266,5 +266,10 @@
     .header {
         font-size: 70px;
         font-weight: bold;
+    }
+
+    ion-item{
+        --inner-padding-end: 0px;
+        --padding-start:0px
     }
 </style>
