@@ -83,9 +83,54 @@
 
                 <!-- Вывод категорий и звернутых в них рецептов -->
                 <div v-else>
-                    1
-                </div>
+                    <div v-for="(category, index) in searchedCategory" :key="index" class="ion-no-padding ion-margin-horizontal" @click.stop="expendList(index)">
+                        
+                        <!--  -->
+                        <ion-item lines="none" class="ion-no-padding" v-if="filteredMyRecipesFunc(category).length !== 0">
+                            <ion-grid>
+                                <ion-row class="ion-justify-content-between ion-align-items-center">
+                                    <ion-text style="font-weight: bold">
+                                        {{category}}
+                                    </ion-text>
+                                    <ion-text>
+                                        {{filteredMyRecipesFunc(category).length}}
+                                    </ion-text>
+                                </ion-row>
+                            </ion-grid>
+                        </ion-item>
 
+                        <!--  -->
+                        <div :id="index" style="display: none">
+                            <div v-for="(recipe, idx) in filteredMyRecipesFunc(category)" :key="idx" lines="none" class="ion-no-padding">
+                                <router-link
+                                    :to="{
+                                        name: 'View-Recipe',
+                                        params: {
+                                            recipeId: recipe.id,
+                                            recipeUid: recipe.uid,
+                                            recipe: JSON.stringify(recipe)
+                                        }
+                                    }"
+                                >
+                                    <ion-item lines="none" class="ion-no-padding">
+                                        <ion-grid>
+                                            <ion-row class="ion-justify-content-between ion-align-items-center">
+                                                <ion-text color="primary">
+                                                    {{recipe.name}}
+                                                </ion-text>
+                                                <ion-text style="display: flex; align-items: center">
+                                                    <ion-icon v-if="userEmail !== recipe.recipeAuthorEmail" color="success"  :icon="bagCheckOutline" @click.stop.prevent="showNotification(recipe)"></ion-icon>
+                                                    <!--  -->
+                                                    <ion-icon v-if="recipe.forSale" color="warning" :icon="ribbonOutline" class="ion-margin-start" @click.stop.prevent="showNotification(recipe)"></ion-icon>
+                                                </ion-text>
+                                            </ion-row>
+                                        </ion-grid>
+                                    </ion-item>
+                                </router-link>
+                            </div>
+                        </div>  
+                    </div>
+                </div>
             </div>
 
         </ion-content>
@@ -99,7 +144,8 @@
     import CreateButton from '@/components/CreateButton.vue';
     import CreateNewRecipe from '@/components/modal/NewRecipe-modalCreate.vue';
     //
-    import { IonContent, IonSearchbar, IonImg, IonText, IonItem, IonGrid, IonRow } from '@ionic/vue'
+    import { IonContent, IonSearchbar, IonImg, IonText, IonItem, IonGrid, IonRow, IonIcon } from '@ionic/vue'
+    import { bagCheckOutline, ribbonOutline } from 'ionicons/icons'
     //
     import { defineComponent, ref, computed, onMounted } from 'vue';
     import store from '../store/index';
@@ -125,7 +171,8 @@
             IonText,
             IonItem,
             IonGrid,
-            IonRow
+            IonRow,
+            IonIcon
         },
         setup() {
             // Get user from store
@@ -178,7 +225,8 @@
                 value: '',
                 name: '',
                 categories: [],
-                recipeAuthorEmail: ''
+                recipeAuthorEmail: '',
+                forSale: false
             })
 
             // При закрытии или открытии modal очищаем шаблон рецепта
@@ -192,7 +240,8 @@
                     value: '',
                     name: '',
                     categories: [],
-                    recipeAuthorEmail: ''
+                    recipeAuthorEmail: '',
+                    forSale: false
                 }
             }
 
@@ -232,9 +281,41 @@
             const goToRecipesStore = () => {
                 alert('Recipes: Магазин в разработке...')
             }
+            //
+            const filteredMyRecipesFunc = (category) => {
+                let filteredMyRecipes = []
+                myRecipes.value.forEach(recipe => {
+                    if(recipe.categories.includes(category)) {
+                        filteredMyRecipes.push(recipe)
+                    }
+                })
+
+                return filteredMyRecipes
+            }
+            //
+            const expendList = (index) => {
+                let el = document.getElementById(index)
+                if(document.getElementById(index)) {
+
+                    if(el.style.display == 'none') {
+                            el.style.display = 'block'
+                        } else {
+                            el.style.display = 'none'
+                    }
+                }
+            }
+
+            //
+            const showNotification = (recipe) => {
+                if (userEmail.value !== recipe.recipeAuthorEmail) {
+                    alert('Данный рецепт был вами куплен')
+                } else if (recipe.forSale) {
+                    alert('Это ваш рецепт и вы выставили его на продажу в магазине рецептов')
+                }
+            }
 
             return {
-                user, router, pageTitle, spinner, dataLoaded, myRecipes, search, isOpen, recipeData, setOpen, createNew, goToRecipesStore, searchedRecipe, recipesCategoriesArray, searchedCategory
+                user, userEmail, router, pageTitle, spinner, dataLoaded, myRecipes, search, isOpen, recipeData, setOpen, createNew, goToRecipesStore, searchedRecipe, recipesCategoriesArray, searchedCategory, expendList, filteredMyRecipesFunc, bagCheckOutline, showNotification, ribbonOutline
             }
         }  
     })

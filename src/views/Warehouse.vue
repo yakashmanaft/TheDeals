@@ -83,6 +83,8 @@
                 <!-- Вывод категорий и завернутых в них предметов -->
                 <div v-else>
                     <div v-for="(category, index) in searchedCategory" :key="index" class="ion-no-padding ion-margin-horizontal" @click.stop="expendList(index)">
+
+                        <!--  -->
                         <ion-item lines="none" class="ion-no-padding" v-if="filteredMyItemsFunc(category).length !== 0">
                             <ion-grid>
                                 <ion-row class="ion-justify-content-between ion-align-items-center">
@@ -96,6 +98,7 @@
                             </ion-grid>
                         </ion-item>
 
+                        <!--  -->
                         <div :id="index" style="display: none">
                             <div v-for="(item, idx) in filteredMyItemsFunc(category)" :key="idx" lines="none" class="ion-no-padding">
                                 <router-link
