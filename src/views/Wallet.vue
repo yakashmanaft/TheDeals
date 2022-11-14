@@ -54,6 +54,7 @@
                     </ion-row>
                 </ion-grid> -->
                 <br>
+                <br>
 
                 <!--  -->
                 <ion-grid class="ion-text-left ion-padding-horizontal ion-margin-horizontal">
@@ -72,6 +73,7 @@
                 </ion-grid>
 
                 <!--  -->
+                <br>
                 <ion-card class="ion-padding">
                     <router-link :to="{ name: 'userFinance' }">
                         <ion-row class="ion-justify-content-between ion-align-items-center">
