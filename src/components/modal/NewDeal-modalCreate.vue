@@ -498,6 +498,7 @@
     import { defineComponent, ref, computed, watch, watchEffect } from 'vue';
     import store from '../../store/index'; 
     import { uid } from 'uid';
+    import { supabase } from '../../supabase/init';
     //
     import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonInput, IonSearchbar, IonItem, IonChip, IonIcon, IonCard, IonActionSheet, IonThumbnail, IonImg, IonLabel, IonTextarea, IonList } from '@ionic/vue';
     import { addCircleOutline, closeCircleOutline } from 'ionicons/icons'
@@ -1251,6 +1252,11 @@
                 } else if (dealData.value.dealPaid !== 0) {
                     dealData.value.dealPaid += +amount
                 }
+
+                // добавляем запись (строку) от транзакции в леджер
+                // addToLedger(amount) 
+
+                //
                 culcDealDebt(dealData.value.totalDealPrice, dealData.value.dealPaid)
                 closeDealPaidMenu()
             }
@@ -1271,6 +1277,23 @@
             watch(dealImportance, () => {
                 dealData.value.dealImportance = dealImportance.value
             })
+
+            // должна вызываться после emit то есть вызывается в: calendar.vue и deals.vue
+            // const addToLedger = async (amount) => {
+            //     try {
+            //         const { error } = await supabase.from('ledger').insert([{
+            //             dealID: dealData.value.id,
+            //             uid: dealData.value.uid,
+            //             contactID: dealData.value.contactID,
+            //             dealType: dealData.value.dealType,
+            //             amount: amount,
+            //             userEmail: dealData.value.email
+            //         }])
+            //         if(error) throw error
+            //     } catch (error) {
+            //         alert(`Error: ${error.message}`)
+            //     }
+            // }
 
             return {
                 currency, dealContact, dealContactID , searchContactMenu, choose, isCalendarOpened, closeModalCalendar, updateExecutionDate, datepicker, myContactsArray, searchDealContact, searchedContacts, dealTypes, addCircleOutline, closeCircleOutline, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, openDeleteSubjectModal, subjectToDelete, deleteDealSubjectButtons, addNewSubject, deleteSubject, dealData, currentDealSubject, isViewDealSubjectOpened, openCurrentDealSubject, checkRentAttr, setColorByDealType, setIconByDealType, currentDealType, isAttributesMenuOpened, setNewSubjectPrice, calcNewSubjectTotalPrice, sumAttributesPriceValue, setSumAttributesPriceValue, setSubjectPrice, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, calcSubjectTotalPrice, setNewSubjectQty, setPersonQty, setNewPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, setChipColor, shippingTypeList, dealShippingType, shippingPrice, shippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, calcTotalDealPrice, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, translateSelectedProduct, culcSubjectWeight, culcBuySubjectWeight, culcDealDebt, setAmountValue, debt, refreshDebtValue, dealPaidAmountValue, setAddButtonColor, currentPriceSubject, personPortionGram, availableBalance, myDeals, setRatingValue, dealImportance

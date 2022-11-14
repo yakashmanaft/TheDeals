@@ -433,7 +433,7 @@
                         name: '',
                         price: 0,
                         totalPrice: 0,
-                        qty: 0,
+                        qty: 1,
                         rentType: '',
                         isReturned: '' 
                     }

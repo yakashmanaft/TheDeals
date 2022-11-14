@@ -462,6 +462,9 @@
                         isViewDealModalOpened.value = false;
                         // переходим на страницу созданного нового контакта
                         router.push({name: 'View-Deal', params: { dealId: newDeal.id, deal: JSON.stringify(newDeal)}})
+                        if(dealData.value.dealPaid > 0) {
+                            addToLedger(dealData.value.dealPaid, newDeal.id)
+                        }
                     } catch (error) {
                         alert(`Error: ${error.message}`)
                     }
@@ -735,8 +738,25 @@
                 // spinner.value = false;
             }
 
+            //
+            const addToLedger = async (amount, dealID) => {
+                try {
+                    const { error } = await supabase.from('ledger').insert([{
+                        dealID: dealID,
+                        uid: dealData.value.uid,
+                        contactID: dealData.value.contactID,
+                        dealType: dealData.value.dealType,
+                        amount: amount,
+                        userEmail: dealData.value.email
+                    }])
+                    if(error) throw error
+                } catch (error) {
+                    alert(`Error: ${error.message}`)
+                }
+            }
+
             return {
-                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isViewDealModalOpened, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translateValue, refreshData, myContacts, getContact, showNameByID, checkRentAttr, dealTypesList, dealByType, showDealByType, helpOutline, addSubject, deleteSubject, setIconByDealType, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, dealStatus, dealWhereChangeStatus, prevDealStatus, debt, culcDealDebt, openDealPaidMenu, isDealPaidMenuOpened, refreshDebtValue, closeDealPaidMenu, dealPaidAmountValue, setAmountValue, isAllAttrReturnedFunc, currency, isAllAttrReturned, update, setMarkerAttrColor, shapes
+                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isViewDealModalOpened, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translateValue, refreshData, myContacts, getContact, showNameByID, checkRentAttr, dealTypesList, dealByType, showDealByType, helpOutline, addSubject, deleteSubject, setIconByDealType, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, dealStatus, dealWhereChangeStatus, prevDealStatus, debt, culcDealDebt, openDealPaidMenu, isDealPaidMenuOpened, refreshDebtValue, closeDealPaidMenu, dealPaidAmountValue, setAmountValue, isAllAttrReturnedFunc, currency, isAllAttrReturned, update, setMarkerAttrColor, shapes, addToLedger
             }
         }
     })

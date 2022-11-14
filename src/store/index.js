@@ -204,7 +204,7 @@ const state = reactive({
   //   {
   //       value: 'swiss-meringue',
   //       name: 'Швейцарская меренга',
-  //       target: ['meringue']
+  //       category: ['meringue']
   //   },
   //   {
   //       value: 'banana-with-gouda',
@@ -229,6 +229,9 @@ const state = reactive({
   // deal SALE Subject List
   // User warehouse list
   userWarehouseArray: [],
+  // user finance from ledger
+  userLedgerArray: [],
+  //
   dealSaleSubjectArray: [
     {
       value: 'cake',
@@ -558,6 +561,13 @@ const methods = {
     let {data: userWarehouse, error } = await supabase.from('userWarehouse').select('*');
     if(error) throw error;
     state.userWarehouseArray = userWarehouse;
+  },
+  // Забираем из БД user ledger finance list
+  getUserLedger: async () => {
+    let { data: userLedger, error } = await supabase.from('ledger').select('*');
+    if(error) throw error;
+    state.userLedgerArray = userLedger;
+    //userLedgerArray
   },
   //
   setUserEmail: () => {

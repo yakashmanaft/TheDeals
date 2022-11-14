@@ -326,7 +326,7 @@
                 spinner.value = false
             }
             // =============================================================
-            // Создаем новое дело
+            // Создаем новое дело, открывая модалку по созданию
             const createNewDeal = (date) => {
                 // console.log(date)
                 isViewChoosenDateOpened.value = false
@@ -360,10 +360,16 @@
                         // обновляем массив в store
                         await store.methods.getMyDealsFromBD();
                         myDeals.value = store.state.myDealsArray
+                        // ищем созданное новое дело в массиве всех дел в store (по uid)
+                        const newDeal = myDeals.value.find(el => el.uid === dealData.value.uid)
                         // закрываем modal
                         isViewDealModalOpened.value = false;
                         // на свякий - тормозим спинер
                         spinner.value = false;
+                        //
+                        if(dealData.value.dealPaid > 0) {
+                            addToLedger(dealData.value.dealPaid, newDeal.id)
+                        }
                         // Оставляем модалку выбранного дня открытой
                         isViewChoosenDateOpened.value = true
                         // если выбранная дата еще есть, а она есть - обновляем контент к показу по этой дате
@@ -603,8 +609,25 @@
                 return daySaturation.qty
             }
 
+            // 
+            const addToLedger = async (amount, dealID) => {
+                try {
+                    const { error } = await supabase.from('ledger').insert([{
+                        dealID: dealID,
+                        uid: dealData.value.uid,
+                        contactID: dealData.value.contactID,
+                        dealType: dealData.value.dealType,
+                        amount: amount,
+                        userEmail: dealData.value.email
+                    }])
+                    if(error) throw error
+                } catch (error) {
+                    alert(`Error: ${error.message}`)
+                }
+            }
+
             return {
-                menu, user, router, pageTitle, choosenDate, spinner, dataLoaded, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle, observer, availableBalance, avatar_url
+                menu, user, router, pageTitle, choosenDate, spinner, dataLoaded, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle, observer, availableBalance, avatar_url, addToLedger
             }
         }
     })

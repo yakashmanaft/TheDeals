@@ -30,6 +30,17 @@ const routes = [
     }
   },
   {
+    path: '/finance',
+    name: 'userFinance',
+    component: () => import('../views/userFinance.vue'),
+    meta: {
+      title: 'My finance',
+      auth: true,
+      translation: 'Аналитика',
+      type: 'View'
+    }
+  },
+  {
     path: '/deals',
     name: 'Deals',
     component: () => import('../views/Deals.vue'),
