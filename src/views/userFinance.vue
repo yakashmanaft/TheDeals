@@ -23,10 +23,9 @@
             </div>
 
             <!-- Data -->
-            <div v-if="dataLoaded && myData !== 0" class="ion-text-left ion-margin-bottom ion-padding-horizontal">
-
+            <div v-if="dataLoaded && myData !== 0" class="ion-text-left ion-margin-bottom">
                 <!--  -->
-                <div v-for="(date, idx) in getTransactionDateArray()" :key="idx" class="ion-margin-top">
+                <div v-for="(date, idx) in getTransactionDateArray()" :key="idx" class="ion-margin-top ion-padding-horizontal">
 
                     <!-- Дата -->
                     <ion-text>
@@ -37,58 +36,56 @@
                     </ion-text>
 
                     <!-- Транзакция -->
-                    <div v-for="transaction in myData" :key="transaction.id">
-                        <div v-if="formattedDate(transaction.created_at) === date">
-                            <!-- <ion-text>dealID: {{transaction.dealID}}</ion-text><br>
-                            <ion-text>uid: {{transaction.uid}}</ion-text><br>
-                            <ion-text>created_at: {{transaction.created_at}}</ion-text><br>
-                            <ion-text>contactID: {{transaction.contactID}}</ion-text><br>
-                            <ion-text>dealType: {{transaction.dealType}}</ion-text><br>
-                            <ion-text>amount: {{transaction.amount}}</ion-text> -->
+                    <div v-for="transaction in myData" :key="transaction.id" class="ion-margin-top" @click="openTransactionDetailsModal(transaction)">
+
 
                             <!--  -->
-                            <ion-grid class="ion-no-padding">
-                                <ion-row class="ion-align-items-center ion-justify-content-between">
+                            <div v-if="formattedDate(transaction.created_at) === date" class="ion-no-margin ion-padding-vertical">
 
-                                    <!-- Иконка Контакт и тип транзакции -->
-                                    <ion-grid class="ion-no-padding">
-                                        <ion-row class="ion-align-items-center ">
-                                            
-                                            <div class="transaction_icon" :class="[transaction.dealType === 'sale' ? 'transaction_icon-income': 'transaction_icon-outcome']">
-                                                <ion-icon v-if="transaction.dealType === 'buy'" :icon="arrowUpOutline" color="light"></ion-icon>
-                                                <ion-icon v-if="transaction.dealType === 'sale'" :icon="arrowDownOutline" color="light"></ion-icon>
-                                            </div>
-        
-                                            <div class="ion-margin-start">
-                                                <ion-text>
-                                                    {{transaction.contactID}}
-                                                </ion-text>
-        
-                                                <div>
-                                                    <ion-text v-if="transaction.dealType === 'sale'">
-                                                        Поступление
-                                                    </ion-text>
-                                                    <ion-text v-if="transaction.dealType === 'buy'">
-                                                        Оплата
-                                                    </ion-text>
-                                                </div>
-                                            </div>
-                                        </ion-row>
-                                    </ion-grid>
-
-                                    <!-- Сумма транзакции и deal ID -->
-                                    <ion-grid class="ion-no-padding">
-                                        <ion-row class="ion-justify-content-end">
-                                            <ion-text>{{ transaction.amount }} {{currency}}</ion-text>
+                                <ion-grid class="ion-no-padding">
+                                    <ion-row class="ion-align-items-center ion-justify-content-between">
     
-                                            <ion-text>К делу (Это ссылка)</ion-text>
-                                        </ion-row>
-                                    </ion-grid>
-                                </ion-row>
-                            </ion-grid>
-                        </div>
+                                        <!-- Иконка Контакт  -->
+                                        <ion-grid class="ion-no-padding">
+                                            <ion-row class="ion-align-items-center">
+                                                
+                                                <div class="transaction_icon ion-margin-end" :class="[transaction.dealType === 'sale' ? 'transaction_icon-income': 'transaction_icon-outcome']">
+                                                    <ion-icon v-if="transaction.dealType === 'buy'" :icon="arrowUpOutline" color="light"></ion-icon>
+                                                    <ion-icon v-if="transaction.dealType === 'sale'" :icon="arrowDownOutline" color="light"></ion-icon>
+                                                </div>
+    
+                                                <!-- Ссылка на контакт -->
+                                                <ion-text v-if="transaction.contactID === '000'" color="medium">
+                                                    Неизвестный
+                                                </ion-text>
+                                                <ion-text v-else @click.stop="goToContact(transaction.contactID)" color="primary">
+                                                    {{translateContactName(transaction.contactID)}}
+                                                </ion-text>
+                                            </ion-row>
+                                        </ion-grid>
+    
+                                        <!-- Сумма транзакции -->
+                                        <ion-text
+                                            :color="getAmountColor(transaction.dealType)"
+                                        >
+                                            <span v-if="transaction.dealType === 'sale'">+</span>
+                                            <span v-else>-</span>
+                                            {{ transaction.amount }} {{currency}}
+                                        </ion-text>
+                                    </ion-row>
+                                </ion-grid>
+                            </div>
+
                     </div>
                 </div>
+
+                <!-- Модалка, открывает показывает конкретной транзакции -->
+                <TransactionDetails
+                    :is-open="transactionDetailOpened"
+                    @closeModal="transactionDetailOpened = false"
+                    @didDismiss="transactionDetailOpened = false"
+                    :transaction="currentTransaction"
+                />
 
                 <!--  -->
                 <!-- <div v-for="(item, index) in myData" :key="index" class="ion-margin-top">
@@ -107,8 +104,9 @@
 <script>
     import Header from '@/components/headers/Header.vue';
     import Spinner from '@/components/Spinner.vue';
+    import TransactionDetails from '../components/modal/TransactonDetails.vue';
     //
-    import { IonContent, IonText, IonGrid, IonRow, IonIcon } from '@ionic/vue'
+    import { IonContent, IonText, IonGrid, IonRow, IonIcon, IonCard } from '@ionic/vue'
     import { arrowUpOutline, arrowDownOutline } from 'ionicons/icons'
     //
     import { defineComponent, ref, computed, onMounted } from 'vue';
@@ -121,9 +119,9 @@
     export default defineComponent({
         name: 'userFinance',
         components: {
-            Header, Spinner,
+            Header, Spinner, TransactionDetails,
             //
-            IonContent, IonText, IonGrid, IonRow, IonIcon
+            IonContent, IonText, IonGrid, IonRow, IonIcon, IonCard
         },
         setup() {
             // Currency
@@ -141,9 +139,12 @@
             //
             const spinner = ref(null);
             const dataLoaded = ref(null);
-            const myData = ref([])
+            const myData = ref([]);
+            // const myDeals = ref([]);
+            const myContacts = ref([])
             //
             const daysArray = ref([])
+            //
 
             // Подтягиваем данные леджера из store
             spinner.value = true;
@@ -151,6 +152,12 @@
             onMounted(async () => {
                 await store.methods.getUserLedger();
                 myData.value = store.state.userLedgerArray
+                //
+                // await store.methods.getMyDealsFromBD();
+                // myDeals.value = store.state.myDealsArray;
+                //
+                await store.methods.getMyContactsFromDB()
+                myContacts.value = store.state.myContactsArray
                 //
                 spinner.value = false
                 dataLoaded.value = true;
@@ -167,7 +174,7 @@
                 // делаем массив дат транзакций
                 const dateArray = []
                 myData.value.forEach(date => {
-                    dateArray.push(date.created_at)
+                    dateArray.unshift(date.created_at)
                 })
                 // Сортируем от ближайшей даты и по удалению от сегодня
                 dateArray.sort((a, b) => {
@@ -176,19 +183,58 @@
                 // создаем новый массив на основе форматированных дат
                 const formattedDateArray = []
                 dateArray.forEach(day => {
-                    formattedDateArray.push(formattedDate(day))
+                    formattedDateArray.unshift(formattedDate(day))
                 })
                 // Исключаем дубли
                 const formattedDateArrayNoDublicates = new Set(formattedDateArray)
 
                 return formattedDateArrayNoDublicates
-                
+            }
 
-                // Сортируем от ближайшей даты и по удалению от сегодня
+            //
+            const getAmountColor = (transactionDealType) => {
+                if(transactionDealType === 'sale') {
+                    return 'success'
+                } else {
+                    return 'medium'
+                }
+            }
+
+            // 
+            // const getDealData = (transactionDealID) => {
+            //     const currentDeal = myDeals.value.filter(item => item.id === transactionDealID)
+            //     console.log(currentDeal)
+            //     return currentDeal
+            // }
+
+            //
+            const currentContact = ref()
+            const goToContact = (contactID) => {
+                currentContact.value = myContacts.value.filter(contact => contact.id === +contactID)
+                router.push({
+                    name: 'View-Contact',
+                    params: {
+                        contactId: +contactID,
+                        contact: JSON.stringify(currentContact.value[0])
+                    }
+                })
+            }
+
+            // 
+            const transactionDetailOpened = ref(false)
+            const currentTransaction = ref();
+            const openTransactionDetailsModal = (transaction) => {
+                transactionDetailOpened.value = true
+                currentTransaction.value = transaction
+            }
+            //
+            const translateContactName = (contactID) => {
+                const contact = myContacts.value.filter(contact => contact.id === +contactID)
+                return `${contact[0].contactInfo.surname} ${contact[0].contactInfo.name}`
             }
 
             return {
-                user, router, pageTitle, spinner, dataLoaded, myData, daysArray, getTransactionDateArray, formattedDate, arrowUpOutline, arrowDownOutline, currency
+                user, router, pageTitle, spinner, dataLoaded, myData, daysArray, getTransactionDateArray, formattedDate, arrowUpOutline, arrowDownOutline, currency, getAmountColor, transactionDetailOpened, openTransactionDetailsModal, currentTransaction, myContacts, goToContact, currentContact, translateContactName
             }
         }
     })
@@ -207,7 +253,12 @@
         width: 50%
     }
     .transaction_icon {
-
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 2rem;
+        height: 2rem;
+        border-radius: 100%;
     }
 
     .transaction_icon-income {
@@ -215,6 +266,6 @@
     }
 
     .transaction_icon-outcome {
-        background-color: var(--ion-color-danger)
+        background-color: var(--ion-color-warning)
     }
 </style>

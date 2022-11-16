@@ -27,6 +27,7 @@
     
             <!-- Data -->
             <div>
+                <!-- {{currentContact}} -->
                 <!-- =================== Avatar ======================== -->
                 <ion-avatar>
                     <ion-text color="light">
@@ -485,9 +486,10 @@
             const checkInitials = () => {
                 if(currentContact.value.contactInfo.surname.length === 0 || currentContact.value.contactInfo.name.length === 0) {
                     return;
-                } 
+                } else {
                     const initials = `${currentContact.value.contactInfo.surname[0].toUpperCase()}${currentContact.value.contactInfo.name[0].toUpperCase()}` 
                     return initials;
+                }
             }
 
             // проверка, если  в типе телефона| имейла будет пустая строка

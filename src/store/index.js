@@ -566,7 +566,7 @@ const methods = {
   getUserLedger: async () => {
     let { data: userLedger, error } = await supabase.from('ledger').select('*');
     if(error) throw error;
-    state.userLedgerArray = userLedger;
+    state.userLedgerArray = userLedger.reverse();
     //userLedgerArray
   },
   //
