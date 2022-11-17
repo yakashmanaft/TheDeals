@@ -113,6 +113,11 @@
                             </ion-row>
                         </ion-grid>
                     </ion-item>
+                    <!-- <ion-item lines="none" @click="addNewCategory" v-if="searchedhWarehouseCategories.length > 0">
+                        <ion-text color="primary">
+                            Добавить категорию
+                        </ion-text>
+                    </ion-item> -->
 
                     <!-- Если ничего подходящего нет или нет данных -->
                     <div v-if="searchedhWarehouseCategories.length <= 0" class="ion-margin-top ion-margin-horizontal">
@@ -121,9 +126,9 @@
                                 <ion-text color="medium">
                                     Ничего не найдено
                                 </ion-text>
-                                <ion-text color="primary" @click="addNewCategory">
+                                <!-- <ion-text color="primary" @click="addNewCategory">
                                     Добавить
-                                </ion-text>
+                                </ion-text> -->
                             </ion-row>
                         </ion-grid>
                     </div>

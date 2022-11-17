@@ -9,7 +9,10 @@
         />
 
         <!-- page header -->
-        <Header :title="pageTitle"/>
+        <Header 
+            @goToSettings="toggleSettingsModal"
+            :title="pageTitle"
+        />
 
         <!-- Кнопка перехода к созданию нового дела -->
         <CreateButton @click="setOpen"/>
@@ -129,6 +132,15 @@
                     </div>
                 </div>
 
+                <!--  -->
+                <WarehouseSettings
+                    :is-open="isSetteingsModalOpened"
+                    @closeModal="toggleSettingsModal(false)"
+                    :itemsSystemCategories="warehouseCategoriesArray"
+                    :userItemsCategories="myItems"
+                    @update="update"
+                />
+
             </div>
         </ion-content>
     </div>
@@ -138,7 +150,7 @@
     import { defineComponent, ref, computed, onMounted} from 'vue'
     import store from '../store/index';
     import { supabase } from '../supabase/init';
-    import { useRouter } from 'vue-router';
+    import { useRoute, useRouter } from 'vue-router';
     import { uid } from 'uid';
     //
     import { IonContent, IonImg, IonText, IonSearchbar, IonItem, IonList, IonGrid, IonRow, IonItemDivider } from '@ionic/vue'
@@ -148,6 +160,7 @@
     import Header from '@/components/headers/Header.vue';
     import CreateButton from '../components/CreateButton.vue';
     import CreateNewItem from '../components/modal/NewWarehouseItem-modalCreate.vue';
+    import WarehouseSettings from '../components/modal/WarehouseSettings.vue';
     // 
     import { searchWarehouseItemFilter  } from '../helpers/filterUserWarehouseItems.js';
     import { searchWarehouseCategoryFilter } from '../helpers/filterWarehouseCategories.js';
@@ -155,7 +168,9 @@
     export default defineComponent({
         name: 'Warehouse',
         components: {
-            IonContent, Spinner, NavigationMenu, Header, CreateButton, IonImg, IonText, CreateNewItem, IonSearchbar, IonItem, IonList, IonGrid, IonRow, IonItemDivider
+            IonContent, IonImg, IonText, IonSearchbar, IonItem, IonList, IonGrid, IonRow, IonItemDivider,
+            //
+            WarehouseSettings, Spinner, NavigationMenu, Header, CreateButton, CreateNewItem
         },
         setup() {
             //
@@ -171,23 +186,37 @@
             const user = computed(() => store.state.user);
             // Setup ref to router
             const router = useRouter();
+            const route = useRoute();
             // Get user email
             store.methods.setUserEmail()
             const userEmail = ref(store.state.userEmail)
             console.log(userEmail.value)
+            // Get current info of route
+            // const currentId = route.params;
+            // console.log(currentId)
             // Get page title
             const pageTitle = router.currentRoute._value.meta.translation;
+            //
+            const userSettings = ref(store.state.userSettings[0])
+            const userWorkProfile = ref(userSettings.value.userWorkProfile);
             //
             const warehouseCategoriesArray = ref([])
             //
             onMounted( async () => {
                 await store.methods.getUserWarehouseItemsFromDB()
                 myItems.value = store.state.userWarehouseArray;
+                console.log(userWorkProfile.value)
                 //
                 spinner.value = false
                 dataLoaded.value = true;
-                //
-                warehouseCategoriesArray.value = store.state.warehouseCategoriesArray
+
+                // ===================== ЗАВИСИТ ОТ ТИПА РАБОЧЕГО ПРОФИЛЯ В НАСТРОЙКАХ АККАУНТА ====================
+                if(userWorkProfile.value === 'Автозапчасти') {
+                    warehouseCategoriesArray.value = store.state.autoWarehouseCategoriesArray
+                } else if (userWorkProfile.value === 'Тортодилер') {
+                    warehouseCategoriesArray.value = store.state.cakeWarehouseCategoriesArray
+                }
+                
             })
             // функция поиска предмета по складу с помощью search
             const search = ref('');
@@ -290,12 +319,35 @@
                 }
             }
 
+            // 
+            const isSetteingsModalOpened = ref(false)
+            const toggleSettingsModal = (boolean) => {
+                // console.log(boolean)
+                isSetteingsModalOpened.value = boolean
+            }
+
+            // 
+            const update = async (myCategories) => {
+                try {
+                    spinner.value = true;
+                    const {error} = await supabase.from('accountSettings').update({
+                        userWarehouseCategories: myCategories
+                    }).eq('email', userEmail.value);
+                    if(error) throw error;
+                } catch (error) {
+                    alert(`Error: ${error.message}`)
+                }
+                spinner.value = false;
+                await store.methods.getUserWarehouseItemsFromDB()
+                myItems.value = store.state.userWarehouseArray;
+            }
+
 
             return {
-                itemData, dataLoaded, spinner, setOpen, currency, user, pageTitle, myItems, isOpen, createItem, search, warehouseCategoriesArray, filteredMyItemsFunc, searchedItem, searchedCategory, expendList
+                route, itemData, dataLoaded, spinner, setOpen, currency, user, pageTitle, myItems, isOpen, createItem, search, warehouseCategoriesArray, filteredMyItemsFunc, searchedItem, searchedCategory, expendList, toggleSettingsModal, isSetteingsModalOpened, update, userSettings, userWorkProfile
             }
         }
-    })
+    }) 
 </script>
 
 <style scoped>

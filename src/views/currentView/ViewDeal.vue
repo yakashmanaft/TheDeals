@@ -632,6 +632,7 @@
             const router = useRouter();
             // Get current info of route
             const currentId = route.params.dealId;
+            console.log(route.params)
             const info = route.params;
             const currentDeal = ref(JSON.parse(info.deal))
             // Храним на случай нажатия Отмены при редактировании контакта

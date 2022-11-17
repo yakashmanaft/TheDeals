@@ -225,7 +225,7 @@
                 value: '',
                 name: '',
                 categories: [],
-                recipeAuthorEmail: '',
+                recipeAuthorEmail: userEmail.value,
                 forSale: false
             })
 
@@ -240,7 +240,7 @@
                     value: '',
                     name: '',
                     categories: [],
-                    recipeAuthorEmail: '',
+                    recipeAuthorEmail: userEmail.value,
                     forSale: false
                 }
             }

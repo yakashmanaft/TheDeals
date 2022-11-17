@@ -19,9 +19,15 @@
             <!-- КНОПКИ СПРАВА -->
             <ion-buttons slot="end">
                 <!-- QR -->
-                <ion-button class="color-primary" v-if="router.currentRoute._value.meta.title === 'Wallet'" @click="goToPay()">
-                    <ion-icon :icon="qrCodeOutline"></ion-icon>
+                <ion-button v-if="router.currentRoute._value.meta.title === 'Wallet'" @click="goToPay()">
+                    <ion-icon color="primary" :icon="qrCodeOutline"></ion-icon>
                 </ion-button>
+
+                <!-- Settings -->
+                <ion-button v-if="router.currentRoute._value.meta.title === 'Warehouse'" @click="$emit('goToSettings', true)">
+                    <ion-icon color="primary" :icon="settingsOutline"></ion-icon>
+                </ion-button>
+
                 <!-- BURGER -->
                 <ion-menu-toggle v-if="router.currentRoute._value.meta.title === 'Calendar'">
                     <ion-icon :icon="menu" class/>
@@ -44,7 +50,7 @@
             IonHeader, IonMenuToggle, IonToolbar, IonIcon, IonGrid, IonRow, IonText, IonButtons, IonButton, IonBackButton, IonTitle
         },
         props: ['title'],
-        setup() {
+        setup(props, { emit }) {
             const user = computed(() => store.state.user);
             const router = useRouter();
             //
@@ -56,8 +62,13 @@
                 alert('Сканируйте qr-код, чтобы оплатить. В разработке...')
             }
 
+            //
+            // const goToSettings = () => {
+            //     alert('Настройки в разработке..')
+            // }
+
             return {
-                user, router, menu, walletOutline, settingsOutline, goToWallet, qrCodeOutline, goToPay
+                user, router, menu, walletOutline, settingsOutline, goToWallet, qrCodeOutline, goToPay, settingsOutline
             }
         }
     }
