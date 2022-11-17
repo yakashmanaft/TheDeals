@@ -74,12 +74,26 @@
                     class="ion-text-start ion-padding-vertical ion-padding-horizontal" 
                 ></ion-input> -->
 
-                <ion-item id="confirmPassword" fill="solid" ref="item" class="ion-no-padding">
+                <ion-item id="confirmPassword" fill="solid" ref="item" class="ion-no-padding ion-margin-bottom">
                     <ion-label color="primary" position="floating">Повтор пароля</ion-label>
                     <ion-input type="password" @ionInput="confirmPasswordValidate" @ionBlur="markTouched" v-model="confirmPassword"></ion-input>
                     <ion-note v-if="confirmPassword" slot="helper" color="success">Совпадает</ion-note>
                     <ion-note slot="error">Не совпадает</ion-note>
                 </ion-item>
+
+                <ion-chip class="ion-margin-top">
+                    <ion-select interface="action-sheet" placeholder="Выберите профиль" cancelText="Отменить" v-model="userWorkProfile" @ionChange="setProfile($event)">
+                        <ion-select-option
+                            v-for="(item, index) in userWorkProfileArray"
+                            :key="index"
+                            :value="item"
+                        >
+                            {{item}}
+                        </ion-select-option>
+                    </ion-select>
+
+                </ion-chip>
+                <!-- {{userAccountSetting}} -->
 
                 <br>
                 <br>
@@ -96,7 +110,7 @@
                     </ion-text>
                     
                 </ion-button>
-                <!-- Ссылка на экран регистрации -->
+                <!-- Ссылка на экран логина -->
                 <ion-text color="primary">
                     <router-link :to="{ name: 'Login' }">Уже есть аккаунт?</router-link>
                 </ion-text>
@@ -108,17 +122,20 @@
 </template>
 
 <script>
-    import { ref, defineComponent } from 'vue';
+    import { ref, defineComponent, onMounted } from 'vue';
     import { supabase } from '../../supabase/init';
     import { useRouter } from 'vue-router';
-    import { IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert, IonNote } from '@ionic/vue';
+    import { IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert, IonNote, IonList, IonSelect, IonSelectOption, IonChip } from '@ionic/vue';
+    //
     import Spinner from '../../components/Spinner.vue';
     //
     import { uid } from 'uid';
+    //
+    import store from '../../store/index';
 
     export default defineComponent ({
         name: 'register',
-        components: { IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert, Spinner, IonNote },
+        components: { IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert, Spinner, IonNote, IonList, IonSelect, IonSelectOption, IonChip },
         setup() {
             // Create data / vars
             const router = useRouter();
@@ -129,6 +146,19 @@
             const isOpenRef = ref(false);
             const spinner = ref(null);
             const confirmRequire = ref(null);
+            const userWorkProfile = ref('');
+            const userWorkProfileArray = ref([])
+
+            onMounted(() => {
+                userWorkProfileArray.value = store.state.userWorkProfileArray
+            })
+
+            //
+            const setProfile = (event) => {
+                // console.log(event.target.value)
+                userAccountSetting.value.userWorkProfile = event.target.value
+                console.log(userWorkProfile.value)
+            }
 
             // Шаблон для создания строки под настройки пользваотеля в БД accountSettings
             const userAccountSetting = ref({
@@ -150,12 +180,17 @@
                         qty: 8
                     }
                 ],
-                avatar_url: null
+                avatar_url: null,
+                userWorkProfile: null
             })
 
             // Register function
             const register = async () => {
-            if (password.value === confirmPassword.value) {
+            if (userWorkProfile.value === '') {
+                alert('Register: Выберите профиль')
+            } else if (password.value !== confirmPassword.value) {
+                alert('Register: Пароль не совпадает')
+            } else if (password.value === confirmPassword.value) {
                 try {
                 const { error } = await supabase.auth.signUp({
                     email: email.value,
@@ -172,14 +207,14 @@
                     createAccountSettings()
                 }, 3000)
                 } catch (error) {
-                errorMsg.value = error.message;
+                // errorMsg.value = error.message;
                 setTimeout(() => {
                     errorMsg.value = null;
                 }, 5000)
                 }
                 return;
             }
-            errorMsg.value = 'Error: Passwords do not match'
+            // errorMsg.value = 'Error: Passwords do not match'
             setTimeout(() => {
                 errorMsg.value = null;
             }, 5000)
@@ -250,7 +285,7 @@
 
 
             return {
-                email, password, confirmPassword, spinner, confirmRequire, confirmRequireFunc, errorMsg, register, isOpenRef, isOpenRef, setOpen, userAccountSetting, createAccountSettings, validateEmail, validate, markTouched, validateConfirmPassword, confirmPasswordValidate
+                email, password, confirmPassword, spinner, confirmRequire, confirmRequireFunc, errorMsg, register, isOpenRef, isOpenRef, setOpen, userAccountSetting, createAccountSettings, validateEmail, validate, markTouched, validateConfirmPassword, confirmPasswordValidate, userWorkProfile, userWorkProfileArray, setProfile
             }
         }
     })
@@ -271,5 +306,16 @@
     ion-item{
         --inner-padding-end: 0px;
         --padding-start:0px
+    }
+    ion-select {
+        --placeholder-opacity: 1;
+        --padding-start: 5px;
+        --padding-bottom: 0;
+        --padding-top: 0;
+        --padding-end: 5px;
+    }
+    ion-list {
+        border-radius: 20px;
+        background-color: transparent
     }
 </style>
