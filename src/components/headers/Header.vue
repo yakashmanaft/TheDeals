@@ -23,9 +23,14 @@
                     <ion-icon color="primary" :icon="qrCodeOutline"></ion-icon>
                 </ion-button>
 
-                <!-- Settings -->
+                <!-- SETTINGS -->
                 <ion-button v-if="router.currentRoute._value.meta.title === 'Warehouse'" @click="$emit('goToSettings', true)">
                     <ion-icon color="primary" :icon="settingsOutline"></ion-icon>
+                </ion-button>
+
+                <!-- RECIPE STORE -->
+                <ion-button v-if="router.currentRoute._value.meta.title === 'Recipes'" @click="$emit('goToStore')">
+                    <ion-icon color="primary" :icon="storefrontOutline"></ion-icon>
                 </ion-button>
 
                 <!-- BURGER -->
@@ -42,7 +47,7 @@
     import { computed } from 'vue';
     import { useRouter } from 'vue-router';
     import { IonHeader, IonMenuToggle, IonToolbar, IonIcon, IonGrid, IonRow, IonText, IonButtons, IonButton, IonBackButton, IonTitle } from '@ionic/vue';
-    import { menu, walletOutline, settingsOutline, qrCodeOutline } from 'ionicons/icons';
+    import { menu, walletOutline, settingsOutline, qrCodeOutline, storefrontOutline } from 'ionicons/icons';
 
     export default {
         name: 'Header',
@@ -63,12 +68,12 @@
             }
 
             //
-            // const goToSettings = () => {
-            //     alert('Настройки в разработке..')
+            // const goToStore = () => {
+            //     alert('Header: Магазин в разработке')
             // }
 
             return {
-                user, router, menu, walletOutline, settingsOutline, goToWallet, qrCodeOutline, goToPay, settingsOutline
+                user, router, menu, walletOutline, settingsOutline, goToWallet, qrCodeOutline, goToPay, settingsOutline, storefrontOutline
             }
         }
     }

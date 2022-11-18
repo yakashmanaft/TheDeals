@@ -314,7 +314,7 @@
             const getExecutionDate = () => {
                 // Сортируем от ближайшей даты и по удалению от сегодня
                 daysArray.value.sort((a,b) => {
-                    return new Date(a) - new Date(b);
+                    return new Date(b) - new Date(a);
                 })
                 // создаем новый массив на основе форматированных дат
                 const array = []

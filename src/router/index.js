@@ -174,6 +174,17 @@ const routes = [
       translation: 'Помощь',
       type: 'View'
     }
+  },
+  {
+    path: '/recipes-store',
+    name: 'RecipesStore',
+    component: () => import('../views/RecipesStore.vue'),
+    meta: {
+      title: 'Recipes Store',
+      auth: true,
+      translation: 'Магазин рецептов',
+      type: 'View'
+    }
   }
 ];
 

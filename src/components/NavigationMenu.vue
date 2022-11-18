@@ -25,7 +25,7 @@
                 <ion-row class="ion-align-items-center">
                     <ion-col>
                         <ion-row>
-                            <ion-text class="account">Аккаунт</ion-text>
+                            <ion-text class="account">{{userProfile}}</ion-text>
                         </ion-row>
                         <ion-row>
                             <ion-text class="account-name">{{ userEmail }}</ion-text>
@@ -43,7 +43,7 @@
         <!-- menu content -->
         <ion-content class="ion-padding-vertical" forceOverscroll="false">
             <ion-list>
-                <ion-item v-for="(item, index) in menuList" :key="index" lines="none" >
+                <ion-item v-for="(item, index) in currentMenuList" :key="index" lines="none" >
                     <ion-icon :icon="`${item.icon}`" color="primary" :alt="`${item.icon}`" class="ion-margin-end"/>
                     <router-link :to="{ name: `${item.name}` }" :class="{ 'current-route': item.title === currentRoute }"> {{ item.title }}</router-link>
                 </ion-item> 
@@ -94,7 +94,7 @@
         },
         props: {
             title: String,
-            avatar: String
+            avatar: String,
         },
         setup(props, {emit}) {
             //
@@ -106,13 +106,33 @@
             const router = useRouter();
             //Get user email
             const userEmail = user.value.email
+            //
+            const userProfile = ref('')
+            // menu items array
+            const menuList = ref(store.state.menuList)
+            //
+            onMounted(async () => {
+                await store.methods.getUserSettingsfromDB()
+                userProfile.value = store.state.userSettings[0].userWorkProfile
+                getCurrentMenuList()
+            })
             // Logout function
             const logout = async () => {
                 await supabase.auth.signOut();
                 router.push({ name: 'Login' });
             }
-            // menu items array
-            const menuList = ref(store.state.menuList)
+            //
+            const currentMenuList = ref([])
+            const getCurrentMenuList = async () => {
+                // console.log(userProfile.value)
+                // console.log(menuList.value.filter(item => item.name !== 'Recipes'))
+                if(userProfile.value === 'Автозапчасти') {
+                    currentMenuList.value = menuList.value.filter(item => item.name !== 'Recipes')
+                } else if(userProfile.value === 'Тортодилер') {
+                    currentMenuList.value = menuList.value
+                }
+                return currentMenuList.value
+            }
             //
             const menuType = ref('overlay')
             //
@@ -123,7 +143,7 @@
             console.log(currentRoute.value)
 
             return {
-                user, router, userEmail, logout, menuList, exitOutline, helpCircleOutline, menuType, currentRoute, avatar_url, person
+                user, router, userEmail, logout, menuList, exitOutline, helpCircleOutline, menuType, currentRoute, avatar_url, person, getCurrentMenuList, userProfile, currentMenuList
             }
         }
     })

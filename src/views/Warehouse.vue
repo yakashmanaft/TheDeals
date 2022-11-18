@@ -240,18 +240,41 @@
                 subjectQty: 1,
                 categories: []
             })
-            // При закрытии или открытии modal очищаем шаблон дела
-            const setOpen = () => {
-                spinner.value = false
-                // alert('Warehouse: В разработке...')
-                isOpen.value = !isOpen.value;
+            if (userWorkProfile.value === 'Тортодилер') {
                 itemData.value = {
                     uid: uid(),
                     email: userEmail.value,
                     name: '',
                     catalogNumber: '',
+                    estimationType: '',
                     subjectQty: 1,
                     categories: []
+                }
+            }
+            // При закрытии или открытии modal очищаем шаблон дела
+            const setOpen = () => {
+                spinner.value = false
+                // alert('Warehouse: В разработке...')
+                isOpen.value = !isOpen.value;
+                if(userWorkProfile.value === 'Автозапчасти') {
+                    itemData.value = {
+                        uid: uid(),
+                        email: userEmail.value,
+                        name: '',
+                        catalogNumber: '',
+                        subjectQty: 1,
+                        categories: []
+                    }
+                } else if (userWorkProfile.value === 'Тортодилер') {
+                    itemData.value = {
+                        uid: uid(),
+                        email: userEmail.value,
+                        name: '',
+                        catalogNumber: '',
+                        estimationType: '',
+                        subjectQty: 1,
+                        categories: []
+                    }
                 }
             }
             //
@@ -273,6 +296,8 @@
                     alert('Warehouse: Вы не указали каталожный номер')
                 } else if(newItemData.categories.length === 0) {
                     alert('Warehouse: Добавьте хотя бы одну категорию')
+                } else if(userWorkProfile.value === 'Тортодилер' && newItemData.estimationType === '') {
+                    alert('Warehouse: Укажите тип расчета')
                 } else {
                     try {
                         // Добавляем в БД инфу по новому предмету

@@ -65,7 +65,7 @@
                     <ion-row class="ion-justify-content-between ion-align-items-center">
                         <!-- Тип расчета -->
                         <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                            Тип расчета
+                            Тип расчета (цена за)
                         </ion-button>
                         <!-- Кнопка изменить тип расчета -->
                         <!-- Для products -->

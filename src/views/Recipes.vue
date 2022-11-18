@@ -4,7 +4,10 @@
         <Spinner v-if="spinner"/>
 
         <!-- page header -->
-        <Header :title="pageTitle" />
+        <Header 
+            @goToStore="goToRecipesStore"    
+            :title="pageTitle" 
+        />
         
         <!-- page navigation menu -->
         <navigation-menu
@@ -279,7 +282,8 @@
             }
             //
             const goToRecipesStore = () => {
-                alert('Recipes: Магазин в разработке...')
+                // alert('Recipes: Магазин в разработке...')
+                router.push({name: 'RecipesStore'})
             }
             //
             const filteredMyRecipesFunc = (category) => {
@@ -313,6 +317,7 @@
                     alert('Это ваш рецепт и вы выставили его на продажу в магазине рецептов')
                 }
             }
+
 
             return {
                 user, userEmail, router, pageTitle, spinner, dataLoaded, myRecipes, search, isOpen, recipeData, setOpen, createNew, goToRecipesStore, searchedRecipe, recipesCategoriesArray, searchedCategory, expendList, filteredMyRecipesFunc, bagCheckOutline, showNotification, ribbonOutline
