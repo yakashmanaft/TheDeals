@@ -60,7 +60,7 @@
                 <ion-grid class="ion-text-left ion-padding-horizontal ion-margin-horizontal">
                     <ion-row class="ion-justify-content-between">
                         <ion-text>Моя задолженность</ion-text>
-                        <ion-text color="primary" @click="goToChoosenDeals">{{myDebt.toFixed(2)}} {{ currency }}</ion-text>
+                        <ion-text color="primary" @click="goToChoosenDeals(myDeals, 'buy')">{{myDebt.toFixed(2)}} {{ currency }}</ion-text>
                     </ion-row>
                 </ion-grid>
 
@@ -68,7 +68,7 @@
                 <ion-grid class="ion-text-left ion-padding-horizontal ion-margin-horizontal ion-margin-top">
                     <ion-row class="ion-justify-content-between">
                         <ion-text>Мне должны</ion-text>
-                        <ion-text color="primary" @click="goToChoosenDeals">{{debtToMe.toFixed(2)}} {{ currency }}</ion-text>
+                        <ion-text color="primary" @click="goToChoosenDeals(myDeals, 'sale')">{{debtToMe.toFixed(2)}} {{ currency }}</ion-text>
                     </ion-row>
                 </ion-grid>
 
@@ -90,6 +90,16 @@
                 </ion-card>
 
             </div>
+
+            <!-- Модалка для просмотра списка долговых дел -->
+            <ViewModalDebts
+                :isOpen="isDebtsModalOpened"
+                @didDismiss="isDebtsModalOpened = false"
+                :dealArray="dealDebtsArray"
+                @closeModal="isDebtsModalOpened = false"
+                :currencyValue="currency"
+            />
+            
         </ion-content>
     </div>
 </template>
@@ -97,6 +107,10 @@
 <script>
     import { defineComponent, ref, computed, onMounted } from 'vue';
     import Header from '../components/headers/Header.vue'
+    import NavigationMenu from '@/components/NavigationMenu.vue';
+    import Spinner from '@/components/Spinner.vue'
+    import ViewModalDebts from '../components/modal/ViewWalletDebts.vue'
+    //
     import { 
         IonContent, IonGrid, IonRow, IonCard, IonText, IonIcon, IonCol, IonButton
     } from '@ionic/vue';
@@ -104,17 +118,17 @@
     import store from '../store/index';
     import { supabase } from '../supabase/init';
     import { useRouter } from 'vue-router';
-    import NavigationMenu from '@/components/NavigationMenu.vue';
-    import Spinner from '@/components/Spinner.vue'
 
 
     export default defineComponent({
         name: 'wallet',
         components: {
             Header,
-            IonContent, 
             NavigationMenu,
             Spinner,
+            ViewModalDebts,
+            //
+            IonContent, 
             IonGrid,
             IonRow,
             IonCard,
@@ -182,17 +196,33 @@
                 alert('Wallet: в разработке...')
             }
             //
-            const goToChoosenDeals = () => {
-                alert('Wallet: хотите перейти к просмотру? В разработке...')
+            const isDebtsModalOpened = ref(false)
+            const dealDebtsArray = ref([])
+            const goToChoosenDeals = (dealsArray, typeOfDeal) => {
+                isDebtsModalOpened.value = true
+                // console.log(typeOfDeal)
+                // console.log(dealsArray)
+                if(typeOfDeal === 'buy') {
+                    const buyDealWithDebts = dealsArray.filter(deal => {
+                        return deal.dealType === typeOfDeal && deal.totalDealPrice > deal.dealPaid
+                    })
+                    dealDebtsArray.value = buyDealWithDebts
+                    // console.log(buyDealWithDebts)
+                } else if (typeOfDeal === 'sale') {
+                    const saleDealWithDebts = dealsArray.filter(deal => {
+                        return deal.dealType === typeOfDeal && deal.totalDealPrice  > deal.dealPaid
+                    })
+                    dealDebtsArray.value = saleDealWithDebts
+                    // console.log(saleDealWithDebts)
+                }
             }
 
             return {
-                menu, user, router, pageTitle, myDeals, spinner, dataLoaded, currency, availableBalance, myDebt, debtToMe, statsChartOutline, putInWallet, makeAPay, goTo, dealsInProcess, completeDeals, cancelledDeals, bookingDeals, deliveryDeals, debtDeals, goToChoosenDeals
+                menu, user, router, pageTitle, myDeals, spinner, dataLoaded, currency, availableBalance, myDebt, debtToMe, statsChartOutline, putInWallet, makeAPay, goTo, dealsInProcess, completeDeals, cancelledDeals, bookingDeals, deliveryDeals, debtDeals, goToChoosenDeals, isDebtsModalOpened, dealDebtsArray
             }
         }
     })
 </script>
 
 <style scoped>
-
 </style>
