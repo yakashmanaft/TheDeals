@@ -13,12 +13,33 @@
             <br>
             <br>
             <!--  -->
-            <ion-card class="ion-no-margin ion-margin-vertical" @click="goToDebtsDeal(deal)" v-if="dealDebtsArray.length !== 0" v-for="deal in dealDebtsArray">
-                Дата создания дела: <br> {{deal.created_at}} <br>
-                Дата исполнения дела: <br> {{deal.executionDate}} <br>
-                Статус дела: <br> {{deal.dealStatus}} <br>
-                Контакт по делу: <br> {{deal.contactID}} <br>
-                Задолженность: <br> {{deal.totalDealPrice - deal.dealPaid}} {{currency}}
+            <ion-card class="ion-no-margin ion-margin-vertical ion-padding" @click="goToDebtsDeal(deal)" v-if="dealDebtsArray.length !== 0" v-for="deal in dealDebtsArray">
+                <!-- Дата создания дела: <br> {{deal.created_at}} <br> -->
+                <ion-grid class="ion-no-padding">
+                    <ion-row class="ion-justify-content-between ion-align-items-center">
+                        <ion-text>
+                            Дата исполнения: <br> {{formattedDate(deal.executionDate)}}
+                        </ion-text>
+                        <ion-chip class="ion-no-margin">
+                            {{translateValue(deal.dealStatus, dealStatusList)}}
+                        </ion-chip>
+                    </ion-row>
+                    <!--  -->
+                    <ion-row class="ion-justify-content-start ion-align-items-center ion-margin-top">
+                        <ion-text v-if="deal.contactID === '000'" color="medium">
+                            Неизвестный
+                        </ion-text>
+                        <ion-text v-else color="primary" @click.stop="goToContact(deal.contactID)">
+                            {{translateContactName(deal.contactID)}}
+                        </ion-text>
+                    </ion-row>
+                    <!--  -->
+                    <ion-row>
+                        <ion-text>
+                            Задолженность: {{deal.totalDealPrice - deal.dealPaid}} {{currency}}
+                        </ion-text>
+                    </ion-row>
+                </ion-grid>
             </ion-card>
 
             <!--  -->
@@ -38,10 +59,17 @@
 </template>
 
 <script>
-    import { defineComponent, ref, watchEffect } from 'vue';
+    import { defineComponent, ref, onMounted, watchEffect } from 'vue';
     import { useRouter } from 'vue-router';
     //
-    import { IonModal, IonHeader, IonContent, IonToolbar, IonButtons, IonButton, IonText, IonImg, IonCard } from '@ionic/vue';
+    import store from '../../store/index';
+    //
+    import { IonModal, IonHeader, IonContent, IonToolbar, IonButtons, IonButton, IonText, IonImg, IonCard, IonChip, IonGrid, IonRow } from '@ionic/vue';
+    //
+    import { translateValue } from '../../helpers/translateValue'
+    //
+    import { format, parseISO } from 'date-fns';
+    import { ru } from 'date-fns/locale'
 
     export default defineComponent({
         name: 'ViewWalletDebts',
@@ -50,7 +78,7 @@
             currencyValue: String
         },
         components: {
-            IonModal, IonHeader, IonContent, IonToolbar, IonButtons, IonButton, IonText, IonImg, IonCard
+            IonModal, IonHeader, IonContent, IonToolbar, IonButtons, IonButton, IonText, IonImg, IonCard, IonChip, IonGrid, IonRow
         },
         setup(props, { emit }) {
             // Setup ref to router
@@ -58,6 +86,15 @@
             //
             const dealDebtsArray = ref([])
             const currency = ref('')
+            // Статусы дел
+            const dealStatusList = ref(store.state.dealStatusList)
+            //
+            const myContacts = ref([])
+            //
+            onMounted(async () => {
+                await store.methods.getMyContactsFromDB()
+                myContacts.value = store.state.myContactsArray
+            })
             //
             const goToDebtsDeal = (deal) => {
                 emit('closeModal')
@@ -71,13 +108,36 @@
                 })
             }
             //
+            const formattedDate = (day) => {
+                const formattedString = format(parseISO(day), 'd MMMM Y HH:mm', { locale: ru });
+                return formattedString;
+            }
+            //
+            const translateContactName = (contactID) => {
+                const contact = myContacts.value.filter(contact => contact.id === +contactID)
+                return `${contact[0].contactInfo.surname} ${contact[0].contactInfo.name}`
+            }
+            //
+            const currentContact = ref()
+            const goToContact = (contactID) => {
+                currentContact.value = myContacts.value.filter(contact => contact.id === +contactID)
+                emit('closeModal')
+                router.push({
+                    name: 'View-Contact',
+                    params: {
+                        contactId: +contactID,
+                        contact: JSON.stringify(currentContact.value[0])
+                    }
+                })
+            }
+            //
             watchEffect(() => {
                 dealDebtsArray.value = props.dealArray
                 currency.value = props.currencyValue
             })
 
             return {
-                router, dealDebtsArray, currency, goToDebtsDeal
+                router, dealDebtsArray, currency, goToDebtsDeal, dealStatusList, translateValue, formattedDate, translateContactName, goToContact, currentContact
             }
         }
     })
