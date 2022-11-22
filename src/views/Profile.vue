@@ -62,8 +62,8 @@
           <!--  -->
           <div v-if="edit">
             <h2>
-              <ion-input autocapitalize="on" inputmode="text" placeholder="Имя" v-model="userInfo.name" :value="userInfo.name"></ion-input>
-              <ion-input autocapitalize="on" inputmode="text" placeholder="Фамилия" v-model="userInfo.surname" :value="userInfo.surname"></ion-input>
+              <ion-input autocapitalize="on" inputmode="text" placeholder="Имя" v-model="userInfo.name" :value="userInfo.name" class="ion-no-padding"></ion-input>
+              <ion-input autocapitalize="on" inputmode="text" placeholder="Фамилия" v-model="userInfo.surname" :value="userInfo.surname" class="ion-no-padding ion-margin-top"></ion-input>
             </h2>
             <ion-text @click="updateUserInfo" color="primary">Готово</ion-text>
           </div>

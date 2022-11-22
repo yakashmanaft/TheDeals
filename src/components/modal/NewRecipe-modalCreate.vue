@@ -32,25 +32,90 @@
           autocapitalize="on"
         ></ion-input>
       </ion-item-group>
+
+      <!-- Категории рецепта -->
+      <ion-item-group>
+        <!-- Заголовок -->
+        <ion-text>
+          <h4>Категории рецепта</h4>
+        </ion-text>
+
+        <!--  -->
+        <ion-grid class="ion-no-padding">
+
+          <!-- Добавленная категория -->
+          <ion-chip v-for="(category, index) in recipeData.categories" :key="index" class="ion-no-margin ion-margin-top ion-margin-end" color="primary" style="position: relative; overflow: visible">
+            {{ category }}
+            <!-- Кнопка удалить выбранную категорию у предмета -->
+            <ion-icon :icon="closeCircleOutline" style="position: absolute; right: -0.2rem; top: 0;" color="medium" @click.stop="openDeleteCategoryModal(category)"></ion-icon>
+          </ion-chip>
+
+          <!-- Кнопка добавления категории -->
+          <ion-chip class="ion-no-margin ion-margin-top ion-margin-end" color="primary" outline="true" @click.stop="searchRecipesCategoriesMenu = true">
+            Добавить
+          </ion-chip>
+        </ion-grid>
+
+        <!-- Всплывашка подтверждение удаления категории предмета -->
+        <ion-action-sheet
+          :isOpen="deleteCategory"
+          header="Удалить категорию"
+          :buttons="deleteCategoryButtons"
+          @didDismiss="deleteCategory = false"
+        ></ion-action-sheet>
+
+      </ion-item-group>
+
+      <!-- Модалка по выбору / поиску категорий  -->
+      <ion-modal :isOpen="searchRecipesCategoriesMenu">
+
+        <!-- Поиск -->
+        <ion-searchbar
+          class="ion-text-left"
+          placeholder="Поиск..."
+          v-model="searchRecipesCategories"
+          show-cancel-button="always"
+          cancelButtonText="Отменить"
+          @ionCancel="searchRecipesCategoriesMenu = false"
+        ></ion-searchbar>
+
+        <!-- Контент -->
+        <ion-content style="height: 90vh">
+          <!-- Если есть данные -->
+          <ion-item v-for="(category) in searchedRecipesCategories" :key="category.id" @click="choosenCategory(category)">
+            <ion-grid class="ion-no-padding">
+                <ion-row class="ion-justify-content-between ion-align-items-center">
+                    <ion-text>{{ category }}</ion-text>
+                </ion-row>
+            </ion-grid>
+          </ion-item>
+          
+          <!-- Если ничего подходящего нет или нет данных -->
+          <div v-if="searchedRecipesCategories.length <= 0" class="ion-margin-top ion-margin-horizontal">
+            <ion-grid class="ion-no-padding">
+              <ion-row class="ion-justify-content-between ion-align-items-center">
+                <ion-text color="medium">Ничего не найдено</ion-text>
+              </ion-row>
+            </ion-grid>
+          </div>
+        </ion-content>
+      </ion-modal>
+
     </ion-content>
   </ion-modal>
 </template>
 
 <script>
-import { defineComponent, ref, watch, watchEffect } from "vue";
+import { defineComponent, ref, watch, watchEffect, computed, onMounted } from "vue";
 import {
-  IonModal,
-  IonHeader,
-  IonToolbar,
-  IonButtons,
-  IonButton,
-  IonTitle,
-  IonContent,
-  IonItemGroup,
-  IonText,
-  IonInput,
-  IonLabel,
+  IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonInput, IonLabel, IonGrid, IonChip, IonSearchbar, IonItem, IonRow, IonIcon, IonActionSheet
 } from "@ionic/vue";
+import { closeCircleOutline } from 'ionicons/icons'
+//
+import store from '../../store/index';
+//
+import { searchWarehouseCategoryFilter } from '../../helpers/filterWarehouseCategories';
+import { sortAlphabeticallyWarhouseItem } from "../../helpers/sortDealSubject";
 
 export default defineComponent({
   name: "CreateRecipe",
@@ -70,12 +135,29 @@ export default defineComponent({
     IonText,
     IonInput,
     IonLabel,
+    IonGrid,
+    IonChip,
+    IonSearchbar,
+    IonItem,
+    IonRow,
+    IonIcon,
+    IonActionSheet
   },
   setup(props, { emit }) {
     //
     const recipeData = ref();
     const recipeName = ref("");
     const recipeValue = ref("");
+    // Массив пользователя с вариантам категорий для рецептов
+    const userRecipesCategories = ref()
+    const userSettings = ref(store.state.userSettings)
+    //
+    onMounted(async () => {
+      await store.methods.getUserSettingsfromDB();
+      userSettings.value = store.state.userSettings;
+      //
+      userRecipesCategories.value = userSettings.value[0].userRecipesCategories
+    })
     //
     watch(recipeName, () => {
       // console.log(recipeName.value)
@@ -90,15 +172,68 @@ export default defineComponent({
       )
     }
     //
+    const searchRecipesCategoriesMenu = ref(false)
+    const searchRecipesCategories = ref('')
+    // ПОЛЬЗОВАТЕЛЬСКИЕ КАТЕГОРИИ
+    const searchedRecipesCategories = computed(() => {
+      const sortedRecipesCategoriesArray = sortAlphabeticallyWarhouseItem(userRecipesCategories.value)
+      return searchWarehouseCategoryFilter(sortedRecipesCategoriesArray, searchRecipesCategories.value)
+    })
+    // Проверяем добавлена уже категория к предмету или нет
+    const isCategoryAlreadyAdded = ref();
+    // Переменная для категории к добавлению
+    const newCategory = ref()
+    const choosenCategory = (category) => {
+      isCategoryAlreadyAdded.value = recipeData.value.categories.find(item => item === category)
+      if(isCategoryAlreadyAdded.value !== undefined) {
+        alert('NewRecipe-modalCreate: категория уже добавлена к предмету')
+      } else {
+        searchRecipesCategoriesMenu.value = false
+        newCategory.value = category
+        console.log(newCategory.value)
+        recipeData.value.categories.push(newCategory.value)
+      }
+    }
+    // ============================ Удаление категории у предмета ===============================================
+    // Вызываем action sheet уведомление в качестве подтверждения
+    const deleteCategory = ref(false);
+    // Храним категорию предмета к удалению
+    const categoryToDelete = ref();
+    //
+    const deleteCategoryButtons = [
+      {
+          text: 'Удалить',
+          role: 'destructive',
+          data: {
+              type: 'delete'
+          },
+          handler: () => {
+              deleteCategoruFunc(categoryToDelete.value)
+          }
+      },
+      {
+          text: 'Отменить',
+          role: 'cancel',
+          handler: () => {
+              console.log('Cancel clicked')
+          }
+      }
+    ]
+    //удаляем current category в предмете (обнолвений в БД здесь не производится)
+    const openDeleteCategoryModal = (category) => {
+        categoryToDelete.value = category;
+        deleteCategory.value = true
+    }
+    const deleteCategoruFunc = (category) => {
+      recipeData.value.categories = recipeData.value.categories.filter(item => item !== category)
+    }
+    //
     watchEffect(() => {
       recipeData.value = props.recipeData;
     });
 
     return {
-      recipeData,
-      recipeName,
-      recipeValue,
-      closeThisModal
+      recipeData, recipeName, recipeValue, closeThisModal, searchRecipesCategoriesMenu, searchRecipesCategories, searchedRecipesCategories, userRecipesCategories, userSettings, isCategoryAlreadyAdded, newCategory, choosenCategory, closeCircleOutline, deleteCategory, deleteCategoryButtons, openDeleteCategoryModal, deleteCategoruFunc
     };
   },
 });
