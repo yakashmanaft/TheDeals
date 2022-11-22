@@ -49,6 +49,25 @@
               <input type="file" ref="file" @change="handleFileUpload()"> -->
           </ion-row>
           <!--  -->
+          <div v-if="!edit">
+            <ion-row class="ion-justify-content-center ion-align-items-center">
+              <h2 v-if="userSettings.userInfo.name && userSettings.userInfo.surname">
+                {{userInfo.name}} {{userInfo.surname}}
+              </h2>
+              <h2 v-else >Без имени</h2>
+            </ion-row>
+            <!-- Кнопка включает режим редактирования -->
+            <ion-icon style="font-size: 24px;" :icon="createOutline" color="primary" @click="edit = true"></ion-icon>
+          </div>
+          <!--  -->
+          <div v-if="edit">
+            <h2>
+              <ion-input autocapitalize="on" inputmode="text" placeholder="Имя" v-model="userInfo.name" :value="userInfo.name"></ion-input>
+              <ion-input autocapitalize="on" inputmode="text" placeholder="Фамилия" v-model="userInfo.surname" :value="userInfo.surname"></ion-input>
+            </h2>
+            <ion-text @click="updateUserInfo" color="primary">Готово</ion-text>
+          </div>
+          <!--  -->
           <ion-row class="ion-justify-content-center ion-margin-top">
             <ion-text>Uid: {{ userSettings.uid }}</ion-text>
           </ion-row>
@@ -61,6 +80,62 @@
             <ion-text>Зарегистрирован: {{formattedDate(userSettings.created_at)}}</ion-text>
           </ion-row>
         </ion-grid>
+
+        <!-- Организация -->
+        <ion-card class="ion-no-padding ion-text-left">
+          <ion-card-header>
+            <ion-grid class="ion-no-padding">
+              <ion-row class="ion-align-items-center ion-justify-content-between">
+                <ion-card-title>
+                  Мои организации
+                </ion-card-title>
+                <ion-icon style="font-size: 24px;" :icon="ellipsisHorizontal" @click="isMainOrganizationMenuOpened = true"></ion-icon>
+              </ion-row>
+            </ion-grid>
+
+            <!--  -->
+            <ion-action-sheet
+              :isOpen="isMainOrganizationMenuOpened"
+              @didDismiss="isMainOrganizationMenuOpened = false"
+              :buttons="mainOrganizationMenuButtons"
+            ></ion-action-sheet>
+          </ion-card-header>
+          <ion-card-content v-if="userSettings.organization.length === 0">
+            Нет организаций
+          </ion-card-content>
+          <ion-card-content v-else>
+            <div v-for="(organization, index) in userSettings.organization" :key="index" class="marginTop">
+              <ion-grid class="ion-no-padding">
+                <ion-row class="ion-align-items-center ion-justify-content-between">
+                  <div>
+                    <ion-chip class="ion-no-margin" color="primary" @click="openCurrentOrganizationMenu(organization, index)">
+                      {{organization.organizationName}}
+                    </ion-chip>
+                    <ion-chip disabled="true">
+                      1 чел.
+                    </ion-chip>
+                  </div>
+                  <ion-text>{{organization.role}}</ion-text>
+                </ion-row>
+              </ion-grid>
+            </div>
+            <!--  -->
+            <ion-action-sheet
+              :isOpen="isCurrentOrganizationMenuOpened"
+              @didDismiss="isCurrentOrganizationMenuOpened = false"
+              :buttons="currentOrganizationMenuButtons"
+            ></ion-action-sheet>
+          </ion-card-content>
+          
+            <!-- Всплывашка подтверждение удаления предмета заказа -->
+            <ion-action-sheet
+                :is-open="deleteOrganizationMenu"
+                header="Точно?"
+                :buttons="deleteOrganizationMenuButtons"
+                @didDismiss="deleteOrganizationMenu = false"
+            >
+            </ion-action-sheet>
+        </ion-card>
 
         <!-- Инфа по подписке -->
         <ion-card class="ion-no-padding ion-text-left">
@@ -186,8 +261,8 @@
   import ViewHeader from '../components/headers/HeaderViewCurrent.vue';
   import Avatar from '../components/Avatar.vue';
   //
-  import { IonContent, IonText, IonCard, IonAvatar, IonIcon, IonGrid, IonRow, IonCardHeader, IonCardTitle, IonCardContent, IonChip } from '@ionic/vue';
-  import { removeCircleOutline, addCircleOutline } from 'ionicons/icons';
+  import { IonContent, IonText, IonCard, IonAvatar, IonIcon, IonGrid, IonRow, IonCardHeader, IonCardTitle, IonCardContent, IonChip, IonActionSheet, IonInput } from '@ionic/vue';
+  import { removeCircleOutline, addCircleOutline, ellipsisHorizontal, createOutline } from 'ionicons/icons';
   //
   import { format, parseISO } from 'date-fns';
   import { ru } from 'date-fns/locale'
@@ -195,7 +270,9 @@
   export default defineComponent({
     name: 'Profile',
     components: {
-      Spinner, ViewHeader, IonContent, IonText, IonCard, IonAvatar, IonIcon, IonGrid, IonRow, IonCardHeader, IonCardTitle, IonCardContent, IonChip, Avatar
+      Spinner, ViewHeader, Avatar, 
+      //
+      IonContent, IonActionSheet, IonText, IonCard, IonAvatar, IonIcon, IonGrid, IonRow, IonCardHeader, IonCardTitle, IonCardContent, IonChip, IonInput
     },
     setup() {
       //
@@ -390,9 +467,164 @@
         console.log('123')
       }
 
+      // isMainOrganizationMenuOpened
+      const isMainOrganizationMenuOpened = ref(false)
+      const mainOrganizationMenuButtons = [
+          {
+              text: 'Создать',
+              handler: () => {
+                alert('Profile: создание организаций в разработке...')
+              },
+          },
+          {
+            text: 'Найти организацию',
+            handler: () => {
+              alert('Profile: поиск организаций в разработке...')
+            }
+          },
+          {
+              text: 'Отменить',
+              role: 'cancel',
+              handler: () => {
+                  console.log('Cancel clicked')
+              },
+          }
+        ]
+
+        // isCurrentOrganizationMenuOpened
+        const organizationToDelete = ref()
+        const currentOrganizationMenuButtons = ref([])
+        const isCurrentOrganizationMenuOpened = ref(false)
+        //
+        const openCurrentOrganizationMenu = (organization, index) => {
+          organizationToDelete.value = index
+          if(organization.role === 'Создатель') {
+            currentOrganizationMenuButtons.value = organizationCreatorButtons
+          } else {
+            currentOrganizationMenuButtons.value = organizationParticipantButtons
+          }
+          isCurrentOrganizationMenuOpened.value = true
+        }
+        //
+        const organizationCreatorButtons = [
+          {
+            text: 'Пригласить',
+            handler: () => {
+              alert('Profile: приглашения в организацию в разработке')
+            }
+          },
+          {
+              text: 'Распустить (удалить)',
+              role: 'destructive',
+              data: {
+                  type: 'delete'
+              },
+              handler: () => {
+                  openDeleteOrganizationMenu()
+              },
+          },
+          {
+              text: 'Отменить',
+              role: 'cancel',
+              handler: () => {
+                  console.log('Cancel clicked')
+              },
+          }
+        ]
+        //
+        const organizationParticipantButtons = [
+          {
+              text: 'Выйти из организации',
+              role: 'destructive',
+              data: {
+                  type: 'delete'
+              },
+              handler: () => {
+                  openDeleteOrganizationMenu()
+              },
+          },
+          {
+              text: 'Отменить',
+              role: 'cancel',
+              handler: () => {
+                  console.log('Cancel clicked')
+              },
+          }
+        ]
+        // 
+        const deleteCurrentOrganization = (index) => {
+          userSettings.value.organization.splice(index, 1)
+          updateUserOrganizations()
+        }
+        //
+        const updateUserOrganizations = async () => {
+          try {
+            spinner.value = true
+            const { error } = await supabase.from('accountSettings').update({
+              organization: userSettings.value.organization
+            }).eq('id', userSettings.value.id)
+            if(error) throw error;
+          } catch (error) {
+            alert(`Error: ${error.message}`)
+          }
+          spinner.value = false;
+        }
+        //
+        const deleteOrganizationMenu = ref(false)
+        const openDeleteOrganizationMenu = () => {
+          deleteOrganizationMenu.value = true
+        }
+        const deleteOrganizationMenuButtons = [
+          {
+              text: 'Да',
+              role: 'destructive',
+              data: {
+                  type: 'delete'
+              },
+              handler: () => {
+                deleteCurrentOrganization(organizationToDelete.value)
+              },
+          },
+          {
+              text: 'Отменить',
+              role: 'cancel',
+              handler: () => {
+                  console.log('Cancel clicked')
+              },
+          }
+        ]
+
+        const edit = ref(false)
+        const userInfo = ref({
+          name: userSettings.value.userInfo.name,
+          surname: userSettings.value.userInfo.surname
+        })
+        const updateUserInfo = async () => {
+          if (!userInfo.value.name || userInfo.value.name === '') {
+            alert('Profile: Укажите имя')
+          } else if (!userInfo.value.surname || userInfo.value.surname === '') {
+            alert('Profile: Укажите фамилию')
+          } else {
+            try {
+              spinner.value = true
+              const { error } = await supabase.from('accountSettings').update({
+                userInfo: userInfo.value
+              }).eq('id', userSettings.value.id)
+              if(error) throw error;
+            } catch (error) {
+              alert(`Error: ${error.message}`)
+            }
+            //const userSettings = ref(store.state.userSettings[0])
+            await store.methods.getUserSettingsfromDB()
+            userSettings.value = store.state.userSettings[0]
+            //
+            edit.value = false
+            spinner.value = false;
+          }
+        }
 
       return {
-        spinner, user, router, dataLoaded, userSettings, userEmail, isQrAvailable, removeCircleOutline, addCircleOutline, changeDaySaturationQty, daySaturation, setCountQtyButtonDecreaseColor, setCountQtyButtonAddColor, translateDaySaturationName, openBusinessCard, addBusinessCard, editBusinessCard, myDeals, availableBalance, myDebt, debtToMe, currency, formattedDate, pageTitle, renewSubscription, file, handleFileUpload, avatar_url, updateProfile
+        spinner, user, router, dataLoaded, userSettings, userEmail, isQrAvailable, removeCircleOutline, addCircleOutline, changeDaySaturationQty, daySaturation, setCountQtyButtonDecreaseColor, setCountQtyButtonAddColor, translateDaySaturationName, openBusinessCard, addBusinessCard, editBusinessCard, myDeals, availableBalance, myDebt, debtToMe, currency, formattedDate, pageTitle, renewSubscription, file, handleFileUpload, avatar_url, updateProfile, ellipsisHorizontal, isMainOrganizationMenuOpened, mainOrganizationMenuButtons, isCurrentOrganizationMenuOpened, currentOrganizationMenuButtons, openCurrentOrganizationMenu ,organizationCreatorButtons, organizationParticipantButtons, organizationToDelete, deleteCurrentOrganization, deleteOrganizationMenu, openDeleteOrganizationMenu, deleteOrganizationMenuButtons, createOutline, edit, userInfo, updateUserInfo
       }
     }
   })
@@ -409,4 +641,10 @@
       width: 6rem;
       height: 6rem;
     } */
+    .marginTop {
+      margin-top: 16px;
+    }
+    .marginTop:first-child {
+      margin-top: 0px;
+    }
 </style>

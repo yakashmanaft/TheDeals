@@ -181,7 +181,9 @@
                     }
                 ],
                 avatar_url: null,
-                userWorkProfile: null
+                userWorkProfile: null,
+                organization: [],
+                userInfo: {}
             })
 
             // Register function

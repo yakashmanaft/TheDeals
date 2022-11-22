@@ -20,7 +20,7 @@
                         <ion-text>
                             Дата исполнения: <br> {{formattedDate(deal.executionDate)}}
                         </ion-text>
-                        <ion-chip class="ion-no-margin">
+                        <ion-chip color="primary" class="ion-no-margin">
                             {{translateValue(deal.dealStatus, dealStatusList)}}
                         </ion-chip>
                     </ion-row>
