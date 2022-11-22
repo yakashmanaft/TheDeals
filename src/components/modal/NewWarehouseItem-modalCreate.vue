@@ -247,6 +247,7 @@ import store from '../../store/index';
                 if(isCategoryAlreadyAdded.value !== undefined) {
                     alert('NewWarehouseItem-modalCreate: категория уже добавлена к предмету')
                 } else {
+                    searchWarehouseCategories.value = ''
                     searchWarehouseCategoriesMenu.value = false
                     // newCategory.value = {
                     //     name: category.name

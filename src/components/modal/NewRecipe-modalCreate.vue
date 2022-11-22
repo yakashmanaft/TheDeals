@@ -156,7 +156,8 @@ export default defineComponent({
       await store.methods.getUserSettingsfromDB();
       userSettings.value = store.state.userSettings;
       //
-      userRecipesCategories.value = userSettings.value[0].userRecipesCategories
+      // userRecipesCategories.value = userSettings.value[0].userRecipesCategories
+      userRecipesCategories.value = store.state.recipesCategoriesArray
     })
     //
     watch(recipeName, () => {
@@ -188,6 +189,7 @@ export default defineComponent({
       if(isCategoryAlreadyAdded.value !== undefined) {
         alert('NewRecipe-modalCreate: категория уже добавлена к предмету')
       } else {
+        searchRecipesCategories.value = ''
         searchRecipesCategoriesMenu.value = false
         newCategory.value = category
         console.log(newCategory.value)
