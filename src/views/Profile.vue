@@ -49,7 +49,7 @@
               <input type="file" ref="file" @change="handleFileUpload()"> -->
           </ion-row>
           <!--  -->
-          <div v-if="!edit">
+          <div v-if="!edit" class="ion-margin-bottom">
             <ion-row class="ion-justify-content-center ion-align-items-center">
               <h2 v-if="userSettings.userInfo.name && userSettings.userInfo.surname">
                 {{userInfo.name}} {{userInfo.surname}}
@@ -60,15 +60,25 @@
             <ion-icon style="font-size: 24px;" :icon="createOutline" color="primary" @click="edit = true"></ion-icon>
           </div>
           <!--  -->
-          <div v-if="edit">
-            <h2>
-              <ion-input autocapitalize="on" inputmode="text" placeholder="Имя" v-model="userInfo.name" :value="userInfo.name" class="ion-no-padding"></ion-input>
-              <ion-input autocapitalize="on" inputmode="text" placeholder="Фамилия" v-model="userInfo.surname" :value="userInfo.surname" class="ion-no-padding ion-margin-top"></ion-input>
-            </h2>
-            <ion-text @click="updateUserInfo" color="primary">Готово</ion-text>
+          <div v-if="edit" class="ion-margin-horizontal ion-padding-end ion-padding-vertical">
+
+            <!-- Имя -->
+            <ion-item>
+              <ion-label color="medium">Имя</ion-label>
+              <ion-input v-model="userInfo.name" :value="userInfo.name" autocapitalize="on" inputmode="text"></ion-input>
+            </ion-item>
+
+            <!-- Фамилия -->
+            <ion-item>
+              <ion-label color="medium">Фамилия</ion-label>
+              <ion-input v-model="userInfo.surname" :value="userInfo.surname" autocapitalize="on" inputmode="text"></ion-input>
+            </ion-item>
+
+            <!-- Кнопка ГОТОВО -->
+            <ion-button @click="updateUserInfo" color="primary" shape="round" class="ion-margin-top">Готово</ion-button>
           </div>
           <!--  -->
-          <ion-row class="ion-justify-content-center ion-margin-top">
+          <ion-row class="ion-justify-content-center">
             <ion-text>Uid: {{ userSettings.uid }}</ion-text>
           </ion-row>
           <!--  -->
@@ -261,7 +271,7 @@
   import ViewHeader from '../components/headers/HeaderViewCurrent.vue';
   import Avatar from '../components/Avatar.vue';
   //
-  import { IonContent, IonText, IonCard, IonAvatar, IonIcon, IonGrid, IonRow, IonCardHeader, IonCardTitle, IonCardContent, IonChip, IonActionSheet, IonInput } from '@ionic/vue';
+  import { IonContent, IonText, IonCard, IonAvatar, IonIcon, IonGrid, IonRow, IonCardHeader, IonCardTitle, IonCardContent, IonChip, IonActionSheet, IonInput, IonLabel, IonItem, IonButton } from '@ionic/vue';
   import { removeCircleOutline, addCircleOutline, ellipsisHorizontal, createOutline } from 'ionicons/icons';
   //
   import { format, parseISO } from 'date-fns';
@@ -272,7 +282,7 @@
     components: {
       Spinner, ViewHeader, Avatar, 
       //
-      IonContent, IonActionSheet, IonText, IonCard, IonAvatar, IonIcon, IonGrid, IonRow, IonCardHeader, IonCardTitle, IonCardContent, IonChip, IonInput
+      IonContent, IonActionSheet, IonText, IonCard, IonAvatar, IonIcon, IonGrid, IonRow, IonCardHeader, IonCardTitle, IonCardContent, IonChip, IonInput, IonLabel, IonItem, IonButton
     },
     setup() {
       //

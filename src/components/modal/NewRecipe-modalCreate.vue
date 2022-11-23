@@ -187,7 +187,7 @@ export default defineComponent({
     const choosenCategory = (category) => {
       isCategoryAlreadyAdded.value = recipeData.value.categories.find(item => item === category)
       if(isCategoryAlreadyAdded.value !== undefined) {
-        alert('NewRecipe-modalCreate: категория уже добавлена к предмету')
+        alert('NewRecipe-modalCreate: категория уже добавлена к рецепту')
       } else {
         searchRecipesCategories.value = ''
         searchRecipesCategoriesMenu.value = false
