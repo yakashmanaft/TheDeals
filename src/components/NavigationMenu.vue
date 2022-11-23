@@ -43,10 +43,17 @@
         <!-- menu content -->
         <ion-content class="ion-padding-vertical" forceOverscroll="false">
             <ion-list>
-                <ion-item v-for="(item, index) in currentMenuList" :key="index" lines="none" >
+                <ion-item v-for="(item, index) in currentMenuList" :key="index" lines="none">
                     <ion-icon :icon="`${item.icon}`" color="primary" :alt="`${item.icon}`" class="ion-margin-end"/>
                     <router-link :to="{ name: `${item.name}` }" :class="{ 'current-route': item.title === currentRoute }"> {{ item.title }}</router-link>
                 </ion-item> 
+                <!-- Ссылкана магазин рецептов -->
+                <ion-item v-if="userProfile === 'Тортодилер'" lines="none">
+                    <ion-icon :icon="storefrontOutline" color="primary" class="ion-margin-end"></ion-icon>
+                    <router-link :to="{ name: 'RecipesStore' }">
+                        Магазин рецептов
+                    </router-link>
+                </ion-item>
             </ion-list>
         </ion-content>
         <!-- menu footer -->
@@ -85,7 +92,7 @@
         IonCol
     } from '@ionic/vue';
     import PWAPrompt from '../components/PWAPrompt.vue';
-    import { exitOutline, helpCircleOutline, person } from 'ionicons/icons';
+    import { exitOutline, helpCircleOutline, person, storefrontOutline } from 'ionicons/icons';
 
     export default defineComponent({
         name: 'NavigationMenu',
@@ -143,7 +150,7 @@
             console.log(currentRoute.value)
 
             return {
-                user, router, userEmail, logout, menuList, exitOutline, helpCircleOutline, menuType, currentRoute, avatar_url, person, getCurrentMenuList, userProfile, currentMenuList
+                user, router, userEmail, logout, menuList, exitOutline, helpCircleOutline, menuType, currentRoute, avatar_url, person, getCurrentMenuList, userProfile, currentMenuList, storefrontOutline
             }
         }
     })
