@@ -33,6 +33,11 @@
                     <ion-icon color="primary" :icon="storefrontOutline"></ion-icon>
                 </ion-button>
 
+                <!-- RECIPE STORE BUSKET -->
+                <ion-button v-if="router.currentRoute._value.meta.title === 'Recipes Store'" @click="$emit('goToBusket')">
+                    <ion-icon color="primary" :icon="bagOutline"></ion-icon>
+                </ion-button>
+
                 <!-- BURGER -->
                 <ion-menu-toggle v-if="router.currentRoute._value.meta.title === 'Calendar'">
                     <ion-icon :icon="menu" class/>
@@ -47,7 +52,7 @@
     import { computed } from 'vue';
     import { useRouter } from 'vue-router';
     import { IonHeader, IonMenuToggle, IonToolbar, IonIcon, IonGrid, IonRow, IonText, IonButtons, IonButton, IonBackButton, IonTitle } from '@ionic/vue';
-    import { menu, walletOutline, settingsOutline, qrCodeOutline, storefrontOutline } from 'ionicons/icons';
+    import { menu, walletOutline, settingsOutline, qrCodeOutline, storefrontOutline, bagOutline } from 'ionicons/icons';
 
     export default {
         name: 'Header',
@@ -73,7 +78,7 @@
             // }
 
             return {
-                user, router, menu, walletOutline, settingsOutline, goToWallet, qrCodeOutline, goToPay, settingsOutline, storefrontOutline
+                user, router, menu, walletOutline, settingsOutline, goToWallet, qrCodeOutline, goToPay, settingsOutline, storefrontOutline, bagOutline
             }
         }
     }

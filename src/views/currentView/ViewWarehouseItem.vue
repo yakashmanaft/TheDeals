@@ -57,7 +57,9 @@
     export default defineComponent({
         name: 'View-warehouse-item',
         components: {
-            ViewHeader, Spinner, IonContent, IonItemGroup, IonButton, IonActionSheet
+            ViewHeader, Spinner, 
+            //
+            IonContent, IonItemGroup, IonButton, IonActionSheet
         },
         setup () {
             //

@@ -75,7 +75,7 @@
             </ion-item>
 
             <!-- Кнопка ГОТОВО -->
-            <ion-button @click="updateUserInfo" color="primary" shape="round" class="ion-margin-top">Готово</ion-button>
+            <ion-button @click="updateUserInfo" color="primary" shape="round" class="ion-margin-top ion-margin-start">Готово</ion-button>
           </div>
           <!--  -->
           <ion-row class="ion-justify-content-center">

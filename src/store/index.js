@@ -476,7 +476,10 @@ const state = reactive({
   cakeWarehouseCategoriesArray: ['Без категории', 'Сыпучие', 'Посуда'],
   // Переменные по моим рецептам
   // Массив возможных категорий для рецептов, которые предлагает сервис (Вариант для тортодиллера)
-  recipesCategoriesArray: ['Без категории', 'Свадебные торты', 'Торты', 'Бисквитные', 'Муссовые', 'Торты цифра', 'Капкейки', 'Кейк-попсы', 'Зефир', 'Леденцы', 'Макаронс', 'Меренге (безе)', 'Брауни', 'Павлова', 'Эскимошки', 'Трайфлы']
+  recipesCategoriesArray: ['Без категории', 'Свадебные', 'Торты', 'Бисквитные', 'Муссовые', 'Цифра', 'Капкейки', 'Кейк-попсы', 'Зефир', 'Леденцы', 'Макаронс', 'Меренге (безе)', 'Брауни', 'Павлова', 'Эскимошки', 'Трайфлы', 'Детские'],
+  storeRecipesArray: [],
+  // Все пользватели сервиса
+  usersArray: []
 });
 
 const methods = {
@@ -572,6 +575,22 @@ const methods = {
     if(error) throw error;
     state.userLedgerArray = userLedger.reverse();
     //userLedgerArray
+  },
+  // Забираем из БД store recipes list (магазин рецептов)
+  getStoreRecipes: async () => {
+    let { data: storeRecipes, error } = await supabase.from('storeRecipes').select('*');
+    if(error) throw error;
+    state.storeRecipesArray = storeRecipes
+  },
+  // Забираем из БД всех users
+  getUsers: async () => {
+    try {
+        let { data: allUsers, error } = await supabase.from('accountSettings').select('*');
+        if (error) throw error;
+        state.usersArray = allUsers
+    } catch (error) {
+        console.log(error);
+    }
   },
   //
   setUserEmail: () => {

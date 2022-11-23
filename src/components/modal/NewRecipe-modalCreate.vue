@@ -25,12 +25,14 @@
       <!--  -->
       <ion-item-group>
         <!-- <ion-label>Default input</ion-label> -->
-        <ion-input
-          type="text"
-          v-model="recipeName"
-          placeholder="Укажите название рецепта"
-          autocapitalize="on"
-        ></ion-input>
+        <ion-item counter="true" class="ion-no-padding">
+          <ion-input
+            v-model="recipeName"
+            placeholder="Укажите название рецепта"
+            autocapitalize="on"
+            maxlength="40"
+          ></ion-input>
+        </ion-item>
       </ion-item-group>
 
       <!-- Категории рецепта -->
@@ -38,6 +40,7 @@
         <!-- Заголовок -->
         <ion-text>
           <h4>Категории рецепта</h4>
+          <ion-text color="medium">Не более 3-х</ion-text>
         </ion-text>
 
         <!--  -->
@@ -188,6 +191,8 @@ export default defineComponent({
       isCategoryAlreadyAdded.value = recipeData.value.categories.find(item => item === category)
       if(isCategoryAlreadyAdded.value !== undefined) {
         alert('NewRecipe-modalCreate: категория уже добавлена к рецепту')
+      } else if (recipeData.value.categories.length >= 3) {
+        alert('NewRecipe-modalCreate: Вы добавили максимально количество категорий')
       } else {
         searchRecipesCategories.value = ''
         searchRecipesCategoriesMenu.value = false

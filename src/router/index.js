@@ -185,7 +185,17 @@ const routes = [
       translation: 'Магазин рецептов',
       type: 'View'
     }
-  }
+  },
+  {
+    path: '/view-store-recipe/:itemId',
+    name: 'View-store-recipe',
+    component: () => import('../views/currentView/ViewStoreRecipe.vue'),
+    meta: {
+      title: 'View Store Recipe',
+      auth: true,
+      type: 'CurrentView'
+    }
+  },
 ];
 
 const router = createRouter({

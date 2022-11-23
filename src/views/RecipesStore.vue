@@ -10,7 +10,9 @@
 
         <!-- page header -->
         <Header 
+            @goToBusket="goToRecipesStoreBusket"
             :title="pageTitle"
+            style="background-color: white"
         />
 
         <!--  -->
@@ -34,7 +36,45 @@
             <!-- Data -->
             <div v-if="dataLoaded && storeItems.length !== 0" class="ion-text-left ion-margin-bottom">
                 <!-- Поиск надо же да? -->
-                dsfds
+                <ion-searchbar class="ion-text-left" placeholder="Поиск..." v-model="search"></ion-searchbar>
+
+                <!--  -->
+                <!-- для формирования рабочего поиска массив storeItems преобразовавываем в searchedItem как в warehouse.vue-->
+                <!-- и используем переменную search -->
+                <!-- v-if="search !== ''" -->
+                <router-link
+                    v-for="(item, index) in storeItems"
+                    :key="index"
+                    :to="{
+                        name: 'View-store-recipe',
+                        params: {
+                            itemId: item.id,
+                            itemUid: item.uid,
+                            item: JSON.stringify(item)
+                        }
+                    }"
+                >
+                    <ion-card>
+                        <!-- Image -->
+                        <div style="height: 13rem; width: 100%; background-color: var(--ion-color-medium);">
+                            <ion-img src="img/common/banana-with-gouda.jpg" :alt="item.name" style="width: 100%; height: 100%; object-fit: cover"/>
+                        </div>
+                        <!-- Header -->
+                        <ion-card-header>
+                            <ion-card-title>
+                                {{item.name}}
+                            </ion-card-title>
+                            <ion-text class="ion-no-margin vertical-devider" v-for="(category, index) in item.categories" :key="index" style="margin-right: 0.3rem;">
+                                {{category}}
+                            </ion-text>
+                        </ion-card-header>
+                        <!-- Content -->
+                        <ion-card-content>
+                            <!-- {{item}} -->
+                            Автор: {{setAuthor(item.recipeAuthorEmail)}}
+                        </ion-card-content>
+                    </ion-card>
+                </router-link>
             </div>
         </ion-content>
     </div>
@@ -48,7 +88,7 @@
     import { defineComponent, ref, computed, onMounted  } from 'vue';
     import { useRoute, useRouter } from 'vue-router';
     //
-    import { IonContent, IonImg, IonText } from '@ionic/vue'
+    import { IonContent, IonImg, IonText, IonSearchbar, IonCard, IonCardHeader, IonCardTitle, IonCardContent } from '@ionic/vue'
     //
     import store from '../store/index';
 
@@ -57,7 +97,7 @@
         components: {
             Spinner, NavigationMenu, Header,
             //
-            IonContent, IonImg, IonText
+            IonContent, IonImg, IonText, IonSearchbar, IonCard, IonCardHeader, IonCardTitle, IonCardContent
         },
         setup(props, { emit }) {
             const spinner = ref(null);
@@ -77,13 +117,50 @@
             // Get page title
             const pageTitle = router.currentRoute._value.meta.translation;
             //
-            onMounted(() => {
+            spinner.value = true;
+            //
+            const users = ref([])
+            //
+            onMounted(async () => {
+                await store.methods.getStoreRecipes()
+                storeItems.value = store.state.storeRecipesArray;
+                //
                 spinner.value = false
                 dataLoaded.value = true;
+                //
+                await store.methods.getUsers()
+                users.value = store.state.usersArray;
+                // console.log(users.value)
             })
+            // функция поиска рецепта по магазину с помощью search
+            const search = ref('')
+
+            // парсим автора рецепта
+            const setAuthor = (recipeAuthorEmail) => {
+                let author;
+                // users.value.forEach(user => {
+                //     if(recipeAuthorEmail === userEmail.value) {
+                //         author =  'Я'
+                //     } else if(recipeAuthorEmail === user.email){
+                //         console.log(user.organization)
+                //         console.log(user.userInfo)
+                //         author = user.email
+                //     }
+                // })
+                if(recipeAuthorEmail === userEmail.value) {
+                    author = 'Я'
+                } else {
+                    author = recipeAuthorEmail
+                }
+                return author
+            }
+            // Переход в корзину
+            const goToRecipesStoreBusket = () => {
+                alert('RecipesStore: Корзина в разработке...')
+            }
 
             return {
-                spinner, dataLoaded, storeItems, user, router, route, pageTitle
+                spinner, dataLoaded, storeItems, user, router, route, pageTitle, search, setAuthor, users, goToRecipesStoreBusket
             }
         }
     })
@@ -124,5 +201,13 @@
     }
     .line-divider {
         border: 0.05rem solid var(--ion-color-light);
+    }
+    ion-text.vertical-devider {
+        padding-right: 0.3rem;
+        border-right: 1px solid var(--ion-color-medium);
+    }
+    ion-text.vertical-devider:last-child {
+        padding-right: 0;
+        border: none;
     }
 </style>
