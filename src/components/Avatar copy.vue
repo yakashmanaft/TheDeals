@@ -129,8 +129,8 @@
         }).eq('id', userSettings.value.id)
         if (error) throw error;
     } catch (error) {
-            alert(`Error: ${error.message}`)
-          }
+        alert(`Error: ${error.message}`)
+    }
   }
 
   watch(path, () => {

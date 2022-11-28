@@ -59,6 +59,9 @@ export default defineComponent({
           let { error: uploadError } = await supabase.storage
             .from('avatars')
             .upload(fileName, file);
+
+            // обновляем запись в table 
+            updateAccountSettings(fileName)
           if (uploadError) {
             throw uploadError;
           }
@@ -69,6 +72,18 @@ export default defineComponent({
         console.log(error);
       }
     };
+    //
+    const updateAccountSettings = async (fileName) => {
+      try {
+        //
+        let { error } = await supabase.from('accountSettings').update({
+            avatar_url: fileName
+        }).eq('id', userSettings.value.id)
+        if (error) throw error;
+      } catch (error) {
+        alert(`Error: ${error.message}`)
+      }
+    }
     watch(path, () => {
       if (path.value) downloadImage();
     });
@@ -77,7 +92,7 @@ export default defineComponent({
       alert('В разработке')
     }
     //
-    return { avatarUrl, uploadAvatar, person, userSettings, changeAvatarMenu };
+    return { avatarUrl, uploadAvatar, person, userSettings, changeAvatarMenu, updateAccountSettings };
   },
 });
 </script>
