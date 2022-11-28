@@ -7,9 +7,9 @@
                     <ion-col>
                         <router-link :to="{ name: 'Profile'  }">
                             <!-- Аватар, поидее должен подгружать из настроек аккаунта -->
-                            <ion-avatar v-if="avatar_url">
+                            <ion-avatar v-if="avatarFileName" >
                                 <!-- Если в БД есть запись url -->
-                                <img class="account-avatar" :src="`https://vpgbroyeiswutvsserbi.supabase.co/storage/v1/object/public/avatars/${avatar_url}`">
+                                <img :src="avatarUrl" />
                             </ion-avatar>
 
                             <!-- Если null -->
@@ -106,7 +106,7 @@
         setup(props, {emit}) {
             //
             const currentRoute = ref(props.title)
-            const avatar_url = ref(props.avatar)
+            const avatarFileName = ref()
             // Get user from store
             const user = computed(() => store.state.user);
             // Setup ref to router
@@ -121,8 +121,25 @@
             onMounted(async () => {
                 await store.methods.getUserSettingsfromDB()
                 userProfile.value = store.state.userSettings[0].userWorkProfile
-                getCurrentMenuList()
+                avatarFileName.value = store.state.userSettings[0].avatar_url
+                await getCurrentMenuList()
+                // console.log(avatarFileName.value)
+                await downloadImage()
+                // console.log(avatarUrl.value)
             })
+            //
+            const avatarUrl = ref()
+            const downloadImage = async () => {
+                try {
+                    const { data, error } = await supabase.storage
+                    .from('avatars')
+                    .download(avatarFileName.value);
+                    if (error) throw error;
+                    avatarUrl.value = URL.createObjectURL(data);
+                } catch (error) {
+                    console.error('Error downloading image: ', error.message);
+                }
+            };
             // Logout function
             const logout = async () => {
                 await supabase.auth.signOut();
@@ -145,12 +162,12 @@
             //
             watchEffect(() => {
                 currentRoute.value = props.title;
-                avatar_url.value = props.avatar
+                // avatarFileName.value = props.avatar
             })
             console.log(currentRoute.value)
 
             return {
-                user, router, userEmail, logout, menuList, exitOutline, helpCircleOutline, menuType, currentRoute, avatar_url, person, getCurrentMenuList, userProfile, currentMenuList, storefrontOutline
+                user, router, userEmail, logout, menuList, exitOutline, helpCircleOutline, menuType, currentRoute, person, getCurrentMenuList, userProfile, currentMenuList, storefrontOutline, avatarFileName, downloadImage, avatarUrl
             }
         }
     })
@@ -195,9 +212,14 @@
         color: var(--ion-color-primary)
     }
     .no-avatar {
-        display: flex;
+        overflow: hidden;
+        /* display: flex;
         justify-content: center;
-        align-items: center;
+        align-items: flex-end; */
         background-color: var(--ion-color-medium)
+    }
+    .no-avatar ion-icon {
+        width: 100%;
+        height: 115%;
     }
 </style>

@@ -6,7 +6,6 @@
         <!-- Navigation Menu -->
         <navigation-menu
             :title="pageTitle"
-            :avatar="avatar_url"
         />
 
         <!-- page header -->
@@ -166,7 +165,7 @@
             const observer = ref()
             //
             const availableBalance = ref(0)
-            const avatar_url = ref(null)
+            // const avatarFileName = ref('')
             // 
             onMounted(async () => {
                 spinner.value = true
@@ -174,7 +173,7 @@
                 userSettings.value = store.state.userSettings[0]
                 weekendDays.value = userSettings.value.weekendDays
                 // console.log(weekendDays.value)
-                avatar_url.value = userSettings.value.avatar_url
+                // avatarFileName.value = userSettings.value.avatar_url
                 // console.log(userSettings.value.avatar_url)
                 //
                 await store.methods.getMyContactsFromDB()
@@ -627,7 +626,7 @@
             }
 
             return {
-                menu, user, router, pageTitle, choosenDate, spinner, dataLoaded, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle, observer, availableBalance, avatar_url, addToLedger
+                menu, user, router, pageTitle, choosenDate, spinner, dataLoaded, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle, observer, availableBalance, addToLedger
             }
         }
     })
