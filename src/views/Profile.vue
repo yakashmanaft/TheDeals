@@ -473,8 +473,8 @@
         console.log("selected file",file.value.files)
       }
       //
-      const updateProfile = () => {
-        console.log('123')
+      const updateProfile = (boolean) => {
+        console.log(boolean)
       }
 
       // isMainOrganizationMenuOpened
