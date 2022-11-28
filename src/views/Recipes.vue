@@ -228,6 +228,7 @@
                 value: '',
                 name: '',
                 categories: [],
+                recipeDescription: '',
                 recipeAuthorEmail: userEmail.value,
                 forSale: false
             })
@@ -243,6 +244,7 @@
                     value: '',
                     name: '',
                     categories: [],
+                    recipeDescription: '',
                     recipeAuthorEmail: userEmail.value,
                     forSale: false
                 }
@@ -257,10 +259,9 @@
                 // Использовать валидацию
                 if(newRecipeData.name === '') {
                     alert('Recipes: Вы не указали название рецепта')
+                } else if (newRecipeData.recipeDescription === '') {
+                    alert('Recips: Вы не заполнили описание рецепта')
                 } 
-                // else if (newRecipeData.categories.length === 0) {
-                //     alert('Recips: Добавьте хотя бы одну категорию')
-                // } 
                 else {
                     try {
                         // Добавляем в БД инфу по новому контакту

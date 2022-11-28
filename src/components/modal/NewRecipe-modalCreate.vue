@@ -15,16 +15,14 @@
     </ion-header>
     <ion-content class="ion-padding" forceOverscroll="false">
       <!-- ============================= Основные данные ===================================== -->
+      {{ recipeData }}
       <ion-item-group>
         <!-- Заголовок -->
         <ion-text>
-          <h4>В разработке...</h4>
+          <h4>Название</h4>
         </ion-text>
-      </ion-item-group>
-      {{ recipeData }}
-      <!--  -->
-      <ion-item-group>
-        <!-- <ion-label>Default input</ion-label> -->
+
+        <!--  -->
         <ion-item counter="true" class="ion-no-padding">
           <ion-input
             v-model="recipeName"
@@ -39,8 +37,8 @@
       <ion-item-group>
         <!-- Заголовок -->
         <ion-text>
-          <h4>Категории рецепта</h4>
-          <ion-text color="medium">Не более 3-х</ion-text>
+          <h4>Категории</h4>
+          <ion-text color="medium">Добавьте не более 3-х категорий</ion-text>
         </ion-text>
 
         <!--  -->
@@ -104,6 +102,17 @@
         </ion-content>
       </ion-modal>
 
+      <!-- Описание рецепта -->
+      <ion-item-group>
+        <!-- Заголовок -->
+        <ion-text>
+          <h4>Описание</h4>
+        </ion-text>
+
+        <!--  -->
+        <ion-textarea placeholder="Заполните описание рецепта" class="ion-no-padding" autoGrow="true" autocapitalize="on"></ion-textarea>
+      </ion-item-group>
+
     </ion-content>
   </ion-modal>
 </template>
@@ -111,7 +120,7 @@
 <script>
 import { defineComponent, ref, watch, watchEffect, computed, onMounted } from "vue";
 import {
-  IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonInput, IonLabel, IonGrid, IonChip, IonSearchbar, IonItem, IonRow, IonIcon, IonActionSheet
+  IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonInput, IonLabel, IonGrid, IonChip, IonSearchbar, IonItem, IonRow, IonIcon, IonActionSheet, IonTextarea 
 } from "@ionic/vue";
 import { closeCircleOutline } from 'ionicons/icons'
 //
@@ -144,7 +153,8 @@ export default defineComponent({
     IonItem,
     IonRow,
     IonIcon,
-    IonActionSheet
+    IonActionSheet,
+    IonTextarea 
   },
   setup(props, { emit }) {
     //
