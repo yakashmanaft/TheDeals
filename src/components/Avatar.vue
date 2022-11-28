@@ -43,6 +43,7 @@ export default defineComponent({
     const spinner = ref(null)
     onMounted(() => {
       // console.log(avatarUrl.value)
+        // ИСКЛЮЧИТЬ ОШИБКУ УСЛОВИЕМ 
         downloadImage()
     })
     const downloadImage = async () => {

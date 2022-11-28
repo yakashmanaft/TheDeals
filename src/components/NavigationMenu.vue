@@ -124,6 +124,7 @@
                 avatarFileName.value = store.state.userSettings[0].avatar_url
                 await getCurrentMenuList()
                 // console.log(avatarFileName.value)
+                // ИСКЛЮЧИТЬ ОШИБКУ УСЛОВИЕМ 
                 await downloadImage()
                 // console.log(avatarUrl.value)
             })
