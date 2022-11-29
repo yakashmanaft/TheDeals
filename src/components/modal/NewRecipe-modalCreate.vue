@@ -16,6 +16,8 @@
     <ion-content class="ion-padding" forceOverscroll="false">
       <!-- ============================= Основные данные ===================================== -->
       {{ recipeData }}
+
+      <!-- Название рецепта -->
       <ion-item-group>
         <!-- Заголовок -->
         <ion-text>
@@ -36,9 +38,13 @@
       <!-- Категории рецепта -->
       <ion-item-group>
         <!-- Заголовок -->
-        <ion-text>
-          <h4>Категории</h4>
-          <ion-text color="medium">Добавьте не более 3-х категорий</ion-text>
+        <ion-text >
+          <ion-grid class="ion-no-padding ion-margin-top">
+            <ion-row class="ion-justify-content-between ion-align-items-center">
+              <h4 class="ion-no-margin">Категории</h4>
+              <ion-text color="medium">Не более 3-х</ion-text>
+            </ion-row>
+          </ion-grid>
         </ion-text>
 
         <!--  -->
@@ -47,12 +53,12 @@
           <!-- Добавленная категория -->
           <ion-chip v-for="(category, index) in recipeData.categories" :key="index" class="ion-no-margin ion-margin-top ion-margin-end" color="primary" style="position: relative; overflow: visible">
             {{ category }}
-            <!-- Кнопка удалить выбранную категорию у предмета -->
+            <!-- Кнопка удалить выбранную категорию у рецепта -->
             <ion-icon :icon="closeCircleOutline" style="position: absolute; right: -0.2rem; top: 0;" color="medium" @click.stop="openDeleteCategoryModal(category)"></ion-icon>
           </ion-chip>
 
           <!-- Кнопка добавления категории -->
-          <ion-chip class="ion-no-margin ion-margin-top ion-margin-end" color="primary" outline="true" @click.stop="searchRecipesCategoriesMenu = true">
+          <ion-chip v-if="recipeData.categories.length < 3" class="ion-no-margin ion-margin-top ion-margin-end" color="primary" outline="true" @click.stop="searchRecipesCategoriesMenu = true">
             Добавить
           </ion-chip>
         </ion-grid>
@@ -113,6 +119,10 @@
         <ion-textarea placeholder="Заполните описание рецепта" class="ion-no-padding" autoGrow="true" autocapitalize="on"></ion-textarea>
       </ion-item-group>
 
+      <!--  -->
+      <ion-item-group>
+        123
+      </ion-item-group>
     </ion-content>
   </ion-modal>
 </template>

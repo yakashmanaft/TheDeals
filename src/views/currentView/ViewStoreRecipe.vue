@@ -29,6 +29,11 @@
                 <ion-item-group>
                     {{ currentItem }}
                 </ion-item-group>
+
+                <br>
+                <ion-item-group>
+                    Автор рецепта {{currentItem.recipeAuthorEmail}}
+                </ion-item-group>
             </div>
         </ion-content>
     </div>

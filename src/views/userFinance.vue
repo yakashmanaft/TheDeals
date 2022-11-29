@@ -98,6 +98,9 @@
                 </div> -->
             </div>
         </ion-content>
+
+        <!-- page footer -->
+        <Footer/>
     </div>
 </template>
 
@@ -105,6 +108,7 @@
     import Header from '@/components/headers/Header.vue';
     import Spinner from '@/components/Spinner.vue';
     import TransactionDetails from '../components/modal/TransactonDetails.vue';
+    import Footer from '../components/Footer.vue';
     //
     import { IonContent, IonText, IonGrid, IonRow, IonIcon, IonCard } from '@ionic/vue'
     import { arrowUpOutline, arrowDownOutline } from 'ionicons/icons'
@@ -119,7 +123,7 @@
     export default defineComponent({
         name: 'userFinance',
         components: {
-            Header, Spinner, TransactionDetails,
+            Header, Spinner, TransactionDetails, Footer,
             //
             IonContent, IonText, IonGrid, IonRow, IonIcon, IonCard
         },

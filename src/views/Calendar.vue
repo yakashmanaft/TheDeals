@@ -70,7 +70,9 @@
             <!--  -->
             <!-- {{userSettings.daySaturation}} -->
         </ion-content>
-        
+
+        <!-- page footer -->
+        <Footer/>
     </div>
 </template>
 
@@ -80,6 +82,7 @@
     import { ru } from 'date-fns/locale';
     //
     import Header from '../components/headers/Header.vue';
+    import Footer from '../components/Footer.vue';
     import Spinner from '../components/Spinner.vue';
     import NavigationMenu from '../components/NavigationMenu.vue';
     import ViewChoosenDate from '../components/modal/ViewChoosenDate.vue';
@@ -99,7 +102,8 @@
         IonText,
         IonItemGroup,
         IonDatetime,
-        IonActionSheet
+        IonActionSheet,
+        IonFooter
     } from '@ionic/vue';
     //
     import { menu } from 'ionicons/icons';
@@ -115,6 +119,9 @@
         name: 'calendar',
         components: {
             Header,
+            Footer,
+            Spinner,
+            //
             IonContent, 
             IonHeader, 
             IonItem, 
@@ -129,10 +136,11 @@
             IonItemGroup,
             NavigationMenu,
             IonDatetime,
-            Spinner,
+            
             ViewChoosenDate,
             CreateNewDeal,
-            IonActionSheet
+            IonActionSheet,
+            IonFooter
         },
         setup() {
             // Get user from store
@@ -638,7 +646,7 @@
         --background: #ffffff;
         --background-rgb: 255,255,255;
         --title-color: green;
-        height: 90vh;
+        height: 80vh;
     }
 
     /* ion-datetime:not(.datetime-placeholder) {

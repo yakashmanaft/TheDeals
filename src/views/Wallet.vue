@@ -101,6 +101,9 @@
             />
             
         </ion-content>
+
+        <!-- page footer -->
+        <Footer/>
     </div>
 </template>
 
@@ -108,8 +111,9 @@
     import { defineComponent, ref, computed, onMounted } from 'vue';
     import Header from '../components/headers/Header.vue'
     import NavigationMenu from '@/components/NavigationMenu.vue';
-    import Spinner from '@/components/Spinner.vue'
-    import ViewModalDebts from '../components/modal/ViewWalletDebts.vue'
+    import Spinner from '@/components/Spinner.vue';
+    import ViewModalDebts from '../components/modal/ViewWalletDebts.vue';
+    import Footer from '../components/Footer.vue';
     //
     import { 
         IonContent, IonGrid, IonRow, IonCard, IonText, IonIcon, IonCol, IonButton
@@ -127,6 +131,7 @@
             NavigationMenu,
             Spinner,
             ViewModalDebts,
+            Footer,
             //
             IonContent, 
             IonGrid,

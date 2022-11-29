@@ -257,6 +257,9 @@
         </ion-card>
       </div>
     </ion-content>
+
+    <!-- page footer -->
+    <Footer/>
   </div>
 </template>
 
@@ -270,6 +273,7 @@
   import Spinner from '../components/Spinner.vue';
   import ViewHeader from '../components/headers/HeaderViewCurrent.vue';
   import Avatar from '../components/Avatar.vue';
+  import Footer from '../components/Footer.vue';
   //
   import { IonContent, IonText, IonCard, IonAvatar, IonIcon, IonGrid, IonRow, IonCardHeader, IonCardTitle, IonCardContent, IonChip, IonActionSheet, IonInput, IonLabel, IonItem, IonButton } from '@ionic/vue';
   import { removeCircleOutline, addCircleOutline, ellipsisHorizontal, createOutline } from 'ionicons/icons';
@@ -280,7 +284,7 @@
   export default defineComponent({
     name: 'Profile',
     components: {
-      Spinner, ViewHeader, Avatar, 
+      Spinner, ViewHeader, Avatar, Footer,
       //
       IonContent, IonActionSheet, IonText, IonCard, IonAvatar, IonIcon, IonGrid, IonRow, IonCardHeader, IonCardTitle, IonCardContent, IonChip, IonInput, IonLabel, IonItem, IonButton
     },
