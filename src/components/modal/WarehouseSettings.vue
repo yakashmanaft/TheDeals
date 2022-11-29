@@ -3,7 +3,7 @@
         <ion-header translucent="true">
             <ion-toolbar>
                 <ion-title>Настройки</ion-title>
-                <ion-buttons slot="end">
+                <ion-buttons slot="start">
                     <ion-button @click="$emit('closeModal')">Закрыть</ion-button>
                 </ion-buttons>
             </ion-toolbar>

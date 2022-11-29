@@ -1,8 +1,8 @@
 <template>
-    <ion-modal :initial-breakpoint="0.8">
+    <ion-modal>
         <ion-header>
             <ion-toolbar translucent="true">
-                <ion-buttons slot="end">
+                <ion-buttons slot="start">
                     <ion-button @click="$emit('closeModal')">
                         Закрыть
                     </ion-button>

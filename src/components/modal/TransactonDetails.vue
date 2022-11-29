@@ -1,9 +1,9 @@
 <template>
-    <ion-modal :initial-breakpoint="0.5">
+    <ion-modal >
         <ion-header translucent="true">
             <ion-toolbar>
                 <!-- <ion-title>Детали</ion-title> -->
-                <ion-buttons slot="end">
+                <ion-buttons slot="start">
                     <ion-button @click="$emit('closeModal')">Закрыть</ion-button>
                 </ion-buttons>
             </ion-toolbar>

@@ -2,12 +2,9 @@
     <ion-modal>
         <ion-header>
             <ion-toolbar>
+                <ion-title>{{formattedDate(date)}}</ion-title>
                 <ion-buttons slot="start">
                     <ion-button @click="$emit('closeModal')">Закрыть</ion-button>
-                </ion-buttons>
-                <ion-title>{{formattedDate(date)}}</ion-title>
-                <ion-buttons slot="end">
-                    <!-- <ion-button @click="$emit('createNewDeal', date)">Добавить</ion-button> -->
                 </ion-buttons>
             </ion-toolbar>
         </ion-header>

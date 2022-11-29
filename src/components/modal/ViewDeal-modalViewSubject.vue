@@ -2,13 +2,12 @@
     <ion-modal>
         <ion-header translucent="true">
             <ion-toolbar>
+
+                <ion-title class="ion-text-center">Просмотр</ion-title>
                 <ion-buttons slot="start">
+                    <!-- <ion-button>Готово</ion-button> -->
                     <ion-button @click="$emit('closeModal')">Закрыть</ion-button>
                 </ion-buttons>
-                <ion-title class="ion-text-center">Просмотр</ion-title>
-                <!-- <ion-buttons slot="end">
-                    <ion-button>Готово</ion-button>
-                </ion-buttons> -->
             </ion-toolbar>
         </ion-header>
         

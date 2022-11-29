@@ -1,7 +1,7 @@
 <template v-show="user">
     <ion-footer style="position:fixed; bottom: 0;" translucent="true">
         <ion-toolbar class="ion-no-border" color="white">
-            <ion-buttons class="color-primary">
+            <ion-buttons >
                 <ion-grid class="ion-no-padding" style="margin: 0.6rem auto">
                     <ion-row class="ion-justify-content-around">
 
