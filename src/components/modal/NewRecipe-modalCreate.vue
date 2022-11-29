@@ -39,26 +39,21 @@
       <ion-item-group>
         <!-- Заголовок -->
         <ion-text >
-          <ion-grid class="ion-no-padding ion-margin-top">
-            <ion-row class="ion-justify-content-between ion-align-items-center">
-              <h4 class="ion-no-margin">Категории</h4>
-              <ion-text color="medium">Не более 3-х</ion-text>
-            </ion-row>
-          </ion-grid>
+          <h4>Категории</h4>
         </ion-text>
 
         <!--  -->
         <ion-grid class="ion-no-padding">
 
           <!-- Добавленная категория -->
-          <ion-chip v-for="(category, index) in recipeData.categories" :key="index" class="ion-no-margin ion-margin-top ion-margin-end" color="primary" style="position: relative; overflow: visible">
+          <ion-chip v-for="(category, index) in recipeData.categories" :key="index" class="ion-no-margin ion-margin-vertical ion-margin-end" color="primary" style="position: relative; overflow: visible">
             {{ category }}
             <!-- Кнопка удалить выбранную категорию у рецепта -->
             <ion-icon :icon="closeCircleOutline" style="position: absolute; right: -0.2rem; top: 0;" color="medium" @click.stop="openDeleteCategoryModal(category)"></ion-icon>
           </ion-chip>
 
           <!-- Кнопка добавления категории -->
-          <ion-chip v-if="recipeData.categories.length < 3" class="ion-no-margin ion-margin-top ion-margin-end" color="primary" outline="true" @click.stop="searchRecipesCategoriesMenu = true">
+          <ion-chip v-if="recipeData.categories.length < 3" class="ion-no-margin ion-margin-vertical ion-margin-end" color="primary" outline="true" @click.stop="searchRecipesCategoriesMenu = true">
             Добавить
           </ion-chip>
         </ion-grid>
@@ -116,7 +111,13 @@
         </ion-text>
 
         <!--  -->
-        <ion-textarea placeholder="Заполните описание рецепта" class="ion-no-padding" autoGrow="true" autocapitalize="on"></ion-textarea>
+        <ion-textarea 
+          placeholder="Заполните описание рецепта" 
+          class="ion-no-padding" 
+          autoGrow="true" 
+          autocapitalize="on"
+          v-model="recipeDescription"
+        ></ion-textarea>
       </ion-item-group>
 
       <!--  -->
@@ -171,6 +172,7 @@ export default defineComponent({
     const recipeData = ref();
     const recipeName = ref("");
     const recipeValue = ref("");
+    const recipeDescription = ref("")
     // Массив пользователя с вариантам категорий для рецептов
     const userRecipesCategories = ref()
     const userSettings = ref(store.state.userSettings)
@@ -186,13 +188,18 @@ export default defineComponent({
     watch(recipeName, () => {
       // console.log(recipeName.value)
         recipeData.value.name = recipeName;
-        recipeData.value.value = recipeName
+        recipeData.value.value = recipeName;
     });
+    //
+    watch(recipeDescription, () => {
+      recipeData.value.recipeDescription = recipeDescription;
+    })
     //
     const closeThisModal = () => {
       emit('closeModal', 
         recipeName.value = '',
-        recipeValue.value = ''
+        recipeValue.value = '',
+        recipeDescription.value = ''
       )
     }
     //
@@ -260,7 +267,7 @@ export default defineComponent({
     });
 
     return {
-      recipeData, recipeName, recipeValue, closeThisModal, searchRecipesCategoriesMenu, searchRecipesCategories, searchedRecipesCategories, userRecipesCategories, userSettings, isCategoryAlreadyAdded, newCategory, choosenCategory, closeCircleOutline, deleteCategory, deleteCategoryButtons, openDeleteCategoryModal, deleteCategoruFunc
+      recipeData, recipeName, recipeDescription, recipeValue, closeThisModal, searchRecipesCategoriesMenu, searchRecipesCategories, searchedRecipesCategories, userRecipesCategories, userSettings, isCategoryAlreadyAdded, newCategory, choosenCategory, closeCircleOutline, deleteCategory, deleteCategoryButtons, openDeleteCategoryModal, deleteCategoruFunc
     };
   },
 });

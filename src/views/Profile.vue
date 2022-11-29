@@ -3,8 +3,13 @@
     <!-- Спиннер как имитация загрузки -->
     <Spinner v-if="spinner"/>
 
+    <!-- Navigation Menu -->
+    <navigation-menu
+        :title="pageTitle"
+    />
+
     <!-- page header -->
-    <ViewHeader 
+    <Header 
       :title="pageTitle"
     />
 
@@ -271,7 +276,8 @@
   import { supabase } from '../supabase/init';
   //
   import Spinner from '../components/Spinner.vue';
-  import ViewHeader from '../components/headers/HeaderViewCurrent.vue';
+  import NavigationMenu from '../components/NavigationMenu.vue'
+  import Header from '../components/headers/Header.vue';
   import Avatar from '../components/Avatar.vue';
   import Footer from '../components/Footer.vue';
   //
@@ -284,7 +290,7 @@
   export default defineComponent({
     name: 'Profile',
     components: {
-      Spinner, ViewHeader, Avatar, Footer,
+      Spinner, Header, Avatar, Footer, NavigationMenu,
       //
       IonContent, IonActionSheet, IonText, IonCard, IonAvatar, IonIcon, IonGrid, IonRow, IonCardHeader, IonCardTitle, IonCardContent, IonChip, IonInput, IonLabel, IonItem, IonButton
     },
@@ -300,12 +306,13 @@
       // Page title
       const pageTitle = router.currentRoute._value.meta.translation;
       console.log(pageTitle)
+      console.log(router.currentRoute._value.meta.title)
       //
       const userSettings = ref(store.state.userSettings[0])
       // Get user email
       store.methods.setUserEmail()
       const userEmail = ref(store.state.userEmail)
-      console.log(userEmail.value)
+      // console.log(userEmail.value)
       //
       const myDeals = ref([]);
       //

@@ -39,9 +39,10 @@
                 </ion-button>
 
                 <!-- BURGER -->
-                <ion-menu-toggle v-if="router.currentRoute._value.meta.title === 'Calendar'">
-                    <ion-icon :icon="menu" class/>
+                <ion-menu-toggle v-if="router.currentRoute._value.meta.title === 'Calendar' || router.currentRoute._value.meta.title === 'Profile'">
+                    <ion-icon :icon="menu"/>
                 </ion-menu-toggle>
+
             </ion-buttons>
         </ion-toolbar>
     </ion-header>
@@ -71,11 +72,6 @@
             const goToPay = () => {
                 alert('Сканируйте qr-код, чтобы оплатить. В разработке...')
             }
-
-            //
-            // const goToStore = () => {
-            //     alert('Header: Магазин в разработке')
-            // }
 
             return {
                 user, router, menu, walletOutline, settingsOutline, goToWallet, qrCodeOutline, goToPay, settingsOutline, storefrontOutline, bagOutline

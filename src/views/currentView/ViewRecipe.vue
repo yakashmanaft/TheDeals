@@ -49,14 +49,14 @@
                     <!--  -->
                     <ion-grid class="ion-no-padding">
                         <!-- Категория -->
-                        <ion-chip v-for="(category, index) in currentRecipe.categories" :key="index" class="ion-no-margin ion-margin-top ion-margin-end" color="primary" style="position: relative; overflow: visible">
+                        <ion-chip v-for="(category, index) in currentRecipe.categories" :key="index" class="ion-no-margin ion-margin-vertical ion-margin-end" color="primary" style="position: relative; overflow: visible">
                             {{ category }}
                             <!-- Кнопка удалить выбранную категорию у рецепта -->
                             <ion-icon :icon="closeCircleOutline" style="position: absolute; right: -0.2rem; top: 0;" color="medium" @click.stop="openDeleteCategoryModal(category)"></ion-icon>
                         </ion-chip>
 
                         <!-- Кнопка добавления категории -->
-                        <ion-chip v-if="currentRecipe.categories.length < 3" class="ion-no-margin ion-margin-top ion-margin-end" color="primary" outline="true" @click.stop="searchRecipesCategoriesMenu = true">
+                        <ion-chip v-if="currentRecipe.categories.length < 3" class="ion-no-margin ion-margin-vertical ion-margin-end" color="primary" outline="true" @click.stop="searchRecipesCategoriesMenu = true">
                             Добавить
                         </ion-chip>
                     </ion-grid>
@@ -68,6 +68,22 @@
                     :buttons="deleteCategoryButtons"
                     @didDismiss="deleteCategory = false"
                     ></ion-action-sheet>
+                </ion-item-group>
+
+                <!-- Описание рецепта -->
+                <ion-item-group>
+                    <!-- Заголовок -->
+                    <ion-text>
+                    <h4>Описание</h4>
+                    </ion-text>
+
+                    <!--  -->
+                    <ion-textarea
+                        class="ion-no-padding" 
+                        autoGrow="true" 
+                        autocapitalize="on"
+                        v-model="recipeDescription"
+                    ></ion-textarea>
                 </ion-item-group>
                 
                 <!-- Вкл / Выкл на продажу в магазин рецептов -->
@@ -108,7 +124,7 @@
     import { supabase } from '../../supabase/init';
     import store from '../../store/index';
     //
-    import { IonContent, IonItemGroup, IonButton, IonActionSheet, IonGrid, IonRow, IonToggle, IonInput, IonText, IonItem, IonChip, IonIcon } from '@ionic/vue';
+    import { IonContent, IonItemGroup, IonButton, IonActionSheet, IonGrid, IonRow, IonToggle, IonInput, IonText, IonItem, IonChip, IonIcon, IonTextarea } from '@ionic/vue';
     import { closeCircleOutline } from 'ionicons/icons'
     //
     import Spinner from '../../components/Spinner.vue';
@@ -119,7 +135,7 @@
         components: {
             ViewHeader, Spinner, 
             //
-            IonContent, IonItemGroup, IonButton, IonActionSheet, IonGrid, IonRow, IonToggle, IonInput, IonText, IonItem, IonChip, IonIcon
+            IonContent, IonItemGroup, IonButton, IonActionSheet, IonGrid, IonRow, IonToggle, IonInput, IonText, IonItem, IonChip, IonIcon, IonTextarea
         },
         setup() {
             //
@@ -175,6 +191,10 @@
                 currentRecipe.value.name = recipeName.value
                 currentRecipe.value.value = recipeName.value
             })
+            const recipeDescription = ref(currentRecipe.value.recipeDescription)
+            watch(recipeDescription, () => {
+                currentRecipe.value.recipeDescription = recipeDescription.value
+            })
             //
             // ============================ Удаление категории у предмета ===============================================
             // Вызываем action sheet уведомление в качестве подтверждения
@@ -211,7 +231,7 @@
             ]
 
             return {
-                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons
+                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription
             }
         }
     })
