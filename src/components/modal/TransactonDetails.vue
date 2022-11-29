@@ -18,7 +18,7 @@
             <br>
             <br>
             <br>
-            <ion-grid>
+            <ion-grid style="height: 70%; display: flex; flex-direction: column; justify-content: center;">
                 <ion-row class="ion-justify-content-center ion-padding-vertical">
                     <ion-text>
                         {{formattedDate(currentTransaction.created_at)}}
