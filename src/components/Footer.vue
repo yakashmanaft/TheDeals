@@ -11,6 +11,12 @@
                             <ion-icon v-else :icon="personOutline"></ion-icon>
                         </ion-button>
 
+                        <!-- Кошелек -->
+                        <ion-button class="ion-margin-vertical" @click="goToWallet()">
+                            <ion-icon v-if="router.currentRoute._value.meta.title === 'Wallet'" :icon="wallet"></ion-icon>
+                            <ion-icon v-else :icon="walletOutline"></ion-icon>
+                        </ion-button>
+
                         <!-- Calendar -->
                         <ion-button class="ion-margin-vertical" @click="goToIndex()">
                             <ion-icon v-if="router.currentRoute._value.meta.title === 'Calendar'" :icon="calendar"></ion-icon>
@@ -34,7 +40,7 @@
     import { computed } from 'vue';
     import { useRouter } from 'vue-router';
     import { IonFooter, IonToolbar, IonButtons, IonTitle, IonButton, IonIcon, IonGrid, IonRow } from '@ionic/vue';
-    import { chatbubblesOutline, personOutline, calendarOutline, calendar, person, chatbubbles } from 'ionicons/icons'
+    import { chatbubblesOutline, personOutline, calendarOutline, walletOutline, calendar, person, chatbubbles, wallet } from 'ionicons/icons'
 
     export default {
         name: 'Footer',
@@ -57,9 +63,13 @@
             const goToIndex = () => {
                 router.push('/')
             }
+            //
+            const goToWallet = () => {
+                router.push({ name: 'Wallet' })
+            }
 
             return {
-                user, router, chatbubblesOutline, personOutline, calendarOutline, goToChat, goToProfile, goToIndex, calendar, person, chatbubbles
+                user, router, chatbubblesOutline, personOutline, calendarOutline, walletOutline, goToChat, goToProfile, goToIndex, goToWallet, calendar, person, chatbubbles, wallet
             }
         }
     }

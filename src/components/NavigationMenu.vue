@@ -48,12 +48,12 @@
                     <router-link :to="{ name: `${item.name}` }" :class="{ 'current-route': item.title === currentRoute }"> {{ item.title }}</router-link>
                 </ion-item> 
                 <!-- Ссылкана магазин рецептов -->
-                <ion-item v-if="userProfile === 'Тортодилер'" lines="none">
+                <!-- <ion-item v-if="userProfile === 'Тортодилер'" lines="none">
                     <ion-icon :icon="storefrontOutline" color="primary" class="ion-margin-end"></ion-icon>
-                    <router-link :to="{ name: 'RecipesStore' }">
+                    <router-link :to="{ name: 'RecipesStore' }" :class="{ 'current-route': currentRoute === 'Магазин рецептов' }">
                         Магазин рецептов
                     </router-link>
-                </ion-item>
+                </ion-item> -->
             </ion-list>
         </ion-content>
         <!-- menu footer -->
@@ -61,7 +61,7 @@
             <ion-list lines="none">
                 <ion-item>
                     <ion-icon :icon="helpCircleOutline" color="primary" class="ion-margin-end"></ion-icon>
-                    <router-link :to="{ name: 'FAQ' }">Помощь</router-link>
+                    <router-link :to="{ name: 'FAQ' }" :class="{ 'current-route': currentRoute === 'Помощь' }">Помощь</router-link>
                 </ion-item>
             </ion-list>
             <!-- Предложение установить сервис в виде приложения -->

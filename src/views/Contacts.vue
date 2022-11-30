@@ -49,7 +49,7 @@
             </div>
 
             <!-- Data -->
-            <div v-if="dataLoaded && myContacts.length !== 0" >
+            <div v-if="dataLoaded && myContacts.length !== 0" class="ion-margin-bottom">
                 <!-- Search -->
                 <ion-searchbar class="ion-text-left" placeholder="Поиск..." v-model="search"></ion-searchbar>
                 <!-- Список контактов -->
@@ -81,10 +81,16 @@
                     </ion-item>
                 </ion-list>
 
+                <br>
+                <br>
+                <br>
             </div>
 
 
         </ion-content>
+
+        <!-- page footer -->
+        <Footer/>
     </div>
 </template>
 
@@ -95,6 +101,8 @@
     import CreateButton from '@/components/CreateButton.vue';
     import Spinner from '@/components/Spinner.vue';
     import CreateNewContact from '@/components/modal/NewContact-modalCreate.vue';
+    import Footer from '../components/Footer.vue'
+    //
     import { 
         IonContent, 
         IonHeader,
@@ -132,6 +140,7 @@
             CreateButton,
             Spinner,
             CreateNewContact,
+            Footer,
             //
             IonSearchbar,
             IonInput,

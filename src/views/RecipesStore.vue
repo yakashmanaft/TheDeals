@@ -77,6 +77,9 @@
                 </router-link>
             </div>
         </ion-content>
+
+        <!-- page footer -->
+        <Footer style="background-color: white"/>
     </div>
 </template>
 
@@ -84,6 +87,7 @@
     import Spinner from '../components/Spinner.vue';
     import NavigationMenu from '@/components/NavigationMenu.vue';
     import Header from '@/components/headers/Header.vue';
+    import Footer from '../components/Footer.vue'
     //
     import { defineComponent, ref, computed, onMounted  } from 'vue';
     import { useRoute, useRouter } from 'vue-router';
@@ -95,7 +99,7 @@
     export default defineComponent({
         name: 'RecipesStore',
         components: {
-            Spinner, NavigationMenu, Header,
+            Spinner, NavigationMenu, Header, Footer,
             //
             IonContent, IonImg, IonText, IonSearchbar, IonCard, IonCardHeader, IonCardTitle, IonCardContent
         },

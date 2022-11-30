@@ -136,7 +136,14 @@
                 </div>
             </div>
 
+            <br>
+            <br>
+            <br>
+
         </ion-content>
+
+        <!-- page footer -->
+        <Footer/>
     </div>
 </template>
 
@@ -146,6 +153,7 @@
     import NavigationMenu from '@/components/NavigationMenu.vue';
     import CreateButton from '@/components/CreateButton.vue';
     import CreateNewRecipe from '@/components/modal/NewRecipe-modalCreate.vue';
+    import Footer from '../components/Footer.vue';
     //
     import { IonContent, IonSearchbar, IonImg, IonText, IonItem, IonGrid, IonRow, IonIcon } from '@ionic/vue'
     import { bagCheckOutline, ribbonOutline } from 'ionicons/icons'
@@ -167,6 +175,7 @@
             NavigationMenu,
             CreateButton,
             CreateNewRecipe,
+            Footer,
             //
             IonContent,
             IonSearchbar,

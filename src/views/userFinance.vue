@@ -3,6 +3,11 @@
         <!-- Спиннер как имитация загрузки -->
         <Spinner v-if="spinner"/>
 
+        <!-- Navigation Menu -->
+        <navigation-menu
+            :title="pageTitle"
+        />
+
         <!-- page header -->
         <Header :title="pageTitle" />
 
@@ -106,6 +111,7 @@
 
 <script>
     import Header from '@/components/headers/Header.vue';
+    import NavigationMenu from '../components/NavigationMenu.vue';
     import Spinner from '@/components/Spinner.vue';
     import TransactionDetails from '../components/modal/TransactonDetails.vue';
     import Footer from '../components/Footer.vue';
@@ -123,7 +129,7 @@
     export default defineComponent({
         name: 'userFinance',
         components: {
-            Header, Spinner, TransactionDetails, Footer,
+            Header, NavigationMenu, Spinner, TransactionDetails, Footer,
             //
             IonContent, IonText, IonGrid, IonRow, IonIcon, IonCard
         },

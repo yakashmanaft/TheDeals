@@ -142,7 +142,14 @@
                 />
 
             </div>
+
+            <br>
+            <br>
+            <br>
         </ion-content>
+
+        <!-- page footer -->
+        <Footer/>
     </div>
 </template>
 
@@ -161,6 +168,7 @@
     import CreateButton from '../components/CreateButton.vue';
     import CreateNewItem from '../components/modal/NewWarehouseItem-modalCreate.vue';
     import WarehouseSettings from '../components/modal/WarehouseSettings.vue';
+    import Footer from '../components/Footer.vue'
     // 
     import { searchWarehouseItemFilter  } from '../helpers/filterUserWarehouseItems.js';
     import { searchWarehouseCategoryFilter } from '../helpers/filterWarehouseCategories.js';
@@ -170,7 +178,7 @@
         components: {
             IonContent, IonImg, IonText, IonSearchbar, IonItem, IonList, IonGrid, IonRow, IonItemDivider,
             //
-            WarehouseSettings, Spinner, NavigationMenu, Header, CreateButton, CreateNewItem
+            WarehouseSettings, Spinner, NavigationMenu, Header, CreateButton, CreateNewItem, Footer
         },
         setup() {
             //

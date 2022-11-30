@@ -4,23 +4,11 @@
         <ion-toolbar color="white">
             
             <!-- КНОПКИ СЛЕВА -->
-            <ion-buttons class="color-primary" slot="start">
-                <!-- В КОШЕЛЕК -->
-                <ion-button v-if="router.currentRoute._value.meta.title === 'Calendar'" @click="goToWallet()">
-                    <ion-icon :icon="walletOutline" />
-                </ion-button>
-                <!-- КНОПКА НАЗАД, Если текущий роут НЕ Calendar -->
-                <ion-back-button v-if="router.currentRoute._value.meta.title !== 'Calendar'" default-href="/" text="Назад"></ion-back-button>
-            </ion-buttons>
+            <ion-buttons slot="start">
 
-            <!-- ЗАГОЛОВОК В СЕРЕДИНЕ -->
-            <ion-title >{{ title }}</ion-title>
-
-            <!-- КНОПКИ СПРАВА -->
-            <ion-buttons slot="end">
-                <!-- QR -->
-                <ion-button v-if="router.currentRoute._value.meta.title === 'Wallet'" @click="goToPay()">
-                    <ion-icon color="primary" :icon="qrCodeOutline"></ion-icon>
+                <!-- RECIPE STORE -->
+                <ion-button v-if="router.currentRoute._value.meta.title === 'Recipes'" @click="$emit('goToStore')">
+                    <ion-icon color="primary" :icon="storefrontOutline"></ion-icon>
                 </ion-button>
 
                 <!-- SETTINGS -->
@@ -28,18 +16,22 @@
                     <ion-icon color="primary" :icon="settingsOutline"></ion-icon>
                 </ion-button>
 
-                <!-- RECIPE STORE -->
-                <ion-button v-if="router.currentRoute._value.meta.title === 'Recipes'" @click="$emit('goToStore')">
-                    <ion-icon color="primary" :icon="storefrontOutline"></ion-icon>
-                </ion-button>
+                <!-- КНОПКА НАЗАД -->
+                <ion-back-button class="color-primary" v-if="router.currentRoute._value.meta.title === 'Recipes Store' || router.currentRoute._value.meta.title === 'My finance'" default-href="/" text="Назад"></ion-back-button>
+            </ion-buttons>
 
+            <!-- ЗАГОЛОВОК В СЕРЕДИНЕ -->
+            <ion-title >{{ title }}</ion-title>
+
+            <!-- КНОПКИ СПРАВА -->
+            <ion-buttons slot="end">
                 <!-- RECIPE STORE BUSKET -->
                 <ion-button v-if="router.currentRoute._value.meta.title === 'Recipes Store'" @click="$emit('goToBusket')">
-                    <ion-icon color="primary" :icon="bagOutline"></ion-icon>
+                    <ion-icon :icon="bagOutline"></ion-icon>
                 </ion-button>
 
                 <!-- BURGER -->
-                <ion-menu-toggle v-if="router.currentRoute._value.meta.title === 'Calendar' || router.currentRoute._value.meta.title === 'Profile'">
+                <ion-menu-toggle v-if="router.currentRoute._value.meta.title !== 'Recipes Store'">
                     <ion-icon :icon="menu"/>
                 </ion-menu-toggle>
 

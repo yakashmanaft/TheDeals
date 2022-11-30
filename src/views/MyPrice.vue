@@ -51,7 +51,7 @@
             <br>
             <br>
             <!-- page content -->
-            <div v-for="(item, index) in userSettings" :key="index">
+            <div v-for="(item, index) in userSettings" :key="index" class="ion-margin-bottom">
                 <!-- No data -->
                 <div v-if="!spinner && ((item.userPriceList.length === 0 && item.userAdditionalAttributes.length === 0) || !dataLoaded )" class="no-status-deal ion-padding-horizontal no-data">
                     <ion-img src="img/common/price-sticker.webp" alt="нет дел"></ion-img>
@@ -169,6 +169,8 @@
                 </div>
             </div>
             <br>
+            <br>
+            <br>
             <!-- Всплывашка подтверждение удаления продукта из прайса листа пользователя -->
             <ion-action-sheet
                 :is-open="deleteProductAction"
@@ -185,6 +187,9 @@
             ></ion-action-sheet>
 
         </ion-content>
+
+        <!-- page footer -->
+        <Footer/>
     </div>
 </template>
 
@@ -200,6 +205,7 @@
     import CreatePriceProduct from '../components/modal/NewPriceProduct-modalCreate';
     import ViewPriceProduct from '../components/modal/ViewPriceProduct-modalViewProduct';
     import CreateButton from '../components/CreateButton.vue';
+    import Footer from '../components/Footer.vue'
     //
     import { closeCircleOutline } from 'ionicons/icons'
     //
@@ -244,6 +250,13 @@
         emits: [],
         components: {
             Header,
+            NavigationMenu,
+            Spinner,
+            CreatePriceProduct,
+            ViewPriceProduct,
+            CreateButton,
+            Footer,
+            //
             IonContent, 
             IonHeader, 
             IonItem, 
@@ -255,12 +268,10 @@
             IonToolbar,
             IonIcon,
             IonText,
-            NavigationMenu,
             IonItemGroup,
             IonCard,
             IonCardHeader,
             IonCardContent,
-            Spinner,
             IonGrid,
             IonRow,
             IonItemSliding,
@@ -270,9 +281,6 @@
             IonActionSheet,
             IonModal,
             IonButtons,
-            CreatePriceProduct,
-            ViewPriceProduct,
-            CreateButton,
             IonImg,
             IonThumbnail,
             IonChip

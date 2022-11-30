@@ -4,9 +4,9 @@
         <Spinner v-if="spinner"/>
 
         <!-- Navigation Menu -->
-        <!-- <navigation-menu
+        <navigation-menu
             :title="pageTitle"
-        /> -->
+        />
 
         <!-- page header -->
         <Header :title="pageTitle"/>
@@ -43,7 +43,7 @@
                 <ion-text color="medium">Самое время начать заниматься деятельностью. <br>И создать первое дело!</ion-text>
             </div>
             <!-- Data -->
-            <div v-if="dataLoaded && myDeals.length !== 0">
+            <div v-if="dataLoaded && myDeals.length !== 0" class="ion-margin-bottom">
                 <!-- ======================================= Статусы дел ================================ -->
                 <ion-list class="horizontal-scroll">
                     <ion-chip v-for="(status, index) in dealStatusList" :key="index" @click="setDealStatus(status.value)" :color="setChipColor(status.value)" :outline="setChipOutline(status.value, currentDealStatus)">
@@ -163,6 +163,11 @@
                 </div>
 
             </div>
+
+            <br>
+            <br>
+            <br>
+
             <!-- Модалка внесения средства по оплате -->
             <DealPaidMenu
                 :is-open="isDealPaidMenuOpened"
@@ -182,6 +187,9 @@
             >
             </ion-action-sheet>
         </ion-content>
+
+        <!-- page footer -->
+        <Footer/>
     </div>
 </template>
 
@@ -193,6 +201,8 @@
     import CreateNewDeal from '@/components/modal/NewDeal-modalCreate.vue';
     import Select from '@/components/Select.vue'
     import DealPaidMenu from '../components/DealPaidMenu.vue';
+    import Footer from '../components/Footer.vue';
+    //
     import { 
         IonContent, 
         IonHeader, 
@@ -240,10 +250,14 @@
         name: 'Deals',
         components: {
             Header,
+            NavigationMenu,
             Spinner,
             CreateButton,
+            DealPaidMenu,
             CreateNewDeal,
             Select,
+            Footer,
+            //
             IonContent, 
             IonHeader, 
             IonItem, 
@@ -256,7 +270,6 @@
             IonToolbar,
             IonIcon,
             IonText,
-            NavigationMenu,
             IonChip,
             IonLabel,
             IonItemOption,
@@ -269,8 +282,7 @@
             IonCardContent,
             IonThumbnail,
             IonItemGroup,
-            IonActionSheet,
-            DealPaidMenu
+            IonActionSheet
         },
         setup() {
             // Currency
