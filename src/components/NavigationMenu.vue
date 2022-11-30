@@ -44,7 +44,7 @@
         <ion-content class="ion-padding-vertical" forceOverscroll="false">
             <ion-list>
                 <ion-item v-for="(item, index) in currentMenuList" :key="index" lines="none">
-                    <ion-icon :icon="`${item.icon}`" color="primary" :alt="`${item.icon}`" class="ion-margin-end"/>
+                    <ion-icon :icon="`${item.icon}`" :color="item.title === currentRoute ? 'primary' : 'medium'" :alt="`${item.icon}`" class="ion-margin-end"/>
                     <router-link :to="{ name: `${item.name}` }" :class="{ 'current-route': item.title === currentRoute }"> {{ item.title }}</router-link>
                 </ion-item> 
                 <!-- Ссылкана магазин рецептов -->
@@ -210,13 +210,10 @@
     }
     .current-route {
         font-weight: bold;
-        color: var(--ion-color-primary)
+        color: var(--ion-color-primary)!important
     }
     .no-avatar {
         overflow: hidden;
-        /* display: flex;
-        justify-content: center;
-        align-items: flex-end; */
         background-color: var(--ion-color-medium)
     }
     .no-avatar ion-icon {
