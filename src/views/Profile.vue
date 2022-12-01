@@ -11,6 +11,7 @@
     <!-- page header -->
     <Header 
       :title="pageTitle"
+      style="background-color: white"
     />
 
     <!-- page-content -->
@@ -217,40 +218,6 @@
           </ion-card-content>
         </ion-card>
 
-        <!-- Настройки загруженности дня -->
-        <ion-card class="ion-padding">
-          <ion-card-header class="ion-no-padding">
-            <ion-card-title class="ion-no-margin ion-text-left">Загруженность дня</ion-card-title>
-          </ion-card-header>
-          <ion-card-content class="ion-no-padding">
-            <ion-grid class="ion-no-padding ion-margin-top" v-for="(item, i) in userSettings.daySaturation" :key="i" >
-              <ion-row class="ion-align-items-center ion-justify-content-between">
-                <ion-text color="primary">
-                  {{ translateDaySaturationName(item.name) }}
-                </ion-text>
-                <!--  -->
-                <div style="display: flex; align-items: center">
-                  <!-- Subtract -->
-                  <ion-icon :color="setCountQtyButtonDecreaseColor(item)" :icon="removeCircleOutline" @click="changeDaySaturationQty('sub', item, i)" class="countQty_button"></ion-icon>
-                  <!-- Show data -->
-                  <ion-text class="ion-padding-horizontal countQty_count" color="primary">{{item.qty}}</ion-text>
-                  <!-- Add -->
-                  <ion-icon :color="setCountQtyButtonAddColor(item)" :icon="addCircleOutline" @click="changeDaySaturationQty('add', item, i)" class="countQty_button"></ion-icon>
-                </div>
-              </ion-row>
-              <!--  -->
-              <ion-row class="ion-text-left ion-margin-top">
-                <ion-text v-if="item.name === 'low'">
-                  Количество дел, которое вы с легкостью можете выполнить
-                </ion-text>
-                <ion-text v-else>
-                  Количество дел, выполнить которое нужно очень постараться
-                </ion-text>
-              </ion-row>
-            </ion-grid>
-          </ion-card-content>
-        </ion-card>
-
         <!-- Реферальная ссылка для приглашения -->
         <ion-card class="ion-no-padding ion-text-left">
           <ion-card-header>
@@ -264,7 +231,7 @@
     </ion-content>
 
     <!-- page footer -->
-    <Footer/>
+    <Footer style="background-color: white"/>
   </div>
 </template>
 
@@ -331,86 +298,6 @@
         calculateBalance()
         isQrAvailable.value = false
       })
-      // массив загруженности дня, который на данный момент хранится в БД
-      const daySaturation = ref(userSettings.value.daySaturation)
-      const changeDaySaturationQty = (action, item, i) => {
-        // Если кликаем на варианту с нижним порогом загруженности
-        if(item.name === 'low') {
-          if(action === 'sub' && item.qty > 1 ) {
-            item.qty--
-            daySaturation.value[i].qty = item.qty
-            updateDaySaturation()
-          } else if (action === 'add' && item.qty < daySaturation.value[1].qty) {
-            item.qty++
-            daySaturation.value[i].qty = item.qty
-            updateDaySaturation()
-          }
-        } 
-        // Если кликаем на варианту с верхним порогом загруженности
-        else if (item.name === 'high') {
-          if(action === 'sub' && item.qty > daySaturation.value[0].qty) {
-            item.qty--
-            daySaturation.value[i].qty = item.qty
-            updateDaySaturation()
-          } else if (action === 'add') {
-            item.qty++
-            daySaturation.value[i].qty = item.qty
-            updateDaySaturation()
-          }
-        }
-      }
-      // Обновляем в БД массив с значениями загруженности дня
-      const updateDaySaturation = async () => {
-          try {
-            spinner.value = true;
-            console.log('DB is updated')
-            //
-            const { error } = await supabase.from('accountSettings').update({
-              daySaturation: daySaturation.value
-            }).eq('id', userSettings.value.id)
-            if(error) throw error;
-          } catch (error) {
-            alert(`Error: ${error.message}`)
-          }
-          spinner.value = false;
-      }
-      // меняем стили кнопок для уменьшения количества 
-      const setCountQtyButtonDecreaseColor = (item) => {
-        if(item.name === 'low') {
-          if(item.qty < 2) {
-            return 'light'
-          } else {
-            return 'primary'
-          }
-        } else if (item.name === 'high') {
-          if(item.qty === daySaturation.value[0].qty) {
-            return 'light'
-          } else {
-            return 'primary'
-          }
-        }
-      }
-      // меняем стили кнопок для увеличения количества 
-      const setCountQtyButtonAddColor = (item) => {
-        if(item.name === 'low') {
-          if(item.qty === daySaturation.value[1].qty) {
-            return 'light'
-          } else {
-            return 'primary'
-          }
-        } else if (item.name === 'high') {
-          return 'primary'
-        }
-      }
-      //
-      const translateDaySaturationName = (itemName) => {
-        if(itemName === 'low') {
-          return 'Низкая нагрузка'
-        } else if (itemName === 'high') {
-          return 'Высокая нагрузка'
-        }
-        
-      }
       // открываем модкалку с QR-визиткой
       const openBusinessCard = () => {
         if (isQrAvailable.value) {
@@ -645,23 +532,13 @@
         }
 
       return {
-        spinner, user, router, dataLoaded, userSettings, userEmail, isQrAvailable, removeCircleOutline, addCircleOutline, changeDaySaturationQty, daySaturation, setCountQtyButtonDecreaseColor, setCountQtyButtonAddColor, translateDaySaturationName, openBusinessCard, addBusinessCard, editBusinessCard, myDeals, availableBalance, myDebt, debtToMe, currency, formattedDate, pageTitle, renewSubscription, file, handleFileUpload, avatar_url, updateProfile, ellipsisHorizontal, isMainOrganizationMenuOpened, mainOrganizationMenuButtons, isCurrentOrganizationMenuOpened, currentOrganizationMenuButtons, openCurrentOrganizationMenu ,organizationCreatorButtons, organizationParticipantButtons, organizationToDelete, deleteCurrentOrganization, deleteOrganizationMenu, openDeleteOrganizationMenu, deleteOrganizationMenuButtons, createOutline, edit, userInfo, updateUserInfo
+        spinner, user, router, dataLoaded, userSettings, userEmail, isQrAvailable, removeCircleOutline, addCircleOutline, openBusinessCard, addBusinessCard, editBusinessCard, myDeals, availableBalance, myDebt, debtToMe, currency, formattedDate, pageTitle, renewSubscription, file, handleFileUpload, avatar_url, updateProfile, ellipsisHorizontal, isMainOrganizationMenuOpened, mainOrganizationMenuButtons, isCurrentOrganizationMenuOpened, currentOrganizationMenuButtons, openCurrentOrganizationMenu ,organizationCreatorButtons, organizationParticipantButtons, organizationToDelete, deleteCurrentOrganization, deleteOrganizationMenu, openDeleteOrganizationMenu, deleteOrganizationMenuButtons, createOutline, edit, userInfo, updateUserInfo
       }
     }
   })
 </script>
 
 <style scoped>
-    .countQty_count {
-        font-size: 24px;
-    }
-    .countQty_button {
-        font-size: 32px;
-    }
-    /* .account-avatar {
-      width: 6rem;
-      height: 6rem;
-    } */
     .marginTop {
       margin-top: 16px;
     }

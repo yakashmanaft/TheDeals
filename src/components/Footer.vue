@@ -28,6 +28,11 @@
                             <ion-icon v-if="router.currentRoute._value.meta.title === 'Chat'" :icon="chatbubbles"></ion-icon>
                             <ion-icon v-else :icon="chatbubblesOutline"></ion-icon>
                         </ion-button>
+
+                        <!-- BURGER -->
+                        <ion-menu-toggle v-if="router.currentRoute._value.meta.title !== 'Recipes Store'" color="base">
+                            <ion-icon :icon="menu"/>
+                        </ion-menu-toggle>
                     </ion-row>
                 </ion-grid>
             </ion-buttons>  
@@ -39,13 +44,13 @@
     import store from '../store/index';
     import { computed } from 'vue';
     import { useRouter } from 'vue-router';
-    import { IonFooter, IonToolbar, IonButtons, IonTitle, IonButton, IonIcon, IonGrid, IonRow } from '@ionic/vue';
-    import { chatbubblesOutline, personOutline, calendarOutline, walletOutline, calendar, person, chatbubbles, wallet } from 'ionicons/icons'
+    import { IonFooter, IonToolbar, IonButtons, IonTitle, IonButton, IonIcon, IonGrid, IonRow, IonMenuToggle } from '@ionic/vue';
+    import { chatbubblesOutline, personOutline, calendarOutline, walletOutline, calendar, person, chatbubbles, wallet, menu } from 'ionicons/icons'
 
     export default {
         name: 'Footer',
         components: {
-            IonFooter, IonToolbar, IonButtons, IonTitle, IonButton, IonIcon, IonGrid, IonRow
+            IonFooter, IonToolbar, IonButtons, IonTitle, IonButton, IonIcon, IonGrid, IonRow, IonMenuToggle
         },
         props: ['title'],
         setup(props, {emit}) {
@@ -69,7 +74,7 @@
             }
 
             return {
-                user, router, chatbubblesOutline, personOutline, calendarOutline, walletOutline, goToChat, goToProfile, goToIndex, goToWallet, calendar, person, chatbubbles, wallet
+                user, router, chatbubblesOutline, personOutline, calendarOutline, walletOutline, goToChat, goToProfile, goToIndex, goToWallet, calendar, person, chatbubbles, wallet, menu
             }
         }
     }

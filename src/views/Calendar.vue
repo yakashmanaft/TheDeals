@@ -9,7 +9,10 @@
         />
 
         <!-- page header -->
-        <Header :title="pageTitle" />
+        <Header 
+            @goToSettings="toggleSettingsModal"
+            :title="pageTitle"
+        />
 
         <ion-content 
             :scroll-events="true"
@@ -48,6 +51,7 @@
                 @goToChoosenContact="goToChoosenContact"
                 @setWeekendDay="setWeekendDayFunc"
             />
+
             <!-- Модалка по созданию нового дела -->
             <CreateNewDeal
                 :isOpen="isViewDealModalOpened"
@@ -59,6 +63,7 @@
                 @deleteSubject="deleteSubject"
                 :walletBalance="availableBalance"
             />
+
             <!-- Всплывашка об удалении выбранной даты из массива дат "ДЕнь без дел" -->
             <ion-action-sheet
                 :is-open="actionSheetWeekendDayOpened"
@@ -67,8 +72,15 @@
                 @didDismiss="actionSheetWeekendDayOpened = false"
             >
             </ion-action-sheet>
-            <!--  -->
-            <!-- {{userSettings.daySaturation}} -->
+            
+            <!-- Настройки Календаря -->
+            <CalendarSettings
+                :isOpen="isSettingsModalOpened"
+                @closeModal="toggleSettingsModal(false)"
+                :userSettings="userSettings"
+                @update="updateDaySaturation"
+            />
+
         </ion-content>
 
         <!-- page footer -->
@@ -87,6 +99,7 @@
     import NavigationMenu from '../components/NavigationMenu.vue';
     import ViewChoosenDate from '../components/modal/ViewChoosenDate.vue';
     import CreateNewDeal from '../components/modal/NewDeal-modalCreate.vue';
+    import CalendarSettings from '../components/modal/CalendarSettings.vue';
     //
     import { 
         IonContent, 
@@ -140,7 +153,8 @@
             ViewChoosenDate,
             CreateNewDeal,
             IonActionSheet,
-            IonFooter
+            IonFooter,
+            CalendarSettings
         },
         setup() {
             // Get user from store
@@ -175,12 +189,14 @@
             //
             const availableBalance = ref(0)
             // const avatarFileName = ref('')
+            // const daySaturation = ref(userSettings.value.daySaturation)
             // 
             onMounted(async () => {
                 spinner.value = true
                 await store.methods.getUserSettingsfromDB()
                 userSettings.value = store.state.userSettings[0]
                 weekendDays.value = userSettings.value.weekendDays
+                // daySaturation.value = userSettings.value.daySaturation
                 // console.log(weekendDays.value)
                 // avatarFileName.value = userSettings.value.avatar_url
                 // console.log(userSettings.value.avatar_url)
@@ -634,8 +650,31 @@
                 }
             }
 
+            // Обновляем в БД массив с значениями загруженности дня
+            const updateDaySaturation = async (daySaturationValue) => {
+                try {
+                    // spinner.value = true;
+                    console.log('DB is updated')
+                    //
+                    const { error } = await supabase.from('accountSettings').update({
+                    daySaturation: daySaturationValue
+                    }).eq('id', userSettings.value.id)
+                    if(error) throw error;
+                    setCalendarStyle()
+                } catch (error) {
+                    alert(`Error: ${error.message}`)
+                }
+                // spinner.value = false;
+            }
+
+            //
+            const isSettingsModalOpened = ref(false)
+            const toggleSettingsModal = (boolean) => {
+                isSettingsModalOpened.value = boolean
+            }
+
             return {
-                menu, user, router, pageTitle, choosenDate, spinner, dataLoaded, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle, observer, availableBalance, addToLedger
+                menu, user, router, pageTitle, choosenDate, spinner, dataLoaded, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle, observer, availableBalance, addToLedger, toggleSettingsModal, isSettingsModalOpened, updateDaySaturation
             }
         }
     })
@@ -645,7 +684,6 @@
     ion-datetime {
         --background: #ffffff;
         --background-rgb: 255,255,255;
-        --title-color: green;
         height: 80vh;
     }
 

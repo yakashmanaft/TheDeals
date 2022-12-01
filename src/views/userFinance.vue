@@ -9,7 +9,10 @@
         />
 
         <!-- page header -->
-        <Header :title="pageTitle" />
+        <Header 
+            :title="pageTitle" 
+            style="background-color: white"
+        />
 
         <!-- page content -->
         <ion-content
@@ -105,7 +108,7 @@
         </ion-content>
 
         <!-- page footer -->
-        <Footer/>
+        <Footer style="background-color: white"/>
     </div>
 </template>
 

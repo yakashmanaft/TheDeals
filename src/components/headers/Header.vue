@@ -6,22 +6,12 @@
             <!-- КНОПКИ СЛЕВА -->
             <ion-buttons slot="start">
 
-                <!-- RECIPE STORE -->
-                <ion-button v-if="router.currentRoute._value.meta.title === 'Recipes'" @click="$emit('goToStore')">
-                    <ion-icon color="primary" :icon="storefrontOutline"></ion-icon>
-                </ion-button>
-
-                <!-- SETTINGS -->
-                <ion-button v-if="router.currentRoute._value.meta.title === 'Warehouse'" @click="$emit('goToSettings', true)">
-                    <ion-icon color="primary" :icon="settingsOutline"></ion-icon>
-                </ion-button>
-
                 <!-- КНОПКА НАЗАД -->
                 <ion-back-button class="color-primary" v-if="router.currentRoute._value.meta.title === 'Recipes Store' || router.currentRoute._value.meta.title === 'My finance'" default-href="/" text="Назад"></ion-back-button>
             </ion-buttons>
 
             <!-- ЗАГОЛОВОК В СЕРЕДИНЕ -->
-            <ion-title >{{ title }}</ion-title>
+            <ion-title ><h4 class="ion-no-margin">{{ title }}</h4></ion-title>
 
             <!-- КНОПКИ СПРАВА -->
             <ion-buttons slot="end">
@@ -31,9 +21,19 @@
                 </ion-button>
 
                 <!-- BURGER -->
-                <ion-menu-toggle v-if="router.currentRoute._value.meta.title !== 'Recipes Store'">
+                <!-- <ion-menu-toggle v-if="router.currentRoute._value.meta.title !== 'Recipes Store'">
                     <ion-icon :icon="menu"/>
-                </ion-menu-toggle>
+                </ion-menu-toggle> -->
+
+                <!-- RECIPE STORE -->
+                <ion-button v-if="router.currentRoute._value.meta.title === 'Recipes'" @click="$emit('goToStore')">
+                    <ion-icon color="primary" :icon="storefrontOutline"></ion-icon>
+                </ion-button>
+
+                <!-- SETTINGS -->
+                <ion-button v-if="router.currentRoute._value.meta.title === 'Warehouse' || router.currentRoute._value.meta.title === 'Calendar'" @click="$emit('goToSettings', true)">
+                    <ion-icon color="primary" :icon="settingsOutline"></ion-icon>
+                </ion-button>
 
             </ion-buttons>
         </ion-toolbar>
@@ -56,17 +56,9 @@
         setup(props, { emit }) {
             const user = computed(() => store.state.user);
             const router = useRouter();
-            //
-            const goToWallet = () => {
-                router.push({ name: 'Wallet' })
-            }
-            //
-            const goToPay = () => {
-                alert('Сканируйте qr-код, чтобы оплатить. В разработке...')
-            }
 
             return {
-                user, router, menu, walletOutline, settingsOutline, goToWallet, qrCodeOutline, goToPay, settingsOutline, storefrontOutline, bagOutline
+                user, router, menu, walletOutline, settingsOutline, qrCodeOutline, settingsOutline, storefrontOutline, bagOutline
             }
         }
     }

@@ -134,7 +134,7 @@
 
                 <!--  -->
                 <WarehouseSettings
-                    :is-open="isSetteingsModalOpened"
+                    :is-open="isSettingsModalOpened"
                     @closeModal="toggleSettingsModal(false)"
                     :itemsSystemCategories="warehouseCategoriesArray"
                     :userItemsCategories="myItems"
@@ -353,10 +353,10 @@
             }
 
             // 
-            const isSetteingsModalOpened = ref(false)
+            const isSettingsModalOpened = ref(false)
             const toggleSettingsModal = (boolean) => {
                 // console.log(boolean)
-                isSetteingsModalOpened.value = boolean
+                isSettingsModalOpened.value = boolean
             }
 
             // 
@@ -377,7 +377,7 @@
 
 
             return {
-                route, itemData, dataLoaded, spinner, setOpen, currency, user, pageTitle, myItems, isOpen, createItem, search, warehouseCategoriesArray, filteredMyItemsFunc, searchedItem, searchedCategory, expendList, toggleSettingsModal, isSetteingsModalOpened, update, userSettings, userWorkProfile
+                route, itemData, dataLoaded, spinner, setOpen, currency, user, pageTitle, myItems, isOpen, createItem, search, warehouseCategoriesArray, filteredMyItemsFunc, searchedItem, searchedCategory, expendList, toggleSettingsModal, isSettingsModalOpened, update, userSettings, userWorkProfile
             }
         }
     }) 

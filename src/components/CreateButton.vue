@@ -1,5 +1,5 @@
 <template>
-        <ion-fab v-if="router.currentRoute._value.meta.title === 'Deals' || router.currentRoute._value.meta.title === 'Contacts' || router.currentRoute._value.meta.title === 'Recipes' || router.currentRoute._value.meta.title === 'MyPrice' || router.currentRoute._value.meta.title === 'Warehouse'" vertical="bottom" horizontal="end" slot="fixed" style="position:fixed; bottom: 4rem; right: 1rem;">
+        <ion-fab v-if="router.currentRoute._value.meta.title === 'Deals' || router.currentRoute._value.meta.title === 'Contacts' || router.currentRoute._value.meta.title === 'Recipes' || router.currentRoute._value.meta.title === 'MyPrice' || router.currentRoute._value.meta.title === 'Warehouse'" vertical="bottom" horizontal="end" slot="fixed" style="position:fixed; bottom: 5rem; right: 1rem;">
             <ion-fab-button>
                 <ion-icon :icon="add">
                     

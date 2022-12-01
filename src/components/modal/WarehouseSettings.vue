@@ -19,9 +19,7 @@
             <br>
             <div class="ion-margin-horizontal">
                 <ion-text>
-                    <h3>
-                        Мои категории
-                    </h3>
+                    <h3>Мои категории</h3>
                 </ion-text>
                 <!-- {{myCategories}} -->
                 <!-- <ion-text color="medium">Подключите складские категории к вашему аккаунту.</ion-text> -->
