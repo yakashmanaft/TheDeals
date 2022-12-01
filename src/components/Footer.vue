@@ -7,31 +7,31 @@
 
                         <!-- Профиль пользователя -->
                         <ion-button class="ion-margin-vertical" @click="goToProfile()">
-                            <ion-icon v-if="router.currentRoute._value.meta.title === 'Profile'" :icon="person"></ion-icon>
+                            <ion-icon color="primary" v-if="router.currentRoute._value.meta.title === 'Profile'" :icon="person"></ion-icon>
                             <ion-icon v-else :icon="personOutline"></ion-icon>
                         </ion-button>
 
                         <!-- Кошелек -->
                         <ion-button class="ion-margin-vertical" @click="goToWallet()">
-                            <ion-icon v-if="router.currentRoute._value.meta.title === 'Wallet'" :icon="wallet"></ion-icon>
+                            <ion-icon color="primary" v-if="router.currentRoute._value.meta.title === 'Wallet'" :icon="wallet"></ion-icon>
                             <ion-icon v-else :icon="walletOutline"></ion-icon>
                         </ion-button>
 
                         <!-- Calendar -->
                         <ion-button class="ion-margin-vertical" @click="goToIndex()">
-                            <ion-icon v-if="router.currentRoute._value.meta.title === 'Calendar'" :icon="calendar"></ion-icon>
+                            <ion-icon color="primary" v-if="router.currentRoute._value.meta.title === 'Calendar'" :icon="calendar"></ion-icon>
                             <ion-icon v-else :icon="calendarOutline"></ion-icon>
                         </ion-button>
 
                         <!-- Чат -->
                         <ion-button class="ion-margin-vertical" @click="goToChat()">
-                            <ion-icon v-if="router.currentRoute._value.meta.title === 'Chat'" :icon="chatbubbles"></ion-icon>
+                            <ion-icon color="primary" v-if="router.currentRoute._value.meta.title === 'Chat'" :icon="chatbubbles"></ion-icon>
                             <ion-icon v-else :icon="chatbubblesOutline"></ion-icon>
                         </ion-button>
 
                         <!-- BURGER -->
-                        <ion-menu-toggle v-if="router.currentRoute._value.meta.title !== 'Recipes Store'" color="base">
-                            <ion-icon :icon="menu"/>
+                        <ion-menu-toggle v-if="router.currentRoute._value.meta.title !== 'Recipes Store'">
+                            <ion-icon :icon="menu" color="system"/>
                         </ion-menu-toggle>
                     </ion-row>
                 </ion-grid>
@@ -58,11 +58,11 @@
             const router = useRouter();
             //
             const goToChat = () => {
-                alert('Footer: Чат в разработке...')
+                router.push({ name: 'Chat' })
             }
             //
             const goToProfile = () => {
-                router.push({name: 'Profile'})
+                router.push({ name: 'Profile' })
             }
             //
             const goToIndex = () => {

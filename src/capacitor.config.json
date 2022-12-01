@@ -1,6 +1,6 @@
 {
 	"appId": "io.ionic.starter",
-	"appName": "pocket",
+	"appName": "Deals",
 	"webDir": "dist",
 	"bundledWebRuntime": false
 }

@@ -172,26 +172,24 @@
         </ion-card>
 
         <!-- Общая инфа по кошельку -->
-        <router-link :to="{ name: 'Wallet' }">
-          <ion-card class="ion-no-padding ion-text-left">
-            <ion-card-header>
-              <ion-card-title>Мой Кошелек</ion-card-title>
-            </ion-card-header>
-            <ion-card-content style="display: flex; flex-direction: column; gap: 16px;">
-              <!--  -->
-              <div style="background-color: var(--ion-color-success); border-radius: 0.6rem; padding: 16px; color: #fff; display: flex; justify-content: space-between; align-items: center;">
-                <span>Баланс:</span>
-                <span style="white-space: nowrap; font-size: 24px;">{{availableBalance.toFixed(2)}} {{ currency }}</span>
-              </div>
-              <!--  -->
-              <div class="ion-text-right" style="display: flex; flex-direction: column;">
-                <ion-text v-if="myDebt > 0">Моя задолженность: {{myDebt.toFixed(2)}} {{ currency }}</ion-text>
-                <ion-text v-if="debtToMe > 0">Мне должны: {{debtToMe.toFixed(2)}} {{ currency }}</ion-text>
-                <ion-text v-if="myDebt === 0 && debtToMe === 0">Долги отсутствуют</ion-text>
-              </div>
-            </ion-card-content>
-          </ion-card>
-        </router-link>
+        <ion-card class="ion-no-padding ion-text-left" @click="router.push({name: 'Wallet'})">
+          <ion-card-header>
+            <ion-card-title>Мой Кошелек</ion-card-title>
+          </ion-card-header>
+          <ion-card-content style="display: flex; flex-direction: column; gap: 16px;">
+            <!--  -->
+            <div style="background-color: var(--ion-color-success); border-radius: 0.6rem; padding: 16px; color: #fff; display: flex; justify-content: space-between; align-items: center;">
+              <span>Баланс:</span>
+              <span style="white-space: nowrap; font-size: 24px;">{{availableBalance.toFixed(2)}} {{ currency }}</span>
+            </div>
+            <!--  -->
+            <div class="ion-text-right" style="display: flex; flex-direction: column;">
+              <ion-text v-if="myDebt > 0">Моя задолженность: {{myDebt.toFixed(2)}} {{ currency }}</ion-text>
+              <ion-text v-if="debtToMe > 0">Мне должны: {{debtToMe.toFixed(2)}} {{ currency }}</ion-text>
+              <ion-text v-if="myDebt === 0 && debtToMe === 0">Долги отсутствуют</ion-text>
+            </div>
+          </ion-card-content>
+        </ion-card>
 
         <!-- QR-визитка -->
         <ion-card class="ion-padding" @click="openBusinessCard()">
@@ -228,6 +226,9 @@
           </ion-card-content>
         </ion-card>
       </div>
+      <br>
+      <br>
+      <br>
     </ion-content>
 
     <!-- page footer -->

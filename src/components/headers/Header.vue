@@ -16,14 +16,12 @@
             <!-- КНОПКИ СПРАВА -->
             <ion-buttons slot="end">
                 <!-- RECIPE STORE BUSKET -->
-                <ion-button v-if="router.currentRoute._value.meta.title === 'Recipes Store'" @click="$emit('goToBusket')">
+                <ion-button class="relative" v-if="router.currentRoute._value.meta.title === 'Recipes Store'" @click="$emit('goToBusket')">
                     <ion-icon :icon="bagOutline"></ion-icon>
+                    <div class="absolute cart flex-center">
+                        <ion-text>99</ion-text>
+                    </div>
                 </ion-button>
-
-                <!-- BURGER -->
-                <!-- <ion-menu-toggle v-if="router.currentRoute._value.meta.title !== 'Recipes Store'">
-                    <ion-icon :icon="menu"/>
-                </ion-menu-toggle> -->
 
                 <!-- RECIPE STORE -->
                 <ion-button v-if="router.currentRoute._value.meta.title === 'Recipes'" @click="$emit('goToStore')">
@@ -77,5 +75,29 @@
     ion-menu-toggle {
         width: 30px;
         height: 30px;
+    }
+    .relative {
+        position: relative;
+    }
+    .absolute {
+        position: absolute;
+    }
+    .cart {
+        border-radius: 100%;
+        right: -0.3rem;
+        top: 0;
+        background-color: var(--ion-color-warning);
+        width: 1.2rem; 
+        height: 1.2rem;
+        padding: 0.7rem;
+    }
+    .flex-center {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .cart ion-text {
+        color: #fff;
+        font-size: 0.8rem;
     }
 </style>

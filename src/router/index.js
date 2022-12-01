@@ -176,6 +176,17 @@ const routes = [
     }
   },
   {
+    path: '/chat',
+    name: 'Chat',
+    component: () => import('../views/Chat.vue'),
+    meta: {
+      title: 'Chat',
+      auth: true,
+      translation: 'Чат',
+      type: 'View'
+    }
+  },
+  {
     path: '/recipes-store',
     name: 'RecipesStore',
     component: () => import('../views/RecipesStore.vue'),

@@ -80,6 +80,13 @@
 
         <!-- page footer -->
         <Footer style="background-color: white"/>
+
+        <!-- Recipe Store Cart -->
+        <RecipeStoreCart
+            :isOpen="isCartOpened"
+            @didDismiss="isCartOpened = false"
+            @closeModal="isCartOpened = false"
+        />
     </div>
 </template>
 
@@ -88,6 +95,7 @@
     import NavigationMenu from '@/components/NavigationMenu.vue';
     import Header from '@/components/headers/Header.vue';
     import Footer from '../components/Footer.vue'
+    import RecipeStoreCart from '../components/modal/RecipeStoreCart.vue';
     //
     import { defineComponent, ref, computed, onMounted  } from 'vue';
     import { useRoute, useRouter } from 'vue-router';
@@ -99,7 +107,7 @@
     export default defineComponent({
         name: 'RecipesStore',
         components: {
-            Spinner, NavigationMenu, Header, Footer,
+            Spinner, NavigationMenu, Header, Footer, RecipeStoreCart,
             //
             IonContent, IonImg, IonText, IonSearchbar, IonCard, IonCardHeader, IonCardTitle, IonCardContent
         },
@@ -159,12 +167,13 @@
                 return author
             }
             // Переход в корзину
+            const isCartOpened = ref(false)
             const goToRecipesStoreBusket = () => {
-                alert('RecipesStore: Корзина в разработке...')
+                isCartOpened.value = true;
             }
 
             return {
-                spinner, dataLoaded, storeItems, user, router, route, pageTitle, search, setAuthor, users, goToRecipesStoreBusket
+                spinner, dataLoaded, storeItems, user, router, route, pageTitle, search, setAuthor, users, goToRecipesStoreBusket, isCartOpened
             }
         }
     })

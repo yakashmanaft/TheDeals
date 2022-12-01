@@ -13,7 +13,8 @@
             <br>
             <br>
             <!--  -->
-            <ion-card class="ion-no-margin ion-margin-vertical ion-padding" @click="goToDebtsDeal(deal)" v-if="dealDebtsArray.length !== 0" v-for="deal in dealDebtsArray">
+            <!-- {{dealDebtsArray}} -->
+            <ion-card class="ion-no-margin ion-margin-vertical ion-padding" @click="goToDebtsDeal(deal)" v-if="dealDebtsArray.length !== 0" v-for="deal in getSortedDealDebtsArray()">
                 <!-- Дата создания дела: <br> {{deal.created_at}} <br> -->
                 <ion-grid class="ion-no-padding">
                     <ion-row class="ion-justify-content-between ion-align-items-center">
@@ -130,6 +131,13 @@
                     }
                 })
             }
+            // Сортируем массив дел с долгами по датам
+            const getSortedDealDebtsArray = () => {
+                dealDebtsArray.value.sort((a, b) => {
+                    return new Date(b.executionDate) - new Date(a.executionDate)
+                })
+                return dealDebtsArray.value
+            }
             //
             watchEffect(() => {
                 dealDebtsArray.value = props.dealArray
@@ -137,7 +145,7 @@
             })
 
             return {
-                router, dealDebtsArray, currency, goToDebtsDeal, dealStatusList, translateValue, formattedDate, translateContactName, goToContact, currentContact
+                router, dealDebtsArray, currency, goToDebtsDeal, dealStatusList, translateValue, formattedDate, translateContactName, goToContact, currentContact, getSortedDealDebtsArray
             }
         }
     })

@@ -60,7 +60,7 @@
         <div>
             <ion-list lines="none">
                 <ion-item>
-                    <ion-icon :icon="helpCircleOutline" color="primary" class="ion-margin-end"></ion-icon>
+                    <ion-icon :icon="helpCircleOutline" color="medium" class="ion-margin-end"></ion-icon>
                     <router-link :to="{ name: 'FAQ' }" :class="{ 'current-route': currentRoute === 'Помощь' }">Помощь</router-link>
                 </ion-item>
             </ion-list>

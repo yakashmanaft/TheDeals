@@ -1,5 +1,7 @@
 <template>
   <ion-modal>
+
+    <!--  -->
     <ion-header translucent="true">
       <ion-toolbar>
         <ion-buttons slot="start">
@@ -13,6 +15,8 @@
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
+
+    <!--  -->
     <ion-content class="ion-padding" forceOverscroll="false">
       <!-- ============================= Основные данные ===================================== -->
       {{ recipeData }}

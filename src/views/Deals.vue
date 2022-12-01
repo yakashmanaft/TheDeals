@@ -200,8 +200,8 @@
     import CreateButton from '@/components/CreateButton.vue';
     import CreateNewDeal from '@/components/modal/NewDeal-modalCreate.vue';
     import Select from '@/components/Select.vue'
-    import DealPaidMenu from '../components/DealPaidMenu.vue';
-    import Footer from '../components/Footer.vue';
+    import DealPaidMenu from '@/components/DealPaidMenu.vue';
+    import Footer from '@/components/Footer.vue';
     //
     import { 
         IonContent, 
