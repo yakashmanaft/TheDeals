@@ -30,7 +30,7 @@
                         </ion-button>
 
                         <!-- BURGER -->
-                        <ion-menu-toggle v-if="router.currentRoute._value.meta.title !== 'Recipes Store'">
+                        <ion-menu-toggle>
                             <ion-icon :icon="menu" color="system"/>
                         </ion-menu-toggle>
                     </ion-row>
