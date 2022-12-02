@@ -43,10 +43,11 @@ export default defineComponent({
     const fileName = ref()
     fileName.value = userSettings.value.avatar_url
     const spinner = ref(null)
-    onMounted(() => {
-        downloadImage()
+    onMounted(async () => {
+      await downloadImage()
     })
     const downloadImage = async () => {
+      spinner.value = true;
       if(path.value) {
         try {
           const { data, error } = await supabase.storage
@@ -60,6 +61,8 @@ export default defineComponent({
         } catch (error) {
           console.error('Error downloading image: ', error.message);
         }
+      } else {
+        spinner.value = false
       }
     };
     const uploadAvatar = async () => {

@@ -7,7 +7,7 @@
             <ion-buttons slot="start">
 
                 <!-- КНОПКА НАЗАД -->
-                <ion-back-button class="color-primary" v-if="router.currentRoute._value.meta.title === 'Recipes Store' || router.currentRoute._value.meta.title === 'My finance'" default-href="/" text="Назад"></ion-back-button>
+                <ion-back-button class="color-primary" v-if="router.currentRoute._value.meta.title !== 'Calendar' || router.currentRoute._value.meta.title === 'My finance'" default-href="/" text="Назад"></ion-back-button>
             </ion-buttons>
 
             <!-- ЗАГОЛОВОК В СЕРЕДИНЕ -->

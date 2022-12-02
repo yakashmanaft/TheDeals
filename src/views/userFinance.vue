@@ -105,6 +105,10 @@
                     <ion-text>amount: {{item.amount}}</ion-text>
                 </div> -->
             </div>
+
+            <br>
+            <br>
+            <br>
         </ion-content>
 
         <!-- page footer -->

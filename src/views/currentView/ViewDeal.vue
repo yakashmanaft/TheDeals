@@ -689,7 +689,7 @@
             const nextDealStatus = ref();
             const prevDealStatus = ref();
             // следим за изменениями значения dealStatus у текущего дела и обновляем его в БД
-            watch (dealStatus, (next, prev) => {
+            watch (dealStatus, async (next, prev) => {
                 currentDeal.value.dealStatus = dealStatus.value
                 // считаем долг
                 culcDealDebt(currentDeal.value.totalDealPrice, currentDeal.value.dealPaid)
@@ -705,7 +705,21 @@
                             //prev - это изначальное значение статуса у дела
                             dealStatus.value = prev
                             currentDeal.value.dealStatus = prev
-                            update()
+                            try {
+                                spinner.value = true;
+                                // Вынести в store?
+                                console.log(`Deal ${currentId} is updated`);
+                                //
+                                const {error} = await supabase.from('deals').update({
+                                    dealStatus: dealStatus.value,
+                                }).eq('id', currentId);
+                                if(error) throw error;
+                                // Дело успешно обновлено
+                            } catch (error) {
+                                // alert(`Error: ${error.message}`)
+                            }
+                            // edit.value = !edit.value;
+                            spinner.value = false;
                         }
                     } else {
                         console.log(`Текущий статус: ${dealStatus.value}`)
@@ -720,17 +734,45 @@
                         alert('ViewDeal: статус дела изменен на "ЗАВЕРШЕНО"')
                     }
                 }
-                update()
+                try {
+                    spinner.value = true;
+                    // Вынести в store?
+                    console.log(`Deal ${currentId} is updated`);
+                    //
+                    const {error} = await supabase.from('deals').update({
+                        dealStatus: dealStatus.value,
+                    }).eq('id', currentId);
+                    if(error) throw error;
+                    // Дело успешно обновлено
+                } catch (error) {
+                    // alert(`Error: ${error.message}`)
+                }
+                // edit.value = !edit.value;
+                spinner.value = false;
             })
 
 
             // выдергиваем из массива нужный контакт
             const searchContactMenu = ref(false)
-            const choose = (contact) => {
+            const choose = async (contact) => {
                 dealContact.value = `${contact.contactInfo.name} ${contact.contactInfo.surname}`
                 dealContactID.value = contact.id
                 searchContactMenu.value = false
-                update()
+                try {
+                    spinner.value = true;
+                    // Вынести в store?
+                    console.log(`Deal ${currentId} is updated`);
+                    //
+                    const {error} = await supabase.from('deals').update({
+                        contactID: dealContactID.value,
+                    }).eq('id', currentId);
+                    if(error) throw error;
+                    // Дело успешно обновлено
+                } catch (error) {
+                    // alert(`Error: ${error.message}`)
+                }
+                // edit.value = !edit.value;
+                spinner.value = false;
             }   
             // =========================== Выбираем дату ==========================
             // храним значение executionDate
@@ -753,10 +795,24 @@
                 executionDate = currentDeal.value.executionDate
                 isCalendarOpened.value = false;
             }
-            const updateExecutionDate = () => {
+            const updateExecutionDate = async () => {
                 currentDeal.value.executionDate = executionDate.value 
                 isCalendarOpened.value = false;
-                update()
+                try {
+                    spinner.value = true;
+                    // Вынести в store?
+                    console.log(`Deal ${currentId} is updated`);
+                    //
+                    const {error} = await supabase.from('deals').update({
+                        executionDate: executionDate.value,
+                    }).eq('id', currentId);
+                    if(error) throw error;
+                    // Дело успешно обновлено
+                } catch (error) {
+                    // alert(`Error: ${error.message}`)
+                }
+                // edit.value = !edit.value;
+                spinner.value = false;
             }
             // ======================================== update current deal ================================
             const update = async () => {

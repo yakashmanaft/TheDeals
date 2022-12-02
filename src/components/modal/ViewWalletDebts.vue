@@ -9,7 +9,9 @@
                 </ion-buttons>
                 <!--  -->
                 <ion-buttons slot="end">
-                    Сегодня: {{today}}
+                    <ion-text style="margin-right: 10px; color:var(--ion-color-system);">
+                        Сегодня: {{today}}
+                    </ion-text>
                 </ion-buttons>
             </ion-toolbar>
         </ion-header>
@@ -18,30 +20,40 @@
             <br>
             <!--  -->
             <!-- {{dealDebtsArray}} -->
-            <ion-card class="ion-no-margin ion-margin-vertical ion-padding" @click="goToDebtsDeal(deal)" v-if="dealDebtsArray.length !== 0" v-for="deal in getSortedDealDebtsArray()">
+            <ion-card class="ion-no-margin ion-margin-vertical ion-padding" @click="goToDebtsDeal(deal)" v-if="dealDebtsArray.length !== 0" v-for="deal in getSortedDealDebtsArray()" :key="deal.id">
                 <!-- Дата создания дела: <br> {{deal.created_at}} <br> -->
                 <ion-grid class="ion-no-padding">
+                    <!--  -->
                     <ion-row class="ion-justify-content-between ion-align-items-center">
-                        <ion-text>
-                            Дата исполнения: <br> {{formattedDate(deal.executionDate)}}
+                        <ion-text v-if="deal.contactID === '000'" color="medium" style="font-size: 1rem;">
+                            Неизвестный
                         </ion-text>
-                        <ion-chip color="primary" class="ion-no-margin">
+                        <ion-text v-else color="primary" @click.stop="goToContact(deal.contactID)" style="font-size: 1rem;">
+                            {{translateContactName(deal.contactID)}}
+                        </ion-text>
+                        <ion-chip v-if="new Date() > new Date(deal.executionDate)" color="warning">
+                            Просрочено
+                        </ion-chip>
+                        <ion-chip v-else color="primary" class="ion-no-margin">
                             {{translateValue(deal.dealStatus, dealStatusList)}}
                         </ion-chip>
                     </ion-row>
                     <!--  -->
-                    <ion-row class="ion-justify-content-start ion-align-items-center ion-margin-top">
-                        <ion-text v-if="deal.contactID === '000'" color="medium">
-                            Неизвестный
-                        </ion-text>
-                        <ion-text v-else color="primary" @click.stop="goToContact(deal.contactID)">
-                            {{translateContactName(deal.contactID)}}
+                    <ion-row class="ion-justify-content-end ion-align-items-center ion-margin-top">
+                        <!-- <ion-text>
+                            Дата исполнения:
+                        </ion-text> -->
+                        <ion-text style="padding: 0 12px 0 12px">
+                            {{formattedDate(deal.executionDate)}}
                         </ion-text>
                     </ion-row>
                     <!--  -->
-                    <ion-row>
-                        <ion-text>
-                            Задолженность: {{deal.totalDealPrice - deal.dealPaid}} {{currency}}
+                    <ion-row class="ion-justify-content-end ion-align-items-center">
+                        <!-- <ion-text>
+                            Задолженность: 
+                        </ion-text> -->
+                        <ion-text style="font-size: 1rem; font-weight: bold; padding: 0 12px 0 12px">
+                            {{deal.totalDealPrice - deal.dealPaid}} {{currency}}
                         </ion-text>
                     </ion-row>
                 </ion-grid>
@@ -93,7 +105,7 @@
             var dd = String(today.getDate()).padStart(2, '0');
             var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
             var yyyy = today.getFullYear();
-            today = mm + '.' + dd + '.' + yyyy;
+            today = dd + '.' + mm + '.' + yyyy;
             //
             const dealDebtsArray = ref([])
             const currency = ref('')
@@ -120,9 +132,10 @@
             }
             //
             const formattedDate = (day) => {
-                const formattedString = format(parseISO(day), 'd MMMM Y HH:mm', { locale: ru });
+                const formattedString = format(parseISO(day), 'd MMMM Y', { locale: ru });
                 return formattedString;
             }
+            
             //
             const translateContactName = (contactID) => {
                 const contact = myContacts.value.filter(contact => contact.id === +contactID)
@@ -155,7 +168,7 @@
             })
 
             return {
-                router, dealDebtsArray, currency, goToDebtsDeal, dealStatusList, translateValue, formattedDate, translateContactName, goToContact, currentContact, getSortedDealDebtsArray, today
+                router, dealDebtsArray, currency, goToDebtsDeal, dealStatusList, translateValue, translateContactName, goToContact, currentContact, getSortedDealDebtsArray, today, formattedDate
             }
         }
     })

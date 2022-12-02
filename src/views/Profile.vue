@@ -163,24 +163,22 @@
         </ion-card>
 
         <!-- Общая инфа по кошельку -->
-        <ion-card class="ion-no-padding ion-text-left" @click="router.push({name: 'Wallet'})">
+        <!-- <ion-card class="ion-no-padding ion-text-left" @click="router.push({name: 'Wallet'})">
           <ion-card-header>
             <ion-card-title>Мой Кошелек</ion-card-title>
           </ion-card-header>
           <ion-card-content style="display: flex; flex-direction: column; gap: 16px;">
-            <!--  -->
             <div style="background-color: var(--ion-color-success); border-radius: 0.6rem; padding: 16px; color: #fff; display: flex; justify-content: space-between; align-items: center;">
               <span>Баланс:</span>
               <span style="white-space: nowrap; font-size: 24px;">{{availableBalance.toFixed(2)}} {{ currency }}</span>
             </div>
-            <!--  -->
             <div class="ion-text-right" style="display: flex; flex-direction: column;">
               <ion-text v-if="myDebt > 0">Моя задолженность: {{myDebt.toFixed(2)}} {{ currency }}</ion-text>
               <ion-text v-if="debtToMe > 0">Мне должны: {{debtToMe.toFixed(2)}} {{ currency }}</ion-text>
               <ion-text v-if="myDebt === 0 && debtToMe === 0">Долги отсутствуют</ion-text>
             </div>
           </ion-card-content>
-        </ion-card>
+        </ion-card> -->
 
         <!-- QR-визитка -->
         <ion-card class="ion-padding" @click="openBusinessCard()">
@@ -273,7 +271,7 @@
       //
       const avatar_url = ref(userSettings.value.avatar_url)
       //
-      const myDeals = ref([]);
+      // const myDeals = ref([]);
       //
       const spinner = ref(null);
       const dataLoaded = ref(null);
@@ -282,12 +280,12 @@
       spinner.value = true;
       //
       onMounted( async () => {
-        await store.methods.getMyDealsFromBD();
-        myDeals.value = store.state.myDealsArray;
+        // await store.methods.getMyDealsFromBD();
+        // myDeals.value = store.state.myDealsArray;
         spinner.value = false;
         dataLoaded.value = true;
         // 
-        calculateBalance()
+        // calculateBalance()
         isQrAvailable.value = false
       })
       // открываем модкалку с QR-визиткой
@@ -305,45 +303,45 @@
         alert('Profile: Вы пытаетесь редактировать QR-визитку. Функционал в разработке...')
       }
       //
-      const availableBalance = ref(0);
-      const myDebt = ref(0);
-      const debtToMe = ref(0);
+      // const availableBalance = ref(0);
+      // const myDebt = ref(0);
+      // const debtToMe = ref(0);
       //
-      const calculateBalance = () => {
-        // console.log('calculate...')
-        // Массив сумм, которые мне уже вносили по делам продаж
-        let payMeArray = []
-        let payMe = 0
-        // Массив сумм, которые я уже вносил по делам закупок
-        let iPayArray = []
-        let iPay = 0
-        // Массив моих задолженностей
-        let myDebtsArray = []
-        let myDebts = 0
-        // Массив покупательских задолженностей
-        let debtsToMeArray = []
-        let debtsToMe = 0
-        //
-        myDeals.value.forEach(item => {
-          if(item.dealType === 'sale') {
-            payMeArray.push(item.dealPaid)
-            debtsToMeArray.push(item.totalDealPrice - item.dealPaid)
-          } else if (item.dealType === 'buy') {
-            iPayArray.push(item.dealPaid)
-            myDebtsArray.push(item.totalDealPrice - item.dealPaid)
-          }
-        })
-        // суммируем значения в массивах, считаем текущий баланс
-        payMe = payMeArray.reduce((a, b) => a + b, 0)
-        iPay = iPayArray.reduce((a, b) => a + b, 0)
-        availableBalance.value = payMe - iPay
-        // 
-        myDebts = myDebtsArray.reduce((a, b) => a + b, 0)
-        myDebt.value = myDebts
-        //
-        debtsToMe = debtsToMeArray.reduce((a, b) => a + b, 0)
-        debtToMe.value = debtsToMe 
-      }
+      // const calculateBalance = () => {
+      //   // console.log('calculate...')
+      //   // Массив сумм, которые мне уже вносили по делам продаж
+      //   let payMeArray = []
+      //   let payMe = 0
+      //   // Массив сумм, которые я уже вносил по делам закупок
+      //   let iPayArray = []
+      //   let iPay = 0
+      //   // Массив моих задолженностей
+      //   let myDebtsArray = []
+      //   let myDebts = 0
+      //   // Массив покупательских задолженностей
+      //   let debtsToMeArray = []
+      //   let debtsToMe = 0
+      //   //
+      //   // myDeals.value.forEach(item => {
+      //   //   if(item.dealType === 'sale') {
+      //   //     payMeArray.push(item.dealPaid)
+      //   //     debtsToMeArray.push(item.totalDealPrice - item.dealPaid)
+      //   //   } else if (item.dealType === 'buy') {
+      //   //     iPayArray.push(item.dealPaid)
+      //   //     myDebtsArray.push(item.totalDealPrice - item.dealPaid)
+      //   //   }
+      //   // })
+      //   // суммируем значения в массивах, считаем текущий баланс
+      //   // payMe = payMeArray.reduce((a, b) => a + b, 0)
+      //   // iPay = iPayArray.reduce((a, b) => a + b, 0)
+      //   // availableBalance.value = payMe - iPay
+      //   // 
+      //   // myDebts = myDebtsArray.reduce((a, b) => a + b, 0)
+      //   // myDebt.value = myDebts
+      //   //
+      //   // debtsToMe = debtsToMeArray.reduce((a, b) => a + b, 0)
+      //   // debtToMe.value = debtsToMe 
+      // }
       // Функционал по смене автарки
       // const changeAvatar = () => {
       //   alert('Profile: Вы хотите сменить аватарку? Функционал в разработке...')
@@ -530,7 +528,7 @@
         }
 
       return {
-        spinner, user, router, dataLoaded, userSettings, userEmail, isQrAvailable, removeCircleOutline, addCircleOutline, openBusinessCard, addBusinessCard, editBusinessCard, myDeals, availableBalance, myDebt, debtToMe, currency, formattedDate, pageTitle, renewSubscription, avatar_url, updateProfile, ellipsisHorizontal, isMainOrganizationMenuOpened, mainOrganizationMenuButtons, isCurrentOrganizationMenuOpened, currentOrganizationMenuButtons, openCurrentOrganizationMenu ,organizationCreatorButtons, organizationParticipantButtons, organizationToDelete, deleteCurrentOrganization, deleteOrganizationMenu, openDeleteOrganizationMenu, deleteOrganizationMenuButtons, createOutline, edit, userInfo, updateUserInfo, deletedAvatar
+        spinner, user, router, dataLoaded, userSettings, userEmail, isQrAvailable, removeCircleOutline, addCircleOutline, openBusinessCard, addBusinessCard, editBusinessCard, currency, formattedDate, pageTitle, renewSubscription, avatar_url, updateProfile, ellipsisHorizontal, isMainOrganizationMenuOpened, mainOrganizationMenuButtons, isCurrentOrganizationMenuOpened, currentOrganizationMenuButtons, openCurrentOrganizationMenu ,organizationCreatorButtons, organizationParticipantButtons, organizationToDelete, deleteCurrentOrganization, deleteOrganizationMenu, openDeleteOrganizationMenu, deleteOrganizationMenuButtons, createOutline, edit, userInfo, updateUserInfo, deletedAvatar
       }
     }
   })
