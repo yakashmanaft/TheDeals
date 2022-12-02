@@ -33,6 +33,12 @@
                     <ion-icon color="primary" :icon="settingsOutline"></ion-icon>
                 </ion-button>
 
+                <!-- Filter -->
+                <ion-button v-if="router.currentRoute._value.meta.title === 'Deals'" @click="$emit('setFilter')" class="relative">
+                    <ion-icon color="primary" :icon="funnelOutline"></ion-icon>
+                    <div v-if="filterBy !== 'all'" class="absolute filterIndicator"></div>
+                </ion-button>
+
             </ion-buttons>
         </ion-toolbar>
     </ion-header>
@@ -43,20 +49,20 @@
     import { computed } from 'vue';
     import { useRouter } from 'vue-router';
     import { IonHeader, IonMenuToggle, IonToolbar, IonIcon, IonGrid, IonRow, IonText, IonButtons, IonButton, IonBackButton, IonTitle } from '@ionic/vue';
-    import { menu, walletOutline, settingsOutline, qrCodeOutline, storefrontOutline, bagOutline } from 'ionicons/icons';
+    import { menu, walletOutline, settingsOutline, qrCodeOutline, storefrontOutline, bagOutline, funnelOutline } from 'ionicons/icons';
 
     export default {
         name: 'Header',
         components: {
             IonHeader, IonMenuToggle, IonToolbar, IonIcon, IonGrid, IonRow, IonText, IonButtons, IonButton, IonBackButton, IonTitle
         },
-        props: ['title'],
+        props: ['title', 'filterBy'],
         setup(props, { emit }) {
             const user = computed(() => store.state.user);
             const router = useRouter();
 
             return {
-                user, router, menu, walletOutline, settingsOutline, qrCodeOutline, settingsOutline, storefrontOutline, bagOutline
+                user, router, menu, walletOutline, settingsOutline, qrCodeOutline, settingsOutline, storefrontOutline, bagOutline, funnelOutline
             }
         }
     }
@@ -99,5 +105,13 @@
     .cart ion-text {
         color: #fff;
         font-size: 0.8rem;
+    }
+    .filterIndicator {
+        width: 1rem; 
+        height: 1rem;
+        background-color: var(--ion-color-warning);
+        border-radius: 100%;
+        right: 0rem;
+        bottom: 0;
     }
 </style>

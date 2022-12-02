@@ -34,9 +34,10 @@
             </div>
 
             <!-- Data -->
-            <div v-if="dataLoaded && storeItems.length !== 0" class="ion-text-left ion-margin-bottom">
-                <!-- Поиск надо же да? -->
-                <ion-searchbar class="ion-text-left" placeholder="Поиск..." v-model="search"></ion-searchbar>
+            <div v-if="dataLoaded && storeItems.length !== 0" class="ion-text-left ion-margin-bottom" style="padding-top: 1.5rem">
+                <br>
+                <!--  -->
+                <ion-searchbar class="ion-text-left searchbar" placeholder="Поиск..." v-model="search"></ion-searchbar>
 
                 <!--  -->
                 <!-- для формирования рабочего поиска массив storeItems преобразовавываем в searchedItem как в warehouse.vue-->
@@ -222,5 +223,13 @@
     ion-text.vertical-devider:last-child {
         padding-right: 0;
         border: none;
+    }
+    .searchbar {
+        position: fixed;
+        z-index: 99999;
+        top: 2.5rem;
+    }
+    ion-searchbar {
+        background-color: white;
     }
 </style>

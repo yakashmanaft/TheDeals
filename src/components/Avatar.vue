@@ -31,8 +31,10 @@ import Spinner from '../components/Spinner.vue'
 import store from '../store/index';
 export default defineComponent({
   name: 'AppAvatar',
-  props: { path: String },
-  emits: ['upload', 'update:path'],
+  props: { 
+    path: String ,
+  },
+  emits: ['upload', 'update:path', 'avatarIsDeleted'],
   components: { IonIcon, IonActionSheet, Spinner },
   setup(prop, { emit }) {
     const { path } = toRefs(prop);
@@ -42,22 +44,22 @@ export default defineComponent({
     fileName.value = userSettings.value.avatar_url
     const spinner = ref(null)
     onMounted(() => {
-      // console.log(avatarUrl.value)
-        // ИСКЛЮЧИТЬ ОШИБКУ УСЛОВИЕМ 
         downloadImage()
     })
     const downloadImage = async () => {
-      try {
-        const { data, error } = await supabase.storage
-          .from('avatars')
-          .download(path.value);
+      if(path.value) {
+        try {
+          const { data, error } = await supabase.storage
+            .from('avatars')
+            .download(path.value);
+            // console.log(avatarUrl.value)
+          if (error) throw error;
+          avatarUrl.value = URL.createObjectURL(data);
           // console.log(avatarUrl.value)
-        if (error) throw error;
-        avatarUrl.value = URL.createObjectURL(data);
-        // console.log(avatarUrl.value)
-        spinner.value = false
-      } catch (error) {
-        console.error('Error downloading image: ', error.message);
+          spinner.value = false
+        } catch (error) {
+          console.error('Error downloading image: ', error.message);
+        }
       }
     };
     const uploadAvatar = async () => {
@@ -117,6 +119,10 @@ export default defineComponent({
       changeAvatarMenuIsOpened.value = true
     }
     const changeAvatarButtons = [
+      // {
+      //   text: 'Изменить',
+      //   handler: () =>  {}
+      // },
       {
           text: 'Удалить',
           role: 'destructive',
@@ -143,6 +149,7 @@ export default defineComponent({
         const {  } = await supabase.from('accountSettings').update({ avatar_url: null }).eq('id', userSettings.value.id)
         fileName.value = ''
         avatarUrl.value = ''
+        emit('avatarIsDeleted', fileName.value)
         if(error) throw error
       } catch(error){
         alert(`Error: ${error.message}`)

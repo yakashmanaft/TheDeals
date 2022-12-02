@@ -9,7 +9,12 @@
         />
 
         <!-- page header -->
-        <Header :title="pageTitle"/>
+        <Header 
+            @setFilter="setFilterFunc"
+            :title="pageTitle"
+            :filterBy="dealByType"
+            style="background-color: white"
+        />
 
         <!-- Кнопка перехода к созданию нового дела -->
         <CreateButton @click="setOpen"/>
@@ -43,15 +48,16 @@
                 <ion-text color="medium">Самое время начать заниматься деятельностью. <br>И создать первое дело!</ion-text>
             </div>
             <!-- Data -->
-            <div v-if="dataLoaded && myDeals.length !== 0" class="ion-margin-bottom">
+            <div v-if="dataLoaded && myDeals.length !== 0" class="ion-margin-bottom" style="padding-top: 0.6rem">
+                <br>
                 <!-- ======================================= Статусы дел ================================ -->
-                <ion-list class="horizontal-scroll">
-                    <ion-chip v-for="(status, index) in dealStatusList" :key="index" @click="setDealStatus(status.value)" :color="setChipColor(status.value)" :outline="setChipOutline(status.value, currentDealStatus)">
+                <ion-list class="horizontal-scroll chip-deal-status">
+                    <ion-chip v-for="(status, index) in dealStatusList" :key="index" @click="setDealStatus(status.value)" :color="setChipColor(status.value)" :outline="setChipOutline(status.value, currentDealStatus)" >
                         <ion-label>{{ status.name }} <span v-if="status.value !== 'deal-cancelled' && status.value !== 'deal-complete'">{{countDealByStatus(status.value)}}</span></ion-label>
                     </ion-chip>
                 </ion-list>
                 <!-- Фильтр по типу дела -->
-                <ion-item-group class="ion-text-left ion-margin-start">
+                <!-- <ion-item-group class="ion-text-left ion-margin-start">
                     <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
                         <Select 
                             :data="dealTypesList"
@@ -59,7 +65,16 @@
                             @date-updated="(selected) => dealByType = selected.currentValue"
                         />
                     </ion-button>
-                </ion-item-group>
+                </ion-item-group> -->
+
+                <!-- Меню выбора фильтра дел -->
+                <ion-action-sheet
+                    :isOpen="setDealTypeMenu"
+                    @didDismiss="setDealTypeMenu = false"
+                    :buttons="setDealTypeMenuButtons"
+                >
+                </ion-action-sheet>
+
                 <!-- Если по конкретному статусу нет дел -->
                 <div class="no-status-deal height_60vh" v-if="foundDealsByStatus.length === 0">
                     <div v-for="(status, index) in dealStatusList" :key="index">
@@ -199,7 +214,7 @@
     import Spinner from '@/components/Spinner.vue';
     import CreateButton from '@/components/CreateButton.vue';
     import CreateNewDeal from '@/components/modal/NewDeal-modalCreate.vue';
-    import Select from '@/components/Select.vue'
+    // import Select from '@/components/Select.vue'
     import DealPaidMenu from '@/components/DealPaidMenu.vue';
     import Footer from '@/components/Footer.vue';
     //
@@ -255,7 +270,7 @@
             CreateButton,
             DealPaidMenu,
             CreateNewDeal,
-            Select,
+            // Select,
             Footer,
             //
             IonContent, 
@@ -767,8 +782,43 @@
                 }
             }
 
+            //
+            const setDealTypeMenu = ref(false)
+            const setFilterFunc = () => {
+                console.log('set filter')
+                setDealTypeMenu.value = true
+            }
+            const setDealTypeMenuButtons = [
+                {
+                    text: 'Показать все',
+                    handler: () => {
+                        dealByType.value = 'all'
+                        //Также, это является значением по умолчанию
+                    }
+                },
+                {
+                    text: 'Продажи',
+                    handler: () => {
+                        dealByType.value = 'sale'
+                    }
+                },
+                {
+                    text: 'Закупки',
+                    handler: () => {
+                        dealByType.value = 'buy'
+                    }
+                },
+                {
+                    text: 'Назад',
+                    role: 'cancel',
+                    handler: () => {
+                        console.log('Cancel clicked')
+                    },
+                }
+            ]
+
             return {
-                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isViewDealModalOpened, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translateValue, refreshData, myContacts, getContact, showNameByID, checkRentAttr, dealTypesList, dealByType, showDealByType, helpOutline, addSubject, deleteSubject, setIconByDealType, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, dealStatus, dealWhereChangeStatus, prevDealStatus, debt, culcDealDebt, openDealPaidMenu, isDealPaidMenuOpened, refreshDebtValue, closeDealPaidMenu, dealPaidAmountValue, setAmountValue, isAllAttrReturnedFunc, currency, isAllAttrReturned, update, setMarkerAttrColor, shapes, addToLedger
+                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isViewDealModalOpened, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translateValue, refreshData, myContacts, getContact, showNameByID, checkRentAttr, dealTypesList, dealByType, showDealByType, helpOutline, addSubject, deleteSubject, setIconByDealType, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, dealStatus, dealWhereChangeStatus, prevDealStatus, debt, culcDealDebt, openDealPaidMenu, isDealPaidMenuOpened, refreshDebtValue, closeDealPaidMenu, dealPaidAmountValue, setAmountValue, isAllAttrReturnedFunc, currency, isAllAttrReturned, update, setMarkerAttrColor, shapes, addToLedger, setFilterFunc, setDealTypeMenu, setDealTypeMenuButtons
             }
         }
     })
@@ -871,5 +921,13 @@
     }
     .no-data ion-img {
         width: 50%
+    }
+    .chip-deal-status {
+        position: fixed; 
+        z-index: 99999; 
+        overflow-x: auto; 
+        width: 100%;
+        top: 2rem;
+        padding-top: 1rem;
     }
 </style>

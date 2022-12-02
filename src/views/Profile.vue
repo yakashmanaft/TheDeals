@@ -6,6 +6,7 @@
     <!-- Navigation Menu -->
     <navigation-menu
         :title="pageTitle"
+        :avatar="avatar_url"
     />
 
     <!-- page header -->
@@ -35,24 +36,14 @@
         <!-- Общая инфа по аккаунту -->
         <ion-grid class="ion-no-padding">
           <ion-row class="ion-justify-content-center">
-            <avatar v-model:path="userSettings.avatar_url" @upload="updateProfile"></avatar>
-            <!-- <Avatar/> -->
-            <!-- <form class="form-widget" @submit.prevent="updateProfile">
 
-            <Avatar v-model:path="avatar_url" @upload="updateProfile" size="10" />
+            <!--  -->
+            <avatar 
+              v-model:path="userSettings.avatar_url" 
+              @upload="updateProfile"
+              @avatarIsDeleted="deletedAvatar"
+            ></avatar>
 
-
-          </form> -->
-          </ion-row>
-          <!--  -->
-          <ion-row class="ion-justify-content-center">
-            <!-- https://habr.com/ru/company/timeweb/blog/648761/ -->
-            <!-- https://habr.com/ru/company/timeweb/blog/660183/ -->
-            <!-- <ion-avatar class="account-avatar" @click="changeAvatar()">
-              <img src="img/common/user-avatar.png">
-            </ion-avatar> -->
-              <!-- <br>
-              <input type="file" ref="file" @change="handleFileUpload()"> -->
           </ion-row>
           <!--  -->
           <div v-if="!edit" class="ion-margin-bottom">
@@ -263,8 +254,6 @@
       IonContent, IonActionSheet, IonText, IonCard, IonAvatar, IonIcon, IonGrid, IonRow, IonCardHeader, IonCardTitle, IonCardContent, IonChip, IonInput, IonLabel, IonItem, IonButton
     },
     setup() {
-      //
-      const avatar_url = ref()
       // Currency
       const currency = ref(store.state.systemCurrency.name)
       // Get user from store
@@ -281,6 +270,8 @@
       store.methods.setUserEmail()
       const userEmail = ref(store.state.userEmail)
       // console.log(userEmail.value)
+      //
+      const avatar_url = ref(userSettings.value.avatar_url)
       //
       const myDeals = ref([]);
       //
@@ -367,13 +358,19 @@
         alert('Profile: хотите продлить подписку? В разработке...')
       }
       // ============================== Работа с аватаркой ============================
-      const file = ref(null)
-      const handleFileUpload = async () => {
-        console.log("selected file",file.value.files)
-      }
-      //
       const updateProfile = (boolean) => {
         console.log(boolean)
+        avatar_url.value = userSettings.value.avatar_url
+        // console.log(`Updated: ${avatar_url.value}`)
+      }
+      // avatar_url.value = userSettings.value.avatar_url
+      // watch(avatar_url, () => {
+      //   console.log(avatar_url.value)
+      //   avatar_url.value = userSettings.value.avatar_url
+      // })
+      const deletedAvatar = (fileName) => {
+        avatar_url.value = fileName
+        // console.log(`avatar is deleted: ${avatar_url.value}`)
       }
 
       // isMainOrganizationMenuOpened
@@ -533,7 +530,7 @@
         }
 
       return {
-        spinner, user, router, dataLoaded, userSettings, userEmail, isQrAvailable, removeCircleOutline, addCircleOutline, openBusinessCard, addBusinessCard, editBusinessCard, myDeals, availableBalance, myDebt, debtToMe, currency, formattedDate, pageTitle, renewSubscription, file, handleFileUpload, avatar_url, updateProfile, ellipsisHorizontal, isMainOrganizationMenuOpened, mainOrganizationMenuButtons, isCurrentOrganizationMenuOpened, currentOrganizationMenuButtons, openCurrentOrganizationMenu ,organizationCreatorButtons, organizationParticipantButtons, organizationToDelete, deleteCurrentOrganization, deleteOrganizationMenu, openDeleteOrganizationMenu, deleteOrganizationMenuButtons, createOutline, edit, userInfo, updateUserInfo
+        spinner, user, router, dataLoaded, userSettings, userEmail, isQrAvailable, removeCircleOutline, addCircleOutline, openBusinessCard, addBusinessCard, editBusinessCard, myDeals, availableBalance, myDebt, debtToMe, currency, formattedDate, pageTitle, renewSubscription, avatar_url, updateProfile, ellipsisHorizontal, isMainOrganizationMenuOpened, mainOrganizationMenuButtons, isCurrentOrganizationMenuOpened, currentOrganizationMenuButtons, openCurrentOrganizationMenu ,organizationCreatorButtons, organizationParticipantButtons, organizationToDelete, deleteCurrentOrganization, deleteOrganizationMenu, openDeleteOrganizationMenu, deleteOrganizationMenuButtons, createOutline, edit, userInfo, updateUserInfo, deletedAvatar
       }
     }
   })

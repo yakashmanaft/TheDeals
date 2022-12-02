@@ -3,7 +3,10 @@
         <!-- Спиннер как имитация загрузки -->
         <Spinner v-if="spinner"/>
         <!-- page header -->
-        <Header :title="pageTitle" />
+        <Header 
+            :title="pageTitle" 
+            style="background-color: white"    
+        />
 
         <!-- page navigation menu -->
         <navigation-menu
@@ -49,9 +52,10 @@
             </div>
 
             <!-- Data -->
-            <div v-if="dataLoaded && myContacts.length !== 0" class="ion-margin-bottom">
+            <div v-if="dataLoaded && myContacts.length !== 0" class="ion-margin-bottom" style="padding-top: 2.2rem">
+                <br>
                 <!-- Search -->
-                <ion-searchbar class="ion-text-left" placeholder="Поиск..." v-model="search"></ion-searchbar>
+                <ion-searchbar class="ion-text-left searchbar" placeholder="Поиск..." v-model="search"></ion-searchbar>
                 <!-- Список контактов -->
                 <ion-list>
                     <router-link
@@ -364,5 +368,13 @@
     }
     .no-data ion-img {
         width: 60%
+    }
+    .searchbar {
+        position: fixed;
+        z-index: 99999;
+        top: 2.5rem;
+    }
+    ion-searchbar {
+        background-color: white;
     }
 </style>

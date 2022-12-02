@@ -60,7 +60,7 @@
         <div>
             <ion-list lines="none">
                 <ion-item>
-                    <ion-icon :icon="helpCircleOutline" color="medium" class="ion-margin-end"></ion-icon>
+                    <ion-icon :icon="helpCircleOutline" :color="currentRoute === 'Помощь' ? 'primary' : 'medium'" class="ion-margin-end"></ion-icon>
                     <router-link :to="{ name: 'FAQ' }" :class="{ 'current-route': currentRoute === 'Помощь' }">Помощь</router-link>
                 </ion-item>
             </ion-list>
@@ -73,7 +73,7 @@
 
 <script>
     import store from '../store/index';
-    import { defineComponent, ref, computed, watchEffect, onMounted } from 'vue';
+    import { defineComponent, ref, computed, watchEffect, onMounted, watch } from 'vue';
     import { supabase } from '../supabase/init';
     import { useRouter } from 'vue-router';
     import { 
@@ -107,6 +107,7 @@
             //
             const currentRoute = ref(props.title)
             const avatarFileName = ref()
+            const fileName = ref(props.avatar)
             // Get user from store
             const user = computed(() => store.state.user);
             // Setup ref to router
@@ -131,14 +132,16 @@
             //
             const avatarUrl = ref()
             const downloadImage = async () => {
-                try {
-                    const { data, error } = await supabase.storage
-                    .from('avatars')
-                    .download(avatarFileName.value);
-                    if (error) throw error;
-                    avatarUrl.value = URL.createObjectURL(data);
-                } catch (error) {
-                    console.error('Error downloading image: ', error.message);
+                if(avatarFileName.value) {
+                    try {
+                        const { data, error } = await supabase.storage
+                        .from('avatars')
+                        .download(avatarFileName.value);
+                        if (error) throw error;
+                        avatarUrl.value = URL.createObjectURL(data);
+                    } catch (error) {
+                        console.error('Error downloading image: ', error.message);
+                    }
                 }
             };
             // Logout function
@@ -163,12 +166,18 @@
             //
             watchEffect(() => {
                 currentRoute.value = props.title;
-                // avatarFileName.value = props.avatar
+                fileName.value = props.avatar
             })
             console.log(currentRoute.value)
+            watch(fileName, () => {
+                avatarFileName.value = fileName.value
+                console.log(`avatarFileName: ${avatarFileName.value}`)
+                console.log(`FileName: ${fileName.value}`)
+                downloadImage()
+            })
 
             return {
-                user, router, userEmail, logout, menuList, exitOutline, helpCircleOutline, menuType, currentRoute, person, getCurrentMenuList, userProfile, currentMenuList, storefrontOutline, avatarFileName, downloadImage, avatarUrl
+                user, router, userEmail, logout, menuList, exitOutline, helpCircleOutline, menuType, currentRoute, person, getCurrentMenuList, userProfile, currentMenuList, storefrontOutline, avatarFileName, downloadImage, avatarUrl, fileName
             }
         }
     })
