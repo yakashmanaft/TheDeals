@@ -435,7 +435,8 @@
                 executionDate: '',
                 dealPaid: 0,
                 cancelledReason: '',
-                dealImportance: 1
+                dealImportance: 1,
+                comments: ''
             })
             // При закрытии или открытии modal очищаем шаблон дела
             const setOpen = () => {
@@ -456,7 +457,8 @@
                     executionDate: '',
                     dealPaid: 0,
                     cancelledReason: '',
-                    dealImportance: 1
+                    dealImportance: 1,
+                    comments: ''
                 }
             }
             // Создаем новую дело

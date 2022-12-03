@@ -307,6 +307,27 @@
                 </ion-grid>
             </ion-item-group>
             
+            <!-- ============================ КОММЕНТАРИИ К ДЕЛУ ==================================================== -->
+            <ion-item-group class="ion-text-left ion-padding-horizontal ion-margin-top">
+
+                <!-- Заголовок -->
+                <ion-text>
+                    <h4 class="ion-no-margin" >Комментарии к делу</h4>
+                </ion-text>
+
+                <!--  -->
+                <ion-grid class="border-bottom ion-no-padding ion-padding-bottom">
+                    <ion-textarea
+                        class="ion-no-padding ion-margin-top"
+                        color="medium"
+                        autoGrow="true"
+                        autocapitalize="on"
+                        v-model="dealComments"
+                        placeholder="Написать комментарий"
+                    ></ion-textarea>
+                </ion-grid>
+            </ion-item-group>
+
             <!-- ============================ ИТОГ ==================================================== -->
             <ion-item-group class="ion-text-left ion-padding-horizontal">
                 <!-- Заголовок -->
@@ -548,6 +569,7 @@
             }
             // Временно обзавем данные
             const myDeals = ref([]);
+            const dealComments = ref('')
             //
             const availableBalance = ref(0);
             //
@@ -1271,11 +1293,15 @@
             // Важность дела
             const setRatingValue = (ratingValue) => {
                 // console.log(ratingValue)
-                dealImportance.value = ratingValue
+                dealImportance.value = ratingValue;
             }
             //
             watch(dealImportance, () => {
-                dealData.value.dealImportance = dealImportance.value
+                dealData.value.dealImportance = dealImportance.value;
+            })
+            //
+            watch(dealComments, () => {
+                dealData.value.comments = dealComments.value;
             })
 
             // должна вызываться после emit то есть вызывается в: calendar.vue и deals.vue
@@ -1296,7 +1322,7 @@
             // }
 
             return {
-                currency, dealContact, dealContactID , searchContactMenu, choose, isCalendarOpened, closeModalCalendar, updateExecutionDate, datepicker, myContactsArray, searchDealContact, searchedContacts, dealTypes, addCircleOutline, closeCircleOutline, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, openDeleteSubjectModal, subjectToDelete, deleteDealSubjectButtons, addNewSubject, deleteSubject, dealData, currentDealSubject, isViewDealSubjectOpened, openCurrentDealSubject, checkRentAttr, setColorByDealType, setIconByDealType, currentDealType, isAttributesMenuOpened, setNewSubjectPrice, calcNewSubjectTotalPrice, sumAttributesPriceValue, setSumAttributesPriceValue, setSubjectPrice, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, calcSubjectTotalPrice, setNewSubjectQty, setPersonQty, setNewPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, setChipColor, shippingTypeList, dealShippingType, shippingPrice, shippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, calcTotalDealPrice, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, translateSelectedProduct, culcSubjectWeight, culcBuySubjectWeight, culcDealDebt, setAmountValue, debt, refreshDebtValue, dealPaidAmountValue, setAddButtonColor, currentPriceSubject, personPortionGram, availableBalance, myDeals, setRatingValue, dealImportance
+                currency, dealContact, dealContactID , searchContactMenu, choose, isCalendarOpened, closeModalCalendar, updateExecutionDate, datepicker, myContactsArray, searchDealContact, searchedContacts, dealTypes, addCircleOutline, closeCircleOutline, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, openDeleteSubjectModal, subjectToDelete, deleteDealSubjectButtons, addNewSubject, deleteSubject, dealData, currentDealSubject, isViewDealSubjectOpened, openCurrentDealSubject, checkRentAttr, setColorByDealType, setIconByDealType, currentDealType, isAttributesMenuOpened, setNewSubjectPrice, calcNewSubjectTotalPrice, sumAttributesPriceValue, setSumAttributesPriceValue, setSubjectPrice, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, calcSubjectTotalPrice, setNewSubjectQty, setPersonQty, setNewPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, setChipColor, shippingTypeList, dealShippingType, shippingPrice, shippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, calcTotalDealPrice, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, translateSelectedProduct, culcSubjectWeight, culcBuySubjectWeight, culcDealDebt, setAmountValue, debt, refreshDebtValue, dealPaidAmountValue, setAddButtonColor, currentPriceSubject, personPortionGram, availableBalance, myDeals, setRatingValue, dealImportance, dealComments
             }
         }
     })

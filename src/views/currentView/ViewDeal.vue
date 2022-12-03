@@ -350,6 +350,26 @@
                     </ion-grid>
                 </ion-item-group>
 
+                <!-- ============================ КОММЕНТАРИИ К ДЕЛУ ==================================================== -->
+                <ion-item-group class="ion-text-left ion-padding-horizontal ion-margin-top">
+                    <!-- Заголовок -->
+                    <ion-text>
+                        <h4 class="ion-no-margin" >Комментарии к делу</h4>
+                    </ion-text>
+
+                    <!--  -->
+                    <ion-grid class="border-bottom ion-no-padding ion-padding-bottom">
+                        <ion-textarea
+                            class="ion-no-padding ion-margin-top" 
+                            color="medium"
+                            autoGrow="true" 
+                            autocapitalize="on"
+                            v-model="dealComments"
+                            placeholder="Написать комментарий"
+                        ></ion-textarea>
+                    </ion-grid>
+                </ion-item-group>
+
                 <!-- ============================ ИТОГ ==================================================== -->
                 <ion-item-group class="ion-text-left ion-padding-horizontal">
                     <!-- Заголовок -->
@@ -830,7 +850,8 @@
                         dealPaid: currentDeal.value.dealPaid,
                         cancelledReason: currentDeal.value.cancelledReason,
                         totalDealPrice: currentDeal.value.totalDealPrice,
-                        dealImportance: dealImportance.value
+                        dealImportance: dealImportance.value,
+                        comments: currentDeal.value.comments
 
                     }).eq('id', currentId);
                     if(error) throw error;
@@ -1688,10 +1709,15 @@
                     alert(`Error: ${error.message}`)
                 }
             }
-
+            //
+            const dealComments = ref(currentDeal.value.comments);
+            watch(dealComments, () => {
+                currentDeal.value.comments = dealComments.value
+                update()
+            })
 
             return {
-                currency, spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, setPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setNewPersonQty, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, shippingTypeList, dealShippingType, shippingPrice, setProductNotePlaceholder, shippingAddress, editShippingAddress, toggleEditShippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, translateShippingType, translateSelectedProduct, culcSubjectWeight, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, culcBuySubjectWeight, debt, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, nextDealStatus, prevDealStatus, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, refreshDebtValue, dealPaidAmountValue, finishDeal, setMarkerAttrColor, shapes, checkmarkDone, availableBalance, currentPriceSubject, personPortionGram, dealImportance, setRatingValue, addToLedger
+                currency, spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, setPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setNewPersonQty, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, shippingTypeList, dealShippingType, shippingPrice, setProductNotePlaceholder, shippingAddress, editShippingAddress, toggleEditShippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, translateShippingType, translateSelectedProduct, culcSubjectWeight, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, culcBuySubjectWeight, debt, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, nextDealStatus, prevDealStatus, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, refreshDebtValue, dealPaidAmountValue, finishDeal, setMarkerAttrColor, shapes, checkmarkDone, availableBalance, currentPriceSubject, personPortionGram, dealImportance, setRatingValue, addToLedger, dealComments
             }
         }
     })
