@@ -237,9 +237,10 @@
                 value: '',
                 name: '',
                 categories: [],
-                recipeDescription: '',
                 recipeAuthorEmail: userEmail.value,
-                forSale: false
+                forSale: false,
+                recipeDescription: '',
+                ingredients: []
             })
 
             // При закрытии или открытии modal очищаем шаблон рецепта
@@ -253,9 +254,10 @@
                     value: '',
                     name: '',
                     categories: [],
-                    recipeDescription: '',
                     recipeAuthorEmail: userEmail.value,
-                    forSale: false
+                    forSale: false,
+                    recipeDescription: '',
+                    ingredients: []
                 }
             }
 

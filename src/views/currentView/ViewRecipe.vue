@@ -74,16 +74,46 @@
                 <ion-item-group>
                     <!-- Заголовок -->
                     <ion-text>
-                    <h4>Описание</h4>
+                        <h4>Описание</h4>
                     </ion-text>
 
                     <!--  -->
                     <ion-textarea
+                        color="medium"
                         class="ion-no-padding" 
                         autoGrow="true" 
                         autocapitalize="on"
                         v-model="recipeDescription"
                     ></ion-textarea>
+                </ion-item-group>
+
+                <!-- Ингредиенты -->
+                <ion-item-group>
+                    <!-- Заголовок -->
+                    <ion-text>
+                        <h4>Состав</h4>
+                    </ion-text>
+
+                    <!--  -->
+                    <div v-for="(ingredient, index) in currentRecipe.ingredients" :key="index">
+                        {{index + 1}} {{ingredient.name}}
+                    </div>
+
+                    <br>
+
+                    <!-- Свайпер с ингредиентами -->
+                    <!-- Лучше свайпер под фотки поставить быть омжет? -->
+                    <swiper>
+                        <swiper-slide 
+                            v-for="(ingredient, index) in currentRecipe.ingredients" 
+                            :key="index"
+                            style="font-size: 16px"
+                        >
+                            <ion-text>
+                                {{ingredient}}
+                            </ion-text>
+                        </swiper-slide>
+                    </swiper>
                 </ion-item-group>
                 
                 <!-- Вкл / Выкл на продажу в магазин рецептов -->
@@ -96,7 +126,7 @@
                     <ion-grid class="ion-no-padding">
                         <ion-row class="ion-justify-content-between ion-align-items-center">
                             <ion-text color="medium">
-                                Рецепт продается
+                                Выставлен на продажу
                             </ion-text>
                             <ion-toggle color="success"></ion-toggle>
                         </ion-row>
@@ -127,6 +157,10 @@
     import { IonContent, IonItemGroup, IonButton, IonActionSheet, IonGrid, IonRow, IonToggle, IonInput, IonText, IonItem, IonChip, IonIcon, IonTextarea } from '@ionic/vue';
     import { closeCircleOutline } from 'ionicons/icons'
     //
+    import 'swiper/css';
+    import '@ionic/vue/css/ionic-swiper.css';
+    import { Swiper, SwiperSlide } from 'swiper/vue';
+    //
     import Spinner from '../../components/Spinner.vue';
     import ViewHeader from '../../components/headers/HeaderViewCurrent.vue'
 
@@ -135,7 +169,9 @@
         components: {
             ViewHeader, Spinner, 
             //
-            IonContent, IonItemGroup, IonButton, IonActionSheet, IonGrid, IonRow, IonToggle, IonInput, IonText, IonItem, IonChip, IonIcon, IonTextarea
+            IonContent, IonItemGroup, IonButton, IonActionSheet, IonGrid, IonRow, IonToggle, IonInput, IonText, IonItem, IonChip, IonIcon, IonTextarea,
+            //
+            Swiper, SwiperSlide
         },
         setup() {
             //
@@ -229,6 +265,7 @@
                     }
                 }
             ]
+
 
             return {
                 route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription
