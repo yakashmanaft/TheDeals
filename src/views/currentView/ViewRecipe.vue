@@ -26,7 +26,6 @@
 
             <!-- Data -->
             <div class="ion-text-left ion-padding-horizontal">
-                {{currentRecipe}}
 
                 <!-- Название рецепта -->
                 <ion-item-group >
@@ -70,6 +69,28 @@
                     ></ion-action-sheet>
                 </ion-item-group>
 
+                <!-- Свайпер с фотками -->
+                <swiper>
+                    <!-- <swiper-slide 
+                        v-for="(element, index) in currentRecipe.composition" 
+                        :key="index"
+                        style="font-size: 16px"
+                    >
+                        <ion-text>
+                            {{element}}
+                        </ion-text>
+                    </swiper-slide> -->
+                    <swiper-slide>
+                        Фото 1
+                    </swiper-slide>
+                    <swiper-slide>
+                        Фото 2
+                    </swiper-slide>
+                    <swiper-slide>
+                        Фото 3
+                    </swiper-slide>
+                </swiper>
+
                 <!-- Описание рецепта -->
                 <ion-item-group>
                     <!-- Заголовок -->
@@ -95,25 +116,39 @@
                     </ion-text>
 
                     <!--  -->
-                    <div v-for="(ingredient, index) in currentRecipe.ingredients" :key="index">
-                        {{index + 1}} {{ingredient.name}}
+                    <div>
+                        <!-- 
+                            Чайная ложка – 5 мл это примерно 5 грамм
+                            Десертная ложка — 10 мл жидкости — 10 грамм
+                            Столовая ложка — 15 мл жидкости — 15 грамм
+                            Щепотка – 2-4 грамма
+                        -->
+                        <div v-for="(element, n) in currentRecipe.composition" :key="n" @click.stop="expendList(`ri + ${n}`)">
+    
+                            <!--  -->
+                            <ion-item class="ion-no-padding">
+                                <ion-text color="primary">
+                                    {{(n + 1)}}. {{element.name}}
+                                </ion-text>
+                            </ion-item>
+    
+                            <!--  -->
+                            <div :id="`ri + ${n}`" style="display: none">
+                                <ion-item v-for="(ingredient, idx) in element.ingredients" :key="idx" lines="none" class="ion-no-padding" style="margin-top: 1rem;">
+                                    <ion-grid class="ion-no-padding">
+                                        <ion-row class="ion-justify-content-between">
+                                            <div style="display: flex; flex-direction: column;">
+                                                <ion-text>{{ingredient.name}}</ion-text>
+                                                <ion-text>{{ingredient.value}}/190</ion-text>
+                                            </div>
+                                            
+                                        </ion-row>
+                                    </ion-grid>
+                                </ion-item>
+                            </div>
+                        </div>
                     </div>
 
-                    <br>
-
-                    <!-- Свайпер с ингредиентами -->
-                    <!-- Лучше свайпер под фотки поставить быть омжет? -->
-                    <swiper>
-                        <swiper-slide 
-                            v-for="(ingredient, index) in currentRecipe.ingredients" 
-                            :key="index"
-                            style="font-size: 16px"
-                        >
-                            <ion-text>
-                                {{ingredient}}
-                            </ion-text>
-                        </swiper-slide>
-                    </swiper>
                 </ion-item-group>
                 
                 <!-- Вкл / Выкл на продажу в магазин рецептов -->
@@ -142,6 +177,9 @@
                     @didDismiss="isOpenRef = false"
                     :buttons="deleteCurrentRecipeButtons"
                 ></ion-action-sheet>
+
+                <br>
+                {{currentRecipe}}
             </div>
 
         </ion-content>
@@ -266,9 +304,18 @@
                 }
             ]
 
+            //
+            const expendList = (el) => {
+                let item = document.getElementById(el)
+                if(item) {
+                    item.style.display == 'none' ? item.style.display = 'block' : item.style.display = 'none'
+                }
+                // console.log(document.getElementById(el))
+            }
+
 
             return {
-                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription
+                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList
             }
         }
     })

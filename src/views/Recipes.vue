@@ -104,7 +104,7 @@
 
                         <!--  -->
                         <div :id="index" style="display: none">
-                            <div v-for="(recipe, idx) in filteredMyRecipesFunc(category)" :key="idx" lines="none" class="ion-no-padding">
+                            <div v-for="(recipe, idx) in filteredMyRecipesFunc(category)" :key="idx" class="ion-no-padding">
                                 <router-link
                                     :to="{
                                         name: 'View-Recipe',
@@ -240,7 +240,7 @@
                 recipeAuthorEmail: userEmail.value,
                 forSale: false,
                 recipeDescription: '',
-                ingredients: []
+                composition: []
             })
 
             // При закрытии или открытии modal очищаем шаблон рецепта
@@ -257,7 +257,7 @@
                     recipeAuthorEmail: userEmail.value,
                     forSale: false,
                     recipeDescription: '',
-                    ingredients: []
+                    composition: []
                 }
             }
 
