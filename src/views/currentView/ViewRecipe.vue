@@ -110,12 +110,12 @@
 
                 <!--  -->
                 <ion-item-group class="ion-margin-top" @click="checkIngredients()">
-                    <!-- <ion-chip color="success" class="ion-no-margin">
+                    <ion-chip color="success" class="ion-no-margin">
                         Все ингредиенты в наличии
-                    </ion-chip> -->
-                    <ion-chip color="warning" class="ion-no-margin">
-                        Недостаточно ингредиентов
                     </ion-chip>
+                    <!-- <ion-chip color="warning" class="ion-no-margin">
+                        На складе недостаточно ингредиентов
+                    </ion-chip> -->
                 </ion-item-group>
 
 
@@ -189,6 +189,13 @@
                     :buttons="deleteCurrentRecipeButtons"
                 ></ion-action-sheet>
 
+                <!-- Модалка проверки количества ингредиентов в наличии (для приготовления по рецепту) -->
+                <CheckIngredientsAvailabilityModal
+                    :isOpen="isCheckIngredientsAvailabilityModalOpened"
+                    @closeModal="(isCheckIngredientsAvailabilityModalOpened = false)"
+                    @didDismiss="(isCheckIngredientsAvailabilityModalOpened = false)"
+                />
+
                 <br>
                 {{currentRecipe}}
             </div>
@@ -211,12 +218,13 @@
     import { Swiper, SwiperSlide } from 'swiper/vue';
     //
     import Spinner from '../../components/Spinner.vue';
-    import ViewHeader from '../../components/headers/HeaderViewCurrent.vue'
+    import ViewHeader from '../../components/headers/HeaderViewCurrent.vue';
+    import CheckIngredientsAvailabilityModal from '../../components/modal/CheckIngredientsAvailabilityModal.vue';
 
     export default defineComponent({
         name: 'View-recipe',
         components: {
-            ViewHeader, Spinner, 
+            ViewHeader, Spinner, CheckIngredientsAvailabilityModal,
             //
             IonContent, IonItemGroup, IonButton, IonActionSheet, IonGrid, IonRow, IonToggle, IonInput, IonText, IonItem, IonChip, IonIcon, IonTextarea,
             //
@@ -325,13 +333,14 @@
             }
 
             //
+            const isCheckIngredientsAvailabilityModalOpened = ref(false)
             const checkIngredients = () => {
-                alert('ViewRecipe: В разработке')
+                isCheckIngredientsAvailabilityModalOpened.value = true
             }
-
+            
 
             return {
-                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList, checkIngredients
+                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList, checkIngredients, isCheckIngredientsAvailabilityModalOpened
             }
         }
     })
