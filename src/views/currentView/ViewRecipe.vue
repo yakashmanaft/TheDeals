@@ -108,7 +108,18 @@
                     ></ion-textarea>
                 </ion-item-group>
 
-                <!-- Ингредиенты -->
+                <!--  -->
+                <ion-item-group class="ion-margin-top" @click="checkIngredients()">
+                    <!-- <ion-chip color="success" class="ion-no-margin">
+                        Все ингредиенты в наличии
+                    </ion-chip> -->
+                    <ion-chip color="warning" class="ion-no-margin">
+                        Недостаточно ингредиентов
+                    </ion-chip>
+                </ion-item-group>
+
+
+                <!-- Ингредиенты по составу -->
                 <ion-item-group>
                     <!-- Заголовок -->
                     <ion-text>
@@ -139,7 +150,7 @@
                                         <ion-row class="ion-justify-content-between">
                                             <div style="display: flex; flex-direction: column;">
                                                 <ion-text>{{ingredient.name}}</ion-text>
-                                                <ion-text>{{ingredient.value}}/190</ion-text>
+                                                <ion-text>{{ingredient.value}}</ion-text>
                                             </div>
                                             
                                         </ion-row>
@@ -313,9 +324,14 @@
                 // console.log(document.getElementById(el))
             }
 
+            //
+            const checkIngredients = () => {
+                alert('ViewRecipe: В разработке')
+            }
+
 
             return {
-                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList
+                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList, checkIngredients
             }
         }
     })
