@@ -392,6 +392,11 @@ const state = reactive({
       costEstimation: 'perUnit'
     },
     {
+      value: 'butter',
+      name: 'Сливочное масло',
+      costEstimation: 'perKilogram'
+    },
+    {
       value: 'other',
       name: 'Прочие услуги',
       costEstimation: 'perUnit'

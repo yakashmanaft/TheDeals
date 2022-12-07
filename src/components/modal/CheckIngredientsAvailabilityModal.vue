@@ -11,55 +11,30 @@
 
         <!--  -->
         <ion-content class="ion-padding-horizontal">
+            <ion-text>
+                <h4>
+                    Запасы недостаточны:
+                </h4>
+                <ion-text color="medium">
+                    Осуществите закупку у ваших поставщиков.
+                    <!-- <ion-text color="primary">Создать дело</ion-text> -->
+                </ion-text>
+            </ion-text>
+            <ion-grid class="ion-no-padding ion-padding-top">
 
-            <ion-grid class="ion-no-padding">
                 <ion-row class="ion-align-items-center ion-justify-content-between ion-nowrap ion-margin-top">
                     <!--  -->
                     <div style="display: flex; align-items: center;">
                         <!-- иконка -->
-                        <ion-thumbnail class="thumbnail_deal-subject relative" style="background-color: var(--ion-color-light);">
-                            <ion-img src="../img/subjects/buy/egg.webp"></ion-img>
-                            <div 
-                                class="absolute mark-atribute"
-                            >
-                                <ion-icon style="font-size: 1.1rem;" :icon="checkmark" color="light"></ion-icon>
-                            </div>
-                        </ion-thumbnail>
-                        <!-- Название ингредиента -->
-                        <ion-text color="medium" class="ion-margin-start">Сливочный творожный сыр</ion-text>
-                        <!-- Иконка галочка для демонстрации наличия -->
-                    </div>
-                    <ion-text color="medium" style="white-space: nowrap; margin-left: 0.3rem;">300/3100 г.</ion-text>
-                </ion-row>
-                <ion-row class="ion-align-items-center ion-justify-content-between ion-nowrap ion-margin-top">
-                    <!--  -->
-                    <div style="display: flex; align-items: center;">
-                        <!-- иконка -->
-                        <ion-thumbnail class="thumbnail_deal-subject" style="background-color: var(--ion-color-warning);">
+                        <ion-thumbnail class="thumbnail_deal-subject" style="background-color: var(--ion-color-light); border: 1px solid var(--ion-color-danger)">
                             <ion-img src="../img/subjects/buy/egg.webp"></ion-img>
                         </ion-thumbnail>
                         <!-- Название ингредиента -->
-                        <ion-text color="warning" class="ion-margin-start">Сливочный творожный сыр</ion-text>
+                        <ion-text color="danger" class="ion-margin-start">Сливочный творожный сыр</ion-text>
                     </div>
-                    <ion-text color="warning" style="white-space: nowrap; margin-left: 0.3rem;">6/5 шт.</ion-text>
+                    <ion-text color="danger" style="white-space: nowrap; margin-left: 0.3rem;">6 / 5 шт.</ion-text>
                 </ion-row>
-                <ion-row class="ion-align-items-center ion-justify-content-between ion-nowrap ion-margin-top">
-                    <!--  -->
-                    <div style="display: flex; align-items: center;">
-                        <!-- иконка -->
-                        <ion-thumbnail class="thumbnail_deal-subject relative" style="background-color: var(--ion-color-light);">
-                            <ion-img src="../img/subjects/buy/egg.webp"></ion-img>
-                            <div 
-                                class="absolute mark-atribute"
-                            >
-                                <ion-icon style="font-size: 1.1rem;" :icon="checkmark" color="light"></ion-icon>
-                            </div>
-                        </ion-thumbnail>
-                        <!-- Название ингредиента -->
-                        <ion-text color="medium" class="ion-margin-start">Сливочный творожный сыр</ion-text>
-                    </div>
-                    <ion-text color="medium" style="white-space: nowrap; margin-left: 0.3rem;">300/3100 г.</ion-text>
-                </ion-row>
+
             </ion-grid>
 
         </ion-content>
@@ -99,22 +74,5 @@
         align-items: center;
         border-radius: 50%;
         padding: 0.5rem;
-    }
-    .relative {
-        position: relative;
-    }
-    .absolute {
-        position: absolute;
-    }
-    .mark-atribute {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        bottom: 0;
-        right: 0;
-        width: 1.3rem;
-        height: 1.3rem;
-        background-color: var(--ion-color-success);
-        border-radius: 100%
     }
 </style>

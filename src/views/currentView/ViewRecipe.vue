@@ -109,13 +109,22 @@
                 </ion-item-group>
 
                 <!--  -->
-                <ion-item-group class="ion-margin-top" @click="checkIngredients()">
-                    <ion-chip color="success" class="ion-no-margin">
-                        Все ингредиенты в наличии
-                    </ion-chip>
-                    <!-- <ion-chip color="warning" class="ion-no-margin">
-                        На складе недостаточно ингредиентов
+                <ion-item-group class="ion-margin-top">
+                    <!-- Если все ингредиенты есть -->
+                    <!-- <ion-chip color="success" class="ion-no-margin">
+                        <ion-icon :icon="checkmark"></ion-icon>
+                        <ion-label>
+                            Все ингредиенты в наличии
+                        </ion-label>
                     </ion-chip> -->
+
+                    <!-- Если чего-то из ингредиентов не хватает -->
+                    <ion-chip color="danger" class="ion-no-margin" @click="checkIngredients()">
+                        <ion-icon :icon="alertOutline"></ion-icon>
+                        <ion-label style="border-bottom: 1px dashed var(--ion-color-danger)">
+                            Недостаточно ингредиентов
+                        </ion-label>
+                    </ion-chip>
                 </ion-item-group>
 
 
@@ -148,12 +157,10 @@
                                 <ion-item v-for="(ingredient, idx) in element.ingredients" :key="idx" lines="none" class="ion-no-padding" style="margin-top: 1rem;">
                                     <ion-grid class="ion-no-padding">
                                         <ion-row class="ion-justify-content-between">
-                                            <div style="display: flex; flex-direction: column;">
-                                                <ion-text>{{ingredient.name}}</ion-text>
-                                                <ion-text>{{ingredient.value}}</ion-text>
-                                            </div>
-                                            
+                                            <ion-text>{{ingredient.name}}</ion-text>
+                                            <ion-text>{{ingredient.value}}</ion-text>
                                         </ion-row>
+                                        {{ingredient.costEstimation}}
                                     </ion-grid>
                                 </ion-item>
                             </div>
@@ -211,7 +218,7 @@
     import store from '../../store/index';
     //
     import { IonContent, IonItemGroup, IonButton, IonActionSheet, IonGrid, IonRow, IonToggle, IonInput, IonText, IonItem, IonChip, IonIcon, IonTextarea } from '@ionic/vue';
-    import { closeCircleOutline } from 'ionicons/icons'
+    import { closeCircleOutline, checkmark, alertOutline } from 'ionicons/icons'
     //
     import 'swiper/css';
     import '@ionic/vue/css/ionic-swiper.css';
@@ -340,7 +347,7 @@
             
 
             return {
-                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList, checkIngredients, isCheckIngredientsAvailabilityModalOpened
+                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList, checkIngredients, isCheckIngredientsAvailabilityModalOpened, checkmark, alertOutline
             }
         }
     })
