@@ -75,8 +75,33 @@
                     </ion-item>
                 </router-link>
 
+                <!-- Выводс списка предметов при наличии категори в принципе -->
+                <router-link
+                    v-for="(item, index) in searchedItem" :key="index"
+                    v-if="search === ''"
+                    :to="{
+                        name: 'View-warehouse-item',
+                        params: {
+                            itemId: item.id,
+                            itemUid: item.uid,
+                            item: JSON.stringify(item)
+                        }
+                    }"
+                >
+                    <ion-item v-if="(item.categories.length === 0)" lines="none">
+                        <ion-row class="ion-justify-content-between ion-align-items-center">
+                            <ion-text color="primary">
+                                {{item.name}}
+                            </ion-text>
+                            <ion-text>
+                                <!-- Не понятно что тут помещать )) -->
+                            </ion-text>
+                        </ion-row>
+                    </ion-item>
+                </router-link>
+
                 <!-- Полоска разделитель -->
-                <div v-if="search !== '' && searchedItem.length > 0" class="line-divider ion-margin-horizontal"></div>
+                <!-- <div v-if="(searchedCategory.length > 0 && searchedItem.length === 0)" class="line-divider ion-margin-horizontal"></div> -->
 
                 <!-- Вывод информации при отсутствии схожих поиску результатов-->
                 <ion-item lines="none" v-if="searchedItem.length <= 0 && searchedCategory.length <= 0">
@@ -302,8 +327,6 @@
                     alert('Warehouse: Вы не указали название предмета')
                 } else if(newItemData.catalogNumber === '') {
                     alert('Warehouse: Вы не указали каталожный номер')
-                } else if(newItemData.categories.length === 0) {
-                    alert('Warehouse: Добавьте хотя бы одну категорию')
                 } else if(userWorkProfile.value === 'Тортодилер' && newItemData.estimationType === '') {
                     alert('Warehouse: Укажите тип расчета')
                 } else {

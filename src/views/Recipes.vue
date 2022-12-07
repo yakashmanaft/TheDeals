@@ -75,8 +75,33 @@
                     </ion-item>
                 </router-link>
                 
+                <!-- Выводс списка рецептов при наличии категори в принципе -->
+                <router-link 
+                    v-for="(recipe, index) in searchedRecipe" :key="index" 
+                    v-if="search === ''"
+                    :to="{ name: 'View-Recipe', 
+                            params: {
+                            recipeId: recipe.id,
+                            recipeUid: recipe.uid,
+                            recipe: JSON.stringify(recipe)
+                        } 
+                    }"   
+                >
+                    
+                    <ion-item v-if="(recipe.categories.length === 0)" lines="none">
+                        <ion-row class="ion-justify-content-between ion-align-items-center">
+                            <ion-text color="primary">
+                                {{recipe.name}}
+                            </ion-text>
+                            <ion-text>
+                                <!-- Не понятно что тут помещать )) -->
+                            </ion-text>
+                        </ion-row>
+                    </ion-item>
+                </router-link>
+
                 <!-- Полоска разделитель -->
-                <div v-if="search !== '' && searchedRecipe.length > 0" class="line-divider ion-margin-horizontal"></div>
+                <!-- <div v-if="(searchedCategory.length > 0 && searchedRecipe.length)" class="line-divider ion-margin-horizontal"></div> -->
 
                 <!-- Вывод информации при отсутствии схожих поиску результатов-->
                 <ion-item lines="none" v-if="searchedRecipe.length <= 0 && searchedCategory.length <= 0">
@@ -348,5 +373,8 @@
 
     .no-data ion-img {
         width: 50%
+    }
+    .line-divider {
+        border: 0.05rem solid var(--ion-color-light);
     }
 </style>

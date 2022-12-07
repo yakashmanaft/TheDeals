@@ -192,6 +192,43 @@
                     </ion-grid>
                 </ion-item-group>
 
+                <!-- Модалка выбора категори -->
+                <ion-modal :isOpen="searchRecipesCategoriesMenu">
+
+                    <!-- Поиск -->
+                    <ion-searchbar
+                    class="ion-text-left"
+                    placeholder="Поиск..."
+                    v-model="searchRecipesCategories"
+                    show-cancel-button="always"
+                    cancelButtonText="Отменить"
+                    @ionCancel="searchRecipesCategoriesMenu = false"
+                    ></ion-searchbar>
+
+                    <!-- Контент -->
+                    <ion-content style="height: 90vh">
+                    <!-- Если есть данные -->
+                    <ion-item v-for="(category) in searchedRecipesCategories" :key="category.id" @click="choosenCategory(category)">
+                        <ion-grid class="ion-no-padding">
+                            <ion-row class="ion-justify-content-between ion-align-items-center">
+                                <ion-text>{{ category }}</ion-text>
+                            </ion-row>
+                        </ion-grid>
+                    </ion-item>
+                    
+                    <!-- Если ничего подходящего нет или нет данных -->
+                    <div v-if="searchedRecipesCategories.length <= 0" class="ion-margin-top ion-margin-horizontal">
+                    <!-- <div v-if="searchedRecipesCategories.length <= 0" class="ion-margin-top ion-margin-horizontal"> -->
+                        <ion-grid class="ion-no-padding">
+                        <ion-row class="ion-justify-content-between ion-align-items-center">
+                            <ion-text color="medium">Ничего не найдено</ion-text>
+                        </ion-row>
+                        </ion-grid>
+                    </div>
+                    
+                    </ion-content>
+                </ion-modal>
+
                 <!-- Кнопка удалить -->
                 <ion-button fill="clear" color="danger" @click="openDeleteMenu">Удалить рецепт</ion-button>
                 <!-- Всплывашка подтверждение удаления рецепта -->
@@ -211,12 +248,12 @@
 </template>
 
 <script>
-    import { defineComponent, ref, watch } from 'vue';
+    import { defineComponent, ref, watch, onMounted, computed } from 'vue';
     import { useRoute, useRouter } from 'vue-router';
     import { supabase } from '../../supabase/init';
     import store from '../../store/index';
     //
-    import { IonContent, IonItemGroup, IonButton, IonActionSheet, IonGrid, IonRow, IonToggle, IonInput, IonText, IonItem, IonChip, IonIcon, IonTextarea, IonLabel, IonThumbnail, IonImg } from '@ionic/vue';
+    import { IonContent, IonItemGroup, IonButton, IonActionSheet, IonGrid, IonRow, IonToggle, IonInput, IonText, IonItem, IonChip, IonIcon, IonTextarea, IonLabel, IonThumbnail, IonImg, IonModal, IonSearchbar } from '@ionic/vue';
     import { closeCircleOutline, checkmark, alertOutline } from 'ionicons/icons'
     //
     import 'swiper/css';
@@ -225,13 +262,16 @@
     //
     import Spinner from '../../components/Spinner.vue';
     import ViewHeader from '../../components/headers/HeaderViewCurrent.vue';
+    //
+    import { searchWarehouseCategoryFilter } from '../../helpers/filterWarehouseCategories';
+    import { sortAlphabeticallyWarhouseItem } from "../../helpers/sortDealSubject";
 
     export default defineComponent({
         name: 'View-recipe',
         components: {
             ViewHeader, Spinner,
             //
-            IonContent, IonItemGroup, IonButton, IonActionSheet, IonGrid, IonRow, IonToggle, IonInput, IonText, IonItem, IonChip, IonIcon, IonTextarea, IonLabel, IonThumbnail, IonImg,
+            IonContent, IonItemGroup, IonButton, IonActionSheet, IonGrid, IonRow, IonToggle, IonInput, IonText, IonItem, IonChip, IonIcon, IonTextarea, IonLabel, IonThumbnail, IonImg, IonModal, IonSearchbar, 
             //
             Swiper, SwiperSlide
         },
@@ -244,10 +284,17 @@
             const info = route.params;
             // console.log(info.recipeId)
             const currentRecipe = ref(JSON.parse(info.recipe))
+            // Массив пользователя с вариантам категорий для рецептов
+            const userRecipesCategories = ref()
             //
             const spinner = ref(null);
             //
             const isOpenRef = ref(false)
+            //
+            onMounted(() => {
+                userRecipesCategories.value = store.state.recipesCategoriesArray
+            })
+            //
             const openDeleteMenu = () => {
                 isOpenRef.value = true
             }
@@ -337,8 +384,20 @@
                 categoryToDelete.value = category;
                 deleteCategory.value = true
             }
-            const deleteCategoruFunc = (category) => {
+            const deleteCategoruFunc = async (category) => {
                 currentRecipe.value.categories = currentRecipe.value.categories.filter(item => item !== category)
+                // 
+                spinner.value = true;
+                try {
+                    const {error} = await supabase.from('userRecipes').update({
+                        categories: currentRecipe.value.categories
+                    }).eq('id', info.recipeId);
+                    if(error) throw error;
+                    spinner.value = false;
+                    // Рецепт успешно обновлено
+                } catch (error) {
+                    // alert(`Error: ${error.message}`)
+                }
             }
             //
             const deleteCategoryButtons = [
@@ -383,8 +442,47 @@
                 return `../img/subjects/buy/${ingredientValue}.webp`
             }
 
+            //
+            const searchRecipesCategoriesMenu = ref(false);
+            const searchRecipesCategories = ref('');
+            // ПОЛЬЗОВАТЕЛЬСКИЕ КАТЕГОРИИ
+            const searchedRecipesCategories = computed(() => {
+                const sortedRecipesCategoriesArray = sortAlphabeticallyWarhouseItem(userRecipesCategories.value)
+                return searchWarehouseCategoryFilter(sortedRecipesCategoriesArray, searchRecipesCategories.value)
+            })
+            // Проверяем добавлена уже категория к предмету или нет
+            const isCategoryAlreadyAdded = ref();
+            // Переменная для категории к добавлению
+            const newCategory = ref()
+            const choosenCategory = async (category) => {
+            isCategoryAlreadyAdded.value = currentRecipe.value.categories.find(item => item === category)
+                if(isCategoryAlreadyAdded.value !== undefined) {
+                    alert('NewRecipe-modalCreate: категория уже добавлена к рецепту')
+                } else if (currentRecipe.value.categories.length >= 3) {
+                    alert('NewRecipe-modalCreate: Вы добавили максимально количество категорий')
+                } else {
+                    searchRecipesCategories.value = ''
+                    searchRecipesCategoriesMenu.value = false
+                    newCategory.value = category
+                    console.log(newCategory.value)
+                    currentRecipe.value.categories.push(newCategory.value)
+                }
+                // 
+                spinner.value = true;
+                try {
+                    const {error} = await supabase.from('userRecipes').update({
+                        categories: currentRecipe.value.categories
+                    }).eq('id', info.recipeId);
+                    if(error) throw error;
+                    spinner.value = false;
+                    // Рецепт успешно обновлено
+                } catch (error) {
+                    // alert(`Error: ${error.message}`)
+                }
+            }
+
             return {
-                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList, checkmark, alertOutline, setImgSrc
+                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList, checkmark, alertOutline, setImgSrc, searchRecipesCategoriesMenu, searchRecipesCategories, userRecipesCategories, searchedRecipesCategories, isCategoryAlreadyAdded, choosenCategory
             }
         }
     })
