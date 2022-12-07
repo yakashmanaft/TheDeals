@@ -50,7 +50,13 @@
                     <ion-searchbar class="ion-text-left" placeholder="Поиск..." v-model="searchSelectedProduct" show-cancel-button="always" cancelButtonText="Отменить" @ionCancel="searchSubjectMenu = false"></ion-searchbar>
                     <ion-content style="height: 90vh">
                         <ion-item v-for="subject in searchedSubject" :key="subject.id" @click="choose(subject)">
-                            {{ subject.name }}
+                            <ion-text>
+                                {{ subject.name }} 
+                                <ion-text color="medium">
+                                    ({{ setCostEstimation(subject.costEstimation) }})
+                                </ion-text>
+                            </ion-text>
+                            
                         </ion-item>
                         <!-- Если ничего подхлдящего нет, создать свое надо -->
                         <div v-if="searchedSubject.length <= 0">
@@ -732,7 +738,7 @@
                     const sortedDealSellSubjectArray = sortAlphabetically(dealSaleSubjectArray.value);
                     return searchDealSubjectFilter(sortedDealSellSubjectArray, searchSelectedProduct.value);
                 } else if(currentDealType.value === 'buy') {
-                    const sortedDealBuySubjectArray = sortAlphabetically(dealBuySubjectArray.value);
+                    const sortedDealBuySubjectArray = sortAlphabetically(dealBuySubjectArray.value.filter(item => item.costEstimation !== 'teaSpoon' && item.costEstimation !== 'pinch' && item.costEstimation !== 'stick'));
                     return searchDealSubjectFilter(sortedDealBuySubjectArray, searchSelectedProduct.value);
                 }
             }) 
@@ -1086,11 +1092,21 @@
                     // Сбрасываем заполненные данные и закрываем модалку
                     setOpen()
                 }
+            }
 
+            //
+            const setCostEstimation = (costEstimation) => {
+                if(costEstimation === 'perKilogram') {
+                    return 'закуп в кг. / г.'
+                } else if (costEstimation === 'perUnit') {
+                    return 'закуп в шт.'
+                } else if(costEstimation === 'per100gram') {
+                    return 'закуп в упаковках по 100г'
+                }
             }
 
             return {
-                dealSaleSubjectArray, dealBuySubjectArray, helpOutline, addOutline, showSelectedProduct, searchSubjectMenu, searchSelectedProduct, currentDealType, translateValue, searchedSubject, choose, searchRecipeMenu, searchRecipe, userRecipeArray, chooseRecipe, showSelectedRecipe, searchedRecipe, noRecipe, searchAttributeMenu, searchAdditionalAttributes, dealAdditionalAttributesArray, searchedAdditionalAttributes, chooseAttribute, closeCircleOutline, isAttributesMenuOpened, toggleAttributesMenu, openDeleteAttributeModal, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, systemCurrency, currentSubjectAttribute, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, isItemAlreadyHave, setAttributeRentType, sumAttributesPriceFunc, newAttribute, setProductQty, calcTotalSubjectPrice, setProductPrice, subjectPrice, subjectQty, removeCircleOutline, addCircleOutline, countQtyButtonColor, changeQty, changePersonQty, countPersonQtyButtonColor, gramPerPerson, setDiscountRange, subjectDiscount, addNewAttrToPrice, addNewRecipe, addNewSubjectToPrice, setAddButtonColor, goToRecipesStore, isModalCreateNewRecipeOpened, recipeData, setOpen, userEmail,createNew, spinner, router, searchedRecipeFunc
+                dealSaleSubjectArray, dealBuySubjectArray, helpOutline, addOutline, showSelectedProduct, searchSubjectMenu, searchSelectedProduct, currentDealType, translateValue, searchedSubject, choose, searchRecipeMenu, searchRecipe, userRecipeArray, chooseRecipe, showSelectedRecipe, searchedRecipe, noRecipe, searchAttributeMenu, searchAdditionalAttributes, dealAdditionalAttributesArray, searchedAdditionalAttributes, chooseAttribute, closeCircleOutline, isAttributesMenuOpened, toggleAttributesMenu, openDeleteAttributeModal, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, systemCurrency, currentSubjectAttribute, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, isItemAlreadyHave, setAttributeRentType, sumAttributesPriceFunc, newAttribute, setProductQty, calcTotalSubjectPrice, setProductPrice, subjectPrice, subjectQty, removeCircleOutline, addCircleOutline, countQtyButtonColor, changeQty, changePersonQty, countPersonQtyButtonColor, gramPerPerson, setDiscountRange, subjectDiscount, addNewAttrToPrice, addNewRecipe, addNewSubjectToPrice, setAddButtonColor, goToRecipesStore, isModalCreateNewRecipeOpened, recipeData, setOpen, userEmail,createNew, spinner, router, searchedRecipeFunc, setCostEstimation
             }
         }
     })

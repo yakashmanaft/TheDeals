@@ -302,8 +302,13 @@ const state = reactive({
       costEstimation: 'per100gram'
     },
     {
-      value: 'nuts',
-      name: 'Орехи',
+      value: 'sugar-powder',
+      name: "Сахарная пудра",
+      costEstimation: "perKilogram",
+    },
+    {
+      value: 'assorted-nuts',
+      name: 'Ассорти орехов (кешью, минадль, фундук)',
       costEstimation: 'perKilogram'
     },
     {
@@ -332,9 +337,24 @@ const state = reactive({
       costEstimation: 'perKilogram'
     },
     {
+      value: 'salt',
+      name: "Соль",
+      costEstimation: "teaSpoon",
+    },
+    {
+      value: 'salt',
+      name: "Соль",
+      costEstimation: "pinch",
+    },
+    {
       value: 'vanilla',
       name: 'Ваниль',
       costEstimation: 'perKilogram'
+    },
+    {
+      value: 'vanilla',
+      name: "Ваниль",
+      costEstimation: "stick",
     },
     {
       value: 'sour-cream',
@@ -347,9 +367,19 @@ const state = reactive({
       costEstimation: 'perKilogram'
     },
     {
+      value: 'banana',
+      name: 'Банан',
+      costEstimation: 'perUnit'
+    },
+    {
       value: 'baking-soda',
       name: 'Пищевая сода',
       costEstimation: 'perKilogram'
+    },
+    {
+      value: 'baking-soda',
+      name: "Пищевая сода",
+      costEstimation: "teaSpoon",
     },
     {
       value: 'vanilla-extract',
@@ -357,9 +387,19 @@ const state = reactive({
       costEstimation: 'perKilogram'
     },
     {
+      value: 'vanilla-extract',
+      name: "Ванильный экстракт",
+      costEstimation: "teaSpoon"
+    },
+    {
       value: 'cream',
       name: 'Сливки',
       costEstimation: 'perKilogram'
+    },
+    {
+      value: 'cream',
+      name: "Сливки (от 33%)",
+      costEstimation: "perKilogram",
     },
     {
       value: 'gouda-cheese',
@@ -367,9 +407,19 @@ const state = reactive({
       costEstimation: 'perKilogram'
     },
     {
+      value: 'cheese',
+      name: "Сыр",
+      costEstimation: "perKilogram",
+    },
+    {
       value: 'lemon-juice',
       name: 'Сок лимона',
       costEstimation: 'perKilogram'
+    },
+    {
+      value: 'lemon-juice',
+      name: "Сок лимона",
+      costEstimation: "teaSpoon",
     },
     {
       value: 'lemon-juice',

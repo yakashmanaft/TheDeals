@@ -34,8 +34,8 @@
                         <h4>Название</h4>
                     </ion-text>
                     <!--  -->
-                    <ion-item counter="true" class="ion-no-padding">
-                        <ion-input color="primary" v-model="recipeName" autocapitalize="on" maxlength="40"></ion-input>
+                    <ion-item class="ion-no-padding" lines="none">
+                        <ion-input color="medium" v-model="recipeName" autocapitalize="on" maxlength="40"></ion-input>
                     </ion-item>
                 </ion-item-group>
 
@@ -92,7 +92,7 @@
                 </swiper>
 
                 <!-- Описание рецепта -->
-                <ion-item-group>
+                <ion-item-group class="ion-margin-bottom">
                     <!-- Заголовок -->
                     <ion-text>
                         <h4>Описание</h4>
@@ -100,16 +100,18 @@
 
                     <!--  -->
                     <ion-textarea
+                        style="border-bottom: 1px solid var(--ion-color-light); padding-bottom: 0.8rem;"
                         color="medium"
                         class="ion-no-padding" 
+                        placeholder="Не указано"
                         autoGrow="true" 
                         autocapitalize="on"
                         v-model="recipeDescription"
                     ></ion-textarea>
                 </ion-item-group>
 
-                <!--  -->
-                <ion-item-group class="ion-margin-top">
+                <!-- Индикатор наличия ингредиентов под рецепт -->
+                <ion-item-group class="ion-padding-bottom">
                     <!-- Если все ингредиенты есть -->
                     <!-- <ion-chip color="success" class="ion-no-margin">
                         <ion-icon :icon="checkmark"></ion-icon>
@@ -119,14 +121,13 @@
                     </ion-chip> -->
 
                     <!-- Если чего-то из ингредиентов не хватает -->
-                    <ion-chip color="danger" class="ion-no-margin" @click="checkIngredients()">
+                    <ion-chip color="danger" class="ion-no-margin">
                         <ion-icon :icon="alertOutline"></ion-icon>
-                        <ion-label style="border-bottom: 1px dashed var(--ion-color-danger)">
+                        <ion-label>
                             Недостаточно ингредиентов
                         </ion-label>
                     </ion-chip>
                 </ion-item-group>
-
 
                 <!-- Ингредиенты по составу -->
                 <ion-item-group>
@@ -154,15 +155,20 @@
     
                             <!--  -->
                             <div :id="`ri + ${n}`" style="display: none">
-                                <ion-item v-for="(ingredient, idx) in element.ingredients" :key="idx" lines="none" class="ion-no-padding" style="margin-top: 1rem;">
+                                <div v-for="(ingredient, idx) in element.ingredients" :key="idx" lines="none" class="ion-no-padding" style="margin-top: 1rem;">
                                     <ion-grid class="ion-no-padding">
-                                        <ion-row class="ion-justify-content-between">
-                                            <ion-text>{{ingredient.name}}</ion-text>
-                                            <ion-text>{{ingredient.value}}</ion-text>
+                                        <ion-row class="ion-justify-content-between ion-align-items-center" style="flex-wrap: nowrap;">
+                                            <div style="display: flex; flex-direction: column;">
+                                                <ion-text>{{ingredient.name}}</ion-text>
+                                                <ion-text>{{ingredient.value}}</ion-text>
+                                            </div>
+                                            <ion-thumbnail class="thumbnail_deal-subject" style="background-color: var(--ion-color-light); border: 1px solid var(--ion-color-danger)">
+                                                <ion-img :src="setImgSrc(ingredient.name, ingredient.costEstimation)"></ion-img>
+                                            </ion-thumbnail>
                                         </ion-row>
-                                        {{ingredient.costEstimation}}
+                                            {{ingredient.costEstimation}}
                                     </ion-grid>
-                                </ion-item>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -170,7 +176,7 @@
                 </ion-item-group>
                 
                 <!-- Вкл / Выкл на продажу в магазин рецептов -->
-                <ion-item-group>
+                <ion-item-group class="ion-padding-vertical">
                     <!-- Заголовок -->
                     <ion-text>
                         <h4>Продажа рецептов</h4>
@@ -196,13 +202,6 @@
                     :buttons="deleteCurrentRecipeButtons"
                 ></ion-action-sheet>
 
-                <!-- Модалка проверки количества ингредиентов в наличии (для приготовления по рецепту) -->
-                <CheckIngredientsAvailabilityModal
-                    :isOpen="isCheckIngredientsAvailabilityModalOpened"
-                    @closeModal="(isCheckIngredientsAvailabilityModalOpened = false)"
-                    @didDismiss="(isCheckIngredientsAvailabilityModalOpened = false)"
-                />
-
                 <br>
                 {{currentRecipe}}
             </div>
@@ -217,7 +216,7 @@
     import { supabase } from '../../supabase/init';
     import store from '../../store/index';
     //
-    import { IonContent, IonItemGroup, IonButton, IonActionSheet, IonGrid, IonRow, IonToggle, IonInput, IonText, IonItem, IonChip, IonIcon, IonTextarea } from '@ionic/vue';
+    import { IonContent, IonItemGroup, IonButton, IonActionSheet, IonGrid, IonRow, IonToggle, IonInput, IonText, IonItem, IonChip, IonIcon, IonTextarea, IonLabel, IonThumbnail, IonImg } from '@ionic/vue';
     import { closeCircleOutline, checkmark, alertOutline } from 'ionicons/icons'
     //
     import 'swiper/css';
@@ -226,14 +225,13 @@
     //
     import Spinner from '../../components/Spinner.vue';
     import ViewHeader from '../../components/headers/HeaderViewCurrent.vue';
-    import CheckIngredientsAvailabilityModal from '../../components/modal/CheckIngredientsAvailabilityModal.vue';
 
     export default defineComponent({
         name: 'View-recipe',
         components: {
-            ViewHeader, Spinner, CheckIngredientsAvailabilityModal,
+            ViewHeader, Spinner,
             //
-            IonContent, IonItemGroup, IonButton, IonActionSheet, IonGrid, IonRow, IonToggle, IonInput, IonText, IonItem, IonChip, IonIcon, IonTextarea,
+            IonContent, IonItemGroup, IonButton, IonActionSheet, IonGrid, IonRow, IonToggle, IonInput, IonText, IonItem, IonChip, IonIcon, IonTextarea, IonLabel, IonThumbnail, IonImg,
             //
             Swiper, SwiperSlide
         },
@@ -244,6 +242,7 @@
             // Get current info of route
             const currentId = route.params.recipeId;
             const info = route.params;
+            // console.log(info.recipeId)
             const currentRecipe = ref(JSON.parse(info.recipe))
             //
             const spinner = ref(null);
@@ -286,14 +285,46 @@
             }
             //
             const recipeName = ref(currentRecipe.value.name)
-            watch(recipeName, () => {
+            watch(recipeName, async () => {
                 // console.log(recipeName.value)
                 currentRecipe.value.name = recipeName.value
                 currentRecipe.value.value = recipeName.value
+                // 
+                spinner.value = true;
+                try {
+                    // Вынести в store?
+                    // console.log(`Deal ${currentId} is updated`);
+                    //
+                    const {error} = await supabase.from('userRecipes').update({
+                        name: currentRecipe.value.name,
+                        value: currentRecipe.value.value
+                    }).eq('id', info.recipeId);
+                    if(error) throw error;
+                    spinner.value = false;
+                    // Дело успешно обновлено
+                } catch (error) {
+                    // alert(`Error: ${error.message}`)
+                }
             })
+            // 
             const recipeDescription = ref(currentRecipe.value.recipeDescription)
-            watch(recipeDescription, () => {
+            watch(recipeDescription, async () => {
                 currentRecipe.value.recipeDescription = recipeDescription.value
+                // 
+                spinner.value = true;
+                try {
+                    // Вынести в store?
+                    // console.log(`Deal ${currentId} is updated`);
+                    //
+                    const {error} = await supabase.from('userRecipes').update({
+                        recipeDescription: currentRecipe.value.recipeDescription
+                    }).eq('id', info.recipeId);
+                    if(error) throw error;
+                    spinner.value = false;
+                    // Дело успешно обновлено
+                } catch (error) {
+                    // alert(`Error: ${error.message}`)
+                }
             })
             //
             // ============================ Удаление категории у предмета ===============================================
@@ -339,20 +370,34 @@
                 // console.log(document.getElementById(el))
             }
 
-            //
-            const isCheckIngredientsAvailabilityModalOpened = ref(false)
-            const checkIngredients = () => {
-                isCheckIngredientsAvailabilityModalOpened.value = true
+            // 
+            const setImgSrc = (recipeName, costEstimation) => {
+                let dealBuySubjectArray = store.state.dealBuySubjectArray
+                let ingredientValue;
+                dealBuySubjectArray.filter(item => {
+                    if(item.name === recipeName && item.costEstimation === costEstimation) {
+                        ingredientValue = item.value
+                    }
+                })
+                // console.log(ingredientValue) 
+                return `../img/subjects/buy/${ingredientValue}.webp`
             }
-            
 
             return {
-                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList, checkIngredients, isCheckIngredientsAvailabilityModalOpened, checkmark, alertOutline
+                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList, checkmark, alertOutline, setImgSrc
             }
         }
     })
 </script>
 
 <style scoped>
-
+    .thumbnail_deal-subject {
+        height: 64px;
+        min-width: 64px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 50%;
+        padding: 0.5rem;
+    }
 </style>

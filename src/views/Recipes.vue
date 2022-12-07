@@ -330,7 +330,6 @@
                 }
             }
 
-
             return {
                 user, userEmail, router, pageTitle, spinner, dataLoaded, myRecipes, search, isOpen, recipeData, setOpen, createNew, goToRecipesStore, searchedRecipe, recipesCategoriesArray, searchedCategory, expendList, filteredMyRecipesFunc, bagCheckOutline, showNotification, ribbonOutline
             }
