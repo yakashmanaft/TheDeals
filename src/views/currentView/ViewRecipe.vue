@@ -4,7 +4,9 @@
         <Spinner v-if="spinner"/>
 
         <!-- page header -->
-        <ViewHeader />
+        <ViewHeader 
+            style="background-color: white;"
+        />
 
         <!-- page-content -->
         <ion-content
@@ -16,7 +18,6 @@
         >
             <br>
             <br>
-            <br>
             <!-- page-content -->
             <!-- No data -->
             <div>
@@ -25,10 +26,10 @@
             </div>
 
             <!-- Data -->
-            <div class="ion-text-left ion-padding-horizontal">
+            <div class="ion-text-left">
 
                 <!-- Название рецепта -->
-                <ion-item-group >
+                <ion-item-group class="ion-padding-horizontal">
                     <!-- Заголовок -->
                     <ion-text>
                         <h4>Название</h4>
@@ -40,7 +41,7 @@
                 </ion-item-group>
 
                 <!-- Категории рецепта -->
-                <ion-item-group>
+                <ion-item-group class="ion-padding-horizontal">
                     <!-- Заголовок -->
                     <ion-text>
                         <h4>Категории</h4>
@@ -70,71 +71,73 @@
                 </ion-item-group>
 
                 <!-- Свайпер с фотками -->
-                <swiper>
-                    <!-- <swiper-slide 
-                        v-for="(element, index) in currentRecipe.composition" 
-                        :key="index"
-                        style="font-size: 16px"
+                <swiper 
+                    :modules="[Virtual]" 
+                    :slides-per-view="1" 
+                    :space-between="0"
+                    :loop="true"
                     >
-                        <ion-text>
-                            {{element}}
-                        </ion-text>
-                    </swiper-slide> -->
-                    <swiper-slide>
-                        Фото 1
+                    <swiper-slide
+                        v-for="(slideContent, index) in slides"
+                        :key="index"
+                        :virtualIndex="index"
+                        :style="setStyleProperties(index)"
+                    >
+                        {{slideContent}}
                     </swiper-slide>
-                    <swiper-slide>
+                    <!-- <swiper-slide>
                         Фото 2
                     </swiper-slide>
                     <swiper-slide>
                         Фото 3
-                    </swiper-slide>
+                    </swiper-slide> -->
                 </swiper>
 
                 <!-- Описание рецепта -->
-                <ion-item-group class="ion-margin-bottom">
+                <ion-item-group class="ion-margin-bottom ion-padding-horizontal">
                     <!-- Заголовок -->
                     <ion-text>
                         <h4>Описание</h4>
                     </ion-text>
 
-                    <!--  -->
+                    <!--style="border-bottom: 1px solid var(--ion-color-light); padding-bottom: 0.8rem;"  -->
                     <ion-textarea
-                        style="border-bottom: 1px solid var(--ion-color-light); padding-bottom: 0.8rem;"
                         color="medium"
-                        class="ion-no-padding" 
+                        class="ion-no-padding ion-margin-top" 
                         placeholder="Не указано"
                         autoGrow="true" 
                         autocapitalize="on"
                         v-model="recipeDescription"
                     ></ion-textarea>
                 </ion-item-group>
-
-                <!-- Индикатор наличия ингредиентов под рецепт -->
-                <ion-item-group class="ion-padding-bottom">
-                    <!-- Если все ингредиенты есть -->
-                    <!-- <ion-chip color="success" class="ion-no-margin">
-                        <ion-icon :icon="checkmark"></ion-icon>
-                        <ion-label>
-                            Все ингредиенты в наличии
-                        </ion-label>
-                    </ion-chip> -->
-
-                    <!-- Если чего-то из ингредиентов не хватает -->
-                    <ion-chip color="danger" class="ion-no-margin">
-                        <ion-icon :icon="alertOutline"></ion-icon>
-                        <ion-label>
-                            Недостаточно ингредиентов
-                        </ion-label>
-                    </ion-chip>
-                </ion-item-group>
-
-                <!-- Ингредиенты по составу -->
-                <ion-item-group>
+                
+                <!-- СОСТАВ -->
+                <ion-item-group class="ion-padding-horizontal">
                     <!-- Заголовок -->
-                    <ion-text>
-                        <h4>Состав</h4>
-                    </ion-text>
+                    <ion-grid class="ion-no-padding">
+                        <ion-row class="ion-justify-content-between ion-align-items-center ion-padding-vertical">
+                            <ion-text>
+                                <h4 class="ion-no-margin">Состав</h4>
+                            </ion-text>
+
+                            <!-- Индикатор наличия ингредиентов под рецепт -->
+                            <!-- Если все ингредиенты есть -->
+                            <!-- <ion-chip color="success" class="ion-no-margin">
+                                <ion-icon :icon="checkmark"></ion-icon>
+                                <ion-label>
+                                    Все ингредиенты в наличии
+                                </ion-label>
+                            </ion-chip> -->
+                            <!-- Если чего-то из ингредиентов не хватает -->
+                            <ion-chip color="danger" class="ion-no-margin">
+                                <ion-icon :icon="alertOutline"></ion-icon>
+                                <ion-label>
+                                    Недостаточно ингредиентов
+                                </ion-label>
+                            </ion-chip>
+
+                        </ion-row>
+                    </ion-grid>
 
                     <!--  -->
                     <div>
@@ -158,25 +161,38 @@
                                 <div v-for="(ingredient, idx) in element.ingredients" :key="idx" lines="none" class="ion-no-padding" style="margin-top: 1rem;">
                                     <ion-grid class="ion-no-padding">
                                         <ion-row class="ion-justify-content-between ion-align-items-center" style="flex-wrap: nowrap;">
-                                            <div style="display: flex; flex-direction: column;">
+                                            <div style="display: flex; flex-direction: column;" class="ion-padding-start">
                                                 <ion-text>{{ingredient.name}}</ion-text>
-                                                <ion-text>{{ingredient.value}}</ion-text>
+                                                <ion-text color="medium" style="margin-top: 0.5rem">
+                                                    <span style="font-size: 1.3rem; font-weight: bold">{{ingredient.value}} </span> / 250 {{setMeasure(ingredient.costEstimation)}}
+                                                </ion-text>
                                             </div>
                                             <ion-thumbnail class="thumbnail_deal-subject" style="background-color: var(--ion-color-light); border: 1px solid var(--ion-color-danger)">
                                                 <ion-img :src="setImgSrc(ingredient.name, ingredient.costEstimation)"></ion-img>
                                             </ion-thumbnail>
                                         </ion-row>
-                                            {{ingredient.costEstimation}}
                                     </ion-grid>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </ion-item-group>
 
+                <!-- ПРОЦЕСС -->
+                <ion-item-group class="ion-padding-vertical ion-padding-horizontal">
+                    <!-- Заголовок -->
+                    <ion-text>
+                        <h4>Процесс приготовления</h4>
+                    </ion-text>
+
+                    <!-- Контент -->
+                    <ion-item v-for="(step, index) in steps" :key="index" lines="none" class="ion-no-padding ion-margin-top">
+                        {{(index + 1)}}. {{step.text}}
+                    </ion-item>
                 </ion-item-group>
                 
                 <!-- Вкл / Выкл на продажу в магазин рецептов -->
-                <ion-item-group class="ion-padding-vertical">
+                <ion-item-group class="ion-padding-vertical ion-padding-horizontal">
                     <!-- Заголовок -->
                     <ion-text>
                         <h4>Продажа рецептов</h4>
@@ -259,6 +275,7 @@
     import 'swiper/css';
     import '@ionic/vue/css/ionic-swiper.css';
     import { Swiper, SwiperSlide } from 'swiper/vue';
+    import { Virtual } from 'swiper';
     //
     import Spinner from '../../components/Spinner.vue';
     import ViewHeader from '../../components/headers/HeaderViewCurrent.vue';
@@ -374,6 +391,8 @@
                 }
             })
             //
+            const steps = ref(currentRecipe.value.process)
+            //
             // ============================ Удаление категории у предмета ===============================================
             // Вызываем action sheet уведомление в качестве подтверждения
             const deleteCategory = ref(false);
@@ -481,8 +500,29 @@
                 }
             }
 
+            //
+            const setMeasure = (costEstimation) => {
+                if(costEstimation === 'perKilogram') {
+                    return 'гр.'
+                } else if(costEstimation === 'perUnit') {
+                    return 'шт.'
+                } else if(costEstimation === 'teaSpoon') {
+                    return 'ч.л.'
+                } else if (costEstimation === 'pinch') {
+                    return 'щепотки'
+                } else if (costEstimation === 'stick') {
+                    return 'палочки'
+                }
+            }
+
+            //
+            const slides = ref(['slide 1', 'slide 2', 'slide 3'])
+            const setStyleProperties = (index) => {
+                return `height: 300px; background-color: #${index}${index}${index}; color: white`
+            }
+
             return {
-                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList, checkmark, alertOutline, setImgSrc, searchRecipesCategoriesMenu, searchRecipesCategories, userRecipesCategories, searchedRecipesCategories, isCategoryAlreadyAdded, choosenCategory
+                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList, checkmark, alertOutline, setImgSrc, searchRecipesCategoriesMenu, searchRecipesCategories, userRecipesCategories, searchedRecipesCategories, isCategoryAlreadyAdded, choosenCategory, setMeasure, Virtual, slides, setStyleProperties, steps
             }
         }
     })

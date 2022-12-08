@@ -19,7 +19,6 @@
     <!--  -->
     <ion-content class="ion-padding" forceOverscroll="false">
       <!-- ============================= Основные данные ===================================== -->
-      {{ recipeData }}
 
       <!-- Название рецепта -->
       <ion-item-group>
@@ -108,7 +107,7 @@
       </ion-modal>
 
       <!-- Описание рецепта -->
-      <ion-item-group>
+      <ion-item-group class="ion-margin-bottom">
         <!-- Заголовок -->
         <ion-text>
           <h4>Описание</h4>
@@ -117,7 +116,7 @@
         <!--  -->
         <ion-textarea 
           placeholder="Заполните описание рецепта" 
-          class="ion-no-padding" 
+          class="ion-no-padding ion-margin-top" 
           autoGrow="true" 
           autocapitalize="on"
           v-model="recipeDescription"
@@ -128,6 +127,9 @@
       <ion-item-group>
         123
       </ion-item-group>
+
+      <!--  -->
+      {{ recipeData }}
     </ion-content>
   </ion-modal>
 </template>
