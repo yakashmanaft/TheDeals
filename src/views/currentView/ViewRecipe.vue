@@ -189,8 +189,63 @@
                     <ion-item v-for="(step, index) in steps" :key="index" lines="none" class="ion-no-padding ion-margin-top">
                         {{(index + 1)}}. {{step.text}}
                     </ion-item>
+
+                    <!-- Кпнока ДОБАВИТЬ ШАГ -->
+                    <ion-grid class="ion-no-padding">
+                        <ion-row class="ion-justify-content-end">
+                            <ion-chip class="ion-no-margin ion-margin-top" color="primary" @click.stop="addProcessStep()">Добавить</ion-chip>
+                        </ion-row>
+                    </ion-grid>
                 </ion-item-group>
                 
+                <!-- СБОРКА -->
+                <ion-item-group>
+                    <!-- Заголовок -->
+                    <ion-text>
+                        <ion-grid class="ion-no-padding">
+                            <ion-row class="ion-justify-content-between ion-align-items-center">
+                                <div>
+                                    <h4 class="ion-padding-horizontal ion-no-margin">Сборка</h4>
+                                    <ion-text class="ion-padding-horizontal" color="medium">Осуществляем сборку по порядку</ion-text>
+                                </div>
+                                <ion-icon :icon="reorderTwo" :color="reorderIsDisabled ? 'primary' : 'warning'" style="font-size: 2rem;" class="ion-margin-end" @click="toggleReorder()"></ion-icon>
+                            </ion-row>
+                        </ion-grid>
+                    </ion-text>
+                    
+                    <!-- Контент -->
+                    <ion-list class="ion-margin-top">
+                        <ion-reorder-group :disabled="reorderIsDisabled" @ionItemReorder="handleReorder($event)">
+                            <ion-item v-for="(item, index) in currentRecipe.assembling" :key="index">
+                                <ion-label>
+                                    <ion-grid class="ion-no-padding">
+                                        <ion-row class="ion-align-items-center" style="flex-wrap: nowrap;">
+                                            <ion-icon :icon="closeCircleOutline" color="danger" style="margin-right: 0.4rem; min-width: 17px;" @click.stop="openDeleteAssemblingItemMenu(index)"></ion-icon>
+                                            <ion-text>{{ index + 1 }}. {{ item }}</ion-text>
+                                        </ion-row>
+                                    </ion-grid>
+                                </ion-label>
+                                <ion-reorder slot="end"></ion-reorder>
+                            </ion-item>
+                        </ion-reorder-group>
+                    </ion-list>
+
+                    <!-- Кпнока ДОБАВИТЬ ШАГ -->
+                    <ion-grid class="ion-no-padding">
+                        <ion-row class="ion-justify-content-end">
+                            <ion-chip class="ion-no-margin ion-margin-top ion-margin-end" color="primary" @click.stop="addAssemblingElement()">Добавить</ion-chip>
+                        </ion-row>
+                    </ion-grid>
+
+                    <!-- Всплывашка подтверждение удаления item в сборке -->
+                    <ion-action-sheet
+                        :isOpen="deleteAssemblingItem"
+                        header="Удалить элемент сборки"
+                        :buttons="deleteAssemblingItemButtons"
+                        @didDismiss="deleteAssemblingItem = false"
+                    ></ion-action-sheet>
+                </ion-item-group>
+
                 <!-- Вкл / Выкл на продажу в магазин рецептов -->
                 <ion-item-group class="ion-padding-vertical ion-padding-horizontal">
                     <!-- Заголовок -->
@@ -246,7 +301,11 @@
                 </ion-modal>
 
                 <!-- Кнопка удалить -->
-                <ion-button fill="clear" color="danger" @click="openDeleteMenu">Удалить рецепт</ion-button>
+                <ion-grid>
+                    <ion-row class="ion-justify-content-center">
+                        <ion-button fill="clear" color="danger" @click="openDeleteMenu">Удалить рецепт</ion-button>
+                    </ion-row>
+                </ion-grid>
                 <!-- Всплывашка подтверждение удаления рецепта -->
                 <ion-action-sheet
                     :is-open="isOpenRef"
@@ -269,8 +328,8 @@
     import { supabase } from '../../supabase/init';
     import store from '../../store/index';
     //
-    import { IonContent, IonItemGroup, IonButton, IonActionSheet, IonGrid, IonRow, IonToggle, IonInput, IonText, IonItem, IonChip, IonIcon, IonTextarea, IonLabel, IonThumbnail, IonImg, IonModal, IonSearchbar } from '@ionic/vue';
-    import { closeCircleOutline, checkmark, alertOutline } from 'ionicons/icons'
+    import { IonContent, IonItemGroup, IonButton, IonActionSheet, IonGrid, IonRow, IonToggle, IonInput, IonText, IonItem, IonChip, IonIcon, IonTextarea, IonLabel, IonThumbnail, IonImg, IonModal, IonSearchbar, IonList, IonReorderGroup, IonReorder } from '@ionic/vue';
+    import { closeCircleOutline, checkmark, alertOutline, reorderTwo } from 'ionicons/icons'
     //
     import 'swiper/css';
     import '@ionic/vue/css/ionic-swiper.css';
@@ -288,7 +347,7 @@
         components: {
             ViewHeader, Spinner,
             //
-            IonContent, IonItemGroup, IonButton, IonActionSheet, IonGrid, IonRow, IonToggle, IonInput, IonText, IonItem, IonChip, IonIcon, IonTextarea, IonLabel, IonThumbnail, IonImg, IonModal, IonSearchbar, 
+            IonContent, IonItemGroup, IonButton, IonActionSheet, IonGrid, IonRow, IonToggle, IonInput, IonText, IonItem, IonChip, IonIcon, IonTextarea, IonLabel, IonThumbnail, IonImg, IonModal, IonSearchbar, IonList, IonReorderGroup, IonReorder,
             //
             Swiper, SwiperSlide
         },
@@ -447,8 +506,7 @@
                 }
                 // console.log(document.getElementById(el))
             }
-
-            // 
+            //
             const setImgSrc = (recipeName, costEstimation) => {
                 let dealBuySubjectArray = store.state.dealBuySubjectArray
                 let ingredientValue;
@@ -521,8 +579,92 @@
                 return `height: 300px; background-color: #${index}${index}${index}; color: white`
             }
 
+            //
+            const addProcessStep = () => {
+                alert('ViewRecipe: добавление этапов процесса - в разработке...')
+            }
+
+            //
+            const addAssemblingElement = () => {
+                alert('ViewRecipe: добавление элемента к сборке - в разработке...')
+            }
+
+            //
+            const reorderIsDisabled = ref(true);
+            const toggleReorder = () => {
+                reorderIsDisabled.value = !reorderIsDisabled.value
+            }
+            const changeReorderButtonColor = () => {
+                
+            }
+            const handleReorder = async (event) => {
+                console.log('Dragged from index', event.detail.from, 'to', event.detail.to);
+                currentRecipe.value.assembling = event.detail.complete(currentRecipe.value.assembling);
+                //
+                spinner.value = true;
+                try {
+                    const {error} = await supabase.from('userRecipes').update({
+                        assembling: currentRecipe.value.assembling
+                    }).eq('id', info.recipeId);
+                    if(error) throw error;
+                    spinner.value = false;
+                    // Рецепт успешно обновлено
+                } catch (error) {
+                    // alert(`Error: ${error.message}`)
+                }
+            }
+
+            // ============================== УДАЛЕНИЕ ЭЛЕМЕНТА В СПИСКЕ СБОРКИ ==================================
+            // Вызываем action sheet уведомление в качестве подтверждения
+            const deleteAssemblingItem = ref(false);
+            // Храним элементы сборки рецепта к удалению
+            const assemblingItemToDeleteIndex = ref();
+            //Открываем меню подтверждения удаления
+            const openDeleteAssemblingItemMenu = (index) => {
+                assemblingItemToDeleteIndex.value = index;
+                deleteAssemblingItem.value = true;
+            }
+            // функционал кнопок в меню подветрждения удаления элементы сборки
+            const deleteAssemblingItemButtons = [
+                {
+                    text: 'Удалить',
+                    role: 'destructive',
+                    data: {
+                        type: 'delete'
+                    },
+                    handler: () => {
+                        deleteAssemblingItemFunc(assemblingItemToDeleteIndex.value)
+                    }
+                },
+                {
+                    text: 'Отменить',
+                    role: 'cancel',
+                    handler: () => {
+                        console.log('Cancel clicked')
+                    }
+                }
+            ]            
+            // функция удаления элемента
+            const deleteAssemblingItemFunc = async (index) => {
+                if(index > -1) {
+                    currentRecipe.value.assembling.splice(index, 1)
+                }
+                //
+                spinner.value = true;
+                try {
+                    const {error} = await supabase.from('userRecipes').update({
+                        assembling: currentRecipe.value.assembling
+                    }).eq('id', info.recipeId);
+                    if(error) throw error;
+                    spinner.value = false;
+                    // Рецепт успешно обновлено
+                } catch (error) {
+                    // alert(`Error: ${error.message}`)
+                }
+            }
+
             return {
-                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList, checkmark, alertOutline, setImgSrc, searchRecipesCategoriesMenu, searchRecipesCategories, userRecipesCategories, searchedRecipesCategories, isCategoryAlreadyAdded, choosenCategory, setMeasure, Virtual, slides, setStyleProperties, steps
+                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList, checkmark, alertOutline, setImgSrc, searchRecipesCategoriesMenu, searchRecipesCategories, userRecipesCategories, searchedRecipesCategories, isCategoryAlreadyAdded, choosenCategory, setMeasure, Virtual, slides, setStyleProperties, steps, addProcessStep, addAssemblingElement, handleReorder, deleteAssemblingItem, assemblingItemToDeleteIndex, openDeleteAssemblingItemMenu, deleteAssemblingItemButtons, deleteAssemblingItemFunc, reorderTwo, reorderIsDisabled, toggleReorder
             }
         }
     })
