@@ -179,19 +179,32 @@
                 </ion-item-group>
 
                 <!-- ПРОЦЕСС -->
-                <ion-item-group class="ion-padding-vertical ion-padding-horizontal">
+                <ion-item-group class="ion-padding-vertical">
                     <!-- Заголовок -->
-                    <ion-text>
-                        <h4>Процесс приготовления</h4>
-                    </ion-text>
+                    <ion-grid class="ion-no-padding">
+                        <ion-row class="ion-justify-content-between ion-align-items-center ion-margin-vertical">
+                            <h4 class="ion-no-margin ion-margin-start">Процесс приготовления</h4>
+                            <!-- <ion-text color="primary" @click.stop="editRecipeProcessFunc()">Править</ion-text> -->
+                            <ion-icon :icon="createOutline" :color="editRecipeProcess ? 'warning' : 'primary'" style="font-size: 1.4rem;" class="ion-margin-end" @click="editRecipeProcessFunc()"></ion-icon>
+                        </ion-row>
+                    </ion-grid>
 
                     <!-- Контент -->
-                    <ion-item v-for="(step, index) in steps" :key="index" lines="none" class="ion-no-padding ion-margin-top">
-                        {{(index + 1)}}. {{step.text}}
-                    </ion-item>
+                    <ion-list>
+                        <ion-reorder-group :disabled="!editRecipeProcess" @ionItemReorder="handleReorderProcess($event)">
+                            <ion-item v-for="(step, index) in steps" :key="index">
+                                <ion-text class="ion-margin-vertical">{{ index + 1 }}. {{step.text}}</ion-text>
+                                <ion-reorder slot="end"></ion-reorder>
+                            </ion-item>
+                        </ion-reorder-group>
+                    </ion-list>
+                    <!-- <ion-item v-for="(step, index) in steps" :key="index" lines="none" class="ion-no-padding ion-margin-top ion-margin-horizontal">
+                        <ion-textarea v-if="editRecipeProcess" v-model="step.text" auto-grow="true" class="ion-no-padding"></ion-textarea>
+                        <ion-text v-else color="medium">{{(index + 1)}}. {{step.text}}</ion-text>
+                    </ion-item> -->
 
                     <!-- Кпнока ДОБАВИТЬ ШАГ -->
-                    <ion-grid class="ion-no-padding">
+                    <ion-grid class="ion-padding-horizontal" v-if="editRecipeProcess">
                         <ion-row class="ion-justify-content-end">
                             <ion-chip class="ion-no-margin ion-margin-top" color="primary" @click.stop="addProcessStep()">Добавить</ion-chip>
                         </ion-row>
@@ -199,19 +212,17 @@
                 </ion-item-group>
                 
                 <!-- СБОРКА -->
-                <ion-item-group>
+                <ion-item-group class="ion-padding-top">
                     <!-- Заголовок -->
-                    <ion-text>
-                        <ion-grid class="ion-no-padding">
-                            <ion-row class="ion-justify-content-between ion-align-items-center">
-                                <div>
-                                    <h4 class="ion-padding-horizontal ion-no-margin">Сборка</h4>
-                                    <ion-text class="ion-padding-horizontal" color="medium">Осуществляем сборку по порядку</ion-text>
-                                </div>
-                                <ion-icon :icon="reorderTwo" :color="reorderIsDisabled ? 'primary' : 'warning'" style="font-size: 2rem;" class="ion-margin-end" @click="toggleReorder()"></ion-icon>
-                            </ion-row>
-                        </ion-grid>
-                    </ion-text>
+                    <ion-grid class="ion-no-padding">
+                        <ion-row class="ion-justify-content-between ion-align-items-center">
+                            <div>
+                                <h4 class="ion-padding-horizontal ion-no-margin">Сборка</h4>
+                                <ion-text class="ion-padding-horizontal" color="medium">Осуществляем сборку по порядку</ion-text>
+                            </div>
+                            <ion-icon :icon="createOutline" :color="reorderIsDisabled ? 'primary' : 'warning'" style="font-size: 1.4rem;" class="ion-margin-end" @click="toggleReorder()"></ion-icon>
+                        </ion-row>
+                    </ion-grid>
                     
                     <!-- Контент -->
                     <ion-list class="ion-margin-top">
@@ -220,7 +231,7 @@
                                 <ion-label>
                                     <ion-grid class="ion-no-padding">
                                         <ion-row class="ion-align-items-center" style="flex-wrap: nowrap;">
-                                            <ion-icon :icon="closeCircleOutline" color="danger" style="margin-right: 0.4rem; min-width: 17px;" @click.stop="openDeleteAssemblingItemMenu(index)"></ion-icon>
+                                            <ion-icon v-if="!reorderIsDisabled" :icon="closeCircleOutline" color="danger" style="margin-right: 0.4rem; min-width: 17px;" @click.stop="openDeleteAssemblingItemMenu(index)"></ion-icon>
                                             <ion-text>{{ index + 1 }}. {{ item }}</ion-text>
                                         </ion-row>
                                     </ion-grid>
@@ -231,7 +242,7 @@
                     </ion-list>
 
                     <!-- Кпнока ДОБАВИТЬ ШАГ -->
-                    <ion-grid class="ion-no-padding">
+                    <ion-grid class="ion-no-padding" v-if="!reorderIsDisabled">
                         <ion-row class="ion-justify-content-end">
                             <ion-chip class="ion-no-margin ion-margin-top ion-margin-end" color="primary" @click.stop="addAssemblingElement()">Добавить</ion-chip>
                         </ion-row>
@@ -329,7 +340,7 @@
     import store from '../../store/index';
     //
     import { IonContent, IonItemGroup, IonButton, IonActionSheet, IonGrid, IonRow, IonToggle, IonInput, IonText, IonItem, IonChip, IonIcon, IonTextarea, IonLabel, IonThumbnail, IonImg, IonModal, IonSearchbar, IonList, IonReorderGroup, IonReorder } from '@ionic/vue';
-    import { closeCircleOutline, checkmark, alertOutline, reorderTwo } from 'ionicons/icons'
+    import { closeCircleOutline, checkmark, alertOutline, createOutline } from 'ionicons/icons'
     //
     import 'swiper/css';
     import '@ionic/vue/css/ionic-swiper.css';
@@ -594,9 +605,6 @@
             const toggleReorder = () => {
                 reorderIsDisabled.value = !reorderIsDisabled.value
             }
-            const changeReorderButtonColor = () => {
-                
-            }
             const handleReorder = async (event) => {
                 console.log('Dragged from index', event.detail.from, 'to', event.detail.to);
                 currentRecipe.value.assembling = event.detail.complete(currentRecipe.value.assembling);
@@ -663,8 +671,30 @@
                 }
             }
 
+            //
+            const editRecipeProcess = ref(false)
+            const editRecipeProcessFunc = () => {
+                editRecipeProcess.value = !editRecipeProcess.value
+            }
+            //
+            const handleReorderProcess = async (event) => {
+                steps.value = event.detail.complete(steps.value);
+                //
+                spinner.value = true;
+                try {
+                    const {error} = await supabase.from('userRecipes').update({
+                        process: currentRecipe.value.process
+                    }).eq('id', info.recipeId);
+                    if(error) throw error;
+                    spinner.value = false;
+                    // Рецепт успешно обновлено
+                } catch (error) {
+                    // alert(`Error: ${error.message}`)
+                }
+            }
+
             return {
-                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList, checkmark, alertOutline, setImgSrc, searchRecipesCategoriesMenu, searchRecipesCategories, userRecipesCategories, searchedRecipesCategories, isCategoryAlreadyAdded, choosenCategory, setMeasure, Virtual, slides, setStyleProperties, steps, addProcessStep, addAssemblingElement, handleReorder, deleteAssemblingItem, assemblingItemToDeleteIndex, openDeleteAssemblingItemMenu, deleteAssemblingItemButtons, deleteAssemblingItemFunc, reorderTwo, reorderIsDisabled, toggleReorder
+                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList, checkmark, alertOutline, setImgSrc, searchRecipesCategoriesMenu, searchRecipesCategories, userRecipesCategories, searchedRecipesCategories, isCategoryAlreadyAdded, choosenCategory, setMeasure, Virtual, slides, setStyleProperties, steps, addProcessStep, addAssemblingElement, handleReorder, deleteAssemblingItem, assemblingItemToDeleteIndex, openDeleteAssemblingItemMenu, deleteAssemblingItemButtons, deleteAssemblingItemFunc, createOutline, reorderIsDisabled, toggleReorder, editRecipeProcess, editRecipeProcessFunc, handleReorderProcess
             }
         }
     })
