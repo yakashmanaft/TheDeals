@@ -110,32 +110,37 @@
                         v-model="recipeDescription"
                     ></ion-textarea>
                 </ion-item-group>
+
+                <!-- Индикатор достатка ингредиентов на складе -->
+                <ion-item-group class="ion-padding-horizontal">
+                    <!-- ДОСТАТОЧНО ингредиентов -->
+                    <!-- <ion-chip color="success" class="ion-no-margin">
+                        <ion-label>
+                            Все ингредиенты в наличии
+                        </ion-label>
+                        <ion-icon :icon="checkmark"></ion-icon>
+                    </ion-chip> -->
+
+                    <!-- НЕДОСТАТОЧНО ингредиентов -->
+                    <ion-chip color="danger" class="ion-no-margin">
+                        <ion-label>
+                            Недостаточно ингредиентов
+                        </ion-label>
+                        <ion-icon :icon="alertOutline"></ion-icon>
+                    </ion-chip>
+                </ion-item-group>
                 
                 <!-- СОСТАВ -->
                 <ion-item-group class="ion-padding-horizontal">
                     <!-- Заголовок -->
                     <ion-grid class="ion-no-padding">
-                        <ion-row class="ion-justify-content-between ion-align-items-center ion-padding-vertical">
-                            <ion-text>
+                        <ion-row class="ion-justify-content-between ion-align-items-center ion-margin-vertical">
+                            <!--  -->
                                 <h4 class="ion-no-margin">Состав</h4>
-                            </ion-text>
-
-                            <!-- Индикатор наличия ингредиентов под рецепт -->
-                            <!-- Если все ингредиенты есть -->
-                            <!-- <ion-chip color="success" class="ion-no-margin">
-                                <ion-icon :icon="checkmark"></ion-icon>
-                                <ion-label>
-                                    Все ингредиенты в наличии
-                                </ion-label>
-                            </ion-chip> -->
-                            <!-- Если чего-то из ингредиентов не хватает -->
-                            <ion-chip color="danger" class="ion-no-margin">
-                                <ion-icon :icon="alertOutline"></ion-icon>
-                                <ion-label>
-                                    Недостаточно ингредиентов
-                                </ion-label>
-                            </ion-chip>
-
+                            <!--  -->
+                            <ion-icon v-if="!editComposition" :icon="createOutline" color="primary" style="font-size: 1.4rem;" @click.stop="editComposition = true"></ion-icon>
+                            <!--  -->
+                            <ion-icon v-else :icon="createOutline" color="warning" style="font-size: 1.4rem;" @click.stop="editCompositionFunc()"></ion-icon>
                         </ion-row>
                     </ion-grid>
 
@@ -147,19 +152,47 @@
                             Столовая ложка — 15 мл жидкости — 15 грамм
                             Щепотка – 2-4 грамма
                         -->
-                        <div v-for="(element, n) in currentRecipe.composition" :key="n" @click.stop="expendList(`ri + ${n}`)">
+                        <!-- Элементы состава -->
+                        <div v-for="(element, n) in currentRecipe.composition" :key="n" >
     
-                            <!--  -->
+                            <!-- Названия элемента состава -->
                             <ion-item class="ion-no-padding">
-                                <ion-text color="primary">
+                                <ion-icon v-if="editComposition" :icon="closeCircleOutline" style="margin-right: 0.4rem; min-width: 17px;" color="danger" @click.stop="openDeleteCompositionItemMenu(n)"></ion-icon>
+                                <ion-text color="primary" @click.stop="expendList(`ri + ${n}`)">
                                     {{(n + 1)}}. {{element.name}}
                                 </ion-text>
                             </ion-item>
     
-                            <!--  -->
+                            <!-- Ингредиенты элемента -->
                             <div :id="`ri + ${n}`" style="display: none">
+                                <!-- перебор массива ингредиентов -->
                                 <div v-for="(ingredient, idx) in element.ingredients" :key="idx" lines="none" class="ion-no-padding" style="margin-top: 1rem;">
-                                    <ion-grid class="ion-no-padding">
+                                    <!-- в режиме редактирования -->
+                                    <ion-item-sliding v-if="editComposition">
+                                        <ion-item lines="none" style="--inner-padding-end: none">
+                                            <ion-grid class="ion-no-padding">
+                                                <ion-row class="ion-justify-content-between ion-align-items-center" style="flex-wrap: nowrap;">
+                                                    <div style="display: flex; flex-direction: column;">
+                                                        <ion-text>{{ingredient.name}} ({{setMeasure(ingredient.costEstimation)}})</ion-text>
+                                                        <div style="display: flex; align-items: center; margin-top: 0.5rem;">
+                                                            <ion-text color="medium" class="ion-margin-end" style="font-size: 1rem;">Укажите кол-во:</ion-text>
+                                                            <ion-input style="font-size: 1.3rem; font-weight: bold;" v-model="ingredient.value" @ionBlur="updateComposition()" class="ion-no-padding" color="primary"></ion-input>
+                                                        </div>
+                                                    </div>
+                                                    <ion-thumbnail class="thumbnail_deal-subject" style="background-color: var(--ion-color-light); border: 1px solid var(--ion-color-danger)">
+                                                        <ion-img :src="setImgSrc(ingredient.name, ingredient.costEstimation)"></ion-img>
+                                                    </ion-thumbnail>
+                                                </ion-row>
+                                            </ion-grid>
+                                        </ion-item>
+                                        <ion-item-options side="end">
+                                            <ion-item-option class="ion-margin-start" color="danger">
+                                                <ion-icon slot="icon-only" :icon="trash"></ion-icon>
+                                            </ion-item-option>
+                                        </ion-item-options>
+                                    </ion-item-sliding>
+                                    <!-- без режима редактирования -->
+                                    <ion-grid v-else class="ion-no-padding">
                                         <ion-row class="ion-justify-content-between ion-align-items-center" style="flex-wrap: nowrap;">
                                             <div style="display: flex; flex-direction: column;" class="ion-padding-start">
                                                 <ion-text>{{ingredient.name}}</ion-text>
@@ -173,9 +206,30 @@
                                         </ion-row>
                                     </ion-grid>
                                 </div>
+                                <!-- кнопка добавления нового ингредеиента к определенному элементу состава -->
+                                <!-- <ion-chip v-if="editComposition" class="ion-no-margin ion-margin-top" color="primary">Добавить</ion-chip> -->
+                                <div v-if="editComposition" class="ion-margin-vertical" @click.stop="addCompositionItemIngredient()">
+                                    <ion-text color="primary" class="ion-margin-start button-add-ingredient">Добавить ингредиент</ion-text>
+                                </div>
                             </div>
+
                         </div>
+
+                        <!-- Кнопка ДОБАВИТЬ Элемент к составу -->
+                        <ion-grid class="ion-no-padding" v-if="editComposition">
+                            <ion-row class="ion-justify-content-end">
+                                <ion-chip class="ion-no-margin ion-margin-top" color="primary" @click.stop="addCompositionItem()">Добавить</ion-chip>
+                            </ion-row>
+                        </ion-grid>
                     </div>
+
+                    <!-- всплывашка подтверждения удаления composition item -->
+                    <ion-action-sheet
+                        :isOpen="deleteCompositionItem"
+                        header="Удалить позицию из состава"
+                        :buttons="deleteCopmositionItemButtons"
+                        @didDismiss="deleteCompositionItem = false"
+                    ></ion-action-sheet>
                 </ion-item-group>
 
                 <!-- ПРОЦЕСС -->
@@ -184,24 +238,28 @@
                     <ion-grid class="ion-no-padding">
                         <ion-row class="ion-justify-content-between ion-align-items-center ion-margin-vertical">
                             <h4 class="ion-no-margin ion-margin-start">Процесс приготовления</h4>
-                            <!-- <ion-text color="primary" @click.stop="editRecipeProcessFunc()">Править</ion-text> -->
-                            <ion-icon :icon="createOutline" :color="editRecipeProcess ? 'warning' : 'primary'" style="font-size: 1.4rem;" class="ion-margin-end" @click="editRecipeProcessFunc()"></ion-icon>
+                            <!--  -->
+                            <ion-icon v-if="!editRecipeProcess" :icon="createOutline" color="primary" style="font-size: 1.4rem;" class="ion-margin-end" @click.stop="editRecipeProcess = true"></ion-icon>
+                            <!--  -->
+                            <ion-icon v-else :icon="createOutline" color="warning" style="font-size: 1.4rem;" class="ion-margin-end" @click="editRecipeProcessFunc()"></ion-icon>
                         </ion-row>
                     </ion-grid>
 
                     <!-- Контент -->
                     <ion-list>
                         <ion-reorder-group :disabled="!editRecipeProcess" @ionItemReorder="handleReorderProcess($event)">
-                            <ion-item v-for="(step, index) in steps" :key="index">
-                                <ion-text class="ion-margin-vertical">{{ index + 1 }}. {{step.text}}</ion-text>
-                                <ion-reorder slot="end"></ion-reorder>
+                            <ion-item v-for="(step, index) in steps" :key="index" style="position: relative;">
+                                <!-- Кнопка удалить current step -->
+                                <ion-icon v-if="editRecipeProcess" :icon="closeCircleOutline" color="danger" @click.stop="openDeleteStepsMenu(index)" style="margin: auto 0;"></ion-icon>
+                                <!-- В режиме редактирования -->
+                                <ion-textarea v-if="editRecipeProcess" v-model="step.text" auto-grow="true" class="ion-padding-start"></ion-textarea>
+                                <!-- Без режима редактирования -->
+                                <ion-text v-else class="ion-margin-vertical" color="medium">{{ index + 1 }}. {{step.text}}</ion-text>
+                                <!-- ползунок реордера -->
+                                <ion-reorder slot="end" style="margin: auto 0;"></ion-reorder>
                             </ion-item>
                         </ion-reorder-group>
                     </ion-list>
-                    <!-- <ion-item v-for="(step, index) in steps" :key="index" lines="none" class="ion-no-padding ion-margin-top ion-margin-horizontal">
-                        <ion-textarea v-if="editRecipeProcess" v-model="step.text" auto-grow="true" class="ion-no-padding"></ion-textarea>
-                        <ion-text v-else color="medium">{{(index + 1)}}. {{step.text}}</ion-text>
-                    </ion-item> -->
 
                     <!-- Кпнока ДОБАВИТЬ ШАГ -->
                     <ion-grid class="ion-padding-horizontal" v-if="editRecipeProcess">
@@ -209,6 +267,14 @@
                             <ion-chip class="ion-no-margin ion-margin-top" color="primary" @click.stop="addProcessStep()">Добавить</ion-chip>
                         </ion-row>
                     </ion-grid>
+
+                    <!-- Всплывашка подтверждение удаления item в сборке -->
+                    <ion-action-sheet
+                        :isOpen="deleteProcessStep"
+                        header="Удалить шаг из процесса"
+                        :buttons="deleteProcessStepButtons"
+                        @didDismiss="deleteProcessStep = false"
+                    ></ion-action-sheet>
                 </ion-item-group>
                 
                 <!-- СБОРКА -->
@@ -231,7 +297,9 @@
                                 <ion-label>
                                     <ion-grid class="ion-no-padding">
                                         <ion-row class="ion-align-items-center" style="flex-wrap: nowrap;">
+                                            <!-- Кнопка удалить current item -->
                                             <ion-icon v-if="!reorderIsDisabled" :icon="closeCircleOutline" color="danger" style="margin-right: 0.4rem; min-width: 17px;" @click.stop="openDeleteAssemblingItemMenu(index)"></ion-icon>
+                                            <!-- current item -->
                                             <ion-text>{{ index + 1 }}. {{ item }}</ion-text>
                                         </ion-row>
                                     </ion-grid>
@@ -311,12 +379,13 @@
                     </ion-content>
                 </ion-modal>
 
-                <!-- Кнопка удалить -->
+                <!-- Кнопка удалить РЕЦЕПТ -->
                 <ion-grid>
                     <ion-row class="ion-justify-content-center">
                         <ion-button fill="clear" color="danger" @click="openDeleteMenu">Удалить рецепт</ion-button>
                     </ion-row>
                 </ion-grid>
+
                 <!-- Всплывашка подтверждение удаления рецепта -->
                 <ion-action-sheet
                     :is-open="isOpenRef"
@@ -339,8 +408,8 @@
     import { supabase } from '../../supabase/init';
     import store from '../../store/index';
     //
-    import { IonContent, IonItemGroup, IonButton, IonActionSheet, IonGrid, IonRow, IonToggle, IonInput, IonText, IonItem, IonChip, IonIcon, IonTextarea, IonLabel, IonThumbnail, IonImg, IonModal, IonSearchbar, IonList, IonReorderGroup, IonReorder } from '@ionic/vue';
-    import { closeCircleOutline, checkmark, alertOutline, createOutline } from 'ionicons/icons'
+    import { IonContent, IonItemGroup, IonButton, IonActionSheet, IonGrid, IonRow, IonToggle, IonInput, IonText, IonItem, IonChip, IonIcon, IonTextarea, IonLabel, IonThumbnail, IonImg, IonModal, IonSearchbar, IonList, IonReorderGroup, IonReorder, IonItemSliding, IonItemOptions, IonItemOption } from '@ionic/vue';
+    import { closeCircleOutline, checkmark, alertOutline, createOutline, trash } from 'ionicons/icons'
     //
     import 'swiper/css';
     import '@ionic/vue/css/ionic-swiper.css';
@@ -358,7 +427,7 @@
         components: {
             ViewHeader, Spinner,
             //
-            IonContent, IonItemGroup, IonButton, IonActionSheet, IonGrid, IonRow, IonToggle, IonInput, IonText, IonItem, IonChip, IonIcon, IonTextarea, IonLabel, IonThumbnail, IonImg, IonModal, IonSearchbar, IonList, IonReorderGroup, IonReorder,
+            IonContent, IonItemGroup, IonButton, IonActionSheet, IonGrid, IonRow, IonToggle, IonInput, IonText, IonItem, IonChip, IonIcon, IonTextarea, IonLabel, IonThumbnail, IonImg, IonModal, IonSearchbar, IonList, IonReorderGroup, IonReorder, IonItemSliding, IonItemOptions, IonItemOption,
             //
             Swiper, SwiperSlide
         },
@@ -656,25 +725,84 @@
             const deleteAssemblingItemFunc = async (index) => {
                 if(index > -1) {
                     currentRecipe.value.assembling.splice(index, 1)
+                    //
+                    spinner.value = true;
+                    try {
+                        const {error} = await supabase.from('userRecipes').update({
+                            assembling: currentRecipe.value.assembling
+                        }).eq('id', info.recipeId);
+                        if(error) throw error;
+                        spinner.value = false;
+                        // Рецепт успешно обновлено
+                    } catch (error) {
+                        // alert(`Error: ${error.message}`)
+                    }
                 }
-                //
-                spinner.value = true;
-                try {
-                    const {error} = await supabase.from('userRecipes').update({
-                        assembling: currentRecipe.value.assembling
-                    }).eq('id', info.recipeId);
-                    if(error) throw error;
-                    spinner.value = false;
-                    // Рецепт успешно обновлено
-                } catch (error) {
-                    // alert(`Error: ${error.message}`)
+            }
+
+            // =============================== УДАЛЕНИЯ ШАГА В СПИСКЕ ПРОЦЕССА ПРИГОТОВЛЕНИЯ ==========================
+            // Вызываем action sheet уведомление в качестве подтверждения
+            const deleteProcessStep = ref(false);
+            // Храним step из списка шагов процесса приготовления к удалению
+            const processStepToDeleteIndex = ref();
+            const openDeleteStepsMenu = (index) => {
+                processStepToDeleteIndex.value = index;
+                deleteProcessStep.value = true;
+            }
+            // кнопки в меню подтверждения удаления шага из процесса
+            const deleteProcessStepButtons = [
+                {
+                    text: 'Удалить',
+                    role: 'destructive',
+                    data: {
+                        type: 'delete'
+                    },
+                    handler: () => {
+                        deleteProcessStepFunc(processStepToDeleteIndex.value)
+                    }
+                },
+                {
+                    text: 'Отменить',
+                    role: 'cancel',
+                    handler: () => {
+                        console.log('Cancel clicked')
+                    }
+                }
+            ]
+            //
+            const deleteProcessStepFunc = async (index) => {
+                if(index > -1) {
+                    currentRecipe.value.process.splice(index, 1)
+                    //
+                    spinner.value = true;
+                    try {
+                        const {error} = await supabase.from('userRecipes').update({
+                            process: currentRecipe.value.process
+                        }).eq('id', info.recipeId);
+                        if(error) throw error;
+                        spinner.value = false;
+                        // Рецепт успешно обновлено
+                    } catch (error) {
+                        // alert(`Error: ${error.message}`)
+                    }
                 }
             }
 
             //
             const editRecipeProcess = ref(false)
-            const editRecipeProcessFunc = () => {
+            const editRecipeProcessFunc = async () => {
                 editRecipeProcess.value = !editRecipeProcess.value
+                //
+                spinner.value = true;
+                try {
+                    const {error} = await supabase.from('userRecipes').update({
+                        process: currentRecipe.value.process
+                    }).eq('id', info.recipeId);
+                    if(error) throw error;
+                    spinner.value = false;
+                } catch (error) {
+                    // alert(`Error: ${error.message}`)
+                }
             }
             //
             const handleReorderProcess = async (event) => {
@@ -687,6 +815,82 @@
                     }).eq('id', info.recipeId);
                     if(error) throw error;
                     spinner.value = false;
+                } catch (error) {
+                    // alert(`Error: ${error.message}`)
+                }
+            }
+
+            // ============================================= РАБОТА С СПИСКОМ СОСТАВА =====================================
+            const addCompositionItem = () => {
+                alert('ViewRecipe: добавление элемента к составу - в разработке...')
+            }
+            // режим редактирования
+            const editComposition = ref(false);
+            const editCompositionFunc = () => {
+                editComposition.value = !editComposition.value;
+            }
+            // ===== удаляем элемент состава ======
+            // переменная для action sheet
+            const deleteCompositionItem = ref(false);
+            // Храним шеуь из списка состава к удалению
+            const compositionItemToDeleteIndex = ref();
+            //
+            const openDeleteCompositionItemMenu = (index) => {
+                compositionItemToDeleteIndex.value = index;
+                deleteCompositionItem.value = true;
+            }
+            //
+            const deleteCopmositionItemButtons = [
+                {
+                    text: 'Удалить',
+                    role: 'destructive',
+                    data: {
+                        type: 'delete'
+                    },
+                    handler: () => {
+                        deleteCompositionItemFunc(compositionItemToDeleteIndex.value)
+                    }
+                },
+                {
+                    text: 'Отменить',
+                    role: 'cancel',
+                    handler: () => {
+                        console.log('Cancel clicked')
+                    }
+                }
+            ]
+            //
+            const deleteCompositionItemFunc = async (index) => {
+                if(index > -1){
+                    currentRecipe.value.composition.splice(index, 1)
+                    //
+                    spinner.value = true;
+                    try {
+                        const {error} = await supabase.from('userRecipes').update({
+                            composition: currentRecipe.value.composition
+                        }).eq('id', info.recipeId);
+                        if(error) throw error;
+                        spinner.value = false;
+                        // Рецепт успешно обновлено
+                    } catch (error) {
+                        // alert(`Error: ${error.message}`)
+                    }
+                }
+            }
+            //
+            const addCompositionItemIngredient = () => {
+                // Надор принимать данные типа к какому элементу состава доябвляем сие ингредиент...
+                alert('ViewRecipe: Добавляение ингредиента - в разработке')
+            }
+            //
+            const updateComposition = async () => {
+                spinner.value = true;
+                try {
+                    const {error} = await supabase.from('userRecipes').update({
+                        composition: currentRecipe.value.composition
+                    }).eq('id', info.recipeId);
+                    if(error) throw error;
+                    spinner.value = false;
                     // Рецепт успешно обновлено
                 } catch (error) {
                     // alert(`Error: ${error.message}`)
@@ -694,7 +898,7 @@
             }
 
             return {
-                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList, checkmark, alertOutline, setImgSrc, searchRecipesCategoriesMenu, searchRecipesCategories, userRecipesCategories, searchedRecipesCategories, isCategoryAlreadyAdded, choosenCategory, setMeasure, Virtual, slides, setStyleProperties, steps, addProcessStep, addAssemblingElement, handleReorder, deleteAssemblingItem, assemblingItemToDeleteIndex, openDeleteAssemblingItemMenu, deleteAssemblingItemButtons, deleteAssemblingItemFunc, createOutline, reorderIsDisabled, toggleReorder, editRecipeProcess, editRecipeProcessFunc, handleReorderProcess
+                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList, checkmark, alertOutline, setImgSrc, searchRecipesCategoriesMenu, searchRecipesCategories, userRecipesCategories, searchedRecipesCategories, isCategoryAlreadyAdded, choosenCategory, setMeasure, Virtual, slides, setStyleProperties, steps, addProcessStep, addAssemblingElement, handleReorder, deleteAssemblingItem, assemblingItemToDeleteIndex, openDeleteAssemblingItemMenu, deleteAssemblingItemButtons, deleteAssemblingItemFunc, createOutline, reorderIsDisabled, toggleReorder, editRecipeProcess, editRecipeProcessFunc, handleReorderProcess, deleteProcessStep, processStepToDeleteIndex, openDeleteStepsMenu, deleteProcessStepButtons, deleteProcessStepFunc, addCompositionItem, editComposition, editCompositionFunc, openDeleteCompositionItemMenu, deleteCompositionItem, compositionItemToDeleteIndex, deleteCopmositionItemButtons, deleteCompositionItemFunc, addCompositionItemIngredient, trash, updateComposition
             }
         }
     })
@@ -709,5 +913,8 @@
         align-items: center;
         border-radius: 50%;
         padding: 0.5rem;
+    }
+    .button-add-ingredient {
+        border-bottom: 1px dashed var(--ion-color-primary);
     }
 </style>
