@@ -252,7 +252,7 @@
                                 <!-- Кнопка удалить current step -->
                                 <ion-icon v-if="editRecipeProcess" :icon="closeCircleOutline" color="danger" @click.stop="openDeleteStepsMenu(index)" style="margin: auto 0;"></ion-icon>
                                 <!-- В режиме редактирования -->
-                                <ion-textarea v-if="editRecipeProcess" v-model="step.text" auto-grow="true" class="ion-padding-start"></ion-textarea>
+                                <ion-textarea v-if="editRecipeProcess" v-model="step.text" auto-grow="true" class="ion-padding-start" placeholder="Опишите действие" autocapitalize="on" rows="1" @ionBlur="updateProcess()"></ion-textarea>
                                 <!-- Без режима редактирования -->
                                 <ion-text v-else class="ion-margin-vertical" color="medium">{{ index + 1 }}. {{step.text}}</ion-text>
                                 <!-- ползунок реордера -->
@@ -324,6 +324,44 @@
                         @didDismiss="deleteAssemblingItem = false"
                     ></ion-action-sheet>
                 </ion-item-group>
+
+                <!-- Модалка добавления item + ingredients к составу -->
+                <ion-modal :isOpen="addCompositionItemModalOpened">
+                    <!--  -->
+                    <ion-header translucent="true">
+                        <ion-toolbar>
+                            <ion-buttons slot="start">
+                                <ion-button @click.stop="addCompositionItemModalOpened = false; newCompositionItem = {}">Отменить</ion-button>
+                            </ion-buttons>
+                            <ion-title>Добавить к составу</ion-title>
+                            <ion-buttons slot="end"></ion-buttons>
+                        </ion-toolbar>
+                    </ion-header>
+                    <!--  -->
+                    <ion-content forceOverscroll="false" class="ion-margin-top">
+                        {{newCompositionItem}}
+                    </ion-content>
+                </ion-modal>
+
+                <!-- Модалка добавления item к сборке -->
+                <ion-modal :isOpen="addAssemblingElementModalOpened">
+                    <!--  -->
+                    <ion-header translucent="true">
+                        <ion-toolbar>
+                            <ion-buttons slot="start">
+                                <ion-button @click="addAssemblingElementModalOpened = false">Отменить</ion-button>
+                            </ion-buttons>
+                            <ion-title>Добавить к сборке</ion-title>
+                            <ion-buttons slot="end"></ion-buttons>
+                        </ion-toolbar>
+                    </ion-header>
+                    <!--  -->
+                    <ion-content forceOverscroll="false" class="ion-margin-top">
+                        <ion-item v-for="(item, index) in currentRecipe.composition" :key="index" @click.stop="addToAssembling(item.name)">
+                            {{item.name}}
+                        </ion-item>
+                    </ion-content>
+                </ion-modal>
 
                 <!-- Вкл / Выкл на продажу в магазин рецептов -->
                 <ion-item-group class="ion-padding-vertical ion-padding-horizontal">
@@ -408,7 +446,7 @@
     import { supabase } from '../../supabase/init';
     import store from '../../store/index';
     //
-    import { IonContent, IonItemGroup, IonButton, IonActionSheet, IonGrid, IonRow, IonToggle, IonInput, IonText, IonItem, IonChip, IonIcon, IonTextarea, IonLabel, IonThumbnail, IonImg, IonModal, IonSearchbar, IonList, IonReorderGroup, IonReorder, IonItemSliding, IonItemOptions, IonItemOption } from '@ionic/vue';
+    import { IonContent, IonItemGroup, IonButton, IonActionSheet, IonGrid, IonRow, IonToggle, IonInput, IonText, IonItem, IonChip, IonIcon, IonTextarea, IonLabel, IonThumbnail, IonImg, IonModal, IonSearchbar, IonList, IonReorderGroup, IonReorder, IonItemSliding, IonItemOptions, IonItemOption, IonHeader, IonToolbar, IonButtons, IonTitle } from '@ionic/vue';
     import { closeCircleOutline, checkmark, alertOutline, createOutline, trash } from 'ionicons/icons'
     //
     import 'swiper/css';
@@ -427,7 +465,7 @@
         components: {
             ViewHeader, Spinner,
             //
-            IonContent, IonItemGroup, IonButton, IonActionSheet, IonGrid, IonRow, IonToggle, IonInput, IonText, IonItem, IonChip, IonIcon, IonTextarea, IonLabel, IonThumbnail, IonImg, IonModal, IonSearchbar, IonList, IonReorderGroup, IonReorder, IonItemSliding, IonItemOptions, IonItemOption,
+            IonContent, IonItemGroup, IonButton, IonActionSheet, IonGrid, IonRow, IonToggle, IonInput, IonText, IonItem, IonChip, IonIcon, IonTextarea, IonLabel, IonThumbnail, IonImg, IonModal, IonSearchbar, IonList, IonReorderGroup, IonReorder, IonItemSliding, IonItemOptions, IonItemOption, IonHeader, IonToolbar, IonButtons, IonTitle,
             //
             Swiper, SwiperSlide
         },
@@ -661,12 +699,32 @@
 
             //
             const addProcessStep = () => {
-                alert('ViewRecipe: добавление этапов процесса - в разработке...')
+                // alert('ViewRecipe: добавление этапов процесса - в разработке...')
+                currentRecipe.value.process.push({
+                    text: ''
+                })
             }
 
             //
+            const addAssemblingElementModalOpened = ref(false)
             const addAssemblingElement = () => {
-                alert('ViewRecipe: добавление элемента к сборке - в разработке...')
+                // alert('ViewRecipe: добавление элемента к сборке - в разработке...')
+                addAssemblingElementModalOpened.value = true;
+            }
+            const addToAssembling = async (itemName) => {
+                currentRecipe.value.assembling.push(itemName)
+                spinner.value = true;
+                try {
+                    const {error} = await supabase.from('userRecipes').update({
+                        assembling: currentRecipe.value.assembling
+                    }).eq('id', info.recipeId);
+                    if(error) throw error;
+                    spinner.value = false;
+                    // Рецепт успешно обновлено
+                } catch (error) {
+                    // alert(`Error: ${error.message}`)
+                }
+                addAssemblingElementModalOpened.value = false;
             }
 
             //
@@ -790,19 +848,19 @@
 
             //
             const editRecipeProcess = ref(false)
-            const editRecipeProcessFunc = async () => {
+            const editRecipeProcessFunc = () => {
                 editRecipeProcess.value = !editRecipeProcess.value
                 //
-                spinner.value = true;
-                try {
-                    const {error} = await supabase.from('userRecipes').update({
-                        process: currentRecipe.value.process
-                    }).eq('id', info.recipeId);
-                    if(error) throw error;
-                    spinner.value = false;
-                } catch (error) {
-                    // alert(`Error: ${error.message}`)
-                }
+                // spinner.value = true;
+                // try {
+                //     const {error} = await supabase.from('userRecipes').update({
+                //         process: currentRecipe.value.process
+                //     }).eq('id', info.recipeId);
+                //     if(error) throw error;
+                //     spinner.value = false;
+                // } catch (error) {
+                //     // alert(`Error: ${error.message}`)
+                // }
             }
             //
             const handleReorderProcess = async (event) => {
@@ -821,8 +879,15 @@
             }
 
             // ============================================= РАБОТА С СПИСКОМ СОСТАВА =====================================
+            const addCompositionItemModalOpened = ref(false);
+            const newCompositionItem = ref({})
             const addCompositionItem = () => {
-                alert('ViewRecipe: добавление элемента к составу - в разработке...')
+                // alert('ViewRecipe addCompositionItem: добавление элемента к составу - в разработке...')
+                addCompositionItemModalOpened.value = true
+                newCompositionItem.value = {
+                    name: 'Царь',
+                    ingredients: ['1', '2', '3']
+                }
             }
             // режим редактирования
             const editComposition = ref(false);
@@ -896,9 +961,23 @@
                     // alert(`Error: ${error.message}`)
                 }
             }
+            //
+            const updateProcess = async () => {
+                spinner.value = true;
+                try {
+                    const {error} = await supabase.from('userRecipes').update({
+                        process: currentRecipe.value.process
+                    }).eq('id', info.recipeId);
+                    if(error) throw error;
+                    spinner.value = false;
+                    // Рецепт успешно обновлено
+                } catch (error) {
+                    // alert(`Error: ${error.message}`)
+                }
+            }
 
             return {
-                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList, checkmark, alertOutline, setImgSrc, searchRecipesCategoriesMenu, searchRecipesCategories, userRecipesCategories, searchedRecipesCategories, isCategoryAlreadyAdded, choosenCategory, setMeasure, Virtual, slides, setStyleProperties, steps, addProcessStep, addAssemblingElement, handleReorder, deleteAssemblingItem, assemblingItemToDeleteIndex, openDeleteAssemblingItemMenu, deleteAssemblingItemButtons, deleteAssemblingItemFunc, createOutline, reorderIsDisabled, toggleReorder, editRecipeProcess, editRecipeProcessFunc, handleReorderProcess, deleteProcessStep, processStepToDeleteIndex, openDeleteStepsMenu, deleteProcessStepButtons, deleteProcessStepFunc, addCompositionItem, editComposition, editCompositionFunc, openDeleteCompositionItemMenu, deleteCompositionItem, compositionItemToDeleteIndex, deleteCopmositionItemButtons, deleteCompositionItemFunc, addCompositionItemIngredient, trash, updateComposition
+                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList, checkmark, alertOutline, setImgSrc, searchRecipesCategoriesMenu, searchRecipesCategories, userRecipesCategories, searchedRecipesCategories, isCategoryAlreadyAdded, choosenCategory, setMeasure, Virtual, slides, setStyleProperties, steps, addProcessStep, addAssemblingElement, handleReorder, deleteAssemblingItem, assemblingItemToDeleteIndex, openDeleteAssemblingItemMenu, deleteAssemblingItemButtons, deleteAssemblingItemFunc, createOutline, reorderIsDisabled, toggleReorder, editRecipeProcess, editRecipeProcessFunc, handleReorderProcess, deleteProcessStep, processStepToDeleteIndex, openDeleteStepsMenu, deleteProcessStepButtons, deleteProcessStepFunc, addCompositionItem, editComposition, editCompositionFunc, openDeleteCompositionItemMenu, deleteCompositionItem, compositionItemToDeleteIndex, deleteCopmositionItemButtons, deleteCompositionItemFunc, addCompositionItemIngredient, trash, updateComposition, addAssemblingElementModalOpened, addToAssembling, updateProcess, addCompositionItemModalOpened, newCompositionItem
             }
         }
     })
