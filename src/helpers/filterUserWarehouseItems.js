@@ -9,7 +9,7 @@ export const searchWarehouseItemFilter = (arrayToFilter, search) => {
 
 export const searchWarehouseCategoryFilter = (arrayToFilter, search) => {
   return arrayToFilter.filter((category) => {
-    console.log(category);
+    // console.log(category);
     return (category.toLowerCase().indexOf(search.toLowerCase()) != -1);
   });
 };
