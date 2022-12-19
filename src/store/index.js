@@ -289,172 +289,206 @@ const state = reactive({
     {
       value: 'sugar',
       name: 'Сахар',
-      costEstimation: 'perKilogram'
+      costEstimation: 'perKilogram',
+      isIngredient: true
     },
     {
       value: 'cottage-cheese',
       name: 'Сливочный творожный сыр',
-      costEstimation: 'perKilogram'
+      costEstimation: 'perKilogram',
+      isIngredient: true
     },
     {
       value: 'sugar-powder',
       name: 'Сахарная пудра',
-      costEstimation: 'per100gram'
+      costEstimation: 'per100gram',
+      isIngredient: true
     },
     {
       value: 'sugar-powder',
       name: "Сахарная пудра",
       costEstimation: "perKilogram",
+      isIngredient: true
     },
     {
       value: 'assorted-nuts',
       name: 'Ассорти орехов (кешью, минадль, фундук)',
-      costEstimation: 'perKilogram'
+      costEstimation: 'perKilogram',
+      isIngredient: true
     },
     {
       value: 'egg',
       name: 'Яйцо',
-      costEstimation: 'perUnit'
+      costEstimation: 'perUnit',
+      isIngredient: true
     },
     {
       value: 'flour',
       name: 'Мука',
-      costEstimation: 'perKilogram'
+      costEstimation: 'perKilogram',
+      isIngredient: true
     },
     {
       value: 'cocoa',
       name: 'Какао',
-      costEstimation: 'perKilogram'
+      costEstimation: 'perKilogram',
+      isIngredient: true
     },
     {
       value: 'corn-starch',
       name: 'Кукурузный крахмал',
-      costEstimation: 'perKilogram'
+      costEstimation: 'perKilogram',
+      isIngredient: true
     },
     {
       value: 'salt',
       name: 'Соль',
-      costEstimation: 'perKilogram'
+      costEstimation: 'perKilogram',
+      isIngredient: true
     },
     {
       value: 'salt',
       name: "Соль",
       costEstimation: "teaSpoon",
+      isIngredient: true
     },
     {
       value: 'salt',
       name: "Соль",
       costEstimation: "pinch",
+      isIngredient: true
     },
     {
       value: 'vanilla',
       name: 'Ваниль',
-      costEstimation: 'perKilogram'
+      costEstimation: 'perKilogram',
+      isIngredient: true
     },
     {
       value: 'vanilla',
       name: "Ваниль",
       costEstimation: "stick",
+      isIngredient: true
     },
     {
       value: 'sour-cream',
       name: 'Сметана',
-      costEstimation: 'perKilogram'
+      costEstimation: 'perKilogram',
+      isIngredient: true
     },
     {
       value: 'banana',
       name: 'Банан',
-      costEstimation: 'perKilogram'
+      costEstimation: 'perKilogram',
+      isIngredient: true
     },
     {
       value: 'banana',
       name: 'Банан',
-      costEstimation: 'perUnit'
+      costEstimation: 'perUnit',
+      isIngredient: true
     },
     {
       value: 'baking-soda',
       name: 'Пищевая сода',
-      costEstimation: 'perKilogram'
+      costEstimation: 'perKilogram',
+      isIngredient: true
     },
     {
       value: 'baking-soda',
       name: "Пищевая сода",
       costEstimation: "teaSpoon",
+      isIngredient: true
     },
     {
       value: 'vanilla-extract',
       name: 'Ванильный экстракт',
-      costEstimation: 'perKilogram'
+      costEstimation: 'perKilogram',
+      isIngredient: true
     },
     {
       value: 'vanilla-extract',
       name: "Ванильный экстракт",
-      costEstimation: "teaSpoon"
+      costEstimation: "teaSpoon",
+      isIngredient: true
     },
     {
       value: 'cream',
       name: 'Сливки',
-      costEstimation: 'perKilogram'
+      costEstimation: 'perKilogram',
+      isIngredient: true
     },
     {
       value: 'cream',
       name: "Сливки (от 33%)",
       costEstimation: "perKilogram",
+      isIngredient: true
     },
     {
       value: 'gouda-cheese',
       name: 'Сыр гауда',
-      costEstimation: 'perKilogram'
+      costEstimation: 'perKilogram',
+      isIngredient: true
     },
     {
       value: 'cheese',
       name: "Сыр",
       costEstimation: "perKilogram",
+      isIngredient: true
     },
     {
       value: 'lemon-juice',
       name: 'Сок лимона',
-      costEstimation: 'perKilogram'
+      costEstimation: 'perKilogram',
+      isIngredient: true
     },
     {
       value: 'lemon-juice',
       name: "Сок лимона",
       costEstimation: "teaSpoon",
+      isIngredient: true
     },
     {
       value: 'lemon-juice',
       name: 'Сок лимона',
-      costEstimation: 'perUnit'
+      costEstimation: 'perUnit',
+      isIngredient: true
     },
     {
       value: 'gingerbread',
       name: 'Пряник',
-      costEstimation: 'perUnit'
+      costEstimation: 'perUnit',
+      isIngredient: true
     },
     {
       value: 'box-for-cake',
       name: 'Коробка под торт',
-      costEstimation: 'perUnit'
+      costEstimation: 'perUnit',
+      isIngredient: false
     },
     {
       value: 'box-for-sweet',
       name: 'Коробка под сладости',
-      costEstimation: 'perUnit'
+      costEstimation: 'perUnit',
+      isIngredient: false
     },
     {
       value: 'butter',
       name: 'Сливочное масло',
-      costEstimation: 'perKilogram'
+      costEstimation: 'perKilogram',
+      isIngredient: true
     },
     {
       value: 'other',
       name: 'Прочие услуги',
-      costEstimation: 'perUnit'
+      costEstimation: 'perUnit',
+      isIngredient: false
     },
     {
       value: 'employees-salary',
       name: 'Зарплата сотрудникам',
-      costEstimation: 'perUnit'
+      costEstimation: 'perUnit',
+      isIngredient: false
     },
   ],
   // type of Shipping
