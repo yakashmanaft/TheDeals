@@ -331,7 +331,7 @@
                     <ion-header translucent="true">
                         <ion-toolbar>
                             <ion-buttons slot="start">
-                                <ion-button @click.stop="addCompositionItemModalOpened = false; newCompositionItem = {}">Отменить</ion-button>
+                                <ion-button @click.stop="closeCompositionItemModal()">Отменить</ion-button> 
                             </ion-buttons>
                             <ion-title>Добавить к составу</ion-title>
                             <ion-buttons slot="end"></ion-buttons>
@@ -355,7 +355,9 @@
                                 <h4>Ингредиенты</h4>
                             </ion-text>
                             <!--  -->
-                            <ion-chip class="ion-no-margin" color="primary">Добавить</ion-chip>
+
+                            <!--  -->
+                            <ion-chip class="ion-no-margin" color="primary" @click.stop="addIngredientToCompositionItem()">Добавить</ion-chip>
                         </ion-item-group>
                         <!--  -->
                         <div style="position: fixed; bottom: 0; left: 0; width: 100%; background-color: #fff; z-index: 999999" class="ion-padding">
@@ -907,7 +909,13 @@
                 addCompositionItemModalOpened.value = true
                 newCompositionItem.value = {
                     name: '',
-                    ingredients: ['1', '2', '3']
+                    ingredients: [
+                        {
+                            name: "Сливочное масло",
+                            costEstimation: "perKilogram",
+                            value: 100
+                        },
+                    ]
                 }
             }
             //
@@ -920,6 +928,11 @@
                     return false
                 }
             }
+            //
+            const addIngredientToCompositionItem = () => {
+                console.log('clicked')
+            }
+            //
             const addNewCompositionItem = async (item) => {
                 if(newCompositionItem.value.name === '') {
                     alert('ViewRecipe: Надо указать название элемента состава')
@@ -930,6 +943,14 @@
                     addCompositionItemModalOpened.value = false
                     await updateComposition()
                     newCompositionItem.value = {}
+                }
+            }
+            //
+            const closeCompositionItemModal = () => {
+                addCompositionItemModalOpened.value = false;
+                newCompositionItem.value = {
+                    name: '',
+                    ingredients: []
                 }
             }
             // режим редактирования
@@ -1020,7 +1041,7 @@
             }
 
             return {
-                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList, checkmark, alertOutline, setImgSrc, searchRecipesCategoriesMenu, searchRecipesCategories, userRecipesCategories, searchedRecipesCategories, isCategoryAlreadyAdded, choosenCategory, setMeasure, Virtual, slides, setStyleProperties, steps, addProcessStep, addAssemblingElement, handleReorder, deleteAssemblingItem, assemblingItemToDeleteIndex, openDeleteAssemblingItemMenu, deleteAssemblingItemButtons, deleteAssemblingItemFunc, createOutline, reorderIsDisabled, toggleReorder, editRecipeProcess, editRecipeProcessFunc, handleReorderProcess, deleteProcessStep, processStepToDeleteIndex, openDeleteStepsMenu, deleteProcessStepButtons, deleteProcessStepFunc, addCompositionItem, editComposition, editCompositionFunc, openDeleteCompositionItemMenu, deleteCompositionItem, compositionItemToDeleteIndex, deleteCopmositionItemButtons, deleteCompositionItemFunc, addCompositionItemIngredient, trash, updateComposition, addAssemblingElementModalOpened, addToAssembling, updateProcess, addCompositionItemModalOpened, newCompositionItem, addNewCompositionItem, addButtonIsDisabled
+                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList, checkmark, alertOutline, setImgSrc, searchRecipesCategoriesMenu, searchRecipesCategories, userRecipesCategories, searchedRecipesCategories, isCategoryAlreadyAdded, choosenCategory, setMeasure, Virtual, slides, setStyleProperties, steps, addProcessStep, addAssemblingElement, handleReorder, deleteAssemblingItem, assemblingItemToDeleteIndex, openDeleteAssemblingItemMenu, deleteAssemblingItemButtons, deleteAssemblingItemFunc, createOutline, reorderIsDisabled, toggleReorder, editRecipeProcess, editRecipeProcessFunc, handleReorderProcess, deleteProcessStep, processStepToDeleteIndex, openDeleteStepsMenu, deleteProcessStepButtons, deleteProcessStepFunc, addCompositionItem, editComposition, editCompositionFunc, openDeleteCompositionItemMenu, deleteCompositionItem, compositionItemToDeleteIndex, deleteCopmositionItemButtons, deleteCompositionItemFunc, addCompositionItemIngredient, trash, updateComposition, addAssemblingElementModalOpened, addToAssembling, updateProcess, addCompositionItemModalOpened, newCompositionItem, addNewCompositionItem, addButtonIsDisabled, closeCompositionItemModal, addIngredientToCompositionItem
             }
         }
     })
