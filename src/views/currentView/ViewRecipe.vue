@@ -1255,15 +1255,18 @@
             }
             //
             const setIngredientValue = (ingredientValue, index) => {
-                newCompositionItem.value.ingredients[index].value = +ingredientValue
+                console.log(+ingredientValue)
+                newCompositionItem.value.ingredients[index].value = ingredientValue
             }
             //
             const setNewIngredientValue = (ingredientValue) => {
-                currentCompositionItemNewIngredient.value.value = +ingredientValue
+                console.log(+ingredientValue)
+                currentCompositionItemNewIngredient.value.value = ingredientValue
             }
             //
             const setCurrentIngredientValue = (ingredientValue, idx, n) => {
-                currentRecipe.value.composition[n].ingredients[idx].value = +ingredientValue
+                console.log(+ingredientValue)
+                currentRecipe.value.composition[n].ingredients[idx].value = ingredientValue
                 updateComposition()
             }
             //

@@ -539,7 +539,7 @@
                 <ion-text>
                     <h4>Заметки по предмету</h4>
                 </ion-text>
-                <ion-textarea class="ion-margin-bottom" autocapitalize="on" v-model="subjectData.productNote" placeholder="Написать..."></ion-textarea>
+                <ion-textarea class="ion-margin-bottom" autoGrow="true" autocapitalize="on" v-model="subjectData.productNote" placeholder="Написать..."></ion-textarea>
             </ion-item-group>
 
             <br>

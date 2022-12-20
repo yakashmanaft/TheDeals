@@ -58,7 +58,7 @@
                             Тип расчета
                         </ion-button>
 
-                        <ion-button color="primary" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                        <ion-button color="primary" size="large" fill="clear" class="ion-no-padding ion-no-margin">
                             <Select
                                 :data="priceEstimationType"
                                 placeholder="Не выбран"
@@ -67,18 +67,29 @@
                         </ion-button>
                     </ion-row>
 
-                    <ion-row class="ion-justify-content-between ion-align-items-center ion-margin-top">
-                        <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                            Количество
-                        </ion-button>
-                        <div style="display: flex; align-items: center;">
-                            <!-- Substract -->
-                            <ion-icon :icon="removeCircleOutline" class="countQty_button" :color="itemData.subjectQty > 1 ? 'primary' : 'light'" @click="changeSubjectQty('sub')"></ion-icon>
-                            <!-- Qty -->
-                            <ion-text class="ion-margin-horizontal countQty_count" color="primary">{{ itemData.subjectQty }}</ion-text>
-                            <!-- Add -->
-                            <ion-icon :icon="addCircleOutline" class="countQty_button" color="primary" @click="changeSubjectQty('add')"></ion-icon>
-                        </div>
+                    <ion-row v-if="itemData.estimationType !== ''" class="ion-justify-content-between ion-align-items-center" style="flex-wrap: nowrap">
+
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                Количество 
+                                <span v-if="itemData.estimationType === 'perKilogram'">(в граммах)</span>
+                                <span v-if="itemData.estimationType === 'perUnit'">(шт.)</span>
+                                <span v-if="itemData.estimationType === 'per100gram'">(по 100 гр.)</span>
+                            </ion-button>
+
+                            <!-- perUnit -->
+                            <div v-if="itemData.estimationType === 'perUnit' || itemData.estimationType === 'per100gram'" style="display: flex; align-items: center;">
+                                <!-- Substract -->
+                                <ion-icon :icon="removeCircleOutline" class="countQty_button" :color="itemData.subjectQty > 1 ? 'primary' : 'light'" @click="changeSubjectQty('sub')"></ion-icon>
+                                <!-- Qty -->
+                                <ion-text class="ion-margin-horizontal countQty_count" color="primary">{{ itemData.subjectQty }}</ion-text>
+                                <!-- Add -->
+                                <ion-icon :icon="addCircleOutline" class="countQty_button" color="primary" @click="changeSubjectQty('add')"></ion-icon>
+                            </div>
+
+                            <!-- perKilogram -->
+                            <div v-if="itemData.estimationType === 'perKilogram'">
+                                <ion-input placeholder="Не указано" v-model="itemData.subjectQty" color="primary" class="ion-text-end ion-no-padding" style="font-size: 1.3rem; font-weight: bold" @ionChange="setPerKilogramValue(itemData.subjectQty)" inputmode="decimal"></ion-input>
+                            </div>
                     </ion-row>
                 </ion-grid>
             </ion-item-group>
@@ -290,13 +301,17 @@ import store from '../../store/index';
             const deleteCategoruFunc = (category) => {
                 itemData.value.categories = itemData.value.categories.filter(item => item !== category)
             }
+            // преобрзауем значение количества в perKilogram
+            const setPerKilogramValue = (inputValue) => {
+                itemData.value.subjectQty = +inputValue
+            }
             //
             watchEffect(() => {
                 itemData.value = props.itemData
             }) 
 
             return {
-                itemData, itemName, catalogNumber, closeThisModal, removeCircleOutline, addCircleOutline, changeSubjectQty, closeCircleOutline, searchWarehouseCategoriesMenu, searchWarehouseCategories, addNewCategory, searchedhWarehouseCategories, userWarehouseCategories, userSettings, choosenCategory, newCategory, isCategoryAlreadyAdded, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, deleteCategoruFunc, priceEstimationType, userWorkProfile
+                itemData, itemName, catalogNumber, closeThisModal, removeCircleOutline, addCircleOutline, changeSubjectQty, closeCircleOutline, searchWarehouseCategoriesMenu, searchWarehouseCategories, addNewCategory, searchedhWarehouseCategories, userWarehouseCategories, userSettings, choosenCategory, newCategory, isCategoryAlreadyAdded, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, deleteCategoruFunc, priceEstimationType, userWorkProfile, setPerKilogramValue
             }
         }
     })

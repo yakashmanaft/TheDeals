@@ -68,7 +68,8 @@
                                     {{item.name}}
                                 </ion-text>
                                 <ion-text>
-                                    {{item.subjectQty}}
+                                    <!-- {{item.subjectQty}} -->
+                                    <!-- Не понятно что тут помещать )) -->
                                 </ion-text>
                             </ion-row>
                         </ion-grid>
@@ -146,7 +147,7 @@
                                                     {{item.name}}
                                                 </ion-text>
                                                 <ion-text>
-                                                    {{item.subjectQty}}
+                                                    <!-- {{item.subjectQty}} -->
                                                 </ion-text>
                                             </ion-row>
                                         </ion-grid>

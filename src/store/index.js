@@ -167,7 +167,7 @@ const state = reactive({
   priceEstimataionType: [
     {
       value: 'perKilogram',
-      name: '1кг.'
+      name: 'кг.'
     },
     {
       value: 'per100gram',
@@ -175,7 +175,7 @@ const state = reactive({
     },
     {
       value: 'perUnit',
-      name: '1шт.'
+      name: 'шт.'
     },
 
   ],

@@ -252,7 +252,7 @@
                     </ion-row>
                     <!-- Content -->
                     <ion-row class="ion-margin-bottom">
-                        <ion-textarea  placeholder="Впишите адрес" class="ion-margin-bottom" autocapitalize="on" v-model="shippingAddress"></ion-textarea>
+                        <ion-textarea  autoGrow="true" placeholder="Впишите адрес" class="ion-margin-bottom" autocapitalize="on" v-model="shippingAddress"></ion-textarea>
                     </ion-row>
                 </ion-grid>
             </ion-item-group>
