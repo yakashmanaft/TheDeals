@@ -173,10 +173,15 @@
                                             <ion-grid class="ion-no-padding">
                                                 <ion-row class="ion-justify-content-between ion-align-items-center" style="flex-wrap: nowrap;">
                                                     <div style="display: flex; flex-direction: column;">
-                                                        <ion-text>{{ingredient.name}} ({{setMeasure(ingredient.costEstimation)}})</ion-text>
+                                                        <!-- <ion-text>{{ingredient.name}} ({{setMeasure(ingredient.costEstimation)}})</ion-text> -->
+                                                        <ion-text>{{ ingredient.name }}
+                                                            <span @click.prevent.stop="openActionSheetCurrentCostEstimationMenu(ingredient)" style="border-bottom: 1px dashed var(--ion-color-primary); color: var(--ion-color-primary); white-space: nowrap;">
+                                                                {{setIngredientEstimation(ingredient.costEstimation)}}
+                                                            </span>
+                                                        </ion-text>
                                                         <div style="display: flex; align-items: center; margin-top: 0.5rem;">
                                                             <ion-text color="medium" class="ion-margin-end" style="font-size: 1rem;">Укажите кол-во:</ion-text>
-                                                            <ion-input style="font-size: 1.3rem; font-weight: bold;" v-model="ingredient.value" @ionBlur="updateComposition()" class="ion-no-padding" color="primary" inputmode="decimal"></ion-input>
+                                                            <ion-input style="font-size: 1.3rem; font-weight: bold;" v-model="ingredient.value" class="ion-no-padding" color="primary" inputmode="decimal" @ionChange="setCurrentIngredientValue(ingredient.value, idx, n)"></ion-input>
                                                         </div>
                                                     </div>
                                                     <ion-thumbnail class="thumbnail_deal-subject" style="background-color: var(--ion-color-light); border: 1px solid var(--ion-color-danger)">
@@ -208,7 +213,7 @@
                                 </div>
                                 <!-- кнопка добавления нового ингредеиента к определенному элементу состава -->
                                 <!-- <ion-chip v-if="editComposition" class="ion-no-margin ion-margin-top" color="primary">Добавить</ion-chip> -->
-                                <div v-if="editComposition" class="ion-margin-vertical" @click.stop="addCompositionItemIngredient()">
+                                <div v-if="editComposition" class="ion-margin-vertical" @click.stop="addCompositionItemIngredient(n)">
                                     <ion-text color="primary" class="ion-margin-start button-add-ingredient">Добавить ингредиент</ion-text>
                                 </div>
                             </div>
@@ -231,7 +236,7 @@
                         @didDismiss="deleteCompositionItem = false"
                     ></ion-action-sheet>
 
-                    <!-- всплывашка подветрждение удаления current ingredient в composition item -->
+                    <!-- всплывашка подтверждение удаления current ingredient в composition item -->
                     <ion-action-sheet
                         :isOpen="deleteCompisitionItemIngredient"
                         header="Удалить ингредиент из состава?"
@@ -363,7 +368,7 @@
                                 <h4 class="ion-margin-horizontal">Ингредиенты</h4>
                             </ion-text>
                             <!--  -->
-                            <div v-if="newCompositionItem.ingredients.length !== 0" v-for="(ingredient, index) in newCompositionItem.ingredients" :key="index" style="margin-top: 1rem;">
+                            <div v-if="newCompositionItem.ingredients && newCompositionItem.ingredients.length !== 0" v-for="(ingredient, index) in newCompositionItem.ingredients" :key="index" style="margin-top: 1rem;">
                                 <ion-item-sliding>
                                     <!-- ингредиент -->
                                     <ion-item lines="none">
@@ -414,6 +419,98 @@
                     </ion-content>
                 </ion-modal>
 
+                <!-- Модалка добавления ингрежиентов к current compistion item -->
+                <ion-modal :isOpen="addIngredientToCurrentCompositionItemModalOpened">
+                    <!--  -->
+                    <ion-header translucent="true">
+                        <ion-toolbar>
+                            <ion-buttons slot="start">
+                                <ion-button @click.stop="closeAddIngredientToCurrentCompositionItemModalOpened()">Отменить</ion-button>
+                            </ion-buttons>
+                            <ion-title>Новый ингредиент</ion-title>
+                            <ion-buttons slot="end"></ion-buttons>
+                        </ion-toolbar>
+                    </ion-header>
+                    <!--  -->
+                    <ion-content forceOverscroll="false" class="ion-margin-top ion-padding-bottom">
+                        <!-- {{ currentCompositionItem }} -->
+                        <br>
+                        <ion-item-group class="ion-padding-horizontal">
+                            <ion-text color="medium">Для элемента:</ion-text>
+                            <ion-text>
+                                <h4 style="border-bottom: 1px solid var(--ion-color-light)" class="ion-no-margin ion-padding-vertical">{{ currentCompositionItem.name }}</h4>
+                            </ion-text>
+                        </ion-item-group>
+                        <!--  -->
+                        <ion-item-group class="ion-padding-horizontal ion-margin-top">
+                            <!--  -->
+                            <ion-text 
+                                v-if="currentCompositionItemNewIngredient.name === ''"
+                                color="primary"
+                                style="border-bottom: 1px dashed var(--ion-color-primary)"
+                                @click.stop="newIngredientCurrentCompositionModalOpend = true"
+                            >Выберите ингредиент</ion-text>
+                            <!--  -->
+                            <div v-else>
+                                <!--  -->
+                                <ion-item style="--inner-padding-end: none; --inner-padding-bottom: 1rem">
+                                    <ion-grid class="ion-no-padding">
+                                        <ion-row @click.stop="newIngredientCurrentCompositionModalOpend = true" class="ion-justify-content-between ion-align-items-center" style="flex-wrap: nowrap;">
+                                            <!--  -->
+                                            <ion-text color="primary">{{ currentCompositionItemNewIngredient.name }}</ion-text>
+                                            <!--  -->
+                                            <ion-thumbnail class="thumbnail_deal-subject" style="background-color: var(--ion-color-light); margin-left: 1rem;">
+                                                <ion-img :src="setImgSrc(currentCompositionItemNewIngredient.name)"></ion-img>
+                                            </ion-thumbnail>
+                                        </ion-row>
+                                    </ion-grid>
+                                </ion-item>
+                                <!--  -->
+                                <ion-item class="ion-margin-top" lines="none" v-if="currentCompositionItemNewIngredient.costEstimation === ''">
+                                    <ion-text 
+                                        color="primary"
+                                        style="border-bottom: 1px dashed var(--ion-color-primary)"  
+                                        @click.stop="actionSheetCurrentCompositionItemNewIngredient = true"  
+                                    >Укажите меру измерения</ion-text>
+                                </ion-item>
+                                <!--  -->
+                                <div v-else>
+                                    <ion-item class="ion-margin-top">
+                                        <ion-grid class="ion-no-padding">
+                                            <ion-row class="ion-justify-content-between ion-align-items-center">
+                                                <ion-text @click.stop="actionSheetCurrentCompositionItemNewIngredient = true" color="primary">Мера измерения</ion-text>
+                                                <ion-text>{{setMeasure(currentCompositionItemNewIngredient.costEstimation)}}</ion-text>
+                                            </ion-row>
+                                        </ion-grid>
+                                    </ion-item>
+                                    <!--  -->
+                                    <ion-item class="ion-margin-top">
+                                        <ion-grid class="ion-no-padding">
+                                            <ion-row class="ion-justify-content-between ion-align-items-center" style="flex-wrap: nowrap;">
+                                                <ion-text color="medium">Количество</ion-text>
+                                                <ion-input v-model="currentCompositionItemNewIngredient.value" style="font-size: 1.3rem; font-weight: bold;" color="primary"  class="ion-text-end" inputmode="decimal" @ionChange="setNewIngredientValue(currentCompositionItemNewIngredient.value)"></ion-input>
+                                            </ion-row>
+                                        </ion-grid>
+                                    </ion-item>
+                                </div>
+                            </div>
+                        </ion-item-group>
+                        <!--  -->
+                        <div style="position: fixed; bottom: 0; left: 0; width: 100%; background-color: #fff; z-index: 999999" class="ion-padding">
+                            <ion-button @click.stop="addCompositionItemIngredientFunc()" :color="addNewIngredientButtonIsDisabled() ? 'light' : 'primary'" expand="block">Добавить к составу</ion-button>
+                        </div>
+                        <!--  -->
+                        <br>
+                        <br>
+                        <br>
+                        <br>
+                        {{ currentCompositionItemNewIngredient }}
+                        <br>
+                        <br>
+                        <br>
+                    </ion-content>
+                </ion-modal>
+
                 <!-- Всплывашка подтверждение удаления ингредиента у нового элемента composition -->
                 <ion-action-sheet
                     :is-open="deleteNewCompositionItemIngredient"
@@ -422,7 +519,58 @@
                     :buttons="deleteNewCompositionItemIngredientButtons"
                 ></ion-action-sheet>
 
-                <!-- Модалка выбора ингредиента к добавлению -->
+                <!-- Модалка выбора ингредиента к current composition item -->
+                <!-- Оптимизировать!!! -->
+                <ion-modal :isOpen="newIngredientCurrentCompositionModalOpend">
+                    <!--  -->
+                    <ion-header>
+                        <ion-toolbar>
+                            <ion-buttons slot="start">
+                                <ion-button @click.stop="newIngredientCurrentCompositionModalOpend = false">Закрыть</ion-button>
+                            </ion-buttons>
+                            <ion-title>Ингредиенты</ion-title>
+                            <ion-buttons slot="end"></ion-buttons>
+                        </ion-toolbar>
+                    </ion-header>
+                    <!--  -->
+                    <ion-content forceOverscroll="false" class="ion-margin-top">
+                        <!-- Поиск -->
+                        <ion-searchbar class="searchbar" placeholder="Поиск..." v-model="searchNewIngredient"></ion-searchbar>
+                        <br>
+                        <br>
+                        <br>
+                        <!-- Вывод списка -->
+                        <ion-item 
+                            v-if="ingredientsList().length > 0"
+                            v-for="(item, idx) in ingredientsList()"
+                            :key="idx" 
+                            class="ion-no-padding"
+                            style="margin-top: 1rem; padding: 0 1rem;"
+                            @click.stop="addIngredientToCurrentCompositionItem(item)"
+                        >
+                            <ion-grid class="ion-no-padding ion-margin-bottom">
+                                <ion-row class="ion-justify-content-between ion-align-items-center" style="flex-wrap: nowrap;">
+                                    <ion-text class="ion-padding-start">{{item.name}}</ion-text>
+                                    <ion-thumbnail class="thumbnail_deal-subject" style="background-color: var(--ion-color-light);">
+                                        <ion-img :src="`../img/subjects/buy/${item.value}.webp`"></ion-img>
+                                    </ion-thumbnail>
+                                </ion-row>
+                            </ion-grid>
+                        </ion-item>
+                        <!--  -->
+                        <ion-item v-else lines="none">
+                            <ion-text color="medium">Ничего не найдено</ion-text>
+                        </ion-item>
+                        <!--  -->
+                        <br>
+                        <br>
+                        <br>
+                        <br>
+                    </ion-content>
+                </ion-modal>
+
+                <!-- Модалка выбора ингредиента к добавлению новый composition item-->
+                <!-- Оптимизировать!!! -->
                 <ion-modal :isOpen="ingredientForNewCompositionModalOpened">
                     <!--  -->
                     <ion-header>
@@ -555,13 +703,28 @@
                 ></ion-action-sheet>
 
                 <!-- Всплывашка изменения cost estimation у конкретного ингредиента в составе-->
+                <!-- для нового элемента состава -->
                 <ion-action-sheet
                     :isOpen="actionSheetIngredientCostEstimation"
                     header="Сменить меру измерения"
                     :buttons="ingredientChangeCostEstimationButtons"
                     @didDismiss="actionSheetIngredientCostEstimation = false"
                 ></ion-action-sheet>
-
+                <!-- для current элемента состава -->
+                <ion-action-sheet
+                    :isOpen="actionSheetCurrentIngredientCostEstimation"
+                    header="Сменить меру измерения"
+                    :buttons="currentIngredientChangeCostEstimationButtons"
+                    @didDismiss="actionSheetCurrentIngredientCostEstimation = false"
+                ></ion-action-sheet>
+                <!-- для current composition item -->
+                <ion-action-sheet
+                    :isOpen="actionSheetCurrentCompositionItemNewIngredient"
+                    header="Мера измерения"
+                    :buttons="actionSheetCurrentCompositionItemNewIngredientButtons"
+                    @didDismiss="actionSheetCurrentCompositionItemNewIngredient = false"
+                > 
+                </ion-action-sheet>
                 <br>
                 {{currentRecipe}}
             </div>
@@ -842,7 +1005,6 @@
 
             //
             const addProcessStep = () => {
-                // alert('ViewRecipe: добавление этапов процесса - в разработке...')
                 currentRecipe.value.process.push({
                     text: ''
                 })
@@ -851,7 +1013,6 @@
             //
             const addAssemblingElementModalOpened = ref(false)
             const addAssemblingElement = () => {
-                // alert('ViewRecipe: добавление элемента к сборке - в разработке...')
                 addAssemblingElementModalOpened.value = true;
             }
             const addToAssembling = async (itemName) => {
@@ -1010,7 +1171,7 @@
                 }
             }
 
-            // ============================================= РАБОТА С СПИСКОМ СОСТАВА =====================================
+            // ============================================= РАБОТА С NEW ЭЛЕМЕНТОМ СОСТАВА =====================================
             const addCompositionItemModalOpened = ref(false);
             const newCompositionItem = ref({})
             const addCompositionItem = () => {
@@ -1028,9 +1189,25 @@
             }
             //
             const addButtonIsDisabled = () => {
+                let isValueZero = []
+                newCompositionItem.value.ingredients.forEach(item => isValueZero.push(item.value))
                 if(newCompositionItem.value.name === '') {
                     return true
-                } else if (newCompositionItem.value.ingredients.length === 0) {
+                } else if (newCompositionItem.value.ingredients && newCompositionItem.value.ingredients.length === 0 ) {
+                    return true
+                } else if (isValueZero.includes(0)) {
+                    return true
+                } else {
+                    return false
+                }
+            }
+            //
+            const addNewIngredientButtonIsDisabled = () => {
+                if(currentCompositionItemNewIngredient.value.name === '') {
+                    return true
+                } else if (currentCompositionItemNewIngredient.value.costEstimation === '') {
+                    return true
+                } else if (currentCompositionItemNewIngredient.value.value === 0) {
                     return true
                 } else {
                     return false
@@ -1061,10 +1238,9 @@
                 // })
                 ingredientForNewCompositionModalOpened.value = true;
             }
-            // Проверяем добавлена уже категория к предмету или нет
             const isIngredientAlreadyAdded = ref()
             const addIngredientToCompositionItemFunc = (ingredientData) => {
-                // console.log(ingredientData)
+                // Проверяем добавлена уже категория к предмету или нет
                 isIngredientAlreadyAdded.value = newCompositionItem.value.ingredients.find(item => item.name ===  ingredientData.name)
                 if(isIngredientAlreadyAdded.value !== undefined) {
                     alert('ViewRecipe: ингредиент уже добавлен')
@@ -1080,6 +1256,15 @@
             //
             const setIngredientValue = (ingredientValue, index) => {
                 newCompositionItem.value.ingredients[index].value = +ingredientValue
+            }
+            //
+            const setNewIngredientValue = (ingredientValue) => {
+                currentCompositionItemNewIngredient.value.value = +ingredientValue
+            }
+            //
+            const setCurrentIngredientValue = (ingredientValue, idx, n) => {
+                currentRecipe.value.composition[n].ingredients[idx].value = +ingredientValue
+                updateComposition()
             }
             //
             const addNewCompositionItem = async (item) => {
@@ -1104,6 +1289,26 @@
                         await updateComposition()
                         newCompositionItem.value = {}
                     }
+                }
+            }
+            //
+            const addCompositionItemIngredientFunc = () => {
+                if(currentCompositionItemNewIngredient.value.name === '') {
+                    alert('ViewRecipe: Надо выбрать ингредиент')
+                } else if (currentCompositionItemNewIngredient.value.costEstimation === '') {
+                    alert('ViewRecipe: Надо указать меру измерения')
+                } else if (currentCompositionItemNewIngredient.value.value === 0) {
+                    alert('ViewRecipe: Надо указать вес или кол-во')
+                } else {
+                    currentCompositionItem.value.ingredients.push(currentCompositionItemNewIngredient.value)
+                    addIngredientToCurrentCompositionItemModalOpened.value = false;
+                    // Удалить, если не понадобится
+                    currentCompositionItemNewIngredient.value = {
+                        name: '',
+                        costEstimation: '',
+                        value: 0
+                    }
+                    updateComposition();
                 }
             }
             //
@@ -1204,11 +1409,6 @@
                     }
                 }
             }
-            //
-            const addCompositionItemIngredient = () => {
-                // Надор принимать данные типа к какому элементу состава доябвляем сие ингредиент...
-                alert('ViewRecipe: Добавляение ингредиента - в разработке')
-            }
             // Вызываем action sheet удаления current ingredient в composition item
             const deleteCompisitionItemIngredient = ref(false);
             const compositionItemIndex = ref();
@@ -1254,17 +1454,14 @@
                     }
                 }
             }
-            // Вызываем action sheet меню выбора меры измерения ингредиента для рецепта
+            // Вызываем action sheet меню выбора меры измерения ингредиента
+            // для нового элемента состава
             const actionSheetIngredientCostEstimation = ref(false);
             const ingredientWhereChangeEstimation = ref();
-            // const prevIngredientEstimation = ref();
-            //
             const openActionSheetCostEstimationMenu = (ingredient) => {
                 actionSheetIngredientCostEstimation.value = true;
                 ingredientWhereChangeEstimation.value = ingredient;
-                // prevIngredientEstimation.value = ingredientCostEstimation
             }
-            // 
             const ingredientChangeCostEstimationButtons = [
                 {
                     text: 'Граммы',
@@ -1305,6 +1502,57 @@
                 }
             ]
             //
+            // для current элемента состава
+            const actionSheetCurrentIngredientCostEstimation = ref(false)
+            const currentIngredientWhereChangeEstimation = ref();
+            const openActionSheetCurrentCostEstimationMenu = (ingredient) => {
+                actionSheetCurrentIngredientCostEstimation.value = true;
+                currentIngredientWhereChangeEstimation.value = ingredient
+            }
+            const currentIngredientChangeCostEstimationButtons = [
+                {
+                    text: 'Граммы',
+                    handler: () => {
+                        currentIngredientWhereChangeEstimation.value.costEstimation = 'perKilogram';
+                        updateComposition();
+                    }
+                },
+                {
+                    text: 'Штуки',
+                    handler: () => {
+                        currentIngredientWhereChangeEstimation.value.costEstimation = 'perUnit';
+                        updateComposition();
+                    }
+                },
+                {
+                    text: 'Чайные ложки',
+                    handler: () => {
+                        currentIngredientWhereChangeEstimation.value.costEstimation = 'teaSpoon';
+                        updateComposition();
+                    }
+                },
+                {
+                    text: 'Щепотки',
+                    handler: () => {
+                        currentIngredientWhereChangeEstimation.value.costEstimation = 'pinch';
+                        updateComposition();
+                    }
+                },
+                {
+                    text: 'Палочки',
+                    handler: () => {
+                        currentIngredientWhereChangeEstimation.value.costEstimation = 'stick';
+                        updateComposition();
+                    }
+                },
+                {
+                    text: 'Отменить',
+                    role: 'cancel',
+                    handler: () => {
+                        console.log('Cancel clicked')
+                    }
+                }
+            ]
 
             //
             const setIngredientEstimation = (ingredientCostEstimation) => {
@@ -1326,7 +1574,80 @@
                     return '(Не указано)'
                 }
             }
-            //
+
+            // ============================================= РАБОТА С CURRENT ЭЛЕМЕНТОМ СОСТАВА =====================================
+            const addIngredientToCurrentCompositionItemModalOpened = ref(false)
+            const currentCompositionItem = ref()
+            const currentCompositionItemNewIngredient = ref({
+                name: '',
+                costEstimation: '',
+                value: 0
+            })
+            const addCompositionItemIngredient = (n) => {
+                currentCompositionItem.value = currentRecipe.value.composition[n]
+                addIngredientToCurrentCompositionItemModalOpened.value = true
+            }
+            const newIngredientCurrentCompositionModalOpend = ref(false)
+            const isIngredientAlreadyAddedToCurrentCompositionItem = ref()
+            const addIngredientToCurrentCompositionItem = (ingredientData) => {
+                isIngredientAlreadyAddedToCurrentCompositionItem.value = currentCompositionItem.value.ingredients.find(item => item.name === ingredientData.name)
+                if(isIngredientAlreadyAddedToCurrentCompositionItem.value !== undefined) {
+                    alert('ViewRecipe: ингредиент уже добавлен')
+                } else {
+                    currentCompositionItemNewIngredient.value.name = ingredientData.name 
+                    newIngredientCurrentCompositionModalOpend.value = false;
+                }
+            }
+            const actionSheetCurrentCompositionItemNewIngredient  = ref(false)
+            const actionSheetCurrentCompositionItemNewIngredientButtons = [
+                {
+                    text: 'Граммы',
+                    handler: () => {
+                        currentCompositionItemNewIngredient.value.costEstimation = 'perKilogram';
+                    }
+                },
+                {
+                    text: 'Штуки',
+                    handler: () => {
+                        currentCompositionItemNewIngredient.value.costEstimation = 'perUnit';
+                    }
+                },
+                {
+                    text: 'Чайные ложки',
+                    handler: () => {
+                        currentCompositionItemNewIngredient.value.costEstimation = 'teaSpoon';
+                    }
+                },
+                {
+                    text: 'Щепотки',
+                    handler: () => {
+                        currentCompositionItemNewIngredient.value.costEstimation = 'pinch';
+                    }
+                },
+                {
+                    text: 'Палочки',
+                    handler: () => {
+                        currentCompositionItemNewIngredient.value.costEstimation = 'stick';
+                    }
+                },
+                {
+                    text: 'Отменить',
+                    role: 'cancel',
+                    handler: () => {
+                        console.log('Cancel clicked')
+                    }
+                }
+            ]
+            const closeAddIngredientToCurrentCompositionItemModalOpened = () => {
+                addIngredientToCurrentCompositionItemModalOpened.value = false
+                currentCompositionItemNewIngredient.value = {
+                    name: '',
+                    costEstimation: '',
+                    value: 0
+                }
+            }
+
+            // =========================================== РАБОТА С БД =============================================
             const updateComposition = async () => {
                 spinner.value = true;
                 try {
@@ -1356,7 +1677,7 @@
             }
 
             return {
-                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList, checkmark, alertOutline, setImgSrc, searchRecipesCategoriesMenu, searchRecipesCategories, userRecipesCategories, searchedRecipesCategories, isCategoryAlreadyAdded, choosenCategory, setMeasure, Virtual, slides, setStyleProperties, steps, addProcessStep, addAssemblingElement, handleReorder, deleteAssemblingItem, assemblingItemToDeleteIndex, openDeleteAssemblingItemMenu, deleteAssemblingItemButtons, deleteAssemblingItemFunc, createOutline, reorderIsDisabled, toggleReorder, editRecipeProcess, editRecipeProcessFunc, handleReorderProcess, deleteProcessStep, processStepToDeleteIndex, openDeleteStepsMenu, deleteProcessStepButtons, deleteProcessStepFunc, addCompositionItem, editComposition, editCompositionFunc, openDeleteCompositionItemMenu, deleteCompositionItem, compositionItemToDeleteIndex, deleteCopmositionItemButtons, deleteCompositionItemFunc, addCompositionItemIngredient, trash, updateComposition, addAssemblingElementModalOpened, addToAssembling, updateProcess, addCompositionItemModalOpened, newCompositionItem, addNewCompositionItem, addButtonIsDisabled, closeCompositionItemModal, addIngredientToCompositionItem, ingredientForNewCompositionModalOpened, ingredientsList, addIngredientToCompositionItemFunc, setIngredientImg, searchNewIngredient, isIngredientAlreadyAdded, deleteNewCompositionItemIngredient, deleteNewCompositionItemIngredientIndex, deleteNewCompositionItemIngredientMenu, deleteNewCompositionItemIngredientFunc, deleteNewCompositionItemIngredientButtons, openActionSheetCostEstimationMenu, actionSheetIngredientCostEstimation, ingredientWhereChangeEstimation, ingredientChangeCostEstimationButtons, setIngredientEstimation, deleteCompisitionItemIngredientMenu, deleteCompisitionItemIngredient, compositionItemIngredientIndex, compositionItemIndex, compositionItemIngredientButtons, deleteCompisitionItemIngredientFunc, setIngredientValue
+                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList, checkmark, alertOutline, setImgSrc, searchRecipesCategoriesMenu, searchRecipesCategories, userRecipesCategories, searchedRecipesCategories, isCategoryAlreadyAdded, choosenCategory, setMeasure, Virtual, slides, setStyleProperties, steps, addProcessStep, addAssemblingElement, handleReorder, deleteAssemblingItem, assemblingItemToDeleteIndex, openDeleteAssemblingItemMenu, deleteAssemblingItemButtons, deleteAssemblingItemFunc, createOutline, reorderIsDisabled, toggleReorder, editRecipeProcess, editRecipeProcessFunc, handleReorderProcess, deleteProcessStep, processStepToDeleteIndex, openDeleteStepsMenu, deleteProcessStepButtons, deleteProcessStepFunc, addCompositionItem, editComposition, editCompositionFunc, openDeleteCompositionItemMenu, deleteCompositionItem, compositionItemToDeleteIndex, deleteCopmositionItemButtons, deleteCompositionItemFunc, addCompositionItemIngredient, trash, updateComposition, addAssemblingElementModalOpened, addToAssembling, updateProcess, addCompositionItemModalOpened, newCompositionItem, addNewCompositionItem, addButtonIsDisabled, closeCompositionItemModal, addIngredientToCompositionItem, ingredientForNewCompositionModalOpened, ingredientsList, addIngredientToCompositionItemFunc, setIngredientImg, searchNewIngredient, isIngredientAlreadyAdded, deleteNewCompositionItemIngredient, deleteNewCompositionItemIngredientIndex, deleteNewCompositionItemIngredientMenu, deleteNewCompositionItemIngredientFunc, deleteNewCompositionItemIngredientButtons, openActionSheetCostEstimationMenu, actionSheetIngredientCostEstimation, ingredientWhereChangeEstimation, ingredientChangeCostEstimationButtons, setIngredientEstimation, deleteCompisitionItemIngredientMenu, deleteCompisitionItemIngredient, compositionItemIngredientIndex, compositionItemIndex, compositionItemIngredientButtons, deleteCompisitionItemIngredientFunc, setIngredientValue, setCurrentIngredientValue, actionSheetCurrentIngredientCostEstimation, currentIngredientWhereChangeEstimation, openActionSheetCurrentCostEstimationMenu, currentIngredientChangeCostEstimationButtons, addIngredientToCurrentCompositionItemModalOpened, currentCompositionItem, currentCompositionItemNewIngredient, addNewIngredientButtonIsDisabled, addCompositionItemIngredientFunc, newIngredientCurrentCompositionModalOpend, addIngredientToCurrentCompositionItem, actionSheetCurrentCompositionItemNewIngredient, actionSheetCurrentCompositionItemNewIngredientButtons, setNewIngredientValue, closeAddIngredientToCurrentCompositionItemModalOpened
             }
         }
     })

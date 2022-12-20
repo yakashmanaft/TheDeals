@@ -312,7 +312,7 @@ const state = reactive({
     },
     {
       value: 'assorted-nuts',
-      name: 'Ассорти орехов (кешью, минадль, фундук)',
+      name: 'Ассорти орехов (кешью, миндаль, фундук)',
       costEstimation: 'perKilogram',
       isIngredient: true
     },
