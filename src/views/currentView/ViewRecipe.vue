@@ -186,7 +186,7 @@
                                             </ion-grid>
                                         </ion-item>
                                         <ion-item-options side="end">
-                                            <ion-item-option class="ion-margin-start" color="danger" @click.stop="deleteCompisitionItemIngredient()">
+                                            <ion-item-option class="ion-margin-start" color="danger" @click.stop="deleteCompisitionItemIngredientMenu(idx, n)">
                                                 <ion-icon slot="icon-only" :icon="trash"></ion-icon>
                                             </ion-item-option>
                                         </ion-item-options>
@@ -229,6 +229,14 @@
                         header="Удалить позицию из состава"
                         :buttons="deleteCopmositionItemButtons"
                         @didDismiss="deleteCompositionItem = false"
+                    ></ion-action-sheet>
+
+                    <!-- всплывашка подветрждение удаления current ingredient в composition item -->
+                    <ion-action-sheet
+                        :isOpen="deleteCompisitionItemIngredient"
+                        header="Удалить ингредиент из состава?"
+                        :buttons="compositionItemIngredientButtons"
+                        @didDismiss="deleteCompisitionItemIngredient = false"
                     ></ion-action-sheet>
                 </ion-item-group>
 
@@ -366,7 +374,7 @@
                                                     <!--  -->
                                                     <div style="display: flex; align-items: center; margin-top: 0.5rem;">
                                                         <ion-text color="medium" class="ion-margin-end" style="font-size: 1rem;">Укажите кол-во:</ion-text>
-                                                        <ion-input v-model="ingredient.value" style="font-size: 1.3rem; font-weight: bold;" class="ion-no-padding" color="primary" inputmode="decimal"></ion-input>
+                                                        <ion-input v-model="ingredient.value" type="number" style="font-size: 1.3rem; font-weight: bold;" class="ion-no-padding" color="primary" inputmode="decimal" @ionChange="setIngredientValue(ingredient.value, index)"></ion-input>
                                                     </div>
                                                 </div>
                                                 <ion-thumbnail class="thumbnail_deal-subject" style="background-color: var(--ion-color-light);">
@@ -1070,6 +1078,10 @@
                 }
             }
             //
+            const setIngredientValue = (ingredientValue, index) => {
+                newCompositionItem.value.ingredients[index].value = +ingredientValue
+            }
+            //
             const addNewCompositionItem = async (item) => {
                 if(newCompositionItem.value.name === '') {
                     alert('ViewRecipe: Надо указать название элемента состава')
@@ -1197,9 +1209,50 @@
                 // Надор принимать данные типа к какому элементу состава доябвляем сие ингредиент...
                 alert('ViewRecipe: Добавляение ингредиента - в разработке')
             }
-            //
-            const deleteCompisitionItemIngredient = () => {
-                alert('ViewRecipe: Удаление ингредиента - в разработке')
+            // Вызываем action sheet удаления current ingredient в composition item
+            const deleteCompisitionItemIngredient = ref(false);
+            const compositionItemIndex = ref();
+            const compositionItemIngredientIndex = ref();
+            const deleteCompisitionItemIngredientMenu = (idx, n) => {
+                deleteCompisitionItemIngredient.value = true;
+                compositionItemIndex.value = n;
+                compositionItemIngredientIndex.value = idx
+            }
+            const compositionItemIngredientButtons = [
+                {
+                    text: 'Удалить',
+                    role: 'destructive',
+                    data: {
+                        type: 'delete'
+                    },
+                    handler: () => {
+                        deleteCompisitionItemIngredientFunc(compositionItemIngredientIndex.value, compositionItemIndex.value)
+                    }
+                },
+                {
+                    text: 'Отменить',
+                    role: 'cancel',
+                    handler: () => {
+                        console.log('Cancel clicked')
+                    }
+                }
+            ]
+            const deleteCompisitionItemIngredientFunc = async (compositionItemIngredientIndex, compositionItemIndex) => {
+                if(compositionItemIngredientIndex > -1 && compositionItemIndex > -1) {
+                    currentRecipe.value.composition[compositionItemIndex].ingredients.splice(compositionItemIngredientIndex, 1)
+                    //
+                    spinner.value = true;
+                    try {
+                        const {error} = await supabase.from('userRecipes').update({
+                            composition: currentRecipe.value.composition
+                        }).eq('id', info.recipeId);
+                        if(error) throw error;
+                        spinner.value = false;
+                        // Рецепт успешно обновлено
+                    } catch (error) {
+                        // alert(`Error: ${error.message}`)
+                    }
+                }
             }
             // Вызываем action sheet меню выбора меры измерения ингредиента для рецепта
             const actionSheetIngredientCostEstimation = ref(false);
@@ -1303,7 +1356,7 @@
             }
 
             return {
-                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList, checkmark, alertOutline, setImgSrc, searchRecipesCategoriesMenu, searchRecipesCategories, userRecipesCategories, searchedRecipesCategories, isCategoryAlreadyAdded, choosenCategory, setMeasure, Virtual, slides, setStyleProperties, steps, addProcessStep, addAssemblingElement, handleReorder, deleteAssemblingItem, assemblingItemToDeleteIndex, openDeleteAssemblingItemMenu, deleteAssemblingItemButtons, deleteAssemblingItemFunc, createOutline, reorderIsDisabled, toggleReorder, editRecipeProcess, editRecipeProcessFunc, handleReorderProcess, deleteProcessStep, processStepToDeleteIndex, openDeleteStepsMenu, deleteProcessStepButtons, deleteProcessStepFunc, addCompositionItem, editComposition, editCompositionFunc, openDeleteCompositionItemMenu, deleteCompositionItem, compositionItemToDeleteIndex, deleteCopmositionItemButtons, deleteCompositionItemFunc, addCompositionItemIngredient, trash, updateComposition, addAssemblingElementModalOpened, addToAssembling, updateProcess, addCompositionItemModalOpened, newCompositionItem, addNewCompositionItem, addButtonIsDisabled, closeCompositionItemModal, addIngredientToCompositionItem, ingredientForNewCompositionModalOpened, ingredientsList, addIngredientToCompositionItemFunc, setIngredientImg, searchNewIngredient, isIngredientAlreadyAdded, deleteNewCompositionItemIngredient, deleteNewCompositionItemIngredientIndex, deleteNewCompositionItemIngredientMenu, deleteNewCompositionItemIngredientFunc, deleteNewCompositionItemIngredientButtons, openActionSheetCostEstimationMenu, actionSheetIngredientCostEstimation, ingredientWhereChangeEstimation, ingredientChangeCostEstimationButtons, setIngredientEstimation, deleteCompisitionItemIngredient
+                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList, checkmark, alertOutline, setImgSrc, searchRecipesCategoriesMenu, searchRecipesCategories, userRecipesCategories, searchedRecipesCategories, isCategoryAlreadyAdded, choosenCategory, setMeasure, Virtual, slides, setStyleProperties, steps, addProcessStep, addAssemblingElement, handleReorder, deleteAssemblingItem, assemblingItemToDeleteIndex, openDeleteAssemblingItemMenu, deleteAssemblingItemButtons, deleteAssemblingItemFunc, createOutline, reorderIsDisabled, toggleReorder, editRecipeProcess, editRecipeProcessFunc, handleReorderProcess, deleteProcessStep, processStepToDeleteIndex, openDeleteStepsMenu, deleteProcessStepButtons, deleteProcessStepFunc, addCompositionItem, editComposition, editCompositionFunc, openDeleteCompositionItemMenu, deleteCompositionItem, compositionItemToDeleteIndex, deleteCopmositionItemButtons, deleteCompositionItemFunc, addCompositionItemIngredient, trash, updateComposition, addAssemblingElementModalOpened, addToAssembling, updateProcess, addCompositionItemModalOpened, newCompositionItem, addNewCompositionItem, addButtonIsDisabled, closeCompositionItemModal, addIngredientToCompositionItem, ingredientForNewCompositionModalOpened, ingredientsList, addIngredientToCompositionItemFunc, setIngredientImg, searchNewIngredient, isIngredientAlreadyAdded, deleteNewCompositionItemIngredient, deleteNewCompositionItemIngredientIndex, deleteNewCompositionItemIngredientMenu, deleteNewCompositionItemIngredientFunc, deleteNewCompositionItemIngredientButtons, openActionSheetCostEstimationMenu, actionSheetIngredientCostEstimation, ingredientWhereChangeEstimation, ingredientChangeCostEstimationButtons, setIngredientEstimation, deleteCompisitionItemIngredientMenu, deleteCompisitionItemIngredient, compositionItemIngredientIndex, compositionItemIndex, compositionItemIngredientButtons, deleteCompisitionItemIngredientFunc, setIngredientValue
             }
         }
     })
