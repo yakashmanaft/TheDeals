@@ -179,42 +179,14 @@
                     </div>
                 </ion-content>
             </ion-modal>
-
+            
             <!-- Модалка по выбору / поиску предмета -->
-            <!-- Оптимизировать!!! ViewRecipe-->
-            <ion-modal :isOpen="searchWarehouseItemMenu">
-                <!-- Поиск -->
-                <ion-searchbar
-                    placeholder="Поиск..."
-                    v-model="searchWarehouseItem"
-                    show-cancel-button="always"
-                    cancelButtonText="Отменить"
-                    @ionCancel="searchWarehouseItemMenu = false"
-                ></ion-searchbar>
-                <!-- Вывод списка -->
-                <ion-content forceOverscroll="false" class="ion-margin-top">
-                    <ion-item
-                        v-if="ingredientsList().length > 0"
-                        v-for="(item, idx) in ingredientsList()"
-                        :key="idx"
-                        class="ion-no-padding"
-                        style="margin-top: 1rem; padding: 0 1rem;"
-                        @click.stop="addItemToCurrentElement(item)"
-                    >
-                        {{ item }}
-                    </ion-item>
-                    <!--  -->
-                    <ion-item v-else lines="none">
-                        <ion-text color="medium">Ничего не найдено</ion-text>
-                    </ion-item>
-                    <!--  -->
-                    <br>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
-                </ion-content>
-            </ion-modal>
+            <SearchDealBuySubject 
+                :isOpen="searchWarehouseItemMenu"
+                @closeModal="searchWarehouseItemMenu = false"
+                :properties="'warehouseSuitable'"
+                @addItem="addItemToCurrentElement"
+            />
         </ion-content>
     </ion-modal>
 </template>
@@ -222,15 +194,14 @@
 <script>
 import { defineComponent, ref, computed, watch, watchEffect, onMounted  } from "vue";
 //
-import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonInput, IonGrid, IonRow, IonIcon, IonChip, IonSearchbar, IonItem, IonActionSheet } from "@ionic/vue";
+import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonInput, IonGrid, IonRow, IonIcon, IonChip, IonSearchbar, IonItem, IonActionSheet, IonImg, IonThumbnail } from "@ionic/vue";
 import { removeCircleOutline, addCircleOutline, closeCircleOutline } from 'ionicons/icons'
 //
 import { searchWarehouseCategoryFilter } from '../../helpers/filterWarehouseCategories';
 import { sortAlphabeticallyWarhouseItem } from "../../helpers/sortDealSubject";
-import { sortAlphabetically } from '../../helpers/sortDealSubject';
-import { searchWarehouseItemFilter } from '../../helpers/filterUserWarehouseItems';
 //
 import Select from '../Select.vue'
+import SearchDealBuySubject from '../modal/SearchDealBuySubject.vue'
 //
 import store from '../../store/index';
 // import { uid } from 'uid';
@@ -238,14 +209,14 @@ import store from '../../store/index';
 
     export default defineComponent({
         name: 'CreateItem',
-        emites: ['closeModal'],
+        emits: ['closeModal'],
         props: {
             itemData: Object
         }, 
         components: {
-            IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonInput, IonGrid, IonRow, IonIcon, IonChip, IonSearchbar, IonItem, IonActionSheet,
+            IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonInput, IonGrid, IonRow, IonIcon, IonChip, IonSearchbar, IonItem, IonActionSheet, IonImg, IonThumbnail,
             //
-            Select
+            Select, SearchDealBuySubject
         }, 
         setup (props, { emit }) {
             //
@@ -369,21 +340,6 @@ import store from '../../store/index';
             }
             // ======================= поиск / создание предмета на склад ====================
             const searchWarehouseItemMenu = ref(false)
-            const searchWarehouseItem = ref('')
-            const ingredientsList = () => {
-                let dealBuySubjectArray = store.state.dealBuySubjectArray.filter(item => {
-                    // Исключаем из списка нежное, оставляем только явные ингредиенты
-                    return item.warehouseSuitable === true
-                })
-                let dealBuySubjectArrayUniq = Object.values(dealBuySubjectArray.reduce((acc,cur)=>Object.assign(acc,{[cur.name]:cur}),{}))
-                if(searchWarehouseItem.value === ''){
-                    return sortAlphabetically(dealBuySubjectArrayUniq)
-                } else if (searchWarehouseItem.value !== '') {
-                    return searchWarehouseItemFilter(dealBuySubjectArrayUniq, searchWarehouseItem.value)
-                } else {
-                    return []
-                }
-            }
             const addItemToCurrentElement = (item) => {
                 itemData.value.name = item.name;
                 searchWarehouseItemMenu.value = false;
@@ -394,7 +350,7 @@ import store from '../../store/index';
             }) 
 
             return {
-                itemData, itemName, catalogNumber, closeThisModal, removeCircleOutline, addCircleOutline, changeSubjectQty, closeCircleOutline, searchWarehouseCategoriesMenu, searchWarehouseCategories, addNewCategory, searchedhWarehouseCategories, userWarehouseCategories, userSettings, choosenCategory, newCategory, isCategoryAlreadyAdded, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, deleteCategoruFunc, priceEstimationType, userWorkProfile, setPerKilogramValue, itemEstimationType, searchWarehouseItemMenu, searchWarehouseItem, ingredientsList, addItemToCurrentElement
+                itemData, itemName, catalogNumber, closeThisModal, removeCircleOutline, addCircleOutline, changeSubjectQty, closeCircleOutline, searchWarehouseCategoriesMenu, searchWarehouseCategories, addNewCategory, searchedhWarehouseCategories, userWarehouseCategories, userSettings, choosenCategory, newCategory, isCategoryAlreadyAdded, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, deleteCategoruFunc, priceEstimationType, userWorkProfile, setPerKilogramValue, itemEstimationType, searchWarehouseItemMenu,  addItemToCurrentElement
             }
         }
     })
