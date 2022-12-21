@@ -325,11 +325,13 @@
                 // Если есть пустые строки
                 // Использовать валидацию
                 if(newItemData.name === '') {
-                    alert('Warehouse: Вы не указали название предмета')
-                } else if(newItemData.catalogNumber === '') {
+                    alert('Warehouse: Вы не указали предмет')
+                } else if(userWorkProfile.value !== 'Тортодилер' && newItemData.catalogNumber === '') {
                     alert('Warehouse: Вы не указали каталожный номер')
                 } else if(userWorkProfile.value === 'Тортодилер' && newItemData.estimationType === '') {
                     alert('Warehouse: Укажите тип расчета')
+                } else if(newItemData.subjectQty === 0) {
+                    alert('Warehouse: Количество должно быть > 0')
                 } else {
                     try {
                         // Добавляем в БД инфу по новому предмету

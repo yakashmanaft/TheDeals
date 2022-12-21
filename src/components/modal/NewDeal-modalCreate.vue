@@ -495,6 +495,7 @@
                     :amount="dealPaidAmountValue()"
                     @getAmountValue="setAmountValue"
                     :balance="availableBalance"
+                    :isDealPaidMenuOpenedValue="isDealPaidMenuOpened"
                 />
             </ion-item-group>
 

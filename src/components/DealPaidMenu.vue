@@ -17,8 +17,7 @@
             <ion-item v-if="currentDeal.dealType === 'buy'" lines="none" class="ion-margin-top">
                 <ion-grid class="ion-no-padding">
                     <ion-row>
-                        <ion-text>Баланс:</ion-text>
-                        <ion-text>{{ walletBalance }}</ion-text>
+                        <ion-text>Баланс:</ion-text>&nbsp<ion-text>{{ walletBalance }}</ion-text>
                     </ion-row>
                 </ion-grid>
             </ion-item>
@@ -112,7 +111,7 @@
             const myDeals = ref([])
             //
             watch(isDealPaidMenuOpened, () => {
-                // console.log(isDealPaidMenuOpened.value)
+                console.log(isDealPaidMenuOpened.value)
                 refreshWalletBalance()
             })
             //
