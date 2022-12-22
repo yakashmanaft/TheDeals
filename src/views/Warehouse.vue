@@ -163,7 +163,6 @@
                     :is-open="isSettingsModalOpened"
                     @closeModal="closeSettingsModal"
                     :itemsSystemCategories="warehouseCategoriesArray"
-                    :userItemsCategories="myItems"
                     @update="update"
                 />
 
@@ -180,7 +179,7 @@
 </template>
 
 <script>
-    import { defineComponent, ref, computed, onMounted} from 'vue'
+    import { defineComponent, ref, computed, onMounted, watch } from 'vue'
     import store from '../store/index';
     import { supabase } from '../supabase/init';
     import { useRoute, useRouter } from 'vue-router';
@@ -262,7 +261,6 @@
             const searchedCategory = computed(() => {
                 return searchWarehouseCategoryFilter(userWarehouseCategoriesArray.value, search.value)
             })
-
             // =====================================
             // Work with Modal Create New Warehouse Item
             const isOpen = ref(false);
@@ -383,9 +381,10 @@
             const isSettingsModalOpened = ref(false)
             const closeSettingsModal = () => {
                 // console.log(boolean)
-                store.methods.getUserWarehouseItemsFromDB()
-                userWarehouseCategoriesArray.value = userSettings.value.userWarehouseCategories
+                // store.methods.getUserWarehouseItemsFromDB()
+                // userWarehouseCategoriesArray.value = userSettings.value.userWarehouseCategories
                 isSettingsModalOpened.value = false
+                console.log(`close clicked: ${userWarehouseCategoriesArray.value}`)
             }
 
             // 
@@ -397,13 +396,14 @@
                     }).eq('email', userEmail.value);
                     if(error) throw error;
                     spinner.value = false;
-                    await store.methods.getUserWarehouseItemsFromDB()
-                    myItems.value = store.state.userWarehouseArray;
-                    // await store.methods.getUserSettingsfromDB()
-                    // userWarehouseCategoriesArray.value = userSettings.value.userWarehouseCategories
                 } catch (error) {
                     alert(`Error: ${error.message}`)
                 }
+                await store.methods.getUserWarehouseItemsFromDB()
+                myItems.value = store.state.userWarehouseArray;
+                await store.methods.getUserSettingsfromDB()
+                userWarehouseCategoriesArray.value = store.state.userSettings[0].userWarehouseCategories 
+                console.log(`after update: ${userWarehouseCategoriesArray.value}`)
             }
 
 

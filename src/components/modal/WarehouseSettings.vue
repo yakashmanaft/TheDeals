@@ -38,7 +38,7 @@
 
                     <ion-row v-else class="ion-justify-content-between ion-align-items-center">
                         <ion-text>{{category}}</ion-text>
-                        <ion-toggle color="success" :checked="isChecked(category)" @ionChange="doSomething(category)"></ion-toggle>
+                        <ion-toggle color="success" :checked="isChecked(category)" @ionChange="toggleCategories(category)"></ion-toggle>
                     </ion-row>
                 </ion-grid>
             </div>
@@ -84,23 +84,26 @@
             }
         }
         //
-        const doSomething = (category) => {
-
+        const toggleCategories = (category) => {
             if(!myCategories.value.includes(category)) {
                 myCategories.value.push(category)
+                console.log(`toggled: ${myCategories.value}`)
             } else if (myCategories.value.includes(category)) {
-                myCategories.value.splice(category, 1)
+                let index = myCategories.value.indexOf(category)
+                if(index > -1) {
+                    myCategories.value.splice(index, 1)
+                }
+                console.log(`toggled: ${myCategories.value}`)
             }
             emit('update', myCategories.value)
         }
         //
         watchEffect(() => {
-            // myItems.value = props.userItemsCategories
             warehouseCategoriesArray.value = props.itemsSystemCategories
         })
 
         return {
-            warehouseCategoriesArray, myCategories, isChecked, doSomething
+            warehouseCategoriesArray, myCategories, isChecked, toggleCategories
         }
       }
     })
