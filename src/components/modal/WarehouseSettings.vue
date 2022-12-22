@@ -33,12 +33,12 @@
                         <div>
                             <ion-text>{{category}}</ion-text> <ion-text color="medium">(По умолчанию)</ion-text>
                         </div>
-                        <ion-toggle color="success" checked="true" disabled="true" @ionChange="doSomething(category, index)"></ion-toggle>
+                        <ion-toggle color="success" checked="true" disabled="true"></ion-toggle>
                     </ion-row>
 
                     <ion-row v-else class="ion-justify-content-between ion-align-items-center">
                         <ion-text>{{category}}</ion-text>
-                        <ion-toggle color="success" :checked="isChecked(category)" @ionChange="doSomething(category, index)"></ion-toggle>
+                        <ion-toggle color="success" :checked="isChecked(category)" @ionChange="doSomething(category)"></ion-toggle>
                     </ion-row>
                 </ion-grid>
             </div>
@@ -61,6 +61,7 @@
         itemsSystemCategories: Array,
         // userItemsCategories: Array
       },
+      emits: ['update', 'closeModal'],
       components: {
         IonModal, IonContent, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonText, IonToggle, IonGrid, IonRow
       }, 
@@ -83,17 +84,14 @@
             }
         }
         //
-        const doSomething = async (category, index) => {
-            console.log(category)
-            console.log(index)
-            if(myCategories.value.includes(category)) {
-                myCategories.value.splice(category, 1)
-                emit('update', myCategories.value)
-            } else {
-                myCategories.value.push(category)
-                emit('update', myCategories.value)
-            }
+        const doSomething = (category) => {
 
+            if(!myCategories.value.includes(category)) {
+                myCategories.value.push(category)
+            } else if (myCategories.value.includes(category)) {
+                myCategories.value.splice(category, 1)
+            }
+            emit('update', myCategories.value)
         }
         //
         watchEffect(() => {

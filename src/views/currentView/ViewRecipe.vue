@@ -396,9 +396,9 @@
                                     </ion-item-options>
                                 </ion-item-sliding>
                             </div>
-                            <div v-else class="ion-padding-horizontal">
+                            <!-- <div v-else class="ion-padding-horizontal">
                                 <ion-text color="medium">Нет ингредиентов</ion-text>
-                            </div>
+                            </div> -->
                             <!--  -->
                             <div class="ion-margin-top ion-padding-horizontal" @click.stop="addIngredientToCompositionItem()">
                                 <ion-text color="primary" class="button-add-ingredient">Добавить ингредиент</ion-text>
@@ -425,7 +425,7 @@
                     <ion-header translucent="true">
                         <ion-toolbar>
                             <ion-buttons slot="start">
-                                <ion-button @click.stop="closeAddIngredientToCurrentCompositionItemModalOpened()">Отменить</ion-button>
+                                <ion-button @click.stop="closeAddIngredientToCurrentCompositionItemModal()">Отменить</ion-button>
                             </ion-buttons>
                             <ion-title>Новый ингредиент</ion-title>
                             <ion-buttons slot="end"></ion-buttons>
@@ -519,83 +519,21 @@
                     :buttons="deleteNewCompositionItemIngredientButtons"
                 ></ion-action-sheet>
 
-                <!-- Модалка выбора ингредиента к current composition item -->
-                <!-- Оптимизировать!!! NewWarehouseItem-modalCreate -->
-                <ion-modal :isOpen="newIngredientCurrentCompositionModalOpened">
-                    <!-- Поиск -->
-                    <ion-searchbar 
-                        placeholder="Поиск..." 
-                        v-model="searchNewIngredient"
-                        show-cancel-button="always"
-                        cancelButtonText="Отменить"
-                        @ionCancel="newIngredientCurrentCompositionModalOpened = false"
-                    ></ion-searchbar>
-                    <!-- Вывод списка -->
-                    <ion-content forceOverscroll="false" class="ion-margin-top">
-                        <ion-item 
-                            v-if="ingredientsList().length > 0"
-                            v-for="(item, idx) in ingredientsList()"
-                            :key="idx" 
-                            class="ion-no-padding"
-                            style="margin-top: 1rem; padding: 0 1rem;"
-                            @click.stop="addIngredientToCurrentCompositionItem(item)"
-                        >
-                            <ion-grid class="ion-no-padding ion-margin-bottom">
-                                <ion-row class="ion-justify-content-between ion-align-items-center" style="flex-wrap: nowrap;">
-                                    <ion-text class="ion-padding-start">{{item.name}}</ion-text>
-                                    <ion-thumbnail class="thumbnail_deal-subject" style="background-color: var(--ion-color-light);">
-                                        <ion-img :src="`../img/subjects/buy/${item.value}.webp`"></ion-img>
-                                    </ion-thumbnail>
-                                </ion-row>
-                            </ion-grid>
-                        </ion-item>
-                        <!--  -->
-                        <ion-item v-else lines="none">
-                            <ion-text color="medium">Ничего не найдено</ion-text>
-                        </ion-item>
-                        <!--  -->
-                        <br>
-                        <br>
-                        <br>
-                        <br>
-                    </ion-content>
-                </ion-modal>
+                <!-- Модалка по выбору / поиску предмета (ингредиента) к CURRENT composition item-->
+                <SearchDealBuySubject
+                    :isOpen="newIngredientCurrentCompositionModalOpened"
+                    @closeModal="newIngredientCurrentCompositionModalOpened = false"
+                    :properties="'isIngredient'"
+                    @addItem="addIngredientToCurrentCompositionItem"
+                />
 
-                <!-- Модалка выбора ингредиента к добавлению новый composition item-->
-                <!-- Оптимизировать!!! NewWarehouseItem-modalCreate -->
-                <ion-modal :isOpen="ingredientForNewCompositionModalOpened">
-                    <!-- Поиск -->
-                    <ion-searchbar 
-                        placeholder="Поиск..." 
-                        v-model="searchNewIngredient"
-                        show-cancel-button="always"
-                        cancelButtonText="Отменить"
-                        @ionCancel="ingredientForNewCompositionModalOpened = false"
-                    ></ion-searchbar>
-                    <!-- Вывод списка -->
-                    <ion-content forceOverscroll="false" class="ion-margin-top">
-                        <ion-item v-if="ingredientsList().length > 0" v-for="(item, idx) in ingredientsList()" :key="idx" class="ion-no-padding" style="margin-top: 1rem; padding: 0 1rem;" @click.stop="addIngredientToCompositionItemFunc(item)">
-                            <ion-grid class="ion-no-padding ion-margin-bottom">
-                                <ion-row class="ion-justify-content-between ion-align-items-center" style="flex-wrap: nowrap;">
-                                    <ion-text class="ion-padding-start">
-                                        {{item.name}}
-                                    </ion-text>
-                                    <ion-thumbnail class="thumbnail_deal-subject" style="background-color: var(--ion-color-light);">
-                                        <ion-img :src="`../img/subjects/buy/${item.value}.webp`"></ion-img>
-                                    </ion-thumbnail>
-                                </ion-row>
-                            </ion-grid>
-                        </ion-item>
-                        <ion-item v-else lines="none">
-                            <ion-text color="medium">Ничего не найдено</ion-text>
-                        </ion-item>
-                        <!--  -->
-                        <br>
-                        <br>
-                        <br>
-                        <br>
-                    </ion-content>
-                </ion-modal>
+                <!-- Модалка по выбору / поиску предмета (ингредиента) к NEW composition item-->
+                <SearchDealBuySubject
+                    :isOpen="ingredientForNewCompositionModalOpened"
+                    @closeModal="ingredientForNewCompositionModalOpened = false"
+                    :properties="'isIngredient'"
+                    @addItem="addIngredientToCompositionItemFunc"
+                />
 
                 <!-- Модалка добавления item к сборке -->
                 <ion-modal :isOpen="addAssemblingElementModalOpened">
@@ -733,6 +671,7 @@
     //
     import Spinner from '../../components/Spinner.vue';
     import ViewHeader from '../../components/headers/HeaderViewCurrent.vue';
+    import SearchDealBuySubject from '../../components/modal/SearchDealBuySubject.vue'
     //
     import { searchWarehouseCategoryFilter } from '../../helpers/filterWarehouseCategories';
     import { sortAlphabeticallyWarhouseItem } from "../../helpers/sortDealSubject";
@@ -746,7 +685,7 @@
             //
             IonContent, IonItemGroup, IonButton, IonActionSheet, IonGrid, IonRow, IonToggle, IonInput, IonText, IonItem, IonChip, IonIcon, IonTextarea, IonLabel, IonThumbnail, IonImg, IonModal, IonSearchbar, IonList, IonReorderGroup, IonReorder, IonItemSliding, IonItemOptions, IonItemOption, IonHeader, IonToolbar, IonButtons, IonTitle,
             //
-            Swiper, SwiperSlide
+            Swiper, SwiperSlide, SearchDealBuySubject
         },
         setup() {
             //
@@ -1199,32 +1138,13 @@
             }
             //
             const ingredientForNewCompositionModalOpened = ref(false)
-            const searchNewIngredient = ref('')
-            const ingredientsList = () => {
-                let dealBuySubjectArray = store.state.dealBuySubjectArray.filter(item => {
-                    // Исключаем из списка нежное, оставляем только явные ингредиенты
-                    return item.isIngredient !== false
-                })
-                let dealBuySubjectArrayUniq = Object.values(dealBuySubjectArray.reduce((acc,cur)=>Object.assign(acc,{[cur.name]:cur}),{}))
-                if(searchNewIngredient.value === '') {
-                    return sortAlphabetically(dealBuySubjectArrayUniq)
-                } else if (searchNewIngredient.value !== '') {
-                    return searchWarehouseItemFilter(dealBuySubjectArrayUniq, searchNewIngredient.value)
-                } else {
-                    return []
-                }
-            }
+            // Открываем модалку создания NEW composition item
             const addIngredientToCompositionItem = () => {
-                // newCompositionItem.value.ingredients.push({
-                //     name: '',
-                //     costEstimation: '',
-                //     value: 0
-                // })
                 ingredientForNewCompositionModalOpened.value = true;
             }
+            // Проверяем добавлена ли ингредиент к NEW composition item, если НЕТ - пушим к массиву ингредиентов у NEW composition item
             const isIngredientAlreadyAdded = ref()
             const addIngredientToCompositionItemFunc = (ingredientData) => {
-                // Проверяем добавлена уже категория к предмету или нет
                 isIngredientAlreadyAdded.value = newCompositionItem.value.ingredients.find(item => item.name ===  ingredientData.name)
                 if(isIngredientAlreadyAdded.value !== undefined) {
                     alert('ViewRecipe: ингредиент уже добавлен')
@@ -1625,7 +1545,7 @@
                     }
                 }
             ]
-            const closeAddIngredientToCurrentCompositionItemModalOpened = () => {
+            const closeAddIngredientToCurrentCompositionItemModal = () => {
                 addIngredientToCurrentCompositionItemModalOpened.value = false
                 currentCompositionItemNewIngredient.value = {
                     name: '',
@@ -1664,7 +1584,7 @@
             }
 
             return {
-                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList, checkmark, alertOutline, setImgSrc, searchRecipesCategoriesMenu, searchRecipesCategories, userRecipesCategories, searchedRecipesCategories, isCategoryAlreadyAdded, choosenCategory, setMeasure, Virtual, slides, setStyleProperties, steps, addProcessStep, addAssemblingElement, handleReorder, deleteAssemblingItem, assemblingItemToDeleteIndex, openDeleteAssemblingItemMenu, deleteAssemblingItemButtons, deleteAssemblingItemFunc, createOutline, reorderIsDisabled, toggleReorder, editRecipeProcess, editRecipeProcessFunc, handleReorderProcess, deleteProcessStep, processStepToDeleteIndex, openDeleteStepsMenu, deleteProcessStepButtons, deleteProcessStepFunc, addCompositionItem, editComposition, editCompositionFunc, openDeleteCompositionItemMenu, deleteCompositionItem, compositionItemToDeleteIndex, deleteCopmositionItemButtons, deleteCompositionItemFunc, addCompositionItemIngredient, trash, updateComposition, addAssemblingElementModalOpened, addToAssembling, updateProcess, addCompositionItemModalOpened, newCompositionItem, addNewCompositionItem, addButtonIsDisabled, closeCompositionItemModal, addIngredientToCompositionItem, ingredientForNewCompositionModalOpened, ingredientsList, addIngredientToCompositionItemFunc, setIngredientImg, searchNewIngredient, isIngredientAlreadyAdded, deleteNewCompositionItemIngredient, deleteNewCompositionItemIngredientIndex, deleteNewCompositionItemIngredientMenu, deleteNewCompositionItemIngredientFunc, deleteNewCompositionItemIngredientButtons, openActionSheetCostEstimationMenu, actionSheetIngredientCostEstimation, ingredientWhereChangeEstimation, ingredientChangeCostEstimationButtons, setIngredientEstimation, deleteCompisitionItemIngredientMenu, deleteCompisitionItemIngredient, compositionItemIngredientIndex, compositionItemIndex, compositionItemIngredientButtons, deleteCompisitionItemIngredientFunc, setIngredientValue, setCurrentIngredientValue, actionSheetCurrentIngredientCostEstimation, currentIngredientWhereChangeEstimation, openActionSheetCurrentCostEstimationMenu, currentIngredientChangeCostEstimationButtons, addIngredientToCurrentCompositionItemModalOpened, currentCompositionItem, currentCompositionItemNewIngredient, addNewIngredientButtonIsDisabled, addCompositionItemIngredientFunc, newIngredientCurrentCompositionModalOpened, addIngredientToCurrentCompositionItem, actionSheetCurrentCompositionItemNewIngredient, actionSheetCurrentCompositionItemNewIngredientButtons, setNewIngredientValue, closeAddIngredientToCurrentCompositionItemModalOpened
+                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList, checkmark, alertOutline, setImgSrc, searchRecipesCategoriesMenu, searchRecipesCategories, userRecipesCategories, searchedRecipesCategories, isCategoryAlreadyAdded, choosenCategory, setMeasure, Virtual, slides, setStyleProperties, steps, addProcessStep, addAssemblingElement, handleReorder, deleteAssemblingItem, assemblingItemToDeleteIndex, openDeleteAssemblingItemMenu, deleteAssemblingItemButtons, deleteAssemblingItemFunc, createOutline, reorderIsDisabled, toggleReorder, editRecipeProcess, editRecipeProcessFunc, handleReorderProcess, deleteProcessStep, processStepToDeleteIndex, openDeleteStepsMenu, deleteProcessStepButtons, deleteProcessStepFunc, addCompositionItem, editComposition, editCompositionFunc, openDeleteCompositionItemMenu, deleteCompositionItem, compositionItemToDeleteIndex, deleteCopmositionItemButtons, deleteCompositionItemFunc, addCompositionItemIngredient, trash, updateComposition, addAssemblingElementModalOpened, addToAssembling, updateProcess, addCompositionItemModalOpened, newCompositionItem, addNewCompositionItem, addButtonIsDisabled, closeCompositionItemModal, addIngredientToCompositionItem, ingredientForNewCompositionModalOpened, addIngredientToCompositionItemFunc, setIngredientImg, isIngredientAlreadyAdded, deleteNewCompositionItemIngredient, deleteNewCompositionItemIngredientIndex, deleteNewCompositionItemIngredientMenu, deleteNewCompositionItemIngredientFunc, deleteNewCompositionItemIngredientButtons, openActionSheetCostEstimationMenu, actionSheetIngredientCostEstimation, ingredientWhereChangeEstimation, ingredientChangeCostEstimationButtons, setIngredientEstimation, deleteCompisitionItemIngredientMenu, deleteCompisitionItemIngredient, compositionItemIngredientIndex, compositionItemIndex, compositionItemIngredientButtons, deleteCompisitionItemIngredientFunc, setIngredientValue, setCurrentIngredientValue, actionSheetCurrentIngredientCostEstimation, currentIngredientWhereChangeEstimation, openActionSheetCurrentCostEstimationMenu, currentIngredientChangeCostEstimationButtons, addIngredientToCurrentCompositionItemModalOpened, currentCompositionItem, currentCompositionItemNewIngredient, addNewIngredientButtonIsDisabled, addCompositionItemIngredientFunc, newIngredientCurrentCompositionModalOpened, addIngredientToCurrentCompositionItem, actionSheetCurrentCompositionItemNewIngredient, actionSheetCurrentCompositionItemNewIngredientButtons, setNewIngredientValue, closeAddIngredientToCurrentCompositionItemModal
             }
         }
     })

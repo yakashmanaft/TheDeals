@@ -10,7 +10,7 @@
 
         <!-- page header -->
         <Header 
-            @goToSettings="toggleSettingsModal"
+            @goToSettings="isSettingsModalOpened = true"
             :title="pageTitle"
         />
 
@@ -161,7 +161,7 @@
                 <!--  -->
                 <WarehouseSettings
                     :is-open="isSettingsModalOpened"
-                    @closeModal="toggleSettingsModal(false)"
+                    @closeModal="closeSettingsModal"
                     :itemsSystemCategories="warehouseCategoriesArray"
                     :userItemsCategories="myItems"
                     @update="update"
@@ -211,6 +211,7 @@
             const spinner = ref(null);
             const dataLoaded = ref(null);
             const myItems = ref([]);
+            const warehouseCategoriesArray = ref([])
             // Подтягиваем список дел из store
             spinner.value = true;
             //
@@ -233,8 +234,7 @@
             //
             const userSettings = ref(store.state.userSettings[0])
             const userWorkProfile = ref(userSettings.value.userWorkProfile);
-            //
-            const warehouseCategoriesArray = ref([])
+            const userWarehouseCategoriesArray = ref(userSettings.value.userWarehouseCategories)
             //
             onMounted( async () => {
                 await store.methods.getUserWarehouseItemsFromDB()
@@ -245,6 +245,7 @@
                 dataLoaded.value = true;
 
                 // ===================== ЗАВИСИТ ОТ ТИПА РАБОЧЕГО ПРОФИЛЯ В НАСТРОЙКАХ АККАУНТА ====================
+                // Это для списка складских категорий в настройках склада
                 if(userWorkProfile.value === 'Автозапчасти') {
                     warehouseCategoriesArray.value = store.state.autoWarehouseCategoriesArray
                 } else if (userWorkProfile.value === 'Тортодилер') {
@@ -259,11 +260,11 @@
                 // return myItems.value
             })
             const searchedCategory = computed(() => {
-                return searchWarehouseCategoryFilter(warehouseCategoriesArray.value, search.value)
+                return searchWarehouseCategoryFilter(userWarehouseCategoriesArray.value, search.value)
             })
 
             // =====================================
-            // Work with Modal Create New Recipe
+            // Work with Modal Create New Warehouse Item
             const isOpen = ref(false);
             //
             const itemData = ref({
@@ -380,9 +381,11 @@
 
             // 
             const isSettingsModalOpened = ref(false)
-            const toggleSettingsModal = (boolean) => {
+            const closeSettingsModal = () => {
                 // console.log(boolean)
-                isSettingsModalOpened.value = boolean
+                store.methods.getUserWarehouseItemsFromDB()
+                userWarehouseCategoriesArray.value = userSettings.value.userWarehouseCategories
+                isSettingsModalOpened.value = false
             }
 
             // 
@@ -393,17 +396,19 @@
                         userWarehouseCategories: myCategories
                     }).eq('email', userEmail.value);
                     if(error) throw error;
+                    spinner.value = false;
+                    await store.methods.getUserWarehouseItemsFromDB()
+                    myItems.value = store.state.userWarehouseArray;
+                    // await store.methods.getUserSettingsfromDB()
+                    // userWarehouseCategoriesArray.value = userSettings.value.userWarehouseCategories
                 } catch (error) {
                     alert(`Error: ${error.message}`)
                 }
-                spinner.value = false;
-                await store.methods.getUserWarehouseItemsFromDB()
-                myItems.value = store.state.userWarehouseArray;
             }
 
 
             return {
-                route, itemData, dataLoaded, spinner, setOpen, currency, user, pageTitle, myItems, isOpen, createItem, search, warehouseCategoriesArray, filteredMyItemsFunc, searchedItem, searchedCategory, expendList, toggleSettingsModal, isSettingsModalOpened, update, userSettings, userWorkProfile
+                route, itemData, dataLoaded, spinner, setOpen, currency, user, pageTitle, myItems, isOpen, createItem, search, warehouseCategoriesArray, filteredMyItemsFunc, searchedItem, searchedCategory, expendList, closeSettingsModal, isSettingsModalOpened, update, userSettings, userWorkProfile, userWarehouseCategoriesArray
             }
         }
     }) 
