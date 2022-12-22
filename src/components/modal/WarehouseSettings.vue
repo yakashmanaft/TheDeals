@@ -23,8 +23,8 @@
                 </ion-text>
                 <!-- {{myCategories}} -->
                 <!-- <ion-text color="medium">Подключите складские категории к вашему аккаунту.</ion-text> -->
-                <ion-text color="medium">Чтобы не потерять предметы, у которых были указаны отключенные категории - также показываем их в поиске.</ion-text>
-                <br>
+                <!-- <ion-text color="medium">Чтобы не потерять предметы, у которых были указаны отключенные категории - также показываем их в поиске.</ion-text>
+                <br> -->
             </div>
 
             <div v-for="(category, index) in warehouseCategoriesArray" :key="index" class="ion-margin-horizontal">

@@ -329,6 +329,8 @@
                     alert('Warehouse: Вы не указали каталожный номер')
                 } else if(userWorkProfile.value === 'Тортодилер' && newItemData.estimationType === '') {
                     alert('Warehouse: Укажите тип расчета')
+                } else if (newItemData.categories.length === 0) {
+                    alert('Warehouse: Укажите категорию')
                 } else if(newItemData.subjectQty === 0) {
                     alert('Warehouse: Количество должно быть > 0')
                 } else {

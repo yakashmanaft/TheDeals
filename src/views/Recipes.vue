@@ -297,8 +297,9 @@
                     alert('Recipes: Вы не указали название рецепта')
                 } else if (newRecipeData.recipeDescription === '') {
                     alert('Recips: Вы не заполнили описание рецепта')
-                } 
-                else {
+                } else if (newRecipeData.categories.length === 0) {
+                    alert('Recipes: Укажите категорию')
+                } else {
                     try {
                         // Добавляем в БД инфу по новому контакту
                         const { error } = await supabase.from('userRecipes').insert([recipeData.value])
