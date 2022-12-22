@@ -27,11 +27,9 @@
                 </ion-text>
                 <!-- Показываем выбранный предмет по делу -->
                 <ion-grid class="ion-no-padding border-bottom ion-padding-bottom">
-                    <ion-row class="ion-justify-content-between ion-align-items-center">
+                    <ion-row @click="searchSubjectMenu = true" class="ion-justify-content-between ion-align-items-center" style="flex-wrap: nowrap;">
                         <!-- Кнопка выбора предмета дела -->
-                        <ion-button color="primary" size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click="searchSubjectMenu = true">
-                            {{ showSelectedProduct(subjectData.selectedProduct) }}
-                        </ion-button>
+                        <ion-text color="primary">{{ showSelectedProduct(subjectData.selectedProduct) }}</ion-text>
                         <!-- Если уже указан предмет -->
                         <ion-thumbnail v-if="subjectData.selectedProduct !== ''" class="thumbnail_deal-subject">
                             <!-- Если тип дела Продажа -->

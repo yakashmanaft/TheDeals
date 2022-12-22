@@ -31,16 +31,26 @@
                 ></ion-input>
                 <!-- Предмет, если Тортодилер -->
                 <div v-else>
-                    <ion-text 
-                        v-if="itemData.name === ''"
-                        color="primary" 
-                        style="border-bottom: 1px dashed var(--ion-color-primary)"
-                        @click.stop="searchWarehouseItemMenu = true"
-                    >Выберите из списка</ion-text>
-                    <ion-text 
-                        v-else
-                        @click.stop="searchWarehouseItemMenu = true"
-                    >{{ itemData.name }}</ion-text>
+                    <ion-item lines="none" class="ion-no-padding">
+                        <!-- Если ничего не было выбрано -->
+                        <ion-text 
+                            v-if="itemData.name === ''"
+                            color="primary" 
+                            style="border-bottom: 1px dashed var(--ion-color-primary)"
+                            @click.stop="searchWarehouseItemMenu = true"
+                        >Выберите из списка</ion-text>
+                        <!-- Если предмет был указан -->
+                        <ion-grid v-else class="ion-no-padding">
+                            <ion-row @click.stop="searchWarehouseItemMenu = true" class="ion-justify-content-between ion-align-items-center" style="flex-wrap: nowrap;">
+                                <!--  -->
+                                <ion-text color="primary">{{ itemData.name }}</ion-text>
+                                <!--  -->
+                                <ion-thumbnail class="thumbnail_deal-subject" style="background-color: var(--ion-color-light);">
+                                    <ion-img :src="setImgSrc(itemData.name)"></ion-img>
+                                </ion-thumbnail>
+                            </ion-row>
+                        </ion-grid>
+                    </ion-item>
                 </div>
             </ion-item-group>
 
@@ -345,12 +355,24 @@ import store from '../../store/index';
                 searchWarehouseItemMenu.value = false;
             }
             //
+            const setImgSrc = (recipeName) => {
+                let dealBuySubjectArray = store.state.dealBuySubjectArray
+                let ingredientValue;
+                dealBuySubjectArray.filter(item => {
+                    if(item.name === recipeName ) {
+                        ingredientValue = item.value
+                    }
+                })
+                // console.log(ingredientValue) 
+                return `../img/subjects/buy/${ingredientValue}.webp`
+            }
+            //
             watchEffect(() => {
                 itemData.value = props.itemData
             }) 
 
             return {
-                itemData, itemName, catalogNumber, closeThisModal, removeCircleOutline, addCircleOutline, changeSubjectQty, closeCircleOutline, searchWarehouseCategoriesMenu, searchWarehouseCategories, addNewCategory, searchedhWarehouseCategories, userWarehouseCategories, userSettings, choosenCategory, newCategory, isCategoryAlreadyAdded, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, deleteCategoruFunc, priceEstimationType, userWorkProfile, setPerKilogramValue, itemEstimationType, searchWarehouseItemMenu,  addItemToCurrentElement
+                itemData, itemName, catalogNumber, closeThisModal, removeCircleOutline, addCircleOutline, changeSubjectQty, closeCircleOutline, searchWarehouseCategoriesMenu, searchWarehouseCategories, addNewCategory, searchedhWarehouseCategories, userWarehouseCategories, userSettings, choosenCategory, newCategory, isCategoryAlreadyAdded, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, deleteCategoruFunc, priceEstimationType, userWorkProfile, setPerKilogramValue, itemEstimationType, searchWarehouseItemMenu,  addItemToCurrentElement, setImgSrc
             }
         }
     })
@@ -362,5 +384,14 @@ import store from '../../store/index';
     }
     .countQty_count {
         font-size: 24px;
+    }
+    .thumbnail_deal-subject {
+        height: 64px;
+        min-width: 64px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 50%;
+        padding: 0.5rem;
     }
 </style>

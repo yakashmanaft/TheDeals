@@ -25,11 +25,9 @@
                 </ion-text>
                 <!-- Показываем текущий продукт -->
                 <ion-grid class="ion-no-padding border-bottom ion-padding-bottom">
-                    <ion-row class="ion-justify-content-between ion-align-items-center">
+                    <ion-row class="ion-justify-content-between ion-align-items-center" style="flex-wrap: nowrap;">
                         <!-- Название текущего продукта -->
-                        <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                            {{ translateProductValue(subjectData.selectedProduct) }}
-                        </ion-button>
+                        <ion-text color="medium">{{ translateProductValue(subjectData.selectedProduct) }}</ion-text>
                         <!-- Иконка к текущему продукту -->
                         <ion-thumbnail v-if="subjectData.selectedProduct !== '' && currentDealType === 'sale'" class="thumbnail_deal-subject">
                             <ion-img :src="`../img/subjects/sale/${subjectData.selectedProduct}.webp`"></ion-img>
