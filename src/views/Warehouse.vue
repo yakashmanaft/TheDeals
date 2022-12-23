@@ -65,7 +65,7 @@
                         <ion-grid>
                             <ion-row class="ion-justify-content-between ion-align-items-center">
                                 <ion-text color="primary">
-                                    {{item.name}}
+                                    {{item.name}} ({{item.subjectQty}}{{ setMeasure(item.estimationType) }})
                                 </ion-text>
                                 <ion-text>
                                     <!-- {{item.subjectQty}} -->
@@ -95,6 +95,7 @@
                                 {{item.name}}
                             </ion-text>
                             <ion-text>
+                                <!-- {{item.subjectQty}}  -->
                                 <!-- Не понятно что тут помещать )) -->
                             </ion-text>
                         </ion-row>
@@ -144,10 +145,7 @@
                                         <ion-grid>
                                             <ion-row class="ion-justify-content-between ion-align-items-center">
                                                 <ion-text color="primary">
-                                                    {{item.name}}
-                                                </ion-text>
-                                                <ion-text>
-                                                    <!-- {{item.subjectQty}} -->
+                                                    {{item.name}} ({{item.subjectQty}}{{ setMeasure(item.estimationType) }})
                                                 </ion-text>
                                             </ion-row>
                                         </ion-grid>
@@ -316,14 +314,17 @@
             //     itemData.value = {}
             // }
             // Создаем новый предмет
+            const isItemAlreadyAdded = ref()
             const createItem = async (newItemData) => {
                 // Принимаем инфу по предмету из модалки
                 itemData.value = newItemData
                 // имитируем загрузку
                 spinner.value = true;
-                // Если есть пустые строки
                 // Использовать валидацию
-                if(newItemData.name === '') {
+                isItemAlreadyAdded.value = myItems.value.find(item => item.name === newItemData.name)
+                if (isItemAlreadyAdded.value !== undefined) {
+                    alert('Warehouse: Предмет с таким названием уже существует')
+                } else if (newItemData.name === '') {
                     alert('Warehouse: Вы не указали предмет')
                 } else if(userWorkProfile.value !== 'Тортодилер' && newItemData.catalogNumber === '') {
                     alert('Warehouse: Вы не указали каталожный номер')
@@ -386,7 +387,7 @@
                 // store.methods.getUserWarehouseItemsFromDB()
                 // userWarehouseCategoriesArray.value = userSettings.value.userWarehouseCategories
                 isSettingsModalOpened.value = false
-                console.log(`close clicked: ${userWarehouseCategoriesArray.value}`)
+                // console.log(`close clicked: ${userWarehouseCategoriesArray.value}`)
             }
 
             // 
@@ -407,10 +408,24 @@
                 userWarehouseCategoriesArray.value = store.state.userSettings[0].userWarehouseCategories 
                 console.log(`after update: ${userWarehouseCategoriesArray.value}`)
             }
+            //
+            const setMeasure = (estimationType) => {
+                if(estimationType === 'perKilogram') {
+                    return 'гр.'
+                } else if(estimationType === 'perUnit') {
+                    return 'шт.'
+                } else if(estimationType === 'teaSpoon') {
+                    return 'ч.л.'
+                } else if (estimationType === 'pinch') {
+                    return 'щепотки'
+                } else if (estimationType === 'stick') {
+                    return 'палочки'
+                }
+            }
 
 
             return {
-                route, itemData, dataLoaded, spinner, setOpen, currency, user, pageTitle, myItems, isOpen, createItem, search, warehouseCategoriesArray, filteredMyItemsFunc, searchedItem, searchedCategory, expendList, closeSettingsModal, isSettingsModalOpened, update, userSettings, userWorkProfile, userWarehouseCategoriesArray
+                route, itemData, dataLoaded, spinner, setOpen, currency, user, pageTitle, myItems, isOpen, createItem, search, warehouseCategoriesArray, filteredMyItemsFunc, searchedItem, searchedCategory, expendList, closeSettingsModal, isSettingsModalOpened, update, userSettings, userWorkProfile, userWarehouseCategoriesArray, setMeasure, isItemAlreadyAdded
             }
         }
     }) 

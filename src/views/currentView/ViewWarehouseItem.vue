@@ -26,8 +26,35 @@
 
             <!-- Data -->
             <div>
-                <ion-item-group>
-                    {{ currentItem }}
+                {{ currentItem }}
+
+                <!-- Название предмета или сам предмет  -->
+                <ion-item-group class="ion-padding-bottom ion-padding-horizontal ion-text-left">
+                    <!-- Заголовок -->
+                    <ion-text>
+                        <h4>Предмет</h4>
+                    </ion-text>
+
+                    <!-- OFF режим редактирования -->
+                    <!-- Название (Если НЕ тортодилер) -->
+
+                    <!-- Название (Если тортодилер) -->
+                    <ion-item lines="none" style="--inner-padding-end: none" class="ion-no-padding">
+                        <ion-grid class="ion-no-padding">
+                            <ion-row class="ion-justify-content-between ion-align-items-center" style="flex-wrap: nowrap;">
+                                <!--  -->
+                                <ion-text color="medium">{{ currentItem.name }}</ion-text>
+                                <!--  -->
+                                <ion-thumbnail class="thumbnail_deal-subject" style="background-color: var(--ion-color-light);">
+                                    <ion-img :src="setImgSrc(currentItem.name)"></ion-img>
+                                </ion-thumbnail>
+                            </ion-row>
+                        </ion-grid>
+                    </ion-item>
+
+                    <!-- ON режим редактирования -->
+                    <!-- Название (Если НЕ тортодилер) -->
+
                 </ion-item-group>
                 <!-- Кпнока удалить -->
                 <ion-button fill="clear" color="danger" @click="openDeleteMenu">Удалить</ion-button>
@@ -48,8 +75,9 @@
     import { defineComponent, ref } from 'vue';
     import { useRoute, useRouter } from 'vue-router';
     import { supabase } from '../../supabase/init';
+    import store from '../../store/index';
     //
-    import { IonContent, IonItemGroup, IonButton, IonActionSheet } from '@ionic/vue';
+    import { IonContent, IonItemGroup, IonButton, IonActionSheet, IonText, IonItem, IonThumbnail, IonImg, IonGrid, IonRow } from '@ionic/vue';
     //
     import Spinner from '../../components/Spinner.vue';
     import ViewHeader from '../../components/headers/HeaderViewCurrent.vue'
@@ -59,7 +87,7 @@
         components: {
             ViewHeader, Spinner, 
             //
-            IonContent, IonItemGroup, IonButton, IonActionSheet
+            IonContent, IonItemGroup, IonButton, IonActionSheet, IonText, IonItem, IonThumbnail, IonImg, IonGrid, IonRow
         },
         setup () {
             //
@@ -71,6 +99,20 @@
             const currentItem = ref(JSON.parse(info.item))
             //
             const spinner = ref(null);
+            //
+            
+            // Подгружаем картинку в название предмета
+            const setImgSrc = (itemName) => {
+                let dealBuySubjectArray = store.state.dealBuySubjectArray;
+                let value;
+                dealBuySubjectArray.filter(item => {
+                    if(item.name === itemName) {
+                        value = item.value
+                    }
+                })
+                return `../img/subjects/buy/${value}.webp`
+            }
+
             //
             const isOpenRef = ref(false)
             const openDeleteMenu = () => {
@@ -110,12 +152,20 @@
             }
 
             return {
-                route, router, spinner, currentId, info, currentItem, openDeleteMenu, isOpenRef, deleteWarehouseItemButtons
+                route, router, spinner, currentId, info, currentItem, openDeleteMenu, isOpenRef, deleteWarehouseItemButtons, setImgSrc
             }
         }
     })
 </script>
 
 <style scoped>
-
+    .thumbnail_deal-subject {
+        height: 64px;
+        min-width: 64px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 50%;
+        padding: 0.5rem;
+    }
 </style>

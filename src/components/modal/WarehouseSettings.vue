@@ -87,13 +87,13 @@
         const toggleCategories = (category) => {
             if(!myCategories.value.includes(category)) {
                 myCategories.value.push(category)
-                console.log(`toggled: ${myCategories.value}`)
+                // console.log(`toggled: ${myCategories.value}`)
             } else if (myCategories.value.includes(category)) {
                 let index = myCategories.value.indexOf(category)
                 if(index > -1) {
                     myCategories.value.splice(index, 1)
                 }
-                console.log(`toggled: ${myCategories.value}`)
+                // console.log(`toggled: ${myCategories.value}`)
             }
             emit('update', myCategories.value)
         }
