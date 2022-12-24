@@ -623,14 +623,15 @@
                 })
             }
             watch(dealStatus, () => {
-                if(dealStatus.value === 'deal-complete' || dealStatus.value === 'deal-in-process') {
-                    if(dealWhereChangeStatus.value.dealType === 'sale' && dealWhereChangeStatus.value.dealsList.length !== 0) {
-                        console.log(`Можно вычитать со склада из дела №${dealWhereChangeStatus.value.uid}`)
+                // Забираем предметы для работы со складом
+                if(dealWhereChangeStatus.value.dealsList.length !== 0) {
+                    if(dealStatus.value === 'deal-in-process' && dealWhereChangeStatus.value.dealType === 'sale') {
+                        console.log(`Можно вычитать предметы со склада по делу №${dealWhereChangeStatus.value.uid}`)
                         dealWhereChangeStatus.value.dealsList.forEach(item => {
                             console.log(item)
                         })
-                    } else if (dealWhereChangeStatus.value.dealType === 'buy' && dealWhereChangeStatus.value.dealsList.length !== 0) {
-                        console.log(`Можно помещать на склад из дела №${dealWhereChangeStatus.value.uid}`)
+                    } else if (dealStatus.value === 'deal-complete' && dealWhereChangeStatus.value.dealType === 'buy') {
+                        console.log(`Можно помещать предметы на склад по делу №${dealWhereChangeStatus.value.uid}`)
                         dealWhereChangeStatus.value.dealsList.forEach(item => {
                             console.log(item)
                         })

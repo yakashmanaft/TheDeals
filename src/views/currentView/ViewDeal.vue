@@ -743,14 +743,15 @@
                         }
                     } 
                 } 
-                if(next === 'deal-complete' || next === 'deal-in-process') {
-                    if(currentDeal.value.dealType === 'sale' && currentDeal.value.dealsList.length !== 0) {
-                        console.log(`Можно вычитать со склада из дела №${currentDeal.value.uid}`)
+                // Забираем предметы для работы со складом
+                if(currentDeal.value.dealsList.length !== 0) {
+                    if(next === 'deal-in-process' && currentDeal.value.dealType === 'sale' ) {
+                        console.log(`Можно вычитать предметы со склада по делу №${currentDeal.value.uid}`)
                         currentDeal.value.dealsList.forEach(item => {
                             console.log(item)
                         })
-                    } else if (currentDeal.value.dealType === 'buy' && currentDeal.value.dealsList.length !== 0) {
-                        console.log(`Можно помещать на склад из дела №${currentDeal.value.uid}`)
+                    } else if (next === 'deal-complete' && currentDeal.value.dealType === 'buy') {
+                        console.log(`Можно помещать предметы на склад по делу №${currentDeal.value.uid}`)
                         currentDeal.value.dealsList.forEach(item => {
                             console.log(item)
                         })
