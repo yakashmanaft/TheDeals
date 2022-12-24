@@ -87,7 +87,7 @@
                     </div>
                 </div>
 
-                <!-- Модалка, открывает показывает конкретной транзакции -->
+                <!-- Модалка, открывает показывает инфу конкретной транзакции -->
                 <TransactionDetails
                     :is-open="transactionDetailOpened"
                     @closeModal="transactionDetailOpened = false"

@@ -1285,7 +1285,7 @@
             }
             //
             const setAddButtonColor = () => {
-                if(dealData.value.shipping.typeOfShipping && dealData.value.executionDate !== '') {
+                if(dealData.value.shipping.typeOfShipping && dealData.value.executionDate !== '' && dealData.value.dealsList.length !== 0) {
                     return 'warning'
                 } else {
                     return 'light'

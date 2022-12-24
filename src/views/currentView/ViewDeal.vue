@@ -652,7 +652,7 @@
             const router = useRouter();
             // Get current info of route
             const currentId = route.params.dealId;
-            console.log(route.params)
+            // console.log(route.params)
             const info = route.params;
             const currentDeal = ref(JSON.parse(info.deal))
             // Храним на случай нажатия Отмены при редактировании контакта
@@ -741,17 +741,19 @@
                             // edit.value = !edit.value;
                             spinner.value = false;
                         }
-                    } else {
-                        console.log(`Текущий статус: ${dealStatus.value}`)
-                    }
-                } else if (debt.value === 0) {
-                    // срабатывает когда мы вносим всю сумму долга, запуская функцию setAmountValue(amount)
-                    // срабатывает функция isAllAttrReturnedFunc(), которая запускается в setAmountValue(amount)
-                    if(currentDeal.value.dealType === 'sale') {
-                        // isAllAttrReturnedFunc()
-                        // в данном меню не будет никогда нуля в долге, меняется через кнопки ВНЕСТИ
-                    } else if (currentDeal.value.dealType === 'buy') {
-                        alert('ViewDeal: статус дела изменен на "ЗАВЕРШЕНО"')
+                    } 
+                } 
+                if(next === 'deal-complete' || next === 'deal-in-process') {
+                    if(currentDeal.value.dealType === 'sale' && currentDeal.value.dealsList.length !== 0) {
+                        console.log(`Можно вычитать со склада из дела №${currentDeal.value.uid}`)
+                        currentDeal.value.dealsList.forEach(item => {
+                            console.log(item)
+                        })
+                    } else if (currentDeal.value.dealType === 'buy' && currentDeal.value.dealsList.length !== 0) {
+                        console.log(`Можно помещать на склад из дела №${currentDeal.value.uid}`)
+                        currentDeal.value.dealsList.forEach(item => {
+                            console.log(item)
+                        })
                     }
                 }
                 try {

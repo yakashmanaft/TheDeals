@@ -29,8 +29,13 @@
                 </ion-button>
 
                 <!-- SETTINGS -->
-                <ion-button v-if="router.currentRoute._value.meta.title === 'Warehouse' || router.currentRoute._value.meta.title === 'Calendar'" @click="$emit('goToSettings', true)">
+                <ion-button v-if="router.currentRoute._value.meta.title === 'Calendar'" @click="$emit('goToSettings', true)">
                     <ion-icon color="primary" :icon="settingsOutline"></ion-icon>
+                </ion-button>
+
+                <!-- WAREHOUSE MENU -->
+                <ion-button v-if="router.currentRoute._value.meta.title === 'Warehouse'" @click="$emit('goToWarehouseMenu', true)">
+                    <ion-icon color="primary" :icon="ellipsisHorizontal"></ion-icon>
                 </ion-button>
 
                 <!-- Filter -->
@@ -49,7 +54,7 @@
     import { computed } from 'vue';
     import { useRouter } from 'vue-router';
     import { IonHeader, IonMenuToggle, IonToolbar, IonIcon, IonGrid, IonRow, IonText, IonButtons, IonButton, IonBackButton, IonTitle } from '@ionic/vue';
-    import { menu, walletOutline, settingsOutline, qrCodeOutline, storefrontOutline, bagOutline, funnelOutline } from 'ionicons/icons';
+    import { menu, walletOutline, settingsOutline, qrCodeOutline, storefrontOutline, bagOutline, funnelOutline, ellipsisHorizontal } from 'ionicons/icons';
 
     export default {
         name: 'Header',
@@ -62,7 +67,7 @@
             const router = useRouter();
 
             return {
-                user, router, menu, walletOutline, settingsOutline, qrCodeOutline, settingsOutline, storefrontOutline, bagOutline, funnelOutline
+                user, router, menu, walletOutline, settingsOutline, qrCodeOutline, settingsOutline, storefrontOutline, bagOutline, funnelOutline, ellipsisHorizontal
             }
         }
     }

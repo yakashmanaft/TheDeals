@@ -10,7 +10,7 @@
 
         <!-- page header -->
         <Header 
-            @goToSettings="isSettingsModalOpened = true"
+            @goToWarehouseMenu="warehouseMenuOpened = true"
             :title="pageTitle"
         />
 
@@ -155,8 +155,8 @@
                         </div>
                     </div>
                 </div>
-
-                <!--  -->
+                
+                <!-- Настройки склада -->
                 <WarehouseSettings
                     :is-open="isSettingsModalOpened"
                     @closeModal="closeSettingsModal"
@@ -164,12 +164,26 @@
                     @update="update"
                 />
 
+                <!-- ledger склада -->
+                <warehouseLedger
+                    :isOpen="isWarehouseLedgerOpened"
+                    @closeModal="isWarehouseLedgerOpened = false"
+                    @didDismiss="isWarehouseLedgerOpened"
+                />
+                
             </div>
-
+            
             <br>
             <br>
             <br>
         </ion-content>
+        <!-- action sheet вызова меню -->
+        <ion-action-sheet
+            :isOpen="warehouseMenuOpened"
+            :buttons="warehouseMenuButtons"
+            header="Меню склада"
+            @didDismiss="warehouseMenuOpened = false"
+        ></ion-action-sheet>
 
         <!-- page footer -->
         <Footer/>
@@ -183,7 +197,7 @@
     import { useRoute, useRouter } from 'vue-router';
     import { uid } from 'uid';
     //
-    import { IonContent, IonImg, IonText, IonSearchbar, IonItem, IonList, IonGrid, IonRow, IonItemDivider } from '@ionic/vue'
+    import { IonContent, IonImg, IonText, IonSearchbar, IonItem, IonList, IonGrid, IonRow, IonItemDivider, IonActionSheet } from '@ionic/vue'
     //
     import Spinner from '@/components/Spinner.vue';
     import NavigationMenu from '@/components/NavigationMenu.vue';
@@ -191,7 +205,8 @@
     import CreateButton from '../components/CreateButton.vue';
     import CreateNewItem from '../components/modal/NewWarehouseItem-modalCreate.vue';
     import WarehouseSettings from '../components/modal/WarehouseSettings.vue';
-    import Footer from '../components/Footer.vue'
+    import Footer from '../components/Footer.vue';
+    import warehouseLedger from '../components/modal/warehouseLedger.vue';
     // 
     import { searchWarehouseItemFilter  } from '../helpers/filterUserWarehouseItems.js';
     import { searchWarehouseCategoryFilter } from '../helpers/filterWarehouseCategories.js';
@@ -199,9 +214,9 @@
     export default defineComponent({
         name: 'Warehouse',
         components: {
-            IonContent, IonImg, IonText, IonSearchbar, IonItem, IonList, IonGrid, IonRow, IonItemDivider,
+            IonContent, IonImg, IonText, IonSearchbar, IonItem, IonList, IonGrid, IonRow, IonItemDivider, IonActionSheet,
             //
-            WarehouseSettings, Spinner, NavigationMenu, Header, CreateButton, CreateNewItem, Footer
+            WarehouseSettings, Spinner, NavigationMenu, Header, CreateButton, CreateNewItem, Footer, warehouseLedger
         },
         setup() {
             //
@@ -422,10 +437,34 @@
                     return 'палочки'
                 }
             }
-
+            //
+            const warehouseMenuOpened = ref(false);
+            const warehouseMenuButtons = [
+                {
+                    text: 'Настройки',
+                    handler: () => {
+                        isSettingsModalOpened.value = true
+                    }
+                },
+                {
+                    text: 'Журнал',
+                    handler: () => {
+                        isWarehouseLedgerOpened.value = true
+                    }
+                },
+                {
+                    text: 'Закрыть',
+                    role: 'cancel',
+                    data: {
+                        action: 'cancel'
+                    }
+                }
+            ]
+            // Для журнала warehuseLedger
+            const isWarehouseLedgerOpened = ref(false)
 
             return {
-                route, itemData, dataLoaded, spinner, setOpen, currency, user, pageTitle, myItems, isOpen, createItem, search, warehouseCategoriesArray, filteredMyItemsFunc, searchedItem, searchedCategory, expendList, closeSettingsModal, isSettingsModalOpened, update, userSettings, userWorkProfile, userWarehouseCategoriesArray, setMeasure, isItemAlreadyAdded
+                route, itemData, dataLoaded, spinner, setOpen, currency, user, pageTitle, myItems, isOpen, createItem, search, warehouseCategoriesArray, filteredMyItemsFunc, searchedItem, searchedCategory, expendList, closeSettingsModal, isSettingsModalOpened, update, userSettings, userWorkProfile, userWarehouseCategoriesArray, setMeasure, isItemAlreadyAdded, warehouseMenuOpened, warehouseMenuButtons, isWarehouseLedgerOpened
             }
         }
     }) 

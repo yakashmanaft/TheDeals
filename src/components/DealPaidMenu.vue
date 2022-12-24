@@ -111,7 +111,7 @@
             const myDeals = ref([])
             //
             watch(isDealPaidMenuOpened, () => {
-                console.log(isDealPaidMenuOpened.value)
+                // console.log(isDealPaidMenuOpened.value)
                 refreshWalletBalance()
             })
             //

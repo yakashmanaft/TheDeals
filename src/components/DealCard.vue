@@ -88,7 +88,7 @@
 </template>
 
 <script>
-    import { defineComponent, ref, watchEffect, onMounted } from 'vue';
+    import { defineComponent, ref, watchEffect, onMounted, watch } from 'vue';
     // import { useRoute, useRouter } from 'vue-router';
     //
     import store from '../store/index';
@@ -154,9 +154,10 @@
                         // console.log(`Предыдущий статус: ${prevDealStatus.value}`)
                         // console.log(`Текущий статус: ${dealStatus.value}`)
                         // компонент DealPaidMenu
-                        if(dealWhereChangeStatus.value.dealStatus === 'deal-complete') {
+                        if(dealWhereChangeStatus.value.dealStatus === 'deal-complete' && dealWhereChangeStatus.value.dealsList.length !== 0) {
                             culcDealDebt(dealWhereChangeStatus.value.totalDealPrice, dealWhereChangeStatus.value.dealPaid)
                             if(debt.value > 0) {
+
                                 if(confirm(`Есть долг по оплате дела. Внести сумму задолженности или её часть?`)) {
                                     // оставляем старый статус (так как не понятно всю ли сумму внесут по долгу)
                                     dealWhereChangeStatus.value.dealStatus = prevDealStatus.value
@@ -166,32 +167,40 @@
                                     // просто оставляем старый статус дела (НЕ меняем на завершен)
                                     dealWhereChangeStatus.value.dealStatus = prevDealStatus.value
                                 }
-                            } else if (debt.value === 0) {
+                            } else if (debt.value === 0 ) {
                                 // SALE
-                                if(dealWhereChangeStatus.value.dealType === 'sale') {
+                                // alert(`ViewDeal: статус дела изменен на ${dealStatus.value}`)
+                                if(dealWhereChangeStatus.value.dealType === 'sale' ) {
                                     // Оставляем dealStatus как deal-complete
                                     // НО проверить на наличие долга по аренде атрибутов
                                     isAllAttrReturnedFunc()
-                                    // console.log(dealWhereChangeStatus.value.dealType)
                                 } 
-                                // BUY
-                                else if (dealWhereChangeStatus.value.dealType === 'buy') {
-                                    // Оставляем dealStatus как deal-complete
-                                    alert('DealCard: статус дела изменен на "ЗАВЕРШЕНО"')
-                                    // closeDealPaidMenu()
-                                }
                             } else if (debt.value < 0) {
                                 // Оставляем dealStatus как deal-complete
-                                // console.log(dealWhereChangeStatus.value.dealType)
-                                alert('DealCard: статус дела изменен на "ЗАВЕРШЕНО"')
+                                alert('Получается переплата... Верно?')
                             }
-                        }
+                        } 
                         // сохраняем изменения в БД
                         updateCurrentDealStatus(dealWhereChangeStatus.value)
                         update()
                     }
                 })
             }
+            watch(dealStatus, () => {
+                if(dealStatus.value === 'deal-complete' || dealStatus.value === 'deal-in-process') {
+                    if(dealWhereChangeStatus.value.dealType === 'sale' && dealWhereChangeStatus.value.dealsList.length !== 0) {
+                        console.log(`Можно вычитать со склада из дела №${dealWhereChangeStatus.value.uid}`)
+                        dealWhereChangeStatus.value.dealsList.forEach(item => {
+                            console.log(item)
+                        })
+                    } else if (dealWhereChangeStatus.value.dealType === 'buy' && dealWhereChangeStatus.value.dealsList.length !== 0) {
+                        console.log(`Можно помещать на склад из дела №${dealWhereChangeStatus.value.uid}`)
+                        dealWhereChangeStatus.value.dealsList.forEach(item => {
+                            console.log(item)
+                        })
+                    }
+                }
+            })
             // Добавляем кнопку отмены (скрытия меню)
             changeDealStatusMenuButtons.push({
                 text: 'Отменить',
