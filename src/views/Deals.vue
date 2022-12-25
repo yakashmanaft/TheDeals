@@ -243,7 +243,8 @@
         IonCardContent,
         IonThumbnail,
         IonItemGroup,
-        IonActionSheet
+        IonActionSheet,
+        toastController
     } from '@ionic/vue';
     import { helpOutline, shapes } from 'ionicons/icons';
     import { defineComponent, ref, computed, onMounted, watch } from 'vue';
@@ -613,6 +614,7 @@
                                     isAllAttrReturnedFunc()
                                 } else if (dealWhereChangeStatus.value.dealType === 'buy') {
                                     // зачисляем на склад только при условию что НЕТ долгов по оплате поставки
+                                    addToWarehouseToast()
                                     console.log(`Можно помещать предметы на склад по делу №${dealWhereChangeStatus.value.uid}`)
                                     dealWhereChangeStatus.value.dealsList.forEach(item => {
                                         console.log(item)
@@ -632,6 +634,7 @@
                 // Забираем предметы для работы со складом
                 if(dealWhereChangeStatus.value.dealsList.length !== 0) {
                     if(dealStatus.value === 'deal-in-process' && dealWhereChangeStatus.value.dealType === 'sale') {
+                        substructFromWarehouseToast()
                         console.log(`Можно вычитать предметы со склада по делу №${dealWhereChangeStatus.value.uid}`)
                         dealWhereChangeStatus.value.dealsList.forEach(item => {
                             console.log(item)
@@ -642,6 +645,49 @@
                     // 2. changeDealStatusMenuButtons, когда debt.value === 0
                 }
             })
+            // Уведомляем о выделении предметов со склада для реализации дела по указанному рецепту
+            const substructFromWarehouseToast = async () => {
+                const toast = await toastController.create({
+                    message: `
+                        Со склада будут вычтены позиции согласно рецептам, указанным в предметах дела
+                    `,
+                    // duration: 3000,
+                    // cssClass: 'custom-toast', 
+                    position: 'top',
+                    buttons: [
+                        {
+                            text: 'ОК',
+                            role: 'cnacel',
+                            handler: () => {
+                                console.log('toast clicked dismiss')
+                            }
+                        }
+                    ]
+                });
+                await toast.present();
+                // const { role } = await toast.onDidDismiss();    
+            }
+            const addToWarehouseToast = async () => {
+                const toast = await toastController.create({
+                    message: `
+                        Предметы дела будут добавлены на склад
+                    `,
+                    // duration: 3000,
+                    // cssClass: 'custom-toast', 
+                    position: 'top',
+                    buttons: [
+                        {
+                            text: 'ОК',
+                            role: 'cnacel',
+                            handler: () => {
+                                console.log('toast clicked dismiss')
+                            }
+                        }
+                    ]
+                });
+                await toast.present();
+                // const { role } = await toast.onDidDismiss();    
+            }
             // Добавляем кнопку отмены (скрытия меню)
             changeDealStatusMenuButtons.push({
                 text: 'Отменить',
@@ -715,6 +761,7 @@
                         alert('Deal: статус дела изменен на "ЗАВЕРШЕНО"')
                         closeDealPaidMenu()
                         // зачисляем на склад только при условию что НЕТ долгов по оплате поставки
+                        addToWarehouseToast()
                         console.log(`Можно помещать предметы на склад по делу №${dealWhereChangeStatus.value.uid}`)
                         dealWhereChangeStatus.value.dealsList.forEach(item => {
                             console.log(item)
@@ -843,7 +890,7 @@
             ]
 
             return {
-                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isViewDealModalOpened, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translateValue, refreshData, myContacts, getContact, showNameByID, checkRentAttr, dealTypesList, dealByType, showDealByType, helpOutline, addSubject, deleteSubject, setIconByDealType, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, dealStatus, dealWhereChangeStatus, prevDealStatus, debt, culcDealDebt, openDealPaidMenu, isDealPaidMenuOpened, refreshDebtValue, closeDealPaidMenu, dealPaidAmountValue, setAmountValue, isAllAttrReturnedFunc, currency, isAllAttrReturned, update, setMarkerAttrColor, shapes, addToLedger, setFilterFunc, setDealTypeMenu, setDealTypeMenuButtons
+                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isViewDealModalOpened, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translateValue, refreshData, myContacts, getContact, showNameByID, checkRentAttr, dealTypesList, dealByType, showDealByType, helpOutline, addSubject, deleteSubject, setIconByDealType, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, dealStatus, dealWhereChangeStatus, prevDealStatus, debt, culcDealDebt, openDealPaidMenu, isDealPaidMenuOpened, refreshDebtValue, closeDealPaidMenu, dealPaidAmountValue, setAmountValue, isAllAttrReturnedFunc, currency, isAllAttrReturned, update, setMarkerAttrColor, shapes, addToLedger, setFilterFunc, setDealTypeMenu, setDealTypeMenuButtons, addToWarehouseToast, substructFromWarehouseToast
             }
         }
     })

@@ -505,7 +505,7 @@
                 if(value === undefined) {
                     return 'Дата не указана'
                 } else {
-                    const formattedString = format(parseISO(value), 'd MMMM', { locale: ru });
+                    const formattedString = format(parseISO(value), 'd MMMM Y', { locale: ru });
                     return formattedString
                 }
             }

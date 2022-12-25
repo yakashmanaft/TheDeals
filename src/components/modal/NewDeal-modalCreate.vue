@@ -300,7 +300,7 @@
                         </ion-button>
                         <!-- Ценник -->
                         <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                        <ion-input type="number" v-model="shippingPrice" :value="dealData.shipping.shippingPrice" placeholder="0" inputmode="decimal" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
+                        <ion-input type="number" disabled="true" v-model="shippingPrice" :value="dealData.shipping.shippingPrice" placeholder="0" inputmode="decimal" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
                     </ion-button>
 
                     </ion-row>
@@ -603,7 +603,7 @@
                     return 'Выберите дату'
                 }
                 const data = eventDate;
-                const formattedString = format(parseISO(data), 'd MMMM к HH:mm', { locale: ru });
+                const formattedString = format(parseISO(data), 'd MMMM Y к HH:mm', { locale: ru });
                 // console.log(formattedString)
                 return formattedString
             }

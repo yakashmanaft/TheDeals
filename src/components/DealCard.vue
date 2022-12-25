@@ -93,7 +93,7 @@
     //
     import store from '../store/index';
     //
-    import { IonCard, IonCardHeader, IonGrid, IonRow, IonThumbnail, IonIcon, IonText, IonCardContent, IonImg, IonLabel, IonActionSheet } from '@ionic/vue'
+    import { IonCard, IonCardHeader, IonGrid, IonRow, IonThumbnail, IonIcon, IonText, IonCardContent, IonImg, IonLabel, IonActionSheet, toastController } from '@ionic/vue'
     //
     import { helpOutline, shapes } from 'ionicons/icons';
     //
@@ -177,6 +177,7 @@
                                     isAllAttrReturnedFunc()
                                 } else if (dealWhereChangeStatus.value.dealType === 'buy') {
                                     // зачисляем на склад только при условию что НЕТ долгов по оплате поставки
+                                    addToWarehouseToast()
                                     console.log(`Можно помещать предметы на склад по делу №${dealWhereChangeStatus.value.uid}`)
                                     dealWhereChangeStatus.value.dealsList.forEach(item => {
                                         console.log(item)
@@ -197,6 +198,7 @@
                 // Забираем предметы для работы со складом
                 if(dealWhereChangeStatus.value.dealsList.length !== 0) {
                     if(dealStatus.value === 'deal-in-process' && dealWhereChangeStatus.value.dealType === 'sale') {
+                        substructFromWarehouseToast()
                         console.log(`Можно вычитать предметы со склада по делу №${dealWhereChangeStatus.value.uid}`)
                         dealWhereChangeStatus.value.dealsList.forEach(item => {
                             console.log(item)
@@ -207,6 +209,49 @@
                     // 2. changeDealStatusMenuButtons, когда debt.value === 0
                 }
             })
+            // Уведомляем о выделении предметов со склада для реализации дела по указанному рецепту
+            const substructFromWarehouseToast = async () => {
+                const toast = await toastController.create({
+                    message: `
+                        Со склада будут вычтены позиции согласно рецептам, указанным в предметах дела
+                    `,
+                    // duration: 3000,
+                    // cssClass: 'custom-toast', 
+                    position: 'top',
+                    buttons: [
+                        {
+                            text: 'ОК',
+                            role: 'cnacel',
+                            handler: () => {
+                                console.log('toast clicked dismiss')
+                            }
+                        }
+                    ]
+                });
+                await toast.present();
+                // const { role } = await toast.onDidDismiss();    
+            }
+            const addToWarehouseToast = async () => {
+                const toast = await toastController.create({
+                    message: `
+                        Предметы дела будут добавлены на склад
+                    `,
+                    // duration: 3000,
+                    // cssClass: 'custom-toast', 
+                    position: 'top',
+                    buttons: [
+                        {
+                            text: 'ОК',
+                            role: 'cnacel',
+                            handler: () => {
+                                console.log('toast clicked dismiss')
+                            }
+                        }
+                    ]
+                });
+                await toast.present();
+                // const { role } = await toast.onDidDismiss();    
+            }
             // Добавляем кнопку отмены (скрытия меню)
             changeDealStatusMenuButtons.push({
                 text: 'Отменить',
@@ -286,6 +331,7 @@
                         alert('DealCard: статус дела изменен на "ЗАВЕРШЕНО"')
                         closeDealPaidMenu()
                         // зачисляем на склад только при условию что НЕТ долгов по оплате поставки
+                        addToWarehouseToast()
                         console.log(`Можно помещать предметы на склад по делу №${dealWhereChangeStatus.value.uid}`)
                         dealWhereChangeStatus.value.dealsList.forEach(item => {
                             console.log(item)
@@ -376,7 +422,7 @@
             })
 
             return {
-                deal, helpOutline, setIconByDealType, translateValue, dealStatusList, openActionSheetDealStatusMenu, contactName, checkRentAttr, actionSheetDealStatus, changeDealStatusMenuButtons, dealStatus, dealWhereChangeStatus, debt, prevDealStatus, updateCurrentDealStatus, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, refreshDebtValue, closeDealPaidMenu, dealPaidAmountValue, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, update, setMarkerAttrColor, setDealStatusToComplete, shapes
+                deal, helpOutline, setIconByDealType, translateValue, dealStatusList, openActionSheetDealStatusMenu, contactName, checkRentAttr, actionSheetDealStatus, changeDealStatusMenuButtons, dealStatus, dealWhereChangeStatus, debt, prevDealStatus, updateCurrentDealStatus, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, refreshDebtValue, closeDealPaidMenu, dealPaidAmountValue, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, update, setMarkerAttrColor, setDealStatusToComplete, shapes, substructFromWarehouseToast, addToWarehouseToast
             }
         }
     })

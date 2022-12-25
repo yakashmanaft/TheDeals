@@ -343,7 +343,7 @@
                             </ion-button>
                             <!-- Ценник -->
                             <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                            <ion-input type="number" disabled="false" v-model="shippingPrice" :value="currentDeal.shipping.shippingPrice" placeholder="0" inputmode="decimal" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
+                            <ion-input type="number" disabled="true" v-model="shippingPrice" :value="currentDeal.shipping.shippingPrice" placeholder="0" inputmode="decimal" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
                         </ion-button>
 
                         </ion-row>
@@ -590,7 +590,7 @@
     import { useRoute, useRouter } from 'vue-router';
     import store from '../../store/index';
     import { uid } from 'uid';
-    import { IonContent, IonButton, IonActionSheet, IonItemGroup, IonText, IonGrid, IonRow, IonCol, IonModal, IonItem, IonSearchbar, IonChip, IonCard, IonImg, IonThumbnail, IonLabel, IonIcon, IonInput, IonTextarea, IonList } from '@ionic/vue';
+    import { IonContent, IonButton, IonActionSheet, IonItemGroup, IonText, IonGrid, IonRow, IonCol, IonModal, IonItem, IonSearchbar, IonChip, IonCard, IonImg, IonThumbnail, IonLabel, IonIcon, IonInput, IonTextarea, IonList, toastController  } from '@ionic/vue';
     import { addCircleOutline, closeCircleOutline, helpOutline, shapes, checkmarkDone } from 'ionicons/icons';
     //
     import { searchFilter } from '../../helpers/filterMyContacts'; 
@@ -746,6 +746,7 @@
                 // Забираем предметы для работы со складом
                 if(currentDeal.value.dealsList.length !== 0) {
                     if(next === 'deal-in-process' && currentDeal.value.dealType === 'sale' ) {
+                        substructFromWarehouseToast()
                         console.log(`Можно вычитать предметы со склада по делу №${currentDeal.value.uid}`)
                         currentDeal.value.dealsList.forEach(item => {
                             console.log(item)
@@ -772,6 +773,49 @@
                 spinner.value = false;
             })
 
+            // Уведомляем о выделении предметов со склада для реализации дела по указанному рецепту
+            const substructFromWarehouseToast = async () => {
+                const toast = await toastController.create({
+                    message: `
+                        Со склада будут вычтены позиции согласно рецептам, указанным в предметах дела
+                    `,
+                    // duration: 3000,
+                    // cssClass: 'custom-toast', 
+                    position: 'top',
+                    buttons: [
+                        {
+                            text: 'ОК',
+                            role: 'cnacel',
+                            handler: () => {
+                                console.log('toast clicked dismiss')
+                            }
+                        }
+                    ]
+                });
+                await toast.present();
+                // const { role } = await toast.onDidDismiss();    
+            }
+            const addToWarehouseToast = async () => {
+                const toast = await toastController.create({
+                    message: `
+                        Предметы дела будут добавлены на склад
+                    `,
+                    // duration: 3000,
+                    // cssClass: 'custom-toast', 
+                    position: 'top',
+                    buttons: [
+                        {
+                            text: 'ОК',
+                            role: 'cnacel',
+                            handler: () => {
+                                console.log('toast clicked dismiss')
+                            }
+                        }
+                    ]
+                });
+                await toast.present();
+                // const { role } = await toast.onDidDismiss();    
+            }
 
             // выдергиваем из массива нужный контакт
             const searchContactMenu = ref(false)
@@ -804,7 +848,7 @@
                     return 'Выберите дату'
                 }
                 const data = eventDate;
-                const formattedString = format(parseISO(data), 'd MMMM к HH:mm', { locale: ru });
+                const formattedString = format(parseISO(data), 'd MMMM Y к HH:mm', { locale: ru });
                 return formattedString
             }
             // Управление модалкой календаря
@@ -943,7 +987,8 @@
                     handler: () => {
                         dealStatus.value = dealStatusList.value[i-1].value
                         // зачисляем на склад только при условию что НЕТ долгов по оплате поставки
-                        if(debt.value === 0 && currentDeal.value.dealType === 'buy') {
+                        if(dealStatus.value === 'deal-complete' && debt.value === 0 && currentDeal.value.dealType === 'buy') {
+                            addToWarehouseToast()
                             console.log(`Можно помещать предметы на склад по делу №${currentDeal.value.uid}`)
                             currentDeal.value.dealsList.forEach(item => {
                                 console.log(item)
@@ -1643,6 +1688,7 @@
                         // закрываем dealPaid Menu
                         closeDealPaidMenu()
                         // зачисляем на склад только при условию что НЕТ долгов по оплате поставки
+                        addToWarehouseToast()
                         console.log(`Можно помещать предметы на склад по делу №${currentDeal.value.uid}`)
                         currentDeal.value.dealsList.forEach(item => {
                             console.log(item)
@@ -1730,7 +1776,7 @@
             })
 
             return {
-                currency, spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, setPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setNewPersonQty, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, shippingTypeList, dealShippingType, shippingPrice, setProductNotePlaceholder, shippingAddress, editShippingAddress, toggleEditShippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, translateShippingType, translateSelectedProduct, culcSubjectWeight, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, culcBuySubjectWeight, debt, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, nextDealStatus, prevDealStatus, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, refreshDebtValue, dealPaidAmountValue, finishDeal, setMarkerAttrColor, shapes, checkmarkDone, availableBalance, currentPriceSubject, personPortionGram, dealImportance, setRatingValue, addToLedger, dealComments
+                currency, spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, setPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setNewPersonQty, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, shippingTypeList, dealShippingType, shippingPrice, setProductNotePlaceholder, shippingAddress, editShippingAddress, toggleEditShippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, translateShippingType, translateSelectedProduct, culcSubjectWeight, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, culcBuySubjectWeight, debt, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, nextDealStatus, prevDealStatus, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, refreshDebtValue, dealPaidAmountValue, finishDeal, setMarkerAttrColor, shapes, checkmarkDone, availableBalance, currentPriceSubject, personPortionGram, dealImportance, setRatingValue, addToLedger, dealComments, substructFromWarehouseToast, 
             }
         }
     })
@@ -1803,4 +1849,7 @@
         margin: 50px auto; 
         border: 1px solid var(--ion-color-success);
     }
+    /* ion-toast.custom-toast::part(message) {
+        --color: #5353d3!important;
+    } */
 </style>

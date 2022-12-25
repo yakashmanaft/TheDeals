@@ -28,7 +28,6 @@
 
             <div>
                 <ion-datetime
-                    minute-values="0,15,30,45"
                     presentation="date"
                     size="cover"
                     v-model="choosenDate"
