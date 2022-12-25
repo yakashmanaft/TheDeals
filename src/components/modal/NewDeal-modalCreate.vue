@@ -100,7 +100,7 @@
                     :is-open="isCalendarOpened" 
                     @date-updated="(pickedDate) => dealData.executionDate = pickedDate.currentValue"
                     @closeModal="closeModalCalendar()"
-                    @updateDate="updateExecutionDate()"
+                    @updateDate="updateExecutionDate(date)"
                     @didDismiss="isCalendarOpened = false"
                     :date="dealData.executionDate"
                     />
@@ -603,7 +603,9 @@
                     return 'Выберите дату'
                 }
                 const data = eventDate;
-                const formattedString = format(parseISO(data), 'd MMMM Y к HH:mm', { locale: ru });
+                const formattedString = format(parseISO(data), 'd MMMM Y к HH:mm');
+                // const formattedString = format(parseISO(data), 'd MMMM Y к HH:mm', { locale: ru });
+                console.log(formattedString)
                 // console.log(formattedString)
                 return formattedString
             }

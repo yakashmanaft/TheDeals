@@ -182,7 +182,8 @@
 
             // функция форматирования даты для сравнения даты дела и даты дня
             const formattedDate = (day) => {
-                const formattedString = format(parseISO(day), 'd MMMM Y', { locale: ru });
+                const formattedString = format(parseISO(day), 'd.M.Y');
+                // const formattedString = format(parseISO(day), 'd MMMM Y', { locale: ru });
                 return formattedString;
             }
 

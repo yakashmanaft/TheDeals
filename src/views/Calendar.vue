@@ -32,7 +32,7 @@
                     size="cover"
                     v-model="choosenDate"
                     :first-day-of-week="1"
-                    locale="ru"
+                    
                     ></ion-datetime>
                     <!-- @ionChange="setChoosenDateStyle" -->
                 <!-- :is-date-enabled="isWeekday" -->
@@ -248,7 +248,8 @@
             // функция форматирования даты для сравнения даты дела и выбранной даты
             const formattedDate = (day) => {
                 if(day) {
-                    const formattedString = format(parseISO(day), 'd MMMM Y', { locale: ru });
+                    // const formattedString = format(parseISO(day), 'd MMMM yyyy');
+                    const formattedString = format(parseISO(day), 'd MMMM yyyy', { locale: ru });
                     return formattedString;
                 }
             }

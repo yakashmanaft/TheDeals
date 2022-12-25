@@ -132,7 +132,8 @@
             // функция форматирования даты
             const formattedDate = (day) => {
                 if(day) {
-                    const formattedString = format(parseISO(day), 'd MMMM Y', { locale: ru });
+                    const formattedString = format(parseISO(day), 'd MMMM Y');
+                    // const formattedString = format(parseISO(day), 'd MMMM Y', { locale: ru });
                     return formattedString;
                 }
             }

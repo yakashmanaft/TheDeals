@@ -777,7 +777,7 @@
             const substructFromWarehouseToast = async () => {
                 const toast = await toastController.create({
                     message: `
-                        Со склада будут вычтены позиции согласно рецептам, указанным в предметах дела
+                        Ингредиенты, необходимые для выполнения заказа, будут взяты со склада.
                     `,
                     // duration: 3000,
                     // cssClass: 'custom-toast', 
@@ -848,7 +848,8 @@
                     return 'Выберите дату'
                 }
                 const data = eventDate;
-                const formattedString = format(parseISO(data), 'd MMMM Y к HH:mm', { locale: ru });
+                const formattedString = format(parseISO(data), 'd MMMM Y к HH:mm');
+                // const formattedString = format(parseISO(data), 'd MMMM Y к HH:mm', { locale: ru });
                 return formattedString
             }
             // Управление модалкой календаря
