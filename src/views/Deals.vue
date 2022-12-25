@@ -611,7 +611,13 @@
                                     // Оставляем dealStatus как deal-complete
                                     // НО проверить на наличие долга по аренде атрибутов
                                     isAllAttrReturnedFunc()
-                                } 
+                                } else if (dealWhereChangeStatus.value.dealType === 'buy') {
+                                    // зачисляем на склад только при условию что НЕТ долгов по оплате поставки
+                                    console.log(`Можно помещать предметы на склад по делу №${dealWhereChangeStatus.value.uid}`)
+                                    dealWhereChangeStatus.value.dealsList.forEach(item => {
+                                        console.log(item)
+                                    })
+                                }
                             } else if (debt.value < 0) {
                                 // Удалить, если не пригодится
                                 alert('Получается переплата... Верно?')
@@ -622,7 +628,7 @@
                     }
                 })
             }
-            watch(dealStatus, () => {
+            watch(dealStatus, (next, prev) => {
                 // Забираем предметы для работы со складом
                 if(dealWhereChangeStatus.value.dealsList.length !== 0) {
                     if(dealStatus.value === 'deal-in-process' && dealWhereChangeStatus.value.dealType === 'sale') {
@@ -630,12 +636,10 @@
                         dealWhereChangeStatus.value.dealsList.forEach(item => {
                             console.log(item)
                         })
-                    } else if (dealStatus.value === 'deal-complete' && dealWhereChangeStatus.value.dealType === 'buy') {
-                        console.log(`Можно помещать предметы на склад по делу №${dealWhereChangeStatus.value.uid}`)
-                        dealWhereChangeStatus.value.dealsList.forEach(item => {
-                            console.log(item)
-                        })
-                    }
+                    } 
+                    // для dealType === 'buy' условие запускается в: 
+                    // 1. setAmountValue(), когда полностью внесена оплата
+                    // 2. changeDealStatusMenuButtons, когда debt.value === 0
                 }
             })
             // Добавляем кнопку отмены (скрытия меню)
@@ -710,6 +714,12 @@
                         dealWhereChangeStatus.value.dealStatus = 'deal-complete'
                         alert('Deal: статус дела изменен на "ЗАВЕРШЕНО"')
                         closeDealPaidMenu()
+                        // зачисляем на склад только при условию что НЕТ долгов по оплате поставки
+                        console.log(`Можно помещать предметы на склад по делу №${dealWhereChangeStatus.value.uid}`)
+                        dealWhereChangeStatus.value.dealsList.forEach(item => {
+                            console.log(item)
+                        })
+                        //
                         updateCurrentDealStatus(dealWhereChangeStatus.value)
                         update()
                     }

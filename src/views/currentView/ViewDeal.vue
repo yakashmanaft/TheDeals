@@ -709,7 +709,7 @@
             const nextDealStatus = ref();
             const prevDealStatus = ref();
             // следим за изменениями значения dealStatus у текущего дела и обновляем его в БД
-            watch (dealStatus, async (next, prev) => {
+            watch(dealStatus, async (next, prev) => {
                 currentDeal.value.dealStatus = dealStatus.value
                 // считаем долг
                 culcDealDebt(currentDeal.value.totalDealPrice, currentDeal.value.dealPaid)
@@ -750,12 +750,10 @@
                         currentDeal.value.dealsList.forEach(item => {
                             console.log(item)
                         })
-                    } else if (next === 'deal-complete' && currentDeal.value.dealType === 'buy') {
-                        console.log(`Можно помещать предметы на склад по делу №${currentDeal.value.uid}`)
-                        currentDeal.value.dealsList.forEach(item => {
-                            console.log(item)
-                        })
-                    }
+                    } 
+                    // для dealType === 'buy' условие запускается в: 
+                    // 1. setAmountValue(), когда полностью внесена оплата
+                    // 2. changeDealStatusMenuButtons, когда debt.value === 0
                 }
                 try {
                     spinner.value = true;
@@ -944,6 +942,13 @@
                     text: dealStatusList.value[i-1].name,
                     handler: () => {
                         dealStatus.value = dealStatusList.value[i-1].value
+                        // зачисляем на склад только при условию что НЕТ долгов по оплате поставки
+                        if(debt.value === 0 && currentDeal.value.dealType === 'buy') {
+                            console.log(`Можно помещать предметы на склад по делу №${currentDeal.value.uid}`)
+                            currentDeal.value.dealsList.forEach(item => {
+                                console.log(item)
+                            })
+                        }
                     }
                 })
             }
@@ -1637,6 +1642,11 @@
                         currentDeal.value.dealStatus = 'deal-complete'
                         // закрываем dealPaid Menu
                         closeDealPaidMenu()
+                        // зачисляем на склад только при условию что НЕТ долгов по оплате поставки
+                        console.log(`Можно помещать предметы на склад по делу №${currentDeal.value.uid}`)
+                        currentDeal.value.dealsList.forEach(item => {
+                            console.log(item)
+                        })
                     }
                 } else if(debt.value > 0){
                     closeDealPaidMenu()
