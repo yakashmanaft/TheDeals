@@ -793,7 +793,7 @@
                 let message2 = 'Не хватает ингредиентов, необходимых для выполнения заказа.';
                 const toast = await toastController.create({
                     message: `
-                        ${message2}
+                        ${message1}
                     `,
                     // duration: 3000,
                     // cssClass: 'custom-toast', 
