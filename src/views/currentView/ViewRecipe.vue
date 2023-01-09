@@ -548,8 +548,12 @@
                         </ion-toolbar>
                     </ion-header>
                     <!--  -->
-                    <ion-content forceOverscroll="false" class="ion-margin-top">
-                        <ion-item v-for="(item, index) in currentRecipe.composition" :key="index" @click.stop="addToAssembling(item.name)">
+                    <ion-content forceOverscroll="false" class="ion-margin-top" style="position: relative">
+                        <div v-if="currentRecipe.composition === null || currentRecipe.composition.length === 0" style="position: absolute; top: 40%; width: 100%; margin: 0 auto" class="ion-text-center">
+                            <ion-text>Сначала добавьте элементы к составу</ion-text><br/>
+                            <ion-button expend="block" fill="clear" @click.stop="fromAssemblingToComposition">Добавить</ion-button>
+                        </div>
+                        <ion-item v-else v-for="(item, index) in currentRecipe.composition" :key="index" @click.stop="addToAssembling(item.name)">
                             {{item.name}}
                         </ion-item>
                     </ion-content>
@@ -567,7 +571,7 @@
                             <ion-text color="medium">
                                 Выставлен на продажу
                             </ion-text>
-                            <ion-toggle color="success"></ion-toggle>
+                            <ion-toggle color="success" @click.stop="toggleRecipeToStore"></ion-toggle>
                         </ion-row>
                     </ion-grid>
                 </ion-item-group>
@@ -928,9 +932,17 @@
 
             //
             const addProcessStep = () => {
-                currentRecipe.value.process.push({
-                    text: ''
-                })
+                if(currentRecipe.value.process === null) {
+                    currentRecipe.value.process = []
+                    currentRecipe.value.process.push({
+                        text: ''
+                    })
+                    steps.value = currentRecipe.value.process
+                } else {
+                    currentRecipe.value.process.push({
+                        text: ''
+                    })
+                }
             }
 
             //
@@ -939,7 +951,12 @@
                 addAssemblingElementModalOpened.value = true;
             }
             const addToAssembling = async (itemName) => {
-                currentRecipe.value.assembling.push(itemName)
+                if(currentRecipe.value.assembling === null) {
+                    currentRecipe.value.assembling = []
+                    currentRecipe.value.assembling.push(itemName)
+                } else {
+                    currentRecipe.value.assembling.push(itemName)
+                }
                 spinner.value = true;
                 try {
                     const {error} = await supabase.from('userRecipes').update({
@@ -1113,12 +1130,16 @@
             //
             const addButtonIsDisabled = () => {
                 let isValueZero = []
+                let isNoCostEstimation = []
                 newCompositionItem.value.ingredients.forEach(item => isValueZero.push(item.value))
+                newCompositionItem.value.ingredients.forEach(item => isNoCostEstimation.push(item.costEstimation))
                 if(newCompositionItem.value.name === '') {
+                    return true
+                } else if (isNoCostEstimation.includes('')) {
                     return true
                 } else if (newCompositionItem.value.ingredients && newCompositionItem.value.ingredients.length === 0 ) {
                     return true
-                } else if (isValueZero.includes(0)) {
+                } else if (isValueZero.includes(0) || isValueZero.includes("0")) {
                     return true
                 } else {
                     return false
@@ -1191,12 +1212,18 @@
                     } else if (qty.includes(0)) {
                         alert('ViewRecipe: в одном из ингредиентов не указан необходимый для рецепта вес или кол-во')
                     } else {
-                        currentRecipe.value.composition.push(item)
+                        if(currentRecipe.value.composition === null) {
+                            currentRecipe.value.composition = []
+                            currentRecipe.value.composition.push(item)
+                        } else {
+                            currentRecipe.value.composition.push(item)
+                        }
                         addCompositionItemModalOpened.value = false
                         await updateComposition()
-                        newCompositionItem.value = {}
                     }
                 }
+                // Если не понадобится - удалить
+                // newCompositionItem.value = {}
             }
             //
             const addCompositionItemIngredientFunc = () => {
@@ -1582,9 +1609,18 @@
                     // alert(`Error: ${error.message}`)
                 }
             }
+            //
+            const fromAssemblingToComposition = () => {
+                addAssemblingElementModalOpened.value = false;
+                addCompositionItem()
+            }
+            //
+            const toggleRecipeToStore = () => {
+                alert('ViewRecipe: в разработке...')
+            }
 
             return {
-                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList, checkmark, alertOutline, setImgSrc, searchRecipesCategoriesMenu, searchRecipesCategories, userRecipesCategories, searchedRecipesCategories, isCategoryAlreadyAdded, choosenCategory, setMeasure, Virtual, slides, setStyleProperties, steps, addProcessStep, addAssemblingElement, handleReorder, deleteAssemblingItem, assemblingItemToDeleteIndex, openDeleteAssemblingItemMenu, deleteAssemblingItemButtons, deleteAssemblingItemFunc, createOutline, reorderIsDisabled, toggleReorder, editRecipeProcess, editRecipeProcessFunc, handleReorderProcess, deleteProcessStep, processStepToDeleteIndex, openDeleteStepsMenu, deleteProcessStepButtons, deleteProcessStepFunc, addCompositionItem, editComposition, editCompositionFunc, openDeleteCompositionItemMenu, deleteCompositionItem, compositionItemToDeleteIndex, deleteCopmositionItemButtons, deleteCompositionItemFunc, addCompositionItemIngredient, trash, updateComposition, addAssemblingElementModalOpened, addToAssembling, updateProcess, addCompositionItemModalOpened, newCompositionItem, addNewCompositionItem, addButtonIsDisabled, closeCompositionItemModal, addIngredientToCompositionItem, ingredientForNewCompositionModalOpened, addIngredientToCompositionItemFunc, setIngredientImg, isIngredientAlreadyAdded, deleteNewCompositionItemIngredient, deleteNewCompositionItemIngredientIndex, deleteNewCompositionItemIngredientMenu, deleteNewCompositionItemIngredientFunc, deleteNewCompositionItemIngredientButtons, openActionSheetCostEstimationMenu, actionSheetIngredientCostEstimation, ingredientWhereChangeEstimation, ingredientChangeCostEstimationButtons, setIngredientEstimation, deleteCompisitionItemIngredientMenu, deleteCompisitionItemIngredient, compositionItemIngredientIndex, compositionItemIndex, compositionItemIngredientButtons, deleteCompisitionItemIngredientFunc, setIngredientValue, setCurrentIngredientValue, actionSheetCurrentIngredientCostEstimation, currentIngredientWhereChangeEstimation, openActionSheetCurrentCostEstimationMenu, currentIngredientChangeCostEstimationButtons, addIngredientToCurrentCompositionItemModalOpened, currentCompositionItem, currentCompositionItemNewIngredient, addNewIngredientButtonIsDisabled, addCompositionItemIngredientFunc, newIngredientCurrentCompositionModalOpened, addIngredientToCurrentCompositionItem, actionSheetCurrentCompositionItemNewIngredient, actionSheetCurrentCompositionItemNewIngredientButtons, setNewIngredientValue, closeAddIngredientToCurrentCompositionItemModal
+                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList, checkmark, alertOutline, setImgSrc, searchRecipesCategoriesMenu, searchRecipesCategories, userRecipesCategories, searchedRecipesCategories, isCategoryAlreadyAdded, choosenCategory, setMeasure, Virtual, slides, setStyleProperties, steps, addProcessStep, addAssemblingElement, handleReorder, deleteAssemblingItem, assemblingItemToDeleteIndex, openDeleteAssemblingItemMenu, deleteAssemblingItemButtons, deleteAssemblingItemFunc, createOutline, reorderIsDisabled, toggleReorder, editRecipeProcess, editRecipeProcessFunc, handleReorderProcess, deleteProcessStep, processStepToDeleteIndex, openDeleteStepsMenu, deleteProcessStepButtons, deleteProcessStepFunc, addCompositionItem, editComposition, editCompositionFunc, openDeleteCompositionItemMenu, deleteCompositionItem, compositionItemToDeleteIndex, deleteCopmositionItemButtons, deleteCompositionItemFunc, addCompositionItemIngredient, trash, updateComposition, addAssemblingElementModalOpened, addToAssembling, updateProcess, addCompositionItemModalOpened, newCompositionItem, addNewCompositionItem, addButtonIsDisabled, closeCompositionItemModal, addIngredientToCompositionItem, ingredientForNewCompositionModalOpened, addIngredientToCompositionItemFunc, setIngredientImg, isIngredientAlreadyAdded, deleteNewCompositionItemIngredient, deleteNewCompositionItemIngredientIndex, deleteNewCompositionItemIngredientMenu, deleteNewCompositionItemIngredientFunc, deleteNewCompositionItemIngredientButtons, openActionSheetCostEstimationMenu, actionSheetIngredientCostEstimation, ingredientWhereChangeEstimation, ingredientChangeCostEstimationButtons, setIngredientEstimation, deleteCompisitionItemIngredientMenu, deleteCompisitionItemIngredient, compositionItemIngredientIndex, compositionItemIndex, compositionItemIngredientButtons, deleteCompisitionItemIngredientFunc, setIngredientValue, setCurrentIngredientValue, actionSheetCurrentIngredientCostEstimation, currentIngredientWhereChangeEstimation, openActionSheetCurrentCostEstimationMenu, currentIngredientChangeCostEstimationButtons, addIngredientToCurrentCompositionItemModalOpened, currentCompositionItem, currentCompositionItemNewIngredient, addNewIngredientButtonIsDisabled, addCompositionItemIngredientFunc, newIngredientCurrentCompositionModalOpened, addIngredientToCurrentCompositionItem, actionSheetCurrentCompositionItemNewIngredient, actionSheetCurrentCompositionItemNewIngredientButtons, setNewIngredientValue, closeAddIngredientToCurrentCompositionItemModal, toggleRecipeToStore, fromAssemblingToComposition
             }
         }
     })

@@ -27,7 +27,7 @@
     import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup } from '@ionic/vue';
 
     export default defineComponent({
-        name: 'warehouseLedger',
+        name: 'WarehouseLedger',
         emit: [],
         props: {
             

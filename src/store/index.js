@@ -524,6 +524,13 @@ const state = reactive({
       isIngredient: false,
       warehouseSuitable: false,
     },
+    {
+      value: 'pear',
+      name: 'Груша',
+      costEstimation: 'perKilogram',
+      isIngredient: true,
+      warehouseSuitable: true,
+    },
   ],
   // type of Shipping
   shippingTypeList: [

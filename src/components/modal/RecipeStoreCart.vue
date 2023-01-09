@@ -9,7 +9,7 @@
                 </ion-buttons>
                 <ion-title class="ion-text-center">Корзина</ion-title>
                 <ion-buttons slot="end">
-                    <ion-button>Очистить</ion-button>
+                    <ion-button @click.stop="clearCart">Очистить</ion-button>
                 </ion-buttons>
             </ion-toolbar>
         </ion-header>
@@ -37,8 +37,12 @@
             IonModal, IonHeader, IonContent, IonToolbar, IonButtons, IonButton, IonTitle
         },
         setup(){
-            return {
+            const clearCart = () => {
+                alert('RecipeStoreCart: в разработке...')
+            }
 
+            return {
+                clearCart
             }
         }
     })

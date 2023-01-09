@@ -165,7 +165,7 @@
                 />
 
                 <!-- ledger склада -->
-                <warehouseLedger
+                <WarehouseLedger
                     :isOpen="isWarehouseLedgerOpened"
                     @closeModal="isWarehouseLedgerOpened = false"
                     @didDismiss="isWarehouseLedgerOpened"
@@ -206,7 +206,7 @@
     import CreateNewItem from '../components/modal/NewWarehouseItem-modalCreate.vue';
     import WarehouseSettings from '../components/modal/WarehouseSettings.vue';
     import Footer from '../components/Footer.vue';
-    import warehouseLedger from '../components/modal/warehouseLedger.vue';
+    import WarehouseLedger from '../components/modal/WarehouseLedger.vue';
     // 
     import { searchWarehouseItemFilter  } from '../helpers/filterUserWarehouseItems.js';
     import { searchWarehouseCategoryFilter } from '../helpers/filterWarehouseCategories.js';
@@ -216,7 +216,7 @@
         components: {
             IonContent, IonImg, IonText, IonSearchbar, IonItem, IonList, IonGrid, IonRow, IonItemDivider, IonActionSheet,
             //
-            WarehouseSettings, Spinner, NavigationMenu, Header, CreateButton, CreateNewItem, Footer, warehouseLedger
+            WarehouseSettings, Spinner, NavigationMenu, Header, CreateButton, CreateNewItem, Footer, WarehouseLedger
         },
         setup() {
             //
