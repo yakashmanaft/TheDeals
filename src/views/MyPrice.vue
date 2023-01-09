@@ -560,10 +560,10 @@
             const setNewProductPrice = (price) => {
                 if(blockToShow.value === 'attributes') {
                     // console.log(price)
-                    newPriceProductData.value.price = price
+                    newPriceProductData.value.price = +price
                     newPriceProductData.value.totalPrice = newPriceProductData.value.qty * newPriceProductData.value.price 
                 } else if (blockToShow.value === 'products') {
-                    newPriceProductData.value.price = price
+                    newPriceProductData.value.price = +price
                 }
             }
             //

@@ -746,11 +746,25 @@
                 // Забираем предметы для работы со складом
                 if(currentDeal.value.dealsList.length !== 0) {
                     if(next === 'deal-in-process' && currentDeal.value.dealType === 'sale' ) {
-                        substructFromWarehouseToast()
-                        console.log(`Можно вычитать предметы со склада по делу №${currentDeal.value.uid}`)
-                        currentDeal.value.dealsList.forEach(item => {
-                            console.log(item)
-                        })
+
+                        // 1. Проверяем наличие ингредиентов и предметов(атрибутов дела) на складе
+
+                        // 2. Если всего хватает ,то тост выводим что будут вычтены
+
+                        // 3. Если чего то не хватает - выводим тост об этом или прям запихать список туда чего не хватает
+                        // и оставляем статус в букинге
+                        // dealStatus.value = 'deal-in-booking'
+                        substructFromWarehouseFunc(currentDeal.value)
+                        substructFromWarehouseToast() // в тос можем передать данные
+                        // console.log(`Можно вычитать предметы со склада по делу №${currentDeal.value.uid}`)
+                        // currentDeal.value.dealsList.forEach(item => {
+                        //     console.log(`Рецепт: ${item.recipe}`)
+
+                        //     // А если нет атрибутов?
+                        //     item.additionalAttributes.forEach(item => {
+                        //         console.log(`Доп.атрибуты: ${item.name} ${item.qty}`)
+                        //     })
+                        // })
                     } 
                     // для dealType === 'buy' условие запускается в: 
                     // 1. setAmountValue(), когда полностью внесена оплата
@@ -775,9 +789,11 @@
 
             // Уведомляем о выделении предметов со склада для реализации дела по указанному рецепту
             const substructFromWarehouseToast = async () => {
+                let message1 = 'Ингредиенты, необходимые для выполнения заказа, будут взяты со склада.';
+                let message2 = 'Не хватает ингредиентов, необходимых для выполнения заказа.';
                 const toast = await toastController.create({
                     message: `
-                        Ингредиенты, необходимые для выполнения заказа, будут взяты со склада.
+                        ${message2}
                     `,
                     // duration: 3000,
                     // cssClass: 'custom-toast', 
@@ -815,6 +831,29 @@
                 });
                 await toast.present();
                 // const { role } = await toast.onDidDismiss();    
+            }
+
+            // функция для добавления покупки на  склад
+            const addToWarehouseFunc = (currentDeal) => {
+                console.log(`Можно помещать предметы на склад по делу №${currentDeal.uid}`)
+                currentDeal.dealsList.forEach(item => {
+                    console.log(item)
+                })
+                //productQuantity
+                //costEstimation
+                //gramPerPerson
+            }
+            // функция исключения ингредиентов и предметов (доп. атрибутов) со склада
+            const substructFromWarehouseFunc = (currentDeal) => {
+                console.log(`Можно вычитать предметы со склада по делу №${currentDeal.uid}`)
+                currentDeal.dealsList.forEach(item => {
+                    console.log(`Рецепт: ${item.recipe}`)
+
+                    // А если нет атрибутов?
+                    item.additionalAttributes.forEach(item => {
+                        console.log(`Доп.атрибуты: ${item.name} ${item.qty}`)
+                    })
+                })
             }
 
             // выдергиваем из массива нужный контакт
@@ -990,10 +1029,11 @@
                         // зачисляем на склад только при условию что НЕТ долгов по оплате поставки
                         if(dealStatus.value === 'deal-complete' && debt.value === 0 && currentDeal.value.dealType === 'buy') {
                             addToWarehouseToast()
-                            console.log(`Можно помещать предметы на склад по делу №${currentDeal.value.uid}`)
-                            currentDeal.value.dealsList.forEach(item => {
-                                console.log(item)
-                            })
+                            addToWarehouseFunc(currentDeal.value)
+                            // console.log(`Можно помещать предметы на склад по делу №${currentDeal.value.uid}`)
+                            // currentDeal.value.dealsList.forEach(item => {
+                            //     console.log(item)
+                            // })
                         }
                     }
                 })
@@ -1690,10 +1730,11 @@
                         closeDealPaidMenu()
                         // зачисляем на склад только при условию что НЕТ долгов по оплате поставки
                         addToWarehouseToast()
-                        console.log(`Можно помещать предметы на склад по делу №${currentDeal.value.uid}`)
-                        currentDeal.value.dealsList.forEach(item => {
-                            console.log(item)
-                        })
+                        addToWarehouseFunc(currentDeal.value)
+                        // console.log(`Можно помещать предметы на склад по делу №${currentDeal.value.uid}`)
+                        // currentDeal.value.dealsList.forEach(item => {
+                        //     console.log(item)
+                        // })
                     }
                 } else if(debt.value > 0){
                     closeDealPaidMenu()
@@ -1777,7 +1818,7 @@
             })
 
             return {
-                currency, spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, setPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setNewPersonQty, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, shippingTypeList, dealShippingType, shippingPrice, setProductNotePlaceholder, shippingAddress, editShippingAddress, toggleEditShippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, translateShippingType, translateSelectedProduct, culcSubjectWeight, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, culcBuySubjectWeight, debt, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, nextDealStatus, prevDealStatus, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, refreshDebtValue, dealPaidAmountValue, finishDeal, setMarkerAttrColor, shapes, checkmarkDone, availableBalance, currentPriceSubject, personPortionGram, dealImportance, setRatingValue, addToLedger, dealComments, substructFromWarehouseToast, 
+                currency, spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, setPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setNewPersonQty, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, shippingTypeList, dealShippingType, shippingPrice, setProductNotePlaceholder, shippingAddress, editShippingAddress, toggleEditShippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, translateShippingType, translateSelectedProduct, culcSubjectWeight, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, culcBuySubjectWeight, debt, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, nextDealStatus, prevDealStatus, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, refreshDebtValue, dealPaidAmountValue, finishDeal, setMarkerAttrColor, shapes, checkmarkDone, availableBalance, currentPriceSubject, personPortionGram, dealImportance, setRatingValue, addToLedger, dealComments, substructFromWarehouseToast, addToWarehouseFunc
             }
         }
     })
