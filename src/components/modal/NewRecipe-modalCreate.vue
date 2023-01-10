@@ -17,11 +17,11 @@
     </ion-header>
 
     <!--  -->
-    <ion-content class="ion-padding" forceOverscroll="false">
+    <ion-content class="ion-padding-vertical" forceOverscroll="false">
       <!-- ============================= Основные данные ===================================== -->
 
       <!-- Название рецепта -->
-      <ion-item-group>
+      <ion-item-group class="ion-padding-horizontal">
         <!-- Заголовок -->
         <ion-text>
           <h4>Название</h4>
@@ -39,7 +39,7 @@
       </ion-item-group>
 
       <!-- Категории рецепта -->
-      <ion-item-group>
+      <ion-item-group class="ion-padding-horizontal">
         <!-- Заголовок -->
         <ion-text >
           <h4>Категории</h4>
@@ -70,8 +70,6 @@
         ></ion-action-sheet>
 
       </ion-item-group>
-
-      <!-- Свайпер с фотками -->
 
       <!-- Модалка по выбору / поиску категорий  -->
       <ion-modal :isOpen="searchRecipesCategoriesMenu">
@@ -108,8 +106,55 @@
         </ion-content>
       </ion-modal>
 
+      <!-- Свайпер с фотками -->
+      <!-- Если ЕСТЬ фото -->
+      <swiper
+        v-if="recipeData.images.length !== 0"
+        :modules="[Virtual]" 
+        :slides-per-view="1" 
+        :space-between="0"
+        :loop="false"
+      >
+        <swiper-slide
+          v-for="(slideContent, index) in recipeData.images"
+          :key="index"
+          :virtualIndex="index"
+          :style="setStyleProperties(index)"
+          style="position: relative"
+        >
+          {{ slideContent }}
+          <div class="ion-margin-end ion-margin-top" style="position: absolute; top: 0; right: 0; background-color: rgba(255, 255, 255, 0.8); padding: 10px; display: flex; justify-content: center; align-items: center; border-radius: 100%;" @click.stop="deleteCurrentImg(index)">
+            <ion-icon 
+                slot="icon-only" 
+                :icon="trash"
+                color="danger"
+            ></ion-icon>
+          </div>
+        </swiper-slide>
+        <!-- Добавить фото -->
+        <swiper-slide v-if="recipeData.images.length < 3">
+          <div 
+              class="ion-no-padding ion-padding-horizontal"
+              style="height: 300px; width: 100%; background-color: var(--ion-color-system); color: white; display: flex; align-items: center; flex-direction: column; justify-content: center;"
+              @click.stop="addImageToSlide()"
+          >   
+              <ion-icon style="font-size: 36px;" :icon="cameraOutline"></ion-icon>
+              <ion-text class="ion-margin-top">Добавить фото</ion-text>
+          </div>
+        </swiper-slide>
+      </swiper>
+      <div 
+          v-else
+          class="ion-no-padding ion-padding-horizontal"
+          style="height: 300px; width: 100%; background-color: var(--ion-color-system); color: white; display: flex; align-items: center; flex-direction: column; justify-content: center;"
+          @click.stop="addImageToSlide()"
+      >   
+          <ion-icon style="font-size: 36px;" :icon="cameraOutline"></ion-icon>
+          <ion-text class="ion-margin-top">Добавить фото</ion-text>
+      </div>
+
       <!-- Описание рецепта -->
-      <ion-item-group class="ion-margin-bottom">
+      <ion-item-group class="ion-margin-bottom ion-padding-horizontal">
         <!-- Заголовок -->
         <ion-text>
           <h4>Описание</h4>
@@ -132,6 +177,10 @@
 
       <!--  -->
       {{ recipeData }}
+      <br>
+      <br>
+      <br>
+      <br>
     </ion-content>
   </ion-modal>
 </template>
@@ -141,12 +190,18 @@ import { defineComponent, ref, watch, watchEffect, computed, onMounted } from "v
 import {
   IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonInput, IonLabel, IonGrid, IonChip, IonSearchbar, IonItem, IonRow, IonIcon, IonActionSheet, IonTextarea 
 } from "@ionic/vue";
-import { closeCircleOutline } from 'ionicons/icons'
+import { closeCircleOutline, cameraOutline, trash } from 'ionicons/icons'
 //
 import store from '../../store/index';
 //
 import { searchWarehouseCategoryFilter } from '../../helpers/filterWarehouseCategories';
 import { sortAlphabeticallyWarhouseItem } from "../../helpers/sortDealSubject";
+//    
+import 'swiper/css';
+import '@ionic/vue/css/ionic-swiper.css';
+import { Swiper, SwiperSlide } from 'swiper/vue';
+import { Virtual } from 'swiper';
+//
 
 export default defineComponent({
   name: "CreateRecipe",
@@ -173,7 +228,9 @@ export default defineComponent({
     IonRow,
     IonIcon,
     IonActionSheet,
-    IonTextarea 
+    IonTextarea,
+    //
+    Swiper, SwiperSlide
   },
   setup(props, { emit }) {
     //
@@ -270,12 +327,26 @@ export default defineComponent({
       recipeData.value.categories = recipeData.value.categories.filter(item => item !== category)
     }
     //
+    const slides = ref([])
+    // Стили для слайдера
+    const setStyleProperties = (index) => {
+        return `height: 300px; background-color: #${index}${index}${index}; color: white`
+    }
+    const addImageToSlide = () => {
+      props.recipeData.images.push('slide')
+    }
+    const deleteCurrentImg = (index) => {
+      if(index > -1) {
+        props.recipeData.images.splice(index, 1)
+      }
+    }
+    //
     watchEffect(() => {
       recipeData.value = props.recipeData;
     });
 
     return {
-      recipeData, recipeName, recipeDescription, recipeValue, closeThisModal, searchRecipesCategoriesMenu, searchRecipesCategories, searchedRecipesCategories, userRecipesCategories, userSettings, isCategoryAlreadyAdded, newCategory, choosenCategory, closeCircleOutline, deleteCategory, deleteCategoryButtons, openDeleteCategoryModal, deleteCategoruFunc
+      recipeData, recipeName, recipeDescription, recipeValue, closeThisModal, searchRecipesCategoriesMenu, searchRecipesCategories, searchedRecipesCategories, userRecipesCategories, userSettings, isCategoryAlreadyAdded, newCategory, choosenCategory, closeCircleOutline, deleteCategory, deleteCategoryButtons, openDeleteCategoryModal, deleteCategoruFunc, Virtual, slides, setStyleProperties, addImageToSlide, cameraOutline, trash, deleteCurrentImg
     };
   },
 });

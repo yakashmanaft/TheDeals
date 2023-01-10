@@ -96,7 +96,7 @@
                         </div>
                     </swiper-slide>
                     <!-- Добавить фото -->
-                    <swiper-slide>
+                    <swiper-slide v-if="slides.length < 3">
                         <div 
                             class="ion-no-padding ion-padding-horizontal"
                             style="height: 300px; width: 100%; background-color: var(--ion-color-system); color: white; display: flex; align-items: center; flex-direction: column; justify-content: center;"
@@ -952,7 +952,7 @@
 
             // Должны браться из БД
             //'slide 1', 'slide 2', 'slide 3'
-            const slides = ref(['slide 1', 'slide 2', 'slide 3'])
+            const slides = ref(['slide', 'slide', 'slide'])
             // Стили для слайдера
             const setStyleProperties = (index) => {
                 return `height: 300px; background-color: #${index}${index}${index}; color: white`
@@ -1648,11 +1648,16 @@
             }
             //
             const addImageToSlide = () => {
+                slides.value.push('slide')
                 alert('ViewRecipe: Добавление фото рецептов в разработке...')
             }
             //
             const deleteCurrentImg = (index) => {
+                if(index > -1) {
+                    slides.value.splice(index, 1)
+                }
                 alert(`ViewRecipe: (${index}) Удаление в разработке...`)
+
             }
 
             return {
