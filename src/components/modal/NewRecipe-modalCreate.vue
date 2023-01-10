@@ -110,7 +110,8 @@
       <!-- Если ЕСТЬ фото -->
       <swiper
         v-if="recipeData.images.length !== 0"
-        :modules="[Virtual]" 
+        :modules="modules" 
+        :pagination="true"
         :slides-per-view="1" 
         :space-between="0"
         :loop="false"
@@ -197,10 +198,11 @@ import store from '../../store/index';
 import { searchWarehouseCategoryFilter } from '../../helpers/filterWarehouseCategories';
 import { sortAlphabeticallyWarhouseItem } from "../../helpers/sortDealSubject";
 //    
-import 'swiper/css';
-import '@ionic/vue/css/ionic-swiper.css';
 import { Swiper, SwiperSlide } from 'swiper/vue';
-import { Virtual } from 'swiper';
+import { Virtual, Pagination } from 'swiper';
+import 'swiper/css';
+import 'swiper/css/pagination';
+import '@ionic/vue/css/ionic-swiper.css';
 //
 
 export default defineComponent({
@@ -346,7 +348,7 @@ export default defineComponent({
     });
 
     return {
-      recipeData, recipeName, recipeDescription, recipeValue, closeThisModal, searchRecipesCategoriesMenu, searchRecipesCategories, searchedRecipesCategories, userRecipesCategories, userSettings, isCategoryAlreadyAdded, newCategory, choosenCategory, closeCircleOutline, deleteCategory, deleteCategoryButtons, openDeleteCategoryModal, deleteCategoruFunc, Virtual, slides, setStyleProperties, addImageToSlide, cameraOutline, trash, deleteCurrentImg
+      recipeData, recipeName, recipeDescription, recipeValue, closeThisModal, searchRecipesCategoriesMenu, searchRecipesCategories, searchedRecipesCategories, userRecipesCategories, userSettings, isCategoryAlreadyAdded, newCategory, choosenCategory, closeCircleOutline, deleteCategory, deleteCategoryButtons, openDeleteCategoryModal, deleteCategoruFunc, slides, setStyleProperties, addImageToSlide, cameraOutline, trash, deleteCurrentImg, modules: [Virtual, Pagination]
     };
   },
 });
