@@ -71,6 +71,8 @@
 
       </ion-item-group>
 
+      <!-- Свайпер с фотками -->
+
       <!-- Модалка по выбору / поиску категорий  -->
       <ion-modal :isOpen="searchRecipesCategoriesMenu">
 

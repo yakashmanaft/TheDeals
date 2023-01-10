@@ -71,27 +71,52 @@
                 </ion-item-group>
 
                 <!-- Свайпер с фотками -->
+                <!-- Если ЕСТЬ фото -->
                 <swiper 
+                    v-if="slides.length !== 0"
                     :modules="[Virtual]" 
                     :slides-per-view="1" 
                     :space-between="0"
-                    :loop="true"
+                    :loop="false"
                     >
                     <swiper-slide
                         v-for="(slideContent, index) in slides"
                         :key="index"
                         :virtualIndex="index"
                         :style="setStyleProperties(index)"
+                        style="position: relative"
                     >
                         {{slideContent}}
+                        <div class="ion-margin-end ion-margin-top" style="position: absolute; top: 0; right: 0; background-color: rgba(255, 255, 255, 0.8); padding: 10px; display: flex; justify-content: center; align-items: center; border-radius: 100%;" @click.stop="deleteCurrentImg(index)">
+                            <ion-icon 
+                                slot="icon-only" 
+                                :icon="trash"
+                                color="danger"
+                            ></ion-icon>
+                        </div>
                     </swiper-slide>
-                    <!-- <swiper-slide>
-                        Фото 2
-                    </swiper-slide>
+                    <!-- Добавить фото -->
                     <swiper-slide>
-                        Фото 3
-                    </swiper-slide> -->
+                        <div 
+                            class="ion-no-padding ion-padding-horizontal"
+                            style="height: 300px; width: 100%; background-color: var(--ion-color-system); color: white; display: flex; align-items: center; flex-direction: column; justify-content: center;"
+                            @click.stop="addImageToSlide()"
+                        >   
+                            <ion-icon style="font-size: 36px;" :icon="cameraOutline"></ion-icon>
+                            <ion-text class="ion-margin-top">Добавить фото</ion-text>
+                        </div>
+                    </swiper-slide>
                 </swiper>
+                <!-- Если НЕТ фото -->
+                <div 
+                    v-else
+                    class="ion-no-padding ion-padding-horizontal"
+                    style="height: 300px; width: 100%; background-color: var(--ion-color-system); color: white; display: flex; align-items: center; flex-direction: column; justify-content: center;"
+                    @click.stop="addImageToSlide()"
+                >   
+                    <ion-icon style="font-size: 36px;" :icon="cameraOutline"></ion-icon>
+                    <ion-text class="ion-margin-top">Добавить фото</ion-text>
+                </div>
 
                 <!-- Описание рецепта -->
                 <ion-item-group class="ion-margin-bottom ion-padding-horizontal">
@@ -112,6 +137,7 @@
                 </ion-item-group>
 
                 <!-- Индикатор достатка ингредиентов на складе -->
+                <!-- Иданный индикатор имеется только у ViewRecipe -->
                 <ion-item-group class="ion-padding-horizontal">
                     <!-- ДОСТАТОЧНО ингредиентов -->
                     <!-- <ion-chip color="success" class="ion-no-margin">
@@ -666,7 +692,7 @@
     import store from '../../store/index';
     //
     import { IonContent, IonItemGroup, IonButton, IonActionSheet, IonGrid, IonRow, IonToggle, IonInput, IonText, IonItem, IonChip, IonIcon, IonTextarea, IonLabel, IonThumbnail, IonImg, IonModal, IonSearchbar, IonList, IonReorderGroup, IonReorder, IonItemSliding, IonItemOptions, IonItemOption, IonHeader, IonToolbar, IonButtons, IonTitle } from '@ionic/vue';
-    import { closeCircleOutline, checkmark, alertOutline, createOutline, trash } from 'ionicons/icons'
+    import { closeCircleOutline, checkmark, alertOutline, createOutline, trash, cameraOutline } from 'ionicons/icons'
     //
     import 'swiper/css';
     import '@ionic/vue/css/ionic-swiper.css';
@@ -924,8 +950,10 @@
                 }
             }
 
-            //
+            // Должны браться из БД
+            //'slide 1', 'slide 2', 'slide 3'
             const slides = ref(['slide 1', 'slide 2', 'slide 3'])
+            // Стили для слайдера
             const setStyleProperties = (index) => {
                 return `height: 300px; background-color: #${index}${index}${index}; color: white`
             }
@@ -1618,9 +1646,17 @@
             const toggleRecipeToStore = () => {
                 alert('ViewRecipe: в разработке...')
             }
+            //
+            const addImageToSlide = () => {
+                alert('ViewRecipe: Добавление фото рецептов в разработке...')
+            }
+            //
+            const deleteCurrentImg = (index) => {
+                alert(`ViewRecipe: (${index}) Удаление в разработке...`)
+            }
 
             return {
-                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList, checkmark, alertOutline, setImgSrc, searchRecipesCategoriesMenu, searchRecipesCategories, userRecipesCategories, searchedRecipesCategories, isCategoryAlreadyAdded, choosenCategory, setMeasure, Virtual, slides, setStyleProperties, steps, addProcessStep, addAssemblingElement, handleReorder, deleteAssemblingItem, assemblingItemToDeleteIndex, openDeleteAssemblingItemMenu, deleteAssemblingItemButtons, deleteAssemblingItemFunc, createOutline, reorderIsDisabled, toggleReorder, editRecipeProcess, editRecipeProcessFunc, handleReorderProcess, deleteProcessStep, processStepToDeleteIndex, openDeleteStepsMenu, deleteProcessStepButtons, deleteProcessStepFunc, addCompositionItem, editComposition, editCompositionFunc, openDeleteCompositionItemMenu, deleteCompositionItem, compositionItemToDeleteIndex, deleteCopmositionItemButtons, deleteCompositionItemFunc, addCompositionItemIngredient, trash, updateComposition, addAssemblingElementModalOpened, addToAssembling, updateProcess, addCompositionItemModalOpened, newCompositionItem, addNewCompositionItem, addButtonIsDisabled, closeCompositionItemModal, addIngredientToCompositionItem, ingredientForNewCompositionModalOpened, addIngredientToCompositionItemFunc, setIngredientImg, isIngredientAlreadyAdded, deleteNewCompositionItemIngredient, deleteNewCompositionItemIngredientIndex, deleteNewCompositionItemIngredientMenu, deleteNewCompositionItemIngredientFunc, deleteNewCompositionItemIngredientButtons, openActionSheetCostEstimationMenu, actionSheetIngredientCostEstimation, ingredientWhereChangeEstimation, ingredientChangeCostEstimationButtons, setIngredientEstimation, deleteCompisitionItemIngredientMenu, deleteCompisitionItemIngredient, compositionItemIngredientIndex, compositionItemIndex, compositionItemIngredientButtons, deleteCompisitionItemIngredientFunc, setIngredientValue, setCurrentIngredientValue, actionSheetCurrentIngredientCostEstimation, currentIngredientWhereChangeEstimation, openActionSheetCurrentCostEstimationMenu, currentIngredientChangeCostEstimationButtons, addIngredientToCurrentCompositionItemModalOpened, currentCompositionItem, currentCompositionItemNewIngredient, addNewIngredientButtonIsDisabled, addCompositionItemIngredientFunc, newIngredientCurrentCompositionModalOpened, addIngredientToCurrentCompositionItem, actionSheetCurrentCompositionItemNewIngredient, actionSheetCurrentCompositionItemNewIngredientButtons, setNewIngredientValue, closeAddIngredientToCurrentCompositionItemModal, toggleRecipeToStore, fromAssemblingToComposition
+                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList, checkmark, alertOutline, setImgSrc, searchRecipesCategoriesMenu, searchRecipesCategories, userRecipesCategories, searchedRecipesCategories, isCategoryAlreadyAdded, choosenCategory, setMeasure, Virtual, slides, setStyleProperties, steps, addProcessStep, addAssemblingElement, handleReorder, deleteAssemblingItem, assemblingItemToDeleteIndex, openDeleteAssemblingItemMenu, deleteAssemblingItemButtons, deleteAssemblingItemFunc, createOutline, reorderIsDisabled, toggleReorder, editRecipeProcess, editRecipeProcessFunc, handleReorderProcess, deleteProcessStep, processStepToDeleteIndex, openDeleteStepsMenu, deleteProcessStepButtons, deleteProcessStepFunc, addCompositionItem, editComposition, editCompositionFunc, openDeleteCompositionItemMenu, deleteCompositionItem, compositionItemToDeleteIndex, deleteCopmositionItemButtons, deleteCompositionItemFunc, addCompositionItemIngredient, trash, updateComposition, addAssemblingElementModalOpened, addToAssembling, updateProcess, addCompositionItemModalOpened, newCompositionItem, addNewCompositionItem, addButtonIsDisabled, closeCompositionItemModal, addIngredientToCompositionItem, ingredientForNewCompositionModalOpened, addIngredientToCompositionItemFunc, setIngredientImg, isIngredientAlreadyAdded, deleteNewCompositionItemIngredient, deleteNewCompositionItemIngredientIndex, deleteNewCompositionItemIngredientMenu, deleteNewCompositionItemIngredientFunc, deleteNewCompositionItemIngredientButtons, openActionSheetCostEstimationMenu, actionSheetIngredientCostEstimation, ingredientWhereChangeEstimation, ingredientChangeCostEstimationButtons, setIngredientEstimation, deleteCompisitionItemIngredientMenu, deleteCompisitionItemIngredient, compositionItemIngredientIndex, compositionItemIndex, compositionItemIngredientButtons, deleteCompisitionItemIngredientFunc, setIngredientValue, setCurrentIngredientValue, actionSheetCurrentIngredientCostEstimation, currentIngredientWhereChangeEstimation, openActionSheetCurrentCostEstimationMenu, currentIngredientChangeCostEstimationButtons, addIngredientToCurrentCompositionItemModalOpened, currentCompositionItem, currentCompositionItemNewIngredient, addNewIngredientButtonIsDisabled, addCompositionItemIngredientFunc, newIngredientCurrentCompositionModalOpened, addIngredientToCurrentCompositionItem, actionSheetCurrentCompositionItemNewIngredient, actionSheetCurrentCompositionItemNewIngredientButtons, setNewIngredientValue, closeAddIngredientToCurrentCompositionItemModal, toggleRecipeToStore, fromAssemblingToComposition, cameraOutline, addImageToSlide, deleteCurrentImg
             }
         }
     })

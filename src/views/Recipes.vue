@@ -265,7 +265,10 @@
                 recipeAuthorEmail: userEmail.value,
                 forSale: false,
                 recipeDescription: '',
-                composition: []
+                composition: [],
+                process: [],
+                assembling: [],
+                images: []
             })
 
             // При закрытии или открытии modal очищаем шаблон рецепта
@@ -282,7 +285,10 @@
                     recipeAuthorEmail: userEmail.value,
                     forSale: false,
                     recipeDescription: '',
-                    composition: []
+                    composition: [],
+                    process: [],
+                    assembling: [],
+                    images: []
                 }
             }
 
