@@ -169,7 +169,7 @@
                             <!--  -->
                             <ion-icon v-else :icon="createOutline" color="warning" style="font-size: 1.4rem;" @click.stop="editCompositionFunc()"></ion-icon>
                         </ion-row>
-                    </ion-grid>
+                    </ion-grid> 
 
                     <!--  -->
                     <div>
@@ -1334,8 +1334,24 @@
             // режим редактирования
             const editComposition = ref(false);
             const editCompositionFunc = () => {
-                editComposition.value = !editComposition.value;
+                if(editComposition.value) {
+                    let boolsArray = [];
+                    currentRecipe.value.composition.forEach(composition => {
+                        if(composition.ingredients.length === 0) {
+                            boolsArray.push('true')
+                        } else {
+                            boolsArray.push('false')
+                        }
+                    })
+                    if(boolsArray.includes('true')) {
+                        alert('ViewRecipe: в элементе состава должен быть указан хотя бы один ингредиент!')
+                        editComposition.value = true
+                    } else {
+                        editComposition.value = false
+                    }
+                }
             }
+
             // ===== удаляем элемент состава ======
             // переменная для action sheet
             const deleteCompositionItem = ref(false);

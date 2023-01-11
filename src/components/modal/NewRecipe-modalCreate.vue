@@ -154,7 +154,7 @@
           <ion-text class="ion-margin-top">Добавить фото</ion-text>
       </div>
 
-      <!-- Описание рецепта -->
+      <!-- ОПИСАНИЕ РЕЦЕПТА -->
       <ion-item-group class="ion-margin-bottom ion-padding-horizontal">
         <!-- Заголовок -->
         <ion-text>
@@ -169,6 +169,26 @@
           autocapitalize="on"
           v-model="recipeDescription"
         ></ion-textarea>
+      </ion-item-group>
+
+      <!-- СОСТАВ -->
+      <ion-item-group class="ion-padding-horizontal">
+        <!-- Заголовок -->
+        <ion-text>
+          <h4 class="ion-no-margin">Состав</h4>
+        </ion-text>
+
+        <!-- список элементов состава -->
+        <div v-if="recipeData.composition.length !== 0" v-for="(element, n) in recipeData.composition" :key="n">
+          {{ element }}
+        </div>
+        <!-- Кнопка добавления элемента -->
+        <ion-grid class="ion-no-padding">
+          <ion-row class="ion-justify-end">
+            <ion-chip class="ion-no-margin ion-margin-top" color="primary" @click.stop="addCompositionItem()">Добавить</ion-chip>
+          </ion-row>
+        </ion-grid>
+
       </ion-item-group>
 
       <!--  -->
@@ -342,13 +362,17 @@ export default defineComponent({
         props.recipeData.images.splice(index, 1)
       }
     }
+    // добавляем элемент к составу
+    const addCompositionItem = () => {
+      alert('добавление элемента к составу в разработке...')
+    }
     //
     watchEffect(() => {
       recipeData.value = props.recipeData;
     });
 
     return {
-      recipeData, recipeName, recipeDescription, recipeValue, closeThisModal, searchRecipesCategoriesMenu, searchRecipesCategories, searchedRecipesCategories, userRecipesCategories, userSettings, isCategoryAlreadyAdded, newCategory, choosenCategory, closeCircleOutline, deleteCategory, deleteCategoryButtons, openDeleteCategoryModal, deleteCategoruFunc, slides, setStyleProperties, addImageToSlide, cameraOutline, trash, deleteCurrentImg, modules: [Virtual, Pagination]
+      recipeData, recipeName, recipeDescription, recipeValue, closeThisModal, searchRecipesCategoriesMenu, searchRecipesCategories, searchedRecipesCategories, userRecipesCategories, userSettings, isCategoryAlreadyAdded, newCategory, choosenCategory, closeCircleOutline, deleteCategory, deleteCategoryButtons, openDeleteCategoryModal, deleteCategoruFunc, slides, setStyleProperties, addImageToSlide, cameraOutline, trash, deleteCurrentImg, modules: [Virtual, Pagination], addCompositionItem
     };
   },
 });
