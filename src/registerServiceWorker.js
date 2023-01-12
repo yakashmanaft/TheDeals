@@ -21,9 +21,12 @@ if (process.env.NODE_ENV === 'production') {
     },
     updated () {
       console.log('New content is available; please refresh.')
+      navigator.serviceWorker.addEventListener('controllerchange',  ()  => window.location.reload());
+      // window.location.reload()
     },
     offline () {
       console.log('No internet connection found. App is running in offline mode.')
+      alert('Отсутствует соединение с интернетом')
     },
     error (error) {
       console.error('Error during service worker registration:', error)
