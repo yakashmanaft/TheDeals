@@ -2,6 +2,9 @@ const { defineConfig } = require('@vue/cli-service')
 module.exports = defineConfig({
   transpileDependencies: true,
   pwa: {
+    workboxOptions: {
+      skipWaiting: true
+    },
     themeColor: "#fff",
     icons: {
       favicon32: 'img/icons/favicon-32x32.png',
