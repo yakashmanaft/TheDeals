@@ -249,8 +249,8 @@
 
                         <!-- Кнопка ДОБАВИТЬ Элемент к составу -->
                         <ion-grid class="ion-no-padding" v-if="editComposition">
-                            <ion-row class="ion-justify-content-end">
-                                <ion-chip class="ion-no-margin ion-margin-top" color="primary" @click.stop="addCompositionItem()">Добавить</ion-chip>
+                            <ion-row>
+                                <ion-chip class="ion-no-margin ion-margin-top" color="primary" outline="true" @click.stop="addCompositionItem()">Добавить</ion-chip>
                             </ion-row>
                         </ion-grid>
                     </div>
@@ -303,8 +303,8 @@
 
                     <!-- Кпнока ДОБАВИТЬ ШАГ -->
                     <ion-grid class="ion-padding-horizontal" v-if="editRecipeProcess">
-                        <ion-row class="ion-justify-content-end">
-                            <ion-chip class="ion-no-margin ion-margin-top" color="primary" @click.stop="addProcessStep()">Добавить</ion-chip>
+                        <ion-row>
+                            <ion-chip class="ion-no-margin ion-margin-top" outline="true" color="primary" @click.stop="addProcessStep()">Добавить</ion-chip>
                         </ion-row>
                     </ion-grid>
 
@@ -354,8 +354,8 @@
 
                     <!-- Кпнока ДОБАВИТЬ ШАГ -->
                     <ion-grid class="ion-no-padding" v-if="!reorderIsDisabled">
-                        <ion-row class="ion-justify-content-end">
-                            <ion-chip class="ion-no-margin ion-margin-top ion-margin-end" color="primary" @click.stop="addAssemblingElement()">Добавить</ion-chip>
+                        <ion-row>
+                            <ion-chip class="ion-margin" outline="true" color="primary" @click.stop="addAssemblingElement()">Добавить</ion-chip>
                         </ion-row>
                     </ion-grid>
 
@@ -1358,7 +1358,7 @@
             // ===== удаляем элемент состава ======
             // переменная для action sheet
             const deleteCompositionItem = ref(false);
-            // Храним шеуь из списка состава к удалению
+            // Храним item из списка состава к удалению
             const compositionItemToDeleteIndex = ref();
             //
             const openDeleteCompositionItemMenu = (index) => {

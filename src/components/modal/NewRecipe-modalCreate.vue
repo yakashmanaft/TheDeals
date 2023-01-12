@@ -180,21 +180,63 @@
 
         <!-- список элементов состава -->
         <div v-if="recipeData.composition.length !== 0" v-for="(element, n) in recipeData.composition" :key="n">
-          {{ element }}
+
+          <!-- Названия элемента состава -->
+          <ion-item class="ion-no-padding">
+            <ion-icon :icon="closeCircleOutline" style="margin-right: 0.4rem; min-width: 17px;" color="danger" @click.stop="openDeleteCompositionItemMenu(n)"></ion-icon>
+            <ion-text color="primary" @click.stop="expendList(`ri + ${n}`)">
+              {{(n + 1)}}. {{element.name}}
+            </ion-text>
+          </ion-item>
         </div>
         <!-- Кнопка добавления элемента -->
         <ion-grid class="ion-no-padding">
-          <ion-row class="ion-justify-end">
-            <ion-chip class="ion-no-margin ion-margin-top" color="primary" @click.stop="addCompositionItem()">Добавить</ion-chip>
+          <ion-row>
+            <ion-chip class="ion-no-margin ion-margin-vertical" color="primary" outline="true" @click.stop="addCompositionItem()">Добавить</ion-chip>
           </ion-row>
         </ion-grid>
+        <!-- всплывашка подтверждения удаления composition item -->
+        <ion-action-sheet
+            :isOpen="deleteCompositionItem"
+            header="Удалить позицию из состава"
+            :buttons="deleteCopmositionItemButtons"
+            @didDismiss="deleteCompositionItem = false"
+        ></ion-action-sheet>
 
       </ion-item-group>
 
-      <!--  -->
-      <ion-item-group>
-        123
+      <!-- Процесс -->
+      <ion-item-group class="ion-padding">
+        <!-- Заголовок -->
+        <ion-text>
+          <h4 class="ion-no-margin">Процесс</h4>
+        </ion-text>
       </ion-item-group>
+
+      <!-- Сборка -->
+      <ion-item-group class="ion-padding-horizontal ion-padding-top">
+        <!-- Заголовок -->
+        <ion-text>
+          <h4 class="ion-no-margin">Сборка</h4>
+        </ion-text>
+      </ion-item-group>
+
+      <ion-modal :isOpen="addCompositionItemModalOpened">
+        <!--  -->
+        <ion-header translucent="true">
+          <ion-toolbar>
+              <ion-buttons slot="start">
+                  <ion-button @click.stop="closeCompositionItemModal()">Отменить</ion-button> 
+              </ion-buttons>
+              <ion-title>Добавить к составу</ion-title>
+              <ion-buttons slot="end"></ion-buttons>
+          </ion-toolbar>
+        </ion-header>
+        <!--  -->
+        <ion-content forceOverscroll="false" class="ion-margin-top ion-padding-bottom">
+          123
+        </ion-content>
+      </ion-modal>
 
       <!--  -->
       {{ recipeData }}
@@ -362,9 +404,73 @@ export default defineComponent({
         props.recipeData.images.splice(index, 1)
       }
     }
-    // добавляем элемент к составу
+    // ======================= РАБОТА С NEW ЭЛЕМЕНТОВ СОСТАВА
+    const addCompositionItemModalOpened = ref(false);
+    const newCompositionItem = ref({})
     const addCompositionItem = () => {
-      alert('добавление элемента к составу в разработке...')
+      addCompositionItemModalOpened.value = true
+      newCompositionItem.value = {
+        name: '',
+        ingredients: [
+          {
+              name: "Сливочное масло",
+              costEstimation: "perKilogram",
+              value: 100
+          },
+        ]
+      }
+    }
+    //
+    const closeCompositionItemModal = () => {
+        addCompositionItemModalOpened.value = false;
+        newCompositionItem.value = {
+            name: '',
+            ingredients: []
+        }
+    }
+
+    // ================ удаляем элемент состава ============
+    // переменная для action sheet
+    const deleteCompositionItem = ref(false);
+    // Храним item из списка состава к удалению
+    const compositionItemToDeleteIndex = ref();
+    //
+    const openDeleteCompositionItemMenu = (index) => {
+      compositionItemToDeleteIndex.value = index;
+      deleteCompositionItem.value = true;
+    }
+    //
+    const deleteCopmositionItemButtons = [
+        {
+            text: 'Удалить',
+            role: 'destructive',
+            data: {
+                type: 'delete'
+            },
+            handler: () => {
+                deleteCompositionItemFunc(compositionItemToDeleteIndex.value)
+            }
+        },
+        {
+            text: 'Отменить',
+            role: 'cancel',
+            handler: () => {
+                console.log('Cancel clicked')
+            }
+        }
+    ]
+    //
+    const deleteCompositionItemFunc = (index) => {
+      if(index > -1) {
+        props.recipeData.composition.splice(index, 1)
+      }
+    }
+    // ================= разворачиваем конкретный элемент состава ======================
+    const expendList = (el) => {
+      let item = document.getElementById(el)
+      if(item) {
+          item.style.display == 'none' ? item.style.display = 'block' : item.style.display = 'none'
+      }
     }
     //
     watchEffect(() => {
@@ -372,7 +478,7 @@ export default defineComponent({
     });
 
     return {
-      recipeData, recipeName, recipeDescription, recipeValue, closeThisModal, searchRecipesCategoriesMenu, searchRecipesCategories, searchedRecipesCategories, userRecipesCategories, userSettings, isCategoryAlreadyAdded, newCategory, choosenCategory, closeCircleOutline, deleteCategory, deleteCategoryButtons, openDeleteCategoryModal, deleteCategoruFunc, slides, setStyleProperties, addImageToSlide, cameraOutline, trash, deleteCurrentImg, modules: [Virtual, Pagination], addCompositionItem
+      recipeData, recipeName, recipeDescription, recipeValue, closeThisModal, searchRecipesCategoriesMenu, searchRecipesCategories, searchedRecipesCategories, userRecipesCategories, userSettings, isCategoryAlreadyAdded, newCategory, choosenCategory, closeCircleOutline, deleteCategory, deleteCategoryButtons, openDeleteCategoryModal, deleteCategoruFunc, slides, setStyleProperties, addImageToSlide, cameraOutline, trash, deleteCurrentImg, modules: [Virtual, Pagination], addCompositionItem, newCompositionItem, addCompositionItemModalOpened, closeCompositionItemModal, openDeleteCompositionItemMenu, deleteCompositionItem, deleteCompositionItemFunc, compositionItemToDeleteIndex, deleteCopmositionItemButtons, expendList
     };
   },
 });
