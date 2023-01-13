@@ -118,8 +118,6 @@
                                         </ion-row>
                                     </ion-grid>
                                 </ion-item>
-                                <!-- Если не хотим указывать рецепт -->
-                                <!-- <ion-item lines="none" @click="chooseRecipe(noRecipe)">Без рецепта</ion-item> -->
                                 <!--  -->
                                 <div class="ion-padding-horizontal" style="display: flex; flex-direction: column; position: absolute; top: 40%;">
                                     <ion-text class="ion-text-center">Если вы хотите добавить рецепт, которого нет в вашей книге десертов</ion-text>
@@ -598,7 +596,7 @@
     import { searchDealSubjectFilter } from '../../helpers/filterDealSubject';
     import { searchUserRecipeFilter } from '../../helpers/filterUserRecipe';
     import { sortAlphabetically } from '../../helpers/sortDealSubject';
-    import { translateValue } from '@/helpers/translateValue';
+    import { translateValue, translateRecipeID } from '@/helpers/translateValue';
     //
     import store from '../../store/index';
     import { uid } from 'uid';
@@ -698,11 +696,9 @@
                 }
             }
             //
-            const showSelectedRecipe = (selectedRecipe) => {
-                if(subjectData.value.recipe !== '' && subjectData.value.recipe === 'Без рецепта') {
-                    return 'Без рецепта'
-                }else if(subjectData.value.recipe !== '' && subjectData.value.recipe !== 'Без рецепта') {
-                    return translateValue(selectedRecipe, userRecipeArray.value)
+            const showSelectedRecipe = (recipeID) => {
+                if(subjectData.value.recipe !== '') {
+                    return translateRecipeID(recipeID, userRecipeArray.value)
                 } else {
                     return 'Не выбрано'
                 }
@@ -797,7 +793,12 @@
             }
             // Задаем из выбранного списка значение для recipe
             const chooseRecipe = (recipe) => {
-                subjectData.value.recipe = recipe.value;
+                console.log(recipe)
+                if(recipe.uid === undefined) {
+                    subjectData.value.recipe = '111'; //Тип без рецепта id
+                } else {
+                    subjectData.value.recipe = recipe.uid;
+                }
                 searchRecipeMenu.value = false;
             }
             // Выбираем из списка объект для массива атрибутов

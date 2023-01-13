@@ -31,12 +31,20 @@
                 <!-- Название рецепта -->
                 <ion-item-group class="ion-padding-horizontal">
                     <!-- Заголовок -->
-                    <ion-text>
-                        <h4>Название</h4>
-                    </ion-text>
+                    <ion-grid class="ion-no-padding">
+                        <ion-row class="ion-justify-content-between ion-align-items-center">
+                            <!--  -->
+                            <h4>Название</h4>
+                            <!-- -->
+                            <ion-text v-if="!editRecipeName" color="primary" @click.stop="toggleEditRecipeName()">Изменить</ion-text>
+                            <!--  -->
+                            <ion-text v-else color="primary" @click.stop="toggleEditRecipeName()">Готово</ion-text>
+                        </ion-row>
+                    </ion-grid>
                     <!--  -->
                     <ion-item class="ion-no-padding" lines="none">
-                        <ion-input color="medium" v-model="recipeName" autocapitalize="on" maxlength="40"></ion-input>
+                        <ion-text v-if="!editRecipeName" color="medium">{{ currentRecipe.name }}</ion-text>
+                        <ion-input v-else placeholder="Укажите название рецепта" v-model="recipeName" autocapitalize="on" maxlength="40"></ion-input>
                     </ion-item>
                 </ion-item-group>
 
@@ -120,26 +128,38 @@
                 </div>
 
                 <!-- Описание рецепта -->
-                <ion-item-group class="ion-margin-bottom ion-padding-horizontal">
+                <ion-item-group class="ion-margin-top ion-padding-horizontal">
                     <!-- Заголовок -->
-                    <ion-text>
-                        <h4>Описание</h4>
-                    </ion-text>
+                    <ion-grid class="ion-no-padding">
+                        <ion-row class="ion-justify-content-between ion-align-items-center">
+                            <h4 class="ion-no-margin">Описание</h4>
+                            <!--  -->
+                            <ion-text v-if="!editRecipeDescription" color="primary" @click.stop="toggleEditRecipeDescription()">Изменить</ion-text>
+                            <!--  -->
+                            <ion-text v-else color="primary" @click.stop="toggleEditRecipeDescription()">Готово</ion-text>
+                        </ion-row>
+                    </ion-grid>
+
+                    <!-- Контент -->
+                    <div class="ion-margin-top">
+                        <ion-text v-if="!editRecipeDescription" color="medium">{{ currentRecipe.recipeDescription }}</ion-text>
+                        
+                        <ion-textarea
+                            v-else
+                            class="ion-no-padding ion-margin-top" 
+                            placeholder="Укажите описание"
+                            autoGrow="true" 
+                            autocapitalize="on"
+                            v-model="recipeDescription"
+                        ></ion-textarea>
+                    </div>
 
                     <!--style="border-bottom: 1px solid var(--ion-color-light); padding-bottom: 0.8rem;"  -->
-                    <ion-textarea
-                        color="medium"
-                        class="ion-no-padding ion-margin-top" 
-                        placeholder="Не указано"
-                        autoGrow="true" 
-                        autocapitalize="on"
-                        v-model="recipeDescription"
-                    ></ion-textarea>
                 </ion-item-group>
 
                 <!-- Индикатор достатка ингредиентов на складе -->
                 <!-- Иданный индикатор имеется только у ViewRecipe -->
-                <ion-item-group class="ion-padding-horizontal">
+                <ion-item-group class="ion-padding-horizontal ion-margin-top">
                     <!-- ДОСТАТОЧНО ингредиентов -->
                     <!-- <ion-chip color="success" class="ion-no-margin">
                         <ion-label>
@@ -163,7 +183,7 @@
                     <ion-grid class="ion-no-padding">
                         <ion-row class="ion-justify-content-between ion-align-items-center ion-margin-vertical">
                             <!--  -->
-                                <h4 class="ion-no-margin">Состав</h4>
+                            <h4 class="ion-no-margin">Состав</h4>
                             <!--  -->
                             <ion-text v-if="!editComposition" @click.stop="editComposition = true" color="primary">Изменить</ion-text>
                             <!--  -->
@@ -779,47 +799,91 @@
             }
             //
             const recipeName = ref(currentRecipe.value.name)
-            watch(recipeName, async () => {
-                // console.log(recipeName.value)
-                currentRecipe.value.name = recipeName.value
-                currentRecipe.value.value = recipeName.value
-                // 
-                spinner.value = true;
-                try {
-                    // Вынести в store?
-                    // console.log(`Deal ${currentId} is updated`);
-                    //
-                    const {error} = await supabase.from('userRecipes').update({
-                        name: currentRecipe.value.name,
-                        value: currentRecipe.value.value
-                    }).eq('id', info.recipeId);
-                    if(error) throw error;
-                    spinner.value = false;
-                    // Дело успешно обновлено
-                } catch (error) {
-                    // alert(`Error: ${error.message}`)
+            const editRecipeName = ref(false)
+            const toggleEditRecipeName = async () => {
+                if(!editRecipeName.value) {
+                    editRecipeName.value = true;
+
+                } else if(editRecipeName.value){
+                    if(recipeName.value === '') {
+                        alert('ViewRecipe: Название обязательно!')
+                    } else {
+                        // console.log(recipeName.value)
+                        currentRecipe.value.name = recipeName.value
+                        currentRecipe.value.value = recipeName.value
+                        // 
+                        spinner.value = true;
+                        try {
+                            // Вынести в store?
+                            // console.log(`Deal ${currentId} is updated`);
+                            //
+                            const {error} = await supabase.from('userRecipes').update({
+                                name: currentRecipe.value.name,
+                                value: currentRecipe.value.value
+                            }).eq('id', info.recipeId);
+                            if(error) throw error;
+                            spinner.value = false;
+                            // Дело успешно обновлено
+                            editRecipeName.value = false;
+                        } catch (error) {
+                            // alert(`Error: ${error.message}`)
+                        }
+                    }
                 }
-            })
+            }
+
+
+            // watch(recipeName, async () => {
+            //     // console.log(recipeName.value)
+            //     currentRecipe.value.name = recipeName.value
+            //     currentRecipe.value.value = recipeName.value
+            //     // 
+            //     spinner.value = true;
+            //     try {
+            //         // Вынести в store?
+            //         // console.log(`Deal ${currentId} is updated`);
+            //         //
+            //         const {error} = await supabase.from('userRecipes').update({
+            //             name: currentRecipe.value.name,
+            //             value: currentRecipe.value.value
+            //         }).eq('id', info.recipeId);
+            //         if(error) throw error;
+            //         spinner.value = false;
+            //         // Дело успешно обновлено
+            //     } catch (error) {
+            //         // alert(`Error: ${error.message}`)
+            //     }
+            // })
             // 
             const recipeDescription = ref(currentRecipe.value.recipeDescription)
-            watch(recipeDescription, async () => {
-                currentRecipe.value.recipeDescription = recipeDescription.value
-                // 
-                spinner.value = true;
-                try {
-                    // Вынести в store?
-                    // console.log(`Deal ${currentId} is updated`);
-                    //
-                    const {error} = await supabase.from('userRecipes').update({
-                        recipeDescription: currentRecipe.value.recipeDescription
-                    }).eq('id', info.recipeId);
-                    if(error) throw error;
-                    spinner.value = false;
-                    // Дело успешно обновлено
-                } catch (error) {
-                    // alert(`Error: ${error.message}`)
+            const editRecipeDescription = ref(false)
+            const toggleEditRecipeDescription = async () => {
+                if(!editRecipeDescription.value) {
+                    editRecipeDescription.value = true
+
+                } else if (editRecipeDescription.value) {
+                    if(recipeDescription.value === '') {
+                        alert('ViewRecipe: Описание рецепта не может быть пустым')
+                    } else {
+                        currentRecipe.value.recipeDescription = recipeDescription.value
+                        spinner.value = true;
+                        try {
+                            // Вынести в store?
+                            // console.log(`Deal ${currentId} is updated`);
+                            //
+                            const {error} = await supabase.from('userRecipes').update({
+                                recipeDescription: currentRecipe.value.recipeDescription
+                            }).eq('id', info.recipeId);
+                            if(error) throw error;
+                            spinner.value = false;
+                            // Дело успешно обновлено
+                            editRecipeDescription.value = false
+                        } catch (error) {
+                            // alert(`Error: ${error.message}`)
+                        }
+                    }
                 }
-            })
+            }
             //
             const steps = ref(currentRecipe.value.process)
             //
@@ -1339,16 +1403,20 @@
             const editCompositionFunc = () => {
                 if(editComposition.value) {
                     let boolsArray = [];
-                    currentRecipe.value.composition.forEach(composition => {
-                        if(composition.ingredients.length === 0) {
-                            boolsArray.push('true')
+                    if(currentRecipe.value.composition !== null) {
+                        currentRecipe.value.composition.forEach(composition => {
+                            if(composition.ingredients.length === 0) {
+                                boolsArray.push('true')
+                            } else {
+                                boolsArray.push('false')
+                            }
+                        })
+                        if(boolsArray.includes('true')) {
+                            alert('ViewRecipe: в элементе состава должен быть указан хотя бы один ингредиент!')
+                            editComposition.value = true
                         } else {
-                            boolsArray.push('false')
+                            editComposition.value = false
                         }
-                    })
-                    if(boolsArray.includes('true')) {
-                        alert('ViewRecipe: в элементе состава должен быть указан хотя бы один ингредиент!')
-                        editComposition.value = true
                     } else {
                         editComposition.value = false
                     }
@@ -1708,11 +1776,10 @@
                     slides.value.splice(index, 1)
                 }
                 alert(`ViewRecipe: (${index}) Удаление в разработке...`)
-
             }
 
             return {
-                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList, checkmark, alertOutline, setImgSrc, searchRecipesCategoriesMenu, searchRecipesCategories, userRecipesCategories, searchedRecipesCategories, isCategoryAlreadyAdded, choosenCategory, setMeasure, slides, setStyleProperties, steps, addProcessStep, addAssemblingElement, handleReorder, deleteAssemblingItem, assemblingItemToDeleteIndex, openDeleteAssemblingItemMenu, deleteAssemblingItemButtons, deleteAssemblingItemFunc, reorderIsDisabled, toggleReorder, editRecipeProcess, editRecipeProcessFunc, handleReorderProcess, deleteProcessStep, processStepToDeleteIndex, openDeleteStepsMenu, deleteProcessStepButtons, deleteProcessStepFunc, addCompositionItem, editComposition, editCompositionFunc, openDeleteCompositionItemMenu, deleteCompositionItem, compositionItemToDeleteIndex, deleteCopmositionItemButtons, deleteCompositionItemFunc, addCompositionItemIngredient, trash, updateComposition, addAssemblingElementModalOpened, addToAssembling, updateProcess, addCompositionItemModalOpened, newCompositionItem, addNewCompositionItem, addButtonIsDisabled, closeCompositionItemModal, addIngredientToCompositionItem, ingredientForNewCompositionModalOpened, addIngredientToCompositionItemFunc, setIngredientImg, isIngredientAlreadyAdded, deleteNewCompositionItemIngredient, deleteNewCompositionItemIngredientIndex, deleteNewCompositionItemIngredientMenu, deleteNewCompositionItemIngredientFunc, deleteNewCompositionItemIngredientButtons, openActionSheetCostEstimationMenu, actionSheetIngredientCostEstimation, ingredientWhereChangeEstimation, ingredientChangeCostEstimationButtons, setIngredientEstimation, deleteCompisitionItemIngredientMenu, deleteCompisitionItemIngredient, compositionItemIngredientIndex, compositionItemIndex, compositionItemIngredientButtons, deleteCompisitionItemIngredientFunc, setIngredientValue, setCurrentIngredientValue, actionSheetCurrentIngredientCostEstimation, currentIngredientWhereChangeEstimation, openActionSheetCurrentCostEstimationMenu, currentIngredientChangeCostEstimationButtons, addIngredientToCurrentCompositionItemModalOpened, currentCompositionItem, currentCompositionItemNewIngredient, addNewIngredientButtonIsDisabled, addCompositionItemIngredientFunc, newIngredientCurrentCompositionModalOpened, addIngredientToCurrentCompositionItem, actionSheetCurrentCompositionItemNewIngredient, actionSheetCurrentCompositionItemNewIngredientButtons, setNewIngredientValue, closeAddIngredientToCurrentCompositionItemModal, toggleRecipeToStore, fromAssemblingToComposition, cameraOutline, addImageToSlide, deleteCurrentImg, modules: [Virtual, Pagination], checkEmptyStrings
+                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList, checkmark, alertOutline, setImgSrc, searchRecipesCategoriesMenu, searchRecipesCategories, userRecipesCategories, searchedRecipesCategories, isCategoryAlreadyAdded, choosenCategory, setMeasure, slides, setStyleProperties, steps, addProcessStep, addAssemblingElement, handleReorder, deleteAssemblingItem, assemblingItemToDeleteIndex, openDeleteAssemblingItemMenu, deleteAssemblingItemButtons, deleteAssemblingItemFunc, reorderIsDisabled, toggleReorder, editRecipeProcess, editRecipeProcessFunc, handleReorderProcess, deleteProcessStep, processStepToDeleteIndex, openDeleteStepsMenu, deleteProcessStepButtons, deleteProcessStepFunc, addCompositionItem, editComposition, editCompositionFunc, openDeleteCompositionItemMenu, deleteCompositionItem, compositionItemToDeleteIndex, deleteCopmositionItemButtons, deleteCompositionItemFunc, addCompositionItemIngredient, trash, updateComposition, addAssemblingElementModalOpened, addToAssembling, updateProcess, addCompositionItemModalOpened, newCompositionItem, addNewCompositionItem, addButtonIsDisabled, closeCompositionItemModal, addIngredientToCompositionItem, ingredientForNewCompositionModalOpened, addIngredientToCompositionItemFunc, setIngredientImg, isIngredientAlreadyAdded, deleteNewCompositionItemIngredient, deleteNewCompositionItemIngredientIndex, deleteNewCompositionItemIngredientMenu, deleteNewCompositionItemIngredientFunc, deleteNewCompositionItemIngredientButtons, openActionSheetCostEstimationMenu, actionSheetIngredientCostEstimation, ingredientWhereChangeEstimation, ingredientChangeCostEstimationButtons, setIngredientEstimation, deleteCompisitionItemIngredientMenu, deleteCompisitionItemIngredient, compositionItemIngredientIndex, compositionItemIndex, compositionItemIngredientButtons, deleteCompisitionItemIngredientFunc, setIngredientValue, setCurrentIngredientValue, actionSheetCurrentIngredientCostEstimation, currentIngredientWhereChangeEstimation, openActionSheetCurrentCostEstimationMenu, currentIngredientChangeCostEstimationButtons, addIngredientToCurrentCompositionItemModalOpened, currentCompositionItem, currentCompositionItemNewIngredient, addNewIngredientButtonIsDisabled, addCompositionItemIngredientFunc, newIngredientCurrentCompositionModalOpened, addIngredientToCurrentCompositionItem, actionSheetCurrentCompositionItemNewIngredient, actionSheetCurrentCompositionItemNewIngredientButtons, setNewIngredientValue, closeAddIngredientToCurrentCompositionItemModal, toggleRecipeToStore, fromAssemblingToComposition, cameraOutline, addImageToSlide, deleteCurrentImg, modules: [Virtual, Pagination], checkEmptyStrings, editRecipeDescription, toggleEditRecipeDescription, editRecipeName, toggleEditRecipeName
             }
         }
     })

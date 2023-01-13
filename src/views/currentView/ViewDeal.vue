@@ -211,7 +211,7 @@
                                 <ion-label style="font-size: 12px">
                                     x{{item.productQuantity}}
                                 </ion-label>
-                                <ion-text v-if="currentDeal.dealType === 'sale'" style="white-space: normal">{{ item.recipe }}</ion-text>
+                                <ion-text v-if="currentDeal.dealType === 'sale'" style="white-space: normal">{{ showSelectedRecipe(item.recipe) }}</ion-text>
                             </ion-card>
                             <!-- Добавить еще предмет к заказу -->
                             <ion-card class="ion-padding card-center card-add" @click="openCreateSubjectModal()">
@@ -596,7 +596,7 @@
     import { searchFilter } from '../../helpers/filterMyContacts'; 
     import { setColorByDealType } from '@/helpers/setColorBy';
     import { setIconByDealType } from '@/helpers/setIconBy';
-    import { translateValue } from '@/helpers/translateValue';
+    import { translateValue, translateRecipeID } from '@/helpers/translateValue';
     import { checkRentAttr } from '@/helpers/checkRentAttr';
     import { setMarkerAttrColor } from '@/helpers/setMarkerColor';
     //
@@ -675,7 +675,7 @@
             // Временно обзавем данные
             const myDeals = ref([]);
             //
-            // const userRecipeArray = ref(store.state.userRecipeArray)
+            const userRecipeArray = ref(store.state.userRecipeArray)
             //
             const availableBalance = ref(0);
             //
@@ -686,7 +686,10 @@
                     // запускаем функцию расчета баланса кошелька из store
                     store.methods.calculateBalance(myDeals.value)
                     availableBalance.value = store.state.availableBalance
-                } 
+                } else if (currentDeal.value.dealType === 'sale') {
+                    await store.methods.getUserRecipesFromBD();
+                    userRecipeArray.value = store.state.userRecipeArray;
+                }
             })
             //
             const showNameByID = (contactID) => {
@@ -1811,6 +1814,10 @@
                 }
             }
             //
+            const showSelectedRecipe = (recipeID) => {
+                return translateRecipeID(recipeID, userRecipeArray.value)
+            }
+            //
             const dealComments = ref(currentDeal.value.comments);
             watch(dealComments, () => {
                 currentDeal.value.comments = dealComments.value
@@ -1818,7 +1825,7 @@
             })
 
             return {
-                currency, spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, setPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setNewPersonQty, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, shippingTypeList, dealShippingType, shippingPrice, setProductNotePlaceholder, shippingAddress, editShippingAddress, toggleEditShippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, translateShippingType, translateSelectedProduct, culcSubjectWeight, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, culcBuySubjectWeight, debt, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, nextDealStatus, prevDealStatus, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, refreshDebtValue, dealPaidAmountValue, finishDeal, setMarkerAttrColor, shapes, checkmarkDone, availableBalance, currentPriceSubject, personPortionGram, dealImportance, setRatingValue, addToLedger, dealComments, substructFromWarehouseToast, addToWarehouseFunc
+                currency, spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, setPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setNewPersonQty, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, shippingTypeList, dealShippingType, shippingPrice, setProductNotePlaceholder, shippingAddress, editShippingAddress, toggleEditShippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, translateShippingType, translateSelectedProduct, culcSubjectWeight, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, culcBuySubjectWeight, debt, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, nextDealStatus, prevDealStatus, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, refreshDebtValue, dealPaidAmountValue, finishDeal, setMarkerAttrColor, shapes, checkmarkDone, availableBalance, currentPriceSubject, personPortionGram, dealImportance, setRatingValue, addToLedger, dealComments, substructFromWarehouseToast, addToWarehouseFunc, showSelectedRecipe, userRecipeArray
             }
         }
     })
