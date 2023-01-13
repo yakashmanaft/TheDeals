@@ -8,6 +8,9 @@
 
                 <!-- КНОПКА НАЗАД -->
                 <ion-back-button class="color-primary" v-if="(router.currentRoute._value.meta.title !== 'Calendar' || router.currentRoute._value.meta.title === 'My finance') && isHasSubstring() === false" default-href="/" text="Назад"></ion-back-button>
+
+                <!-- КНОПКА НА ГЛАВНУЮ -->
+                <ion-button class="color-primary" v-if="isHasSubstring() === true" @click.stop="router.push({ path: '/' })">На главную</ion-button>
             </ion-buttons>
 
             <!-- ЗАГОЛОВОК В СЕРЕДИНЕ -->
@@ -65,7 +68,7 @@
         setup(props, { emit }) {
             const user = computed(() => store.state.user);
             const router = useRouter();
-            console.log(router.options.history.state.back)
+            // console.log(router.options.history.state.back)
             const isHasSubstring = () => {
                 let historyBack = router.options.history.state.back
                 let substring = '/view-deal/'

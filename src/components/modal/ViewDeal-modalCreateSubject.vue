@@ -112,15 +112,12 @@
                                             <ion-text color="medium">
                                                 Ничего не найдено
                                             </ion-text>
-                                            <ion-text color="primary" @click="addNewRecipe">
-                                                    Добавить
-                                            </ion-text>
                                         </ion-row>
                                     </ion-grid>
                                 </ion-item>
                                 <!--  -->
-                                <div class="ion-padding-horizontal" style="display: flex; flex-direction: column; position: absolute; top: 40%;">
-                                    <ion-text class="ion-text-center">Если вы хотите добавить рецепт, которого нет в вашей книге десертов</ion-text>
+                                <div class="ion-padding-horizontal" style="display: flex; flex-direction: column; position: absolute; top: 40%; width: 100%;">
+                                    <ion-text class="ion-text-center">Купить или создать в <ion-text color="primary" @click="goToMyRecipes()">Моих рецептах</ion-text></ion-text>
                                     <ion-button color="dark" class="ion-margin-top" @click="goToRecipesStore()">Купить в магазине</ion-button>
                                 </div>
                             </div>
@@ -1006,11 +1003,6 @@
                 alert('ViewDeal-modalCreateSubject: функционал в разработке (addNewAttrToPrice)')
             }
             //
-            const addNewRecipe = () => {
-                // alert('ViewDeal-modalCreateSubject: функционал в разработке (addNewRecipe)')
-                isModalCreateNewRecipeOpened.value = true;
-            }
-            //
             const addNewSubjectToPrice = () => {
                 alert('ViewDeal-modalCreateSubject: функционал в разработке (addNewSubjectToPrice)')
             }
@@ -1034,7 +1026,15 @@
             }
             //
             const goToRecipesStore = () => {
-                alert('ViewDeal-modalCreateSubject: Магазин в разработке...')
+                // alert('ViewDeal-modalCreateSubject: Магазин в разработке...')
+                searchRecipeMenu.value = false
+                emit('closeModal')
+                router.push({ path: '/recipes-store' })
+            }
+            const goToMyRecipes = () => {
+                searchRecipeMenu.value = false
+                emit('closeModal')
+                router.push({ path: '/recipes' })
             }
             // =======================================================================================
             // Work with Modal Create New Recipe
@@ -1105,7 +1105,7 @@
             }
 
             return {
-                dealSaleSubjectArray, dealBuySubjectArray, helpOutline, addOutline, showSelectedProduct, searchSubjectMenu, searchSelectedProduct, currentDealType, translateValue, searchedSubject, choose, searchRecipeMenu, searchRecipe, userRecipeArray, chooseRecipe, showSelectedRecipe, searchedRecipe, noRecipe, searchAttributeMenu, searchAdditionalAttributes, dealAdditionalAttributesArray, searchedAdditionalAttributes, chooseAttribute, closeCircleOutline, isAttributesMenuOpened, toggleAttributesMenu, openDeleteAttributeModal, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, systemCurrency, currentSubjectAttribute, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, isItemAlreadyHave, setAttributeRentType, sumAttributesPriceFunc, newAttribute, setProductQty, calcTotalSubjectPrice, setProductPrice, subjectPrice, subjectQty, removeCircleOutline, addCircleOutline, countQtyButtonColor, changeQty, changePersonQty, countPersonQtyButtonColor, gramPerPerson, setDiscountRange, subjectDiscount, addNewAttrToPrice, addNewRecipe, addNewSubjectToPrice, setAddButtonColor, goToRecipesStore, isModalCreateNewRecipeOpened, recipeData, setOpen, userEmail,createNew, spinner, router, searchedRecipeFunc, setCostEstimation
+                dealSaleSubjectArray, dealBuySubjectArray, helpOutline, addOutline, showSelectedProduct, searchSubjectMenu, searchSelectedProduct, currentDealType, translateValue, searchedSubject, choose, searchRecipeMenu, searchRecipe, userRecipeArray, chooseRecipe, showSelectedRecipe, searchedRecipe, noRecipe, searchAttributeMenu, searchAdditionalAttributes, dealAdditionalAttributesArray, searchedAdditionalAttributes, chooseAttribute, closeCircleOutline, isAttributesMenuOpened, toggleAttributesMenu, openDeleteAttributeModal, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, systemCurrency, currentSubjectAttribute, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, isItemAlreadyHave, setAttributeRentType, sumAttributesPriceFunc, newAttribute, setProductQty, calcTotalSubjectPrice, setProductPrice, subjectPrice, subjectQty, removeCircleOutline, addCircleOutline, countQtyButtonColor, changeQty, changePersonQty, countPersonQtyButtonColor, gramPerPerson, setDiscountRange, subjectDiscount, addNewAttrToPrice, addNewSubjectToPrice, setAddButtonColor, goToRecipesStore, isModalCreateNewRecipeOpened, recipeData, setOpen, userEmail,createNew, spinner, router, searchedRecipeFunc, setCostEstimation, goToMyRecipes
             }
         }
     })

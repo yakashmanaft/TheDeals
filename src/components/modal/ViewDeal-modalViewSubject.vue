@@ -83,7 +83,7 @@
                                 </ion-item>
                                 <!--  -->
                                 <div class="ion-padding-horizontal" style="display: flex; flex-direction: column; position: absolute; top: 40%; width: 100%">
-                                    <ion-text class="ion-text-center">Купить или создать в <ion-text color="primary">Моих рецептах</ion-text></ion-text>
+                                    <ion-text class="ion-text-center">Купить или создать в <ion-text color="primary" @click.stop="goToMyRecipes()">Моих рецептах</ion-text></ion-text>
                                     <ion-button color="dark" class="ion-margin-top" @click="goToRecipesStore()">Купить в магазине</ion-button>
                                 </div>
                             </div>
@@ -873,6 +873,12 @@
                 emit('closeModal')
                 router.push({ path: '/recipes-store' })
             }
+            //
+            const goToMyRecipes = () => {
+                searchRecipeMenu.value = false
+                emit('closeModal')
+                router.push({ path: '/recipes' })
+            }
             // =======================================================================================
             const isModalCreateNewRecipeOpened = ref(false)
             // При закрытии или открытии modal очищаем шаблон рецепта
@@ -901,7 +907,7 @@
 
 
             return {
-                systemCurrency, userSettings, subjectData, currentDealType, searchRecipeMenu, searchRecipe, chooseRecipe, noRecipe, searchedRecipe, userRecipeArray, showSelectedRecipe, translateProductValue, dealSaleSubjectArray, dealBuySubjectArray, addOutline, closeCircleOutline, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, openDeleteAttributeModal, deleteAttributeFunc, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, currentSubjectAttribute, isItemAlreadyHave, searchAttributeMenu, searchAdditionalAttributes, searchedAdditionalAttributes, dealAdditionalAttributesArray, chooseAttribute, setAttributeRentType, setProductPrice, setProductQty, sumAttributesPriceFunc, productNote, setProductNotePlaceholder, calcTotalSubjectPrice, subjectPrice, newAttribute, sumAttributesPriceValue, subjectQty, removeCircleOutline, addCircleOutline, changeQty, changePersonQty, gramPerPerson, setDiscountRange, subjectDiscount, setIsReturned, addNewAttrToPrice, sync, checkmark, setMarkerCurrentAttrColor, addNewRecipe, isModalCreateNewRecipeOpened, setOpen, goToRecipesStore, searchedRecipeFunc, attributePrice, router
+                systemCurrency, userSettings, subjectData, currentDealType, searchRecipeMenu, searchRecipe, chooseRecipe, noRecipe, searchedRecipe, userRecipeArray, showSelectedRecipe, translateProductValue, dealSaleSubjectArray, dealBuySubjectArray, addOutline, closeCircleOutline, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, openDeleteAttributeModal, deleteAttributeFunc, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, currentSubjectAttribute, isItemAlreadyHave, searchAttributeMenu, searchAdditionalAttributes, searchedAdditionalAttributes, dealAdditionalAttributesArray, chooseAttribute, setAttributeRentType, setProductPrice, setProductQty, sumAttributesPriceFunc, productNote, setProductNotePlaceholder, calcTotalSubjectPrice, subjectPrice, newAttribute, sumAttributesPriceValue, subjectQty, removeCircleOutline, addCircleOutline, changeQty, changePersonQty, gramPerPerson, setDiscountRange, subjectDiscount, setIsReturned, addNewAttrToPrice, sync, checkmark, setMarkerCurrentAttrColor, addNewRecipe, isModalCreateNewRecipeOpened, setOpen, goToRecipesStore, searchedRecipeFunc, attributePrice, router, goToMyRecipes
             }
         }
     })
