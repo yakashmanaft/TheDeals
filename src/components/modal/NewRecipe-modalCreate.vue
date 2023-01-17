@@ -188,13 +188,22 @@
               {{(n + 1)}}. {{element.name}}
             </ion-text>
           </ion-item>
+
+          <!-- Ингредиенты элемента -->
+          <div :id="`ri + ${n}`">
+            {{ element.ingredients }}
+            <!-- перебор массива ингредиентов -->
+          </div>
+
         </div>
+
         <!-- Кнопка добавления элемента -->
         <ion-grid class="ion-no-padding">
           <ion-row>
             <ion-chip class="ion-no-margin ion-margin-vertical" color="primary" outline="true" @click.stop="addCompositionItem()">Добавить</ion-chip>
           </ion-row>
         </ion-grid>
+
         <!-- всплывашка подтверждения удаления composition item -->
         <ion-action-sheet
             :isOpen="deleteCompositionItem"
@@ -221,6 +230,7 @@
         </ion-text>
       </ion-item-group>
 
+      <!-- Модалка добавления item + ingredients к составу -->
       <ion-modal :isOpen="addCompositionItemModalOpened">
         <!--  -->
         <ion-header translucent="true">
@@ -234,9 +244,64 @@
         </ion-header>
         <!--  -->
         <ion-content forceOverscroll="false" class="ion-margin-top ion-padding-bottom">
-          123
+          {{ newCompositionItem }}
+          <ion-item-group class="ion-padding-horizontal">
+            <!--  -->
+            <ion-text>
+              <h4>Название</h4>
+            </ion-text>
+
+            <!--  -->
+            <ion-input placeholder="Укажите название" v-model="newCompositionItem.name" maxlength="40" autocapitalize="on"></ion-input>
+          </ion-item-group>
+
+          <!--  -->
+          <ion-item-group>
+            <!--  -->
+            <ion-text>
+              <h4 class="ion-margin-horizontal">Ингредиенты</h4>
+            </ion-text>
+
+            <!--  -->
+            <div v-if="newCompositionItem.ingredients && newCompositionItem.ingredients.length !== 0" v-for="(ingredient, index) in newCompositionItem.ingredients" :key="index" style="margin-top: 1rem;">
+
+              <!-- ингредиент -->
+              <ion-item-sliding>
+                <ion-item lines="none">
+                  <ion-grid class="ion-no-padding border-bottom">
+                    <ion-row class="ion-justify-content-between ion-align-items-center" style="flex-wrap: nowrap">
+                      <!--  -->
+                      <div>
+                        {{ ingredient }}
+                      </div>
+                      <!--  -->
+                      <ion-thumbnail class="thumbnail_deal-subject" style="background-color: var(--ion-color-light);">
+                        <ion-img :src="setIngredientImg(ingredient.name)"></ion-img>
+                      </ion-thumbnail>
+                    </ion-row>
+                  </ion-grid>
+                </ion-item>
+              </ion-item-sliding>
+            </div>
+            
+            <!-- Кнопка -->
+            <div class="ion-margin-top ion-padding-horizontal" @click.stop="addIngredientToCompositionItem()">
+                <ion-text color="primary" class="button-add-ingredient">Добавить ингредиент</ion-text>
+            </div>
+          </ion-item-group>
         </ion-content>
       </ion-modal>
+
+      <!-- Всплывашка подтверждение удаления ингредиента у нового элемента composition -->
+
+      <!-- Модалка по выбору / поиску предмета (ингредиента) к NEW composition item-->
+      <SearchDealBuySubject
+        :isOpen="ingredientForNewCompositionModalOpened"
+        @closeModal="ingredientForNewCompositionModalOpened = false"
+        :properties="'isIngredient'"
+        @addItem="addIngredientToCompositionItemFunc"
+      />
+
 
       <!--  -->
       {{ recipeData }}
@@ -251,7 +316,7 @@
 <script>
 import { defineComponent, ref, watch, watchEffect, computed, onMounted } from "vue";
 import {
-  IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonInput, IonLabel, IonGrid, IonChip, IonSearchbar, IonItem, IonRow, IonIcon, IonActionSheet, IonTextarea 
+  IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonInput, IonLabel, IonGrid, IonChip, IonSearchbar, IonItem, IonRow, IonIcon, IonActionSheet, IonTextarea, IonItemSliding, IonThumbnail, IonImg
 } from "@ionic/vue";
 import { closeCircleOutline, cameraOutline, trash } from 'ionicons/icons'
 //
@@ -265,6 +330,8 @@ import { Virtual, Pagination } from 'swiper';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import '@ionic/vue/css/ionic-swiper.css';
+//
+import SearchDealBuySubject from '../../components/modal/SearchDealBuySubject.vue';
 //
 
 export default defineComponent({
@@ -293,8 +360,13 @@ export default defineComponent({
     IonIcon,
     IonActionSheet,
     IonTextarea,
+    IonItemSliding,
+    IonThumbnail,
+    IonImg,
     //
-    Swiper, SwiperSlide
+    Swiper, SwiperSlide,
+    //
+    SearchDealBuySubject
   },
   setup(props, { emit }) {
     //
@@ -412,12 +484,39 @@ export default defineComponent({
       newCompositionItem.value = {
         name: '',
         ingredients: [
-          {
-              name: "Сливочное масло",
-              costEstimation: "perKilogram",
-              value: 100
-          },
+          // пример, удаляем потом
+          // {
+          //     name: "Сливочное масло",
+          //     costEstimation: "perKilogram",
+          //     value: 100
+          // },
+          // {
+          //     name: "Сыр",
+          //     costEstimation: "perKilogram",
+          //     value: 170
+          // },
         ]
+      }
+    }
+    //
+    const ingredientForNewCompositionModalOpened = ref(false)
+    // Открываем модалку создания NEW composition item
+    const addIngredientToCompositionItem = () => {
+      ingredientForNewCompositionModalOpened.value = true;
+    }
+    // Проверяем добавлена ли ингредиент к NEW composition item, если НЕТ - пушим к массиву ингредиентов у NEW composition item
+    const isIngredientAlreadyAdded = ref()
+    const addIngredientToCompositionItemFunc = (ingredientData) => {
+      isIngredientAlreadyAdded.value = newCompositionItem.value.ingredients.find(item => item.name === ingredientData.name)
+      if(isIngredientAlreadyAdded.value !== undefined) {
+        alert('NewRecipe-modalCreate: ингредиент уже добавлен')
+      } else {
+        ingredientForNewCompositionModalOpened.value = false
+        newCompositionItem.value.ingredients.push({
+          name: ingredientData.name,
+          costEstimation: '',
+          value: 0
+        })
       }
     }
     //
@@ -473,15 +572,43 @@ export default defineComponent({
       }
     }
     //
+    const setIngredientImg = (recipeName) => {
+      let dealBuySubjectArray = store.state.dealBuySubjectArray
+      let ingredientValue;
+      dealBuySubjectArray.filter(item => {
+          if(item.name === recipeName) {
+              ingredientValue = item.value
+          }
+      })
+      return `../img/subjects/buy/${ingredientValue}.webp`
+    }
+    //
     watchEffect(() => {
       recipeData.value = props.recipeData;
     });
 
     return {
-      recipeData, recipeName, recipeDescription, recipeValue, closeThisModal, searchRecipesCategoriesMenu, searchRecipesCategories, searchedRecipesCategories, userRecipesCategories, userSettings, isCategoryAlreadyAdded, newCategory, choosenCategory, closeCircleOutline, deleteCategory, deleteCategoryButtons, openDeleteCategoryModal, deleteCategoruFunc, slides, setStyleProperties, addImageToSlide, cameraOutline, trash, deleteCurrentImg, modules: [Virtual, Pagination], addCompositionItem, newCompositionItem, addCompositionItemModalOpened, closeCompositionItemModal, openDeleteCompositionItemMenu, deleteCompositionItem, deleteCompositionItemFunc, compositionItemToDeleteIndex, deleteCopmositionItemButtons, expendList
+      recipeData, recipeName, recipeDescription, recipeValue, closeThisModal, searchRecipesCategoriesMenu, searchRecipesCategories, searchedRecipesCategories, userRecipesCategories, userSettings, isCategoryAlreadyAdded, newCategory, choosenCategory, closeCircleOutline, deleteCategory, deleteCategoryButtons, openDeleteCategoryModal, deleteCategoruFunc, slides, setStyleProperties, addImageToSlide, cameraOutline, trash, deleteCurrentImg, modules: [Virtual, Pagination], addCompositionItem, newCompositionItem, addCompositionItemModalOpened, closeCompositionItemModal, openDeleteCompositionItemMenu, deleteCompositionItem, deleteCompositionItemFunc, compositionItemToDeleteIndex, deleteCopmositionItemButtons, expendList, addIngredientToCompositionItem, ingredientForNewCompositionModalOpened, isIngredientAlreadyAdded, addIngredientToCompositionItemFunc, setIngredientImg
     };
   },
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+  .thumbnail_deal-subject {
+      height: 64px;
+      min-width: 64px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%;
+      padding: 0.5rem;
+  }
+  .button-add-ingredient {
+      border-bottom: 1px dashed var(--ion-color-primary);
+  }
+  .border-bottom {
+        border-bottom: 1px solid var(--ion-color-light);
+        padding-bottom: 1rem;
+    }
+</style>
