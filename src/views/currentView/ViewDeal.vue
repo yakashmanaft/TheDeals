@@ -103,6 +103,7 @@
                     <StarRaiting
                         :value="dealImportance"
                         @getRatingValue="setRatingValue"
+                        :dealStatus="dealStatus"
                     />
                 </ion-item-group>
 
@@ -116,7 +117,7 @@
                     <ion-grid class="ion-no-padding border-bottom">
                         <ion-row class="ion-justify-content-between ion-align-items-center">
                             <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">{{dealContact}}</ion-button>
-                            <ion-button size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click="searchContactMenu = true">Изменить</ion-button>
+                            <ion-button size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click.stop="openSearchContactMenu()">Изменить</ion-button>
                         </ion-row>
                     </ion-grid>
                     <!-- модалка для выбора (ПОИСК КОНТАКТА) контакта по делу -->
@@ -154,7 +155,7 @@
                             <!-- Текущая дата и время исполнения -->
                             <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">{{ datepicker(currentDeal.executionDate) }}</ion-button>
                             <!-- Кнопка активации компонента, она же показывает выбранное -->
-                            <ion-button size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click="openModalCalendar(isCalendarOpened = true)">Изменить</ion-button>
+                            <ion-button size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click="openModalCalendar()">Изменить</ion-button>
                         </ion-row>
                     </ion-grid>
                     <!--  -->
@@ -246,6 +247,7 @@
                             <ion-chip :color="setChipColor(currentDeal.shipping.typeOfShipping)">
                                 <Select
                                     :data="shippingTypeList" 
+                                    :dealStatus="dealStatus"
                                     :placeholder="translateShippingType(currentDeal.shipping.typeOfShipping)"
                                     @date-updated="(selected) => dealShippingType = selected.currentValue"
                                 />
@@ -262,7 +264,7 @@
                             </ion-button>
                             <!-- Ценник -->
                             <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                                <ion-input type="number" v-model="shippingPrice" :value="currentDeal.shipping.shippingPrice" placeholder="0" inputmode="decimal" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
+                                <ion-input type="number" :disabled="(currentDeal.dealStatus === 'deal-complete' || currentDeal.dealStatus === 'deal-in-delivery') ? true : false"  v-model="shippingPrice" :value="currentDeal.shipping.shippingPrice" placeholder="0" inputmode="decimal" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
                             </ion-button>
                         </ion-row>
                     </ion-grid>
@@ -275,7 +277,7 @@
                             </ion-button>
                             <!-- Ценник -->
                             <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                            <ion-input type="number" disabled="true" v-model="shippingPrice" :value="currentDeal.shipping.shippingPrice" placeholder="0" inputmode="decimal" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
+                            <ion-input type="number" :disabled="(currentDeal.dealStatus === 'deal-complete' || currentDeal.dealStatus === 'deal-in-delivery' || currentDeal.shipping.typeOfShipping === 'shipping-pickup') ? true : false" v-model="shippingPrice" :value="currentDeal.shipping.shippingPrice" placeholder="0" inputmode="decimal" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
                         </ion-button>
 
                         </ion-row>
@@ -289,14 +291,14 @@
                                 Адрес доставки
                             </ion-button>
                             <!-- Кнопка изменить адрес -->
-                            <ion-button v-if="editShippingAddress === false" size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click="editShippingAddress = true">Изменить</ion-button>
+                            <ion-button v-if="editShippingAddress === false" size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click="toggleEditShippingAddress">Изменить</ion-button>
                             <ion-button v-if="editShippingAddress === true" size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click="toggleEditShippingAddress">Готово</ion-button>
                         </ion-row>
                         <!--content -->
                         <ion-row class="ion-margin-bottom">
                             <!-- Адрес доставки -->
                             <ion-text v-if="editShippingAddress === false">{{setProductNotePlaceholder(currentDeal.shipping.shippingAddress)}}</ion-text>
-                            <ion-textarea v-if="editShippingAddress === true" class="ion-margin-bottom" autocapitalize="on" v-model="shippingAddress"></ion-textarea>
+                            <ion-textarea v-if="editShippingAddress === true" class="ion-margin-bottom" autocapitalize="on" v-model="shippingAddress" placeholder="Укажите адрес"></ion-textarea>
                         </ion-row>
                     </ion-grid>
                 </ion-item-group> 
@@ -314,6 +316,7 @@
                             <ion-chip :color="setChipColor(currentDeal.shipping.typeOfShipping)">
                                 <Select
                                     :data="shippingTypeList" 
+                                    :dealStatus="dealStatus"
                                     :placeholder="translateShippingType(currentDeal.shipping.typeOfShipping)"
                                     @date-updated="(selected) => dealShippingType = selected.currentValue"
                                 />
@@ -330,7 +333,7 @@
                             </ion-button>
                             <!-- Ценник -->
                             <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                                <ion-input type="number" v-model="shippingPrice" :value="currentDeal.shipping.shippingPrice" placeholder="0" inputmode="decimal" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
+                                <ion-input type="number" :disabled="(currentDeal.dealStatus === 'deal-complete' || currentDeal.dealStatus === 'deal-in-delivery') ? true : false" v-model="shippingPrice" :value="currentDeal.shipping.shippingPrice" placeholder="0" inputmode="decimal" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
                             </ion-button>
                         </ion-row>
                     </ion-grid>
@@ -343,7 +346,7 @@
                             </ion-button>
                             <!-- Ценник -->
                             <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                            <ion-input type="number" disabled="true" v-model="shippingPrice" :value="currentDeal.shipping.shippingPrice" placeholder="0" inputmode="decimal" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
+                            <ion-input type="number" :disabled="(currentDeal.dealStatus === 'deal-complete' || currentDeal.dealStatus === 'deal-in-delivery' || currentDeal.shipping.typeOfShipping === 'shipping-pickup') ? true : false" v-model="shippingPrice" :value="currentDeal.shipping.shippingPrice" placeholder="0" inputmode="decimal" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
                         </ion-button>
 
                         </ion-row>
@@ -861,6 +864,15 @@
 
             // выдергиваем из массива нужный контакт
             const searchContactMenu = ref(false)
+            // открываем меню выбора контакта
+            const openSearchContactMenu = () => {
+                if(currentDeal.value.dealStatus === 'deal-complete') {
+                    alert('ViewDeal: вы не можете изменить контакт, если статус "ЗАВЕРШЕН"')
+                } else {
+                    searchContactMenu.value = true
+                }
+            }
+            //
             const choose = async (contact) => {
                 dealContact.value = `${contact.contactInfo.name} ${contact.contactInfo.surname}`
                 dealContactID.value = contact.id
@@ -897,7 +909,11 @@
             // Управление модалкой календаря
             const isCalendarOpened = ref(false)
             const openModalCalendar = () => {
-                isCalendarOpened.value = true
+                if(currentDeal.value.dealStatus === 'deal-complete') {
+                    alert('Viewdeal: вы не можете изменить дату, если статус "ЗАВЕРШЕН"')
+                } else {
+                    isCalendarOpened.value = true
+                }
             }
             const closeModalCalendar = (executionDate) => {
                 executionDate = currentDeal.value.executionDate
@@ -1085,15 +1101,19 @@
             // открываем view current deal item
             const isViewDealSubjectOpened = ref(false);
             const openCurrentDealSubject = (index, item) => {
-                isViewDealSubjectOpened.value = true;
-                //
-                currentDealSubject.value = currentDeal.value.dealsList[index];
-                currentPriceSubject.value = item.price
-                personPortionGram.value = item.gramPerPerson
-                // console.log(item)
-                //
-                setCountQtyButtonColor(currentDealSubject.value.productQuantity);
-                setCountPersonQtyButtonColor(currentDealSubject.value.personQuantity);
+                if(currentDeal.value.dealStatus === 'deal-complete') {
+                    alert('ViewDeal: вы не можете изменить предмет дела, если статус "ЗАВЕРШЕН"')
+                } else {
+                    isViewDealSubjectOpened.value = true;
+                    //
+                    currentDealSubject.value = currentDeal.value.dealsList[index];
+                    currentPriceSubject.value = item.price
+                    personPortionGram.value = item.gramPerPerson
+                    // console.log(item)
+                    //
+                    setCountQtyButtonColor(currentDealSubject.value.productQuantity);
+                    setCountPersonQtyButtonColor(currentDealSubject.value.personQuantity);
+                }
             }
             // Вызываем action sheet меню выбор
             const actionSheetDealStatus = ref(false)
@@ -1105,8 +1125,12 @@
             // Храним айди предмета к удалению
             const subjectToDelete = ref();
             const openDeleteSubjectModal = (id) => {
-                deleteSubject.value = true;
-                subjectToDelete.value = id;
+                if(currentDeal.value.dealStatus === 'deal-complete') {
+                    alert('ViewDeal: вы не можете удалить предмет дела, если статус "ЗАВЕРШЕН"')
+                } else {
+                    deleteSubject.value = true;
+                    subjectToDelete.value = id;
+                }
             }
             // удаляем current deal item и обновляем запись в БД
             const deleteCurrentDealItem = (id) => {
@@ -1117,35 +1141,39 @@
             const isCreateNewSubjectOpened = ref(false);
             // Открывает модалку создания нового предмета к текущему делу
             const openCreateSubjectModal = () => {
-                isCreateNewSubjectOpened.value = true;
-                // Обнуляем шаблон нового предмета у дела согласно dealType
-                if (currentDeal.value.dealType === 'sale') {
-                    currentSubject.value = {
-                        id: uid(),
-                        selectedProduct: '',
-                        price: 0,
-                        costEstimation: '',
-                        personQuantity: 1,
-                        gramPerPerson: 120,
-                        subjectDiscount: 0,
-                        subjectPrice: 0,
-                        recipe: '',
-                        productQuantity: 1,
-                        additionalAttributes: [],
-                        totalSubjectPrice: 0, 
-                        productNote: '',
-                    }
-                } else if (currentDeal.value.dealType === 'buy') {
-                    currentSubject.value = {
-                        id: uid(),
-                        selectedProduct: '',
-                        price: 0,
-                        gramPerPerson: 0,
-                        subjectPrice: 0,
-                        costEstimation: '',
-                        productQuantity: 1,
-                        totalSubjectPrice: 0, 
-                        productNote: '',
+                if(currentDeal.value.dealStatus === 'deal-complete') {
+                    alert('ViewDeal: вы не можете добавлять предмету к делу, если статус "ЗАВЕРШЕН"')
+                } else {
+                    isCreateNewSubjectOpened.value = true;
+                    // Обнуляем шаблон нового предмета у дела согласно dealType
+                    if (currentDeal.value.dealType === 'sale') {
+                        currentSubject.value = {
+                            id: uid(),
+                            selectedProduct: '',
+                            price: 0,
+                            costEstimation: '',
+                            personQuantity: 1,
+                            gramPerPerson: 120,
+                            subjectDiscount: 0,
+                            subjectPrice: 0,
+                            recipe: '',
+                            productQuantity: 1,
+                            additionalAttributes: [],
+                            totalSubjectPrice: 0, 
+                            productNote: '',
+                        }
+                    } else if (currentDeal.value.dealType === 'buy') {
+                        currentSubject.value = {
+                            id: uid(),
+                            selectedProduct: '',
+                            price: 0,
+                            gramPerPerson: 0,
+                            subjectPrice: 0,
+                            costEstimation: '',
+                            productQuantity: 1,
+                            totalSubjectPrice: 0, 
+                            productNote: '',
+                        }
                     }
                 }
             }
@@ -1633,14 +1661,22 @@
             // })
             //
             const toggleEditShippingAddress = () => {
-                editShippingAddress.value = false
-                currentDeal.value.shipping.shippingAddress = shippingAddress.value
-                update()
+                if(editShippingAddress.value === false) {
+                    if(currentDeal.value.dealStatus === 'deal-complete' || currentDeal.value.dealStatus === 'deal-in-delivery') {
+                        alert('ViewDeal: вы не можете изменить адрес доставки, если статус "ЗАВЕРШЕН" или "В ДОСТАВКЕ"')
+                    } else {
+                        editShippingAddress.value = true
+                    }
+                } else {
+                    editShippingAddress.value = false
+                    currentDeal.value.shipping.shippingAddress = shippingAddress.value
+                    update()
+                }
             }
             //
             const setProductNotePlaceholder = (note) => {
                 if (note === '') {
-                    return 'Напишите адрес'
+                    return 'Адрес не указан'
                 } else {
                     shippingAddress.value = note
                     return note
@@ -1778,7 +1814,7 @@
             }
             // функция для кнопки ЗАВЕРШИТЬ ДЕЛО
             const finishDeal = () => {
-                // Ставим делу статус ЗАВЕРШЕНо
+                // Ставим делу статус ЗАВЕРШЕНJ
                 dealStatus.value = 'deal-complete'
                 // Проверяем на предмет возврата атрибутов
                 if(currentDeal.value.dealType === 'sale') {
@@ -1792,9 +1828,13 @@
             const dealImportance = ref(currentDeal.value.dealImportance)
             //
             const setRatingValue = (ratingValue) => {
-                // console.log(ratingValue)
-                dealImportance.value = ratingValue
-                update()
+                if(currentDeal.value.dealStatus === 'deal-complete') {
+                    // alert('ViewDeal: вы не можете изменить дело, если статус Завершен')
+                } else {
+                    // console.log(ratingValue)
+                    dealImportance.value = ratingValue
+                    update()
+                }
             }
 
             // добавляем запись (строку) от транзакции в леджер
@@ -1825,7 +1865,7 @@
             })
 
             return {
-                currency, spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, setPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setNewPersonQty, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, shippingTypeList, dealShippingType, shippingPrice, setProductNotePlaceholder, shippingAddress, editShippingAddress, toggleEditShippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, translateShippingType, translateSelectedProduct, culcSubjectWeight, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, culcBuySubjectWeight, debt, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, nextDealStatus, prevDealStatus, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, refreshDebtValue, dealPaidAmountValue, finishDeal, setMarkerAttrColor, shapes, checkmarkDone, availableBalance, currentPriceSubject, personPortionGram, dealImportance, setRatingValue, addToLedger, dealComments, substructFromWarehouseToast, addToWarehouseFunc, showSelectedRecipe, userRecipeArray
+                currency, spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, setPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setNewPersonQty, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, shippingTypeList, dealShippingType, shippingPrice, setProductNotePlaceholder, shippingAddress, editShippingAddress, toggleEditShippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, translateShippingType, translateSelectedProduct, culcSubjectWeight, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, culcBuySubjectWeight, debt, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, nextDealStatus, prevDealStatus, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, refreshDebtValue, dealPaidAmountValue, finishDeal, setMarkerAttrColor, shapes, checkmarkDone, availableBalance, currentPriceSubject, personPortionGram, dealImportance, setRatingValue, addToLedger, dealComments, substructFromWarehouseToast, addToWarehouseFunc, showSelectedRecipe, userRecipeArray, openSearchContactMenu
             }
         }
     })

@@ -39,7 +39,8 @@
             value: null,
             id: String,
             disabled: Boolean,
-            required: Boolean
+            required: Boolean,
+            dealStatus: String
         },
         components: {
             IonLabel, IonRadio, IonIcon, IonText, IonGrid, IonRow
@@ -49,13 +50,21 @@
             // const temp_value = ref(null)
             const ratings =  ref([1, 2, 3, 4, 5])
             const value = ref()
+            const status = ref()
             //
             const set = (i) => {
-                return value.value = i + 1
+                // console.log(status.value)
+                if(status.value === 'deal-complete') {
+                    alert('StarRating: вы не можете изменить дело, если статус "ЗАВЕРШЕН"')
+                    return value.value = value.value;
+                } else {
+                    return value.value = i + 1
+                }
             }
             //
             watchEffect(() => {
                 value.value = props.value
+                status.value = props.dealStatus
             })
             //
             watch(value, () => {
@@ -64,7 +73,7 @@
             })
 
             return {
-                ratings, star, set, value
+                ratings, star, set, value, status
             }
         }  
     })
