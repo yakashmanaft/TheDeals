@@ -305,22 +305,61 @@
                     alert('Recips: Вы не заполнили описание рецепта')
                 } else if (newRecipeData.categories.length === 0) {
                     alert('Recipes: Укажите категорию')
-                } else {
-                    try {
-                        // Добавляем в БД инфу по новому контакту
-                        const { error } = await supabase.from('userRecipes').insert([recipeData.value])
-                        if(error) throw error;
-                        await store.methods.getUserRecipesFromBD();
-                        myRecipes.value = store.state.userRecipeArray;
-                        // ищем созданный новый рецепт в массиве всех рецептов в store (по uid)
-                        const newRecipe = myRecipes.value.find(el => el.uid === recipeData.value.uid) 
-                        // Сбрасываем заполненные данные и закрываем модалку
-                        setOpen()
-                        // переходим на страницу созданного нового контакта
-                        router.push({ name: 'View-Recipe', params: { recipeId: newRecipe.id, recipe: JSON.stringify(newRecipe)}})
-                        // console.log(newRecipe)
-                    } catch (error) {
-                        alert(`Error: ${error.message}`)
+                } else if (newRecipeData.composition.length === 0) {
+                    alert('Recipes: В составе рецепта должен быть хотя бы один элемент')
+                } else if (newRecipeData.process.length === 0) {
+                    alert('Recipes: Должен быть хотя бы один шаг в процессе')
+                } 
+                // else if (newRecipeData.assembling.length === 0) {
+                //     alert('Recipes: Должен быть указан хотя бы один элемент в сборке')
+                // } 
+                else {
+                    // проверяем, чтобы не было пустых composition (без ингредиентов всмысле)
+                    let boolsArray = [];
+                    let emptyStrings = []
+                    if(newRecipeData.composition !== null) {
+                        newRecipeData.composition.forEach(composition => {
+                            if(composition.ingredients.length === 0) {
+                                boolsArray.push('true')
+                            } else {
+                                boolsArray.push('false')
+                            }
+                        })
+                        if(boolsArray.includes('true')) {
+                            alert('Recipes: в элементе состава должен быть указан хотя бы один ингредиент!')
+                        } else {
+                            // Проверяем, чтобы не было пустых шагов в процессе
+                            if(newRecipeData.process !== null) {
+                                newRecipeData.process.forEach(step => {
+                                    if(step.text === '') {
+                                        emptyStrings.push(step.text)
+                                    }
+                                })
+                                if(emptyStrings.includes('')) {
+                                    alert('Recipe: Шаг процесса не может быть пустым')
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Функция создания записи в БД
+                    if(!boolsArray.includes('true') && !emptyStrings.includes('')) {
+                        try {
+                            // Добавляем в БД инфу по новому контакту
+                            const { error } = await supabase.from('userRecipes').insert([recipeData.value])
+                            if(error) throw error;
+                            await store.methods.getUserRecipesFromBD();
+                            myRecipes.value = store.state.userRecipeArray;
+                            // ищем созданный новый рецепт в массиве всех рецептов в store (по uid)
+                            const newRecipe = myRecipes.value.find(el => el.uid === recipeData.value.uid) 
+                            // Сбрасываем заполненные данные и закрываем модалку
+                            setOpen()
+                            // переходим на страницу созданного нового контакта
+                            router.push({ name: 'View-Recipe', params: { recipeId: newRecipe.id, recipe: JSON.stringify(newRecipe)}})
+                            // console.log(newRecipe)
+                        } catch (error) {
+                            alert(`Error: ${error.message}`)
+                        }
                     }
                 }
             }

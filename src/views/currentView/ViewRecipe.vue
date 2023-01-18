@@ -213,24 +213,29 @@
                             <!-- Ингредиенты элемента -->
                             <div :id="`ri + ${n}`" style="display: none">
                                 <!-- перебор массива ингредиентов -->
-                                <div v-for="(ingredient, idx) in element.ingredients" :key="idx" lines="none" class="ion-no-padding" style="margin-top: 1rem;">
+                                <div v-for="(ingredient, idx) in element.ingredients" :key="idx" class="ion-no-padding" style="margin-top: 1rem;">
                                     <!-- в режиме редактирования -->
                                     <ion-item-sliding v-if="editComposition">
                                         <ion-item lines="none" style="--inner-padding-end: none">
                                             <ion-grid class="ion-no-padding">
                                                 <ion-row class="ion-justify-content-between ion-align-items-center" style="flex-wrap: nowrap;">
+                                                    <!--  -->
                                                     <div style="display: flex; flex-direction: column;">
-                                                        <!-- <ion-text>{{ingredient.name}} ({{setMeasure(ingredient.costEstimation)}})</ion-text> -->
+
+                                                        <!--  -->
                                                         <ion-text>{{ ingredient.name }}
                                                             <span @click.prevent.stop="openActionSheetCurrentCostEstimationMenu(ingredient)" style="border-bottom: 1px dashed var(--ion-color-primary); color: var(--ion-color-primary); white-space: nowrap;">
                                                                 {{setIngredientEstimation(ingredient.costEstimation)}}
                                                             </span>
                                                         </ion-text>
+                                                        <!--  -->
                                                         <div style="display: flex; align-items: center; margin-top: 0.5rem;">
                                                             <ion-text color="medium" class="ion-margin-end" style="font-size: 1rem;">Укажите кол-во:</ion-text>
                                                             <ion-input style="font-size: 1.3rem; font-weight: bold;" v-model="ingredient.value" class="ion-no-padding" color="primary" inputmode="decimal" @ionChange="setCurrentIngredientValue(ingredient.value, idx, n)"></ion-input>
                                                         </div>
+
                                                     </div>
+                                                    <!--  -->
                                                     <ion-thumbnail class="thumbnail_deal-subject" style="background-color: var(--ion-color-light); border: 1px solid var(--ion-color-danger)">
                                                         <ion-img :src="setImgSrc(ingredient.name)"></ion-img>
                                                     </ion-thumbnail>
@@ -258,8 +263,8 @@
                                         </ion-row>
                                     </ion-grid>
                                 </div>
+
                                 <!-- кнопка добавления нового ингредеиента к определенному элементу состава -->
-                                <!-- <ion-chip v-if="editComposition" class="ion-no-margin ion-margin-top" color="primary">Добавить</ion-chip> -->
                                 <div v-if="editComposition" class="ion-margin-vertical" @click.stop="addCompositionItemIngredient(n)">
                                     <ion-text color="primary" class="ion-margin-start button-add-ingredient">Добавить ингредиент</ion-text>
                                 </div>
@@ -328,7 +333,7 @@
                         </ion-row>
                     </ion-grid>
 
-                    <!-- Всплывашка подтверждение удаления item в сборке -->
+                    <!-- Всплывашка подтверждение удаления шаг в процессе -->
                     <ion-action-sheet
                         :isOpen="deleteProcessStep"
                         header="Удалить шаг из процесса"
@@ -372,7 +377,7 @@
                         </ion-reorder-group>
                     </ion-list>
 
-                    <!-- Кпнока ДОБАВИТЬ ШАГ -->
+                    <!-- Кнопка добавить элементв в сборку -->
                     <ion-grid class="ion-no-padding" v-if="!reorderIsDisabled">
                         <ion-row>
                             <ion-chip class="ion-margin" outline="true" color="primary" @click.stop="addAssemblingElement()">Добавить</ion-chip>
@@ -427,7 +432,7 @@
                                                 <div style="display: flex; flex-direction: column;">
                                                     <ion-text>{{ingredient.name}} <span @click.prevent.stop="openActionSheetCostEstimationMenu(ingredient)" style="border-bottom: 1px dashed var(--ion-color-primary); color: var(--ion-color-primary); white-space: nowrap">{{setIngredientEstimation(ingredient.costEstimation)}}</span></ion-text>
                                                     <!--  -->
-                                                    <div style="display: flex; align-items: center; margin-top: 0.5rem;">
+                                                    <div style="display: flex; align-items: center; margin-top: 0.7rem;">
                                                         <ion-text color="medium" class="ion-margin-end" style="font-size: 1rem;">Укажите кол-во:</ion-text>
                                                         <ion-input v-model="ingredient.value" type="number" style="font-size: 1.3rem; font-weight: bold;" class="ion-no-padding" color="primary" inputmode="decimal" @ionChange="setIngredientValue(ingredient.value, index)"></ion-input>
                                                     </div>
@@ -469,7 +474,7 @@
                     </ion-content>
                 </ion-modal>
 
-                <!-- Модалка добавления ингрежиентов к current compistion item -->
+                <!-- Модалка добавления ингредиентов к current compistion item -->
                 <ion-modal :isOpen="addIngredientToCurrentCompositionItemModalOpened">
                     <!--  -->
                     <ion-header translucent="true">
@@ -599,10 +604,12 @@
                     </ion-header>
                     <!--  -->
                     <ion-content forceOverscroll="false" class="ion-margin-top" style="position: relative">
+                        <!--  -->
                         <div v-if="currentRecipe.composition === null || currentRecipe.composition.length === 0" style="position: absolute; top: 40%; width: 100%; margin: 0 auto" class="ion-text-center">
                             <ion-text>Сначала добавьте элементы к составу</ion-text><br/>
-                            <ion-button expend="block" fill="clear" @click.stop="fromAssemblingToComposition">Добавить</ion-button>
+                            <ion-button expand="block" fill="clear" @click.stop="fromAssemblingToComposition">Добавить</ion-button>
                         </div>
+                        <!--  -->
                         <ion-item v-else v-for="(item, index) in currentRecipe.composition" :key="index" @click.stop="addToAssembling(item.name)">
                             {{item.name}}
                         </ion-item>
@@ -831,29 +838,6 @@
                     }
                 }
             }
-
-
-            // watch(recipeName, async () => {
-            //     // console.log(recipeName.value)
-            //     currentRecipe.value.name = recipeName.value
-            //     currentRecipe.value.value = recipeName.value
-            //     // 
-            //     spinner.value = true;
-            //     try {
-            //         // Вынести в store?
-            //         // console.log(`Deal ${currentId} is updated`);
-            //         //
-            //         const {error} = await supabase.from('userRecipes').update({
-            //             name: currentRecipe.value.name,
-            //             value: currentRecipe.value.value
-            //         }).eq('id', info.recipeId);
-            //         if(error) throw error;
-            //         spinner.value = false;
-            //         // Дело успешно обновлено
-            //     } catch (error) {
-            //         // alert(`Error: ${error.message}`)
-            //     }
-            // })
             // 
             const recipeDescription = ref(currentRecipe.value.recipeDescription)
             const editRecipeDescription = ref(false)
@@ -894,8 +878,12 @@
             const categoryToDelete = ref();
             //удаляем current category в предмете (обнолвений в БД здесь не производится)
             const openDeleteCategoryModal = (category) => {
-                categoryToDelete.value = category;
-                deleteCategory.value = true
+                if(currentRecipe.value.categories.length === 1) {
+                    alert('ViewRecipe: должна быть указана хотя бы одна категория')
+                } else {
+                    categoryToDelete.value = category;
+                    deleteCategory.value = true
+                }
             }
             const deleteCategoruFunc = async (category) => {
                 currentRecipe.value.categories = currentRecipe.value.categories.filter(item => item !== category)
@@ -1074,7 +1062,7 @@
                 reorderIsDisabled.value = !reorderIsDisabled.value
             }
             const handleReorder = async (event) => {
-                console.log('Dragged from index', event.detail.from, 'to', event.detail.to);
+                // console.log('Dragged from index', event.detail.from, 'to', event.detail.to);
                 currentRecipe.value.assembling = event.detail.complete(currentRecipe.value.assembling);
                 //
                 spinner.value = true;
@@ -1145,8 +1133,12 @@
             // Храним step из списка шагов процесса приготовления к удалению
             const processStepToDeleteIndex = ref();
             const openDeleteStepsMenu = (index) => {
-                processStepToDeleteIndex.value = index;
-                deleteProcessStep.value = true;
+                if(currentRecipe.value.process.length === 1) {
+                    alert('ViewRecipe: Нельзя удалить. Должен быть указан хотя бы один шаг')
+                } else {
+                    processStepToDeleteIndex.value = index;
+                    deleteProcessStep.value = true;
+                }
             }
             // кнопки в меню подтверждения удаления шага из процесса
             const deleteProcessStepButtons = [
@@ -1361,14 +1353,14 @@
                     ingredients: []
                 }
             }
-            // ============================== удаляем ингредиент у нового элементы coposition =======================
+            // ============================== удаляем ингредиент у нового элементы composition =======================
             // переменная для action sheet
             const deleteNewCompositionItemIngredient = ref(false)
             // Храним ингредиент в новом composition item к удалению
             const deleteNewCompositionItemIngredientIndex = ref();
             //
             const deleteNewCompositionItemIngredientMenu = (index) => {
-                console.log(index)
+                // console.log(index)
                 deleteNewCompositionItemIngredientIndex.value = index;
                 deleteNewCompositionItemIngredient.value = true;
             }
@@ -1420,7 +1412,7 @@
                     } else {
                         editComposition.value = false
                     }
-                }
+                } 
             }
 
             // ===== удаляем элемент состава ======
@@ -1430,8 +1422,12 @@
             const compositionItemToDeleteIndex = ref();
             //
             const openDeleteCompositionItemMenu = (index) => {
-                compositionItemToDeleteIndex.value = index;
-                deleteCompositionItem.value = true;
+                if(currentRecipe.value.composition.length === 1) {
+                    alert('ViewRecipe: Нельзя удалить. Должен быть хотя бы один элемент в составе')
+                } else {
+                    compositionItemToDeleteIndex.value = index;
+                    deleteCompositionItem.value = true;
+                }
             }
             //
             const deleteCopmositionItemButtons = [
