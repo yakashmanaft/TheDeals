@@ -38,7 +38,7 @@
 
                 <!-- WAREHOUSE MENU -->
                 <ion-button v-if="router.currentRoute._value.meta.title === 'Warehouse'" @click="$emit('goToWarehouseMenu', true)">
-                    <ion-icon color="primary" :icon="ellipsisHorizontal"></ion-icon>
+                    <ion-icon color="primary" :icon="settingsOutline"></ion-icon>
                 </ion-button>
 
                 <!-- Filter -->
@@ -57,7 +57,7 @@
     import { computed } from 'vue';
     import { useRouter } from 'vue-router';
     import { IonHeader, IonMenuToggle, IonToolbar, IonIcon, IonGrid, IonRow, IonText, IonButtons, IonButton, IonBackButton, IonTitle } from '@ionic/vue';
-    import { menu, walletOutline, settingsOutline, qrCodeOutline, storefrontOutline, bagOutline, funnelOutline, ellipsisHorizontal } from 'ionicons/icons';
+    import { menu, walletOutline, settingsOutline, qrCodeOutline, storefrontOutline, bagOutline, funnelOutline } from 'ionicons/icons';
 
     export default {
         name: 'Header',
@@ -80,7 +80,7 @@
             }
 
             return {
-                user, router, menu, walletOutline, settingsOutline, qrCodeOutline, settingsOutline, storefrontOutline, bagOutline, funnelOutline, ellipsisHorizontal, isHasSubstring
+                user, router, menu, walletOutline, settingsOutline, qrCodeOutline, settingsOutline, storefrontOutline, bagOutline, funnelOutline, isHasSubstring
             }
         }
     }

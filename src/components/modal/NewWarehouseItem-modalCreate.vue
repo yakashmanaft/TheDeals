@@ -219,7 +219,7 @@ import store from '../../store/index';
 
     export default defineComponent({
         name: 'CreateItem',
-        emits: ['closeModal'],
+        emits: ['closeModal', 'createItem'],
         props: {
             itemData: Object
         }, 

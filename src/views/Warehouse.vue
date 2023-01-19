@@ -14,13 +14,14 @@
             :title="pageTitle"
         />
 
-        <!-- Кнопка перехода к созданию нового дела -->
-        <CreateButton @click="setOpen"/>
+        <!-- Кнопка вызова меню (создать новую позицию, добавить в существующую, вычесть из существующей) -->
+        <!-- <CreateButton @click="setOpenCreateNewModal"/> -->
+        <CreateActionButton @click="isActionMenuOpened = true"/>
 
         <!-- Модалка создания нового предмета -->
         <CreateNewItem
             :is-open="isOpen"
-            @closeModal="setOpen"
+            @closeModal="setOpenCreateNewModal"
             @createItem="createItem"
             :itemData="itemData"
         />
@@ -177,12 +178,20 @@
             <br>
             <br>
         </ion-content>
-        <!-- action sheet вызова меню -->
+        <!-- меню типа настроек-->
         <ion-action-sheet
             :isOpen="warehouseMenuOpened"
             :buttons="warehouseMenuButtons"
             header="Меню склада"
             @didDismiss="warehouseMenuOpened = false"
+        ></ion-action-sheet>
+
+        <!-- меню выбор действий (создать, добвить, вычесть)-->
+        <ion-action-sheet
+            :isOpen="isActionMenuOpened"
+            :buttons="actionMenuButtons"
+            header="Выберите нужное действие"
+            @didDismiss="isActionMenuOpened = false"
         ></ion-action-sheet>
 
         <!-- page footer -->
@@ -203,6 +212,7 @@
     import NavigationMenu from '@/components/NavigationMenu.vue';
     import Header from '@/components/headers/Header.vue';
     import CreateButton from '../components/CreateButton.vue';
+    import CreateActionButton from '../components/CreateActionButton.vue';
     import CreateNewItem from '../components/modal/NewWarehouseItem-modalCreate.vue';
     import WarehouseSettings from '../components/modal/WarehouseSettings.vue';
     import Footer from '../components/Footer.vue';
@@ -216,7 +226,7 @@
         components: {
             IonContent, IonImg, IonText, IonSearchbar, IonItem, IonList, IonGrid, IonRow, IonItemDivider, IonActionSheet,
             //
-            WarehouseSettings, Spinner, NavigationMenu, Header, CreateButton, CreateNewItem, Footer, WarehouseLedger
+            WarehouseSettings, Spinner, NavigationMenu, Header, CreateButton, CreateActionButton, CreateNewItem, Footer, WarehouseLedger
         },
         setup() {
             //
@@ -298,7 +308,7 @@
                 }
             }
             // При закрытии или открытии modal очищаем шаблон дела
-            const setOpen = () => {
+            const setOpenCreateNewModal = () => {
                 spinner.value = false
                 // alert('Warehouse: В разработке...')
                 isOpen.value = !isOpen.value;
@@ -360,7 +370,7 @@
                         // ищем созданный новый предмет в массиве всех предметов в store (по uid)
                         const newItem = myItems.value.find(el => el.uid === itemData.value.uid)
                         // Сбрасываем заполненные данные и закрываем модалку
-                        setOpen()
+                        setOpenCreateNewModal()
                         // переходим на страницу созданного нового контакта
                         router.push({ name: 'View-warehouse-item', params: { itemId: newItem.id, item: JSON.stringify(newItem)} })
                     } catch (error) {
@@ -462,9 +472,38 @@
             ]
             // Для журнала warehuseLedger
             const isWarehouseLedgerOpened = ref(false)
+            // Для action menu в кнопке CreateActionButton
+            const isActionMenuOpened = ref(false)
+            const actionMenuButtons = [
+                {
+                    text: 'Добавить к позиции',
+                    handler: () => {
+
+                    }
+                },
+                {
+                    text: 'Вычесть из позиции',
+                    handler: () => {
+
+                    }
+                },
+                {
+                    text: 'Создать новую позицию',
+                    handler: () => {
+                        setOpenCreateNewModal()
+                    }
+                },
+                {
+                    text: 'Закрыть',
+                    role: 'cancel',
+                    data: {
+                        action: 'cancel'
+                    }
+                }
+            ]
 
             return {
-                route, itemData, dataLoaded, spinner, setOpen, currency, user, pageTitle, myItems, isOpen, createItem, search, warehouseCategoriesArray, filteredMyItemsFunc, searchedItem, searchedCategory, expendList, closeSettingsModal, isSettingsModalOpened, update, userSettings, userWorkProfile, userWarehouseCategoriesArray, setMeasure, isItemAlreadyAdded, warehouseMenuOpened, warehouseMenuButtons, isWarehouseLedgerOpened
+                route, itemData, dataLoaded, spinner, setOpenCreateNewModal, currency, user, pageTitle, myItems, isOpen, createItem, search, warehouseCategoriesArray, filteredMyItemsFunc, searchedItem, searchedCategory, expendList, closeSettingsModal, isSettingsModalOpened, update, userSettings, userWorkProfile, userWarehouseCategoriesArray, setMeasure, isItemAlreadyAdded, warehouseMenuOpened, warehouseMenuButtons, isWarehouseLedgerOpened, isActionMenuOpened, actionMenuButtons
             }
         }
     }) 

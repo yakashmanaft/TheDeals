@@ -6,6 +6,9 @@
         <!-- page header -->
         <ViewHeader />
 
+        <!-- Кнопка вызова меню (добавить в позицию, вычесть из позиции) -->
+        <CreateActionButton @click="isActionMenuOpened = true"/>
+
         <!-- page-content -->
         <ion-content
             :scroll-events="true"
@@ -56,6 +59,19 @@
                     <!-- Название (Если НЕ тортодилер) -->
 
                 </ion-item-group>
+
+                <!-- Кол-во -->
+                <ion-item-group class="ion-padding-bottom ion-padding-horizontal ion-text-left">
+                    <!-- Заголовок -->
+                    <ion-text>
+                        <h4>Кол-во</h4>
+                    </ion-text>
+                    <!--  -->
+                    <ion-grid>
+                        
+                    </ion-grid>
+                </ion-item-group>
+
                 <!-- Кпнока удалить -->
                 <ion-button fill="clear" color="danger" @click="openDeleteMenu">Удалить</ion-button>
                 <!-- Всплывашка подтверждение удаления предмета-->
@@ -68,6 +84,14 @@
             </div>
 
         </ion-content>
+        
+        <!-- меню выбор действий (добвить, вычесть)-->
+        <ion-action-sheet
+            :isOpen="isActionMenuOpened"
+            :buttons="actionMenuButtons"
+            header="Выберите нужное действие"
+            @didDismiss="isActionMenuOpened = false"
+        ></ion-action-sheet>
     </div>
 </template>
 
@@ -80,12 +104,13 @@
     import { IonContent, IonItemGroup, IonButton, IonActionSheet, IonText, IonItem, IonThumbnail, IonImg, IonGrid, IonRow } from '@ionic/vue';
     //
     import Spinner from '../../components/Spinner.vue';
-    import ViewHeader from '../../components/headers/HeaderViewCurrent.vue'
+    import ViewHeader from '../../components/headers/HeaderViewCurrent.vue';
+    import CreateActionButton from '../../components/CreateActionButton.vue';
 
     export default defineComponent({
         name: 'View-warehouse-item',
         components: {
-            ViewHeader, Spinner, 
+            ViewHeader, Spinner, CreateActionButton,
             //
             IonContent, IonItemGroup, IonButton, IonActionSheet, IonText, IonItem, IonThumbnail, IonImg, IonGrid, IonRow
         },
@@ -151,8 +176,32 @@
                 }
             }
 
+            // Для action menu в кнопке CreateActionButton
+            const isActionMenuOpened = ref(false)
+            const actionMenuButtons = [
+                {
+                    text: 'Добавить к позиции',
+                    handler: () => {
+
+                    }
+                },
+                {
+                    text: 'Вычесть из позиции',
+                    handler: () => {
+
+                    }
+                },
+                {
+                    text: 'Закрыть',
+                    role: 'cancel',
+                    data: {
+                        action: 'cancel'
+                    }
+                }
+            ]
+
             return {
-                route, router, spinner, currentId, info, currentItem, openDeleteMenu, isOpenRef, deleteWarehouseItemButtons, setImgSrc
+                route, router, spinner, currentId, info, currentItem, openDeleteMenu, isOpenRef, deleteWarehouseItemButtons, setImgSrc, isActionMenuOpened, actionMenuButtons
             }
         }
     })
