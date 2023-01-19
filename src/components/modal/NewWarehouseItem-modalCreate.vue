@@ -355,16 +355,16 @@ import store from '../../store/index';
                 searchWarehouseItemMenu.value = false;
             }
             //
-            const setImgSrc = (recipeName) => {
+            const setImgSrc = (itemName) => {
                 let dealBuySubjectArray = store.state.dealBuySubjectArray
-                let ingredientValue;
+                let itemValue;
                 dealBuySubjectArray.filter(item => {
-                    if(item.name === recipeName ) {
-                        ingredientValue = item.value
+                    if(item.name === itemName ) {
+                        itemValue = item.value
                     }
                 })
                 // console.log(ingredientValue) 
-                return `../img/subjects/buy/${ingredientValue}.webp`
+                return `../img/subjects/buy/${itemValue}.webp`
             }
             //
             watchEffect(() => {

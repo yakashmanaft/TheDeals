@@ -18,6 +18,16 @@
         <!-- <CreateButton @click="setOpenCreateNewModal"/> -->
         <CreateActionButton @click="isActionMenuOpened = true"/>
 
+        <!-- Модалка добавления или вычитания количества из item -->
+        <WarehouseAddSubstructItemQty
+            :isOpen="isAddSubstructModalOpened"
+            @closeModal="isAddSubstructModalOpened = false"
+            :actionType="typeOfAction"
+            :itemData="currentItem"
+            :email="userEmail"
+            :routeName="currentRoute"
+        />
+
         <!-- Модалка создания нового предмета -->
         <CreateNewItem
             :is-open="isOpen"
@@ -217,6 +227,7 @@
     import WarehouseSettings from '../components/modal/WarehouseSettings.vue';
     import Footer from '../components/Footer.vue';
     import WarehouseLedger from '../components/modal/WarehouseLedger.vue';
+    import WarehouseAddSubstructItemQty from '../components/modal/WarehouseAddSubstructItemQty.vue'
     // 
     import { searchWarehouseItemFilter  } from '../helpers/filterUserWarehouseItems.js';
     import { searchWarehouseCategoryFilter } from '../helpers/filterWarehouseCategories.js';
@@ -226,7 +237,7 @@
         components: {
             IonContent, IonImg, IonText, IonSearchbar, IonItem, IonList, IonGrid, IonRow, IonItemDivider, IonActionSheet,
             //
-            WarehouseSettings, Spinner, NavigationMenu, Header, CreateButton, CreateActionButton, CreateNewItem, Footer, WarehouseLedger
+            WarehouseSettings, Spinner, NavigationMenu, Header, CreateButton, CreateActionButton, CreateNewItem, Footer, WarehouseLedger, WarehouseAddSubstructItemQty
         },
         setup() {
             //
@@ -236,7 +247,8 @@
             const warehouseCategoriesArray = ref([])
             // Подтягиваем список дел из store
             spinner.value = true;
-            //
+            // заглушка для модалки добавления вычитания складского
+            const currentItem = ref({})
             // Currency
             const currency = ref(store.state.systemCurrency.name)
             // Get user from store
@@ -247,12 +259,13 @@
             // Get user email
             store.methods.setUserEmail()
             const userEmail = ref(store.state.userEmail)
-            console.log(userEmail.value)
+            // console.log(userEmail.value)
             // Get current info of route
             // const currentId = route.params;
             // console.log(currentId)
             // Get page title
             const pageTitle = router.currentRoute._value.meta.translation;
+            const currentRoute = router.currentRoute._value.name
             //
             const userSettings = ref(store.state.userSettings[0])
             const userWorkProfile = ref(userSettings.value.userWorkProfile);
@@ -474,17 +487,20 @@
             const isWarehouseLedgerOpened = ref(false)
             // Для action menu в кнопке CreateActionButton
             const isActionMenuOpened = ref(false)
+            const typeOfAction = ref()
             const actionMenuButtons = [
                 {
                     text: 'Добавить к позиции',
                     handler: () => {
-
+                        isAddSubstructModalOpened.value = true
+                        typeOfAction.value = 'добавить'
                     }
                 },
                 {
                     text: 'Вычесть из позиции',
                     handler: () => {
-
+                        isAddSubstructModalOpened.value = true
+                        typeOfAction.value = 'вычесть'
                     }
                 },
                 {
@@ -502,8 +518,12 @@
                 }
             ]
 
+            // =================== РАБОТА С ДОБАВЛЕНИЕМ ВЫЧИТАНИЕМ КОЛИЧЕСТВА В ITEM ====================
+            const isAddSubstructModalOpened = ref(false)
+
+
             return {
-                route, itemData, dataLoaded, spinner, setOpenCreateNewModal, currency, user, pageTitle, myItems, isOpen, createItem, search, warehouseCategoriesArray, filteredMyItemsFunc, searchedItem, searchedCategory, expendList, closeSettingsModal, isSettingsModalOpened, update, userSettings, userWorkProfile, userWarehouseCategoriesArray, setMeasure, isItemAlreadyAdded, warehouseMenuOpened, warehouseMenuButtons, isWarehouseLedgerOpened, isActionMenuOpened, actionMenuButtons
+                route, itemData, dataLoaded, spinner, setOpenCreateNewModal, currency, user, pageTitle, myItems, isOpen, createItem, search, warehouseCategoriesArray, filteredMyItemsFunc, searchedItem, searchedCategory, expendList, closeSettingsModal, isSettingsModalOpened, update, userSettings, userWorkProfile, userWarehouseCategoriesArray, setMeasure, isItemAlreadyAdded, warehouseMenuOpened, warehouseMenuButtons, isWarehouseLedgerOpened, isActionMenuOpened, typeOfAction, actionMenuButtons, isAddSubstructModalOpened, currentRoute, userEmail, currentItem
             }
         }
     }) 

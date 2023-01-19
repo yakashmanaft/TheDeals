@@ -24,6 +24,7 @@
             :actionType="typeOfAction"
             :itemData="currentItem"
             :email="userEmail"
+            :routeName="currentRoute"
         />
 
         <!-- page-content -->
@@ -152,7 +153,8 @@
             const currentItem = ref(JSON.parse(info.item))
             //
             const userEmail = ref(store.state.userEmail)
-            console.log(userEmail.value)
+            // console.log(userEmail.value)
+            const currentRoute = router.currentRoute._value.name
             //
             const spinner = ref(null);
             //
@@ -238,7 +240,7 @@
             const isAddSubstructModalOpened = ref(false)
 
             return {
-                route, router, spinner, currentId, info, currentItem, openDeleteMenu, isOpenRef, deleteWarehouseItemButtons, setImgSrc, isActionMenuOpened, actionMenuButtons, isAddSubstructModalOpened, typeOfAction, userEmail
+                route, router, spinner, currentId, info, currentItem, openDeleteMenu, isOpenRef, deleteWarehouseItemButtons, setImgSrc, isActionMenuOpened, actionMenuButtons, isAddSubstructModalOpened, typeOfAction, userEmail, currentRoute
             }
         }
     })

@@ -2,14 +2,14 @@
     <!--  -->
     <ion-fab  vertical="bottom" horizontal="end" slot="fixed" style="position:fixed; right: 1rem;" :class="isHasSubstring() === true ? 'bottom-2-rem' : 'bottom-5-rem'">
         <ion-fab-button>
-            <ion-icon :icon="layers"></ion-icon>
+            <ion-icon :icon="ellipsisHorizontal"></ion-icon>
         </ion-fab-button>
     </ion-fab>
 </template>
 
 <script>
     import { defineComponent } from 'vue';
-    import { layers } from 'ionicons/icons';
+    import { ellipsisHorizontal } from 'ionicons/icons';
     import { IonIcon, IonFab, IonFabButton } from '@ionic/vue';
     //
     import { useRouter } from 'vue-router';
@@ -33,7 +33,7 @@
             }
 
             return {
-                router, layers, isHasSubstring
+                router, ellipsisHorizontal, isHasSubstring
             }
         }
     })
