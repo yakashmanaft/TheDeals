@@ -65,10 +65,14 @@
                 </ion-item>
             </ion-item-group>
 
-            <ion-item-group class="ion-padding-horizontal">
+            <ion-item-group v-if="data.name !== undefined" class="ion-padding-horizontal">
                 <!-- Заголовок -->
                 <ion-text>
-                    <h4>Сколько {{ actionType }}</h4>
+                    <h4>Сколько {{ actionType }} 
+                        <span v-if="data.estimationType === 'perKilogram'">в граммах</span>
+                        <span v-if="data.estimationType === 'perUnit'">шт.</span>
+                        <span v-if="data.estimationType === 'per100gram'">по 100 гр.</span>
+                    </h4>
                 </ion-text>
 
                 <!--  -->
@@ -138,7 +142,7 @@
                         updateSubjectQtyBD(data.value)
                         makeRecordInLedgerWarehouse(data.value, actionType)
                     } else if (actionType ==='вычесть') {
-                        if(+actionQty.value <= +itemData.subjectQty) {
+                        if(+actionQty.value <= +data.value.subjectQty) {
                             data.value.subjectQty = +data.value.subjectQty - +actionQty.value
                             updateSubjectQtyBD(data.value)
                             makeRecordInLedgerWarehouse(data.value, actionType)
