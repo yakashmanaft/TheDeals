@@ -7,12 +7,12 @@
                 <ion-back-button  default-href="/" v-else text="Назад"></ion-back-button>
             </ion-buttons>
             <!-- Если текущий роут НЕ View-Deal && НЕ Profile && НЕ View-Recipe-->
-            <ion-buttons class="color-primary" slot="end" v-if="(route.name !== 'View-Deal' && route.name !== 'Profile' && route.name !== 'View-Recipe')">
+            <ion-buttons class="color-primary" slot="end" v-if="(route.name !== 'View-Deal' && route.name !== 'Profile' && route.name !== 'View-Recipe' && isHasSubstring() === false)">
                 <ion-button fill="clear" v-if="edit"  @click="update">Готово</ion-button>
                 <ion-button fill="clear" v-else @click="editMode">Править</ion-button>
             </ion-buttons>
             <!-- Если текущий роут View-DEal -->
-            <ion-buttons v-if="route.name === 'View-Deal'" slot="end" @click="$emit('openDeleteMenu')">
+            <ion-buttons v-if="route.name === 'View-Deal' || route.name === 'View-warehouse-item'" slot="end" @click="$emit('openDeleteMenu')">
                 <ion-button>
                     <ion-icon :icon="trashOutline" color="danger"></ion-icon>
                 </ion-button>
@@ -23,7 +23,7 @@
 
 <script>
     import { defineComponent } from 'vue';
-    import { useRoute } from 'vue-router';
+    import { useRoute, useRouter } from 'vue-router';
     import store from '../../store/index';
     //
     import { trashOutline } from 'ionicons/icons';
@@ -45,9 +45,21 @@
         setup(props, { emit }) {
             //
             const route = useRoute();
+            const router = useRouter();
+            //
+            // console.log(router.currentRoute._value.fullPath)
+            const isHasSubstring = () => {
+                let currentRoute = router.currentRoute._value.fullPath
+                let substring = '/view-warehouse/'
+                if(currentRoute.indexOf(substring) === -1) {
+                    return false
+                } else {
+                    true
+                }
+            }
 
             return {
-                route, trashOutline
+                route, router, trashOutline, isHasSubstring
             }
         }
     })

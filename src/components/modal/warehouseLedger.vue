@@ -12,9 +12,17 @@
         </ion-header>
         <!--  -->
         <ion-content forceOverscroll="false">
-            <ion-item-group>
-                Это журнал
-            </ion-item-group>
+
+            <!-- no data -->
+            <div v-if="myData.length === 0" class="no-data ion-padding-horizontal">
+                <ion-text>Пока пусто</ion-text>
+            </div>
+
+            <!-- data -->
+            <div v-if="myData.length !== 0">
+                {{ myData }}
+            </div>
+
             <br>
             <br>
             <br>
@@ -23,8 +31,10 @@
 </template>
 
 <script>
-    import { defineComponent } from 'vue';
-    import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup } from '@ionic/vue';
+    import { defineComponent, ref, onMounted } from 'vue';
+    import store from '../../store/index';
+    //
+    import { IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText } from '@ionic/vue';
 
     export default defineComponent({
         name: 'WarehouseLedger',
@@ -33,16 +43,30 @@
             
         },
         components: {
-            IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup
+            IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText
         },
         setup(props, {emit}) {
-            return {
+            //
+            const myData = ref([])
 
+            onMounted(async () => {
+                await store.methods.getUserWarehouseLedger();
+                myData.value = store.state.userLedgerWarehouseArray
+            })
+
+            return {
+                myData
             }
         }
     })
 </script>
 
 <style scoped>
-
+    .no-data {
+        height: 80vh; 
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+        justify-content: center;
+    }
 </style>

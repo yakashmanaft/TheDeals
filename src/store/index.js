@@ -231,6 +231,8 @@ const state = reactive({
   userWarehouseArray: [],
   // user finance from ledger
   userLedgerArray: [],
+  // user warehouse ledger
+  userLedgerWarehouseArray: [],
   //
   dealSaleSubjectArray: [
     {
@@ -704,7 +706,12 @@ const methods = {
     let { data: userLedger, error } = await supabase.from('ledger').select('*');
     if(error) throw error;
     state.userLedgerArray = userLedger.reverse();
-    //userLedgerArray
+  },
+  // Забираем из БД user ledger warehouse list
+  getUserWarehouseLedger: async () => {
+    let { data: userLedgerWarehouse, error } = await supabase.from('ledgerWarehouse').select('*');
+    if(error) throw error;
+    state.userLedgerWarehouseArray = userLedgerWarehouse.reverse();
   },
   // Забираем из БД store recipes list (магазин рецептов)
   getStoreRecipes: async () => {

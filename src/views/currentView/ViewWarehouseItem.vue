@@ -1,13 +1,30 @@
 <template :key="componentKey">
+    <!-- 
+        Чайная ложка – 5 мл это примерно 5 грамм
+        Десертная ложка — 10 мл жидкости — 10 грамм
+        Столовая ложка — 15 мл жидкости — 15 грамм
+        Щепотка – 2-4 грамма
+    -->
     <div>
         <!-- Спиннер как имитация загрузки -->
         <Spinner v-if="spinner"/>
 
         <!-- page header -->
-        <ViewHeader />
+        <ViewHeader 
+            @openDeleteMenu="openDeleteMenu"
+        />
 
         <!-- Кнопка вызова меню (добавить в позицию, вычесть из позиции) -->
         <CreateActionButton @click="isActionMenuOpened = true"/>
+
+        <!-- Модалка добавления или вычитания количества из item -->
+        <WarehouseAddSubstructItemQty
+            :isOpen="isAddSubstructModalOpened"
+            @closeModal="isAddSubstructModalOpened = false"
+            :actionType="typeOfAction"
+            :itemData="currentItem"
+            :email="userEmail"
+        />
 
         <!-- page-content -->
         <ion-content
@@ -29,7 +46,7 @@
 
             <!-- Data -->
             <div>
-                {{ currentItem }}
+                <!-- {{ currentItem }} -->
 
                 <!-- Название предмета или сам предмет  -->
                 <ion-item-group class="ion-padding-bottom ion-padding-horizontal ion-text-left">
@@ -64,16 +81,26 @@
                 <ion-item-group class="ion-padding-bottom ion-padding-horizontal ion-text-left">
                     <!-- Заголовок -->
                     <ion-text>
-                        <h4>Кол-во</h4>
+                        <h4>Количество</h4>
                     </ion-text>
                     <!--  -->
-                    <ion-grid>
-                        
+                    <ion-grid class="ion-no-padding">
+
+                        <!--  -->
+                        <ion-row class="ion-justify-content-between ion-align-items-center" style="flex-wrap: nowrap">
+                            <!--  -->
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                <span v-if="currentItem.estimationType === 'perKilogram'">в граммах</span>
+                                <span v-if="currentItem.estimationType === 'perUnit'">шт.</span>
+                                <span v-if="currentItem.estimationType === 'per100gram'">по 100 гр.</span>
+                            </ion-button>
+
+                            <!--  -->
+                            <ion-text color="primary" style="font-size: 1.3rem; font-weight: bold">{{ currentItem.subjectQty }}</ion-text>
+                        </ion-row>
                     </ion-grid>
                 </ion-item-group>
 
-                <!-- Кпнока удалить -->
-                <ion-button fill="clear" color="danger" @click="openDeleteMenu">Удалить</ion-button>
                 <!-- Всплывашка подтверждение удаления предмета-->
                 <ion-action-sheet
                     :is-open="isOpenRef"
@@ -106,11 +133,12 @@
     import Spinner from '../../components/Spinner.vue';
     import ViewHeader from '../../components/headers/HeaderViewCurrent.vue';
     import CreateActionButton from '../../components/CreateActionButton.vue';
+    import WarehouseAddSubstructItemQty from '../../components/modal/WarehouseAddSubstructItemQty.vue';
 
     export default defineComponent({
         name: 'View-warehouse-item',
         components: {
-            ViewHeader, Spinner, CreateActionButton,
+            ViewHeader, Spinner, CreateActionButton, WarehouseAddSubstructItemQty,
             //
             IonContent, IonItemGroup, IonButton, IonActionSheet, IonText, IonItem, IonThumbnail, IonImg, IonGrid, IonRow
         },
@@ -122,6 +150,9 @@
             const currentId = route.params.itemId;
             const info = route.params;
             const currentItem = ref(JSON.parse(info.item))
+            //
+            const userEmail = ref(store.state.userEmail)
+            console.log(userEmail.value)
             //
             const spinner = ref(null);
             //
@@ -178,17 +209,20 @@
 
             // Для action menu в кнопке CreateActionButton
             const isActionMenuOpened = ref(false)
+            const typeOfAction = ref()
             const actionMenuButtons = [
                 {
                     text: 'Добавить к позиции',
                     handler: () => {
-
+                        isAddSubstructModalOpened.value = true
+                        typeOfAction.value = 'добавить'
                     }
                 },
                 {
                     text: 'Вычесть из позиции',
                     handler: () => {
-
+                        isAddSubstructModalOpened.value = true
+                        typeOfAction.value = 'вычесть'
                     }
                 },
                 {
@@ -200,8 +234,11 @@
                 }
             ]
 
+            // =================== РАБОТА С ДОБАВЛЕНИЕМ ВЫЧИТАНИЕМ КОЛИЧЕСТВА В ITEM ====================
+            const isAddSubstructModalOpened = ref(false)
+
             return {
-                route, router, spinner, currentId, info, currentItem, openDeleteMenu, isOpenRef, deleteWarehouseItemButtons, setImgSrc, isActionMenuOpened, actionMenuButtons
+                route, router, spinner, currentId, info, currentItem, openDeleteMenu, isOpenRef, deleteWarehouseItemButtons, setImgSrc, isActionMenuOpened, actionMenuButtons, isAddSubstructModalOpened, typeOfAction, userEmail
             }
         }
     })
