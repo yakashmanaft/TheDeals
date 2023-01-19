@@ -85,19 +85,19 @@
                     if(actionType === 'добавить') {
                         itemData.subjectQty = +itemData.subjectQty + +actionQty.value
                         updateSubjectQtyBD(itemData)
-                        makeRecordInLedgerWarehouse(itemData)
+                        makeRecordInLedgerWarehouse(itemData, actionType)
                     } else if (actionType ==='вычесть') {
                         if(+actionQty.value <= +itemData.subjectQty) {
                             itemData.subjectQty = +itemData.subjectQty - +actionQty.value
                             updateSubjectQtyBD(itemData)
-                            makeRecordInLedgerWarehouse(itemData)
+                            makeRecordInLedgerWarehouse(itemData, actionType)
                         } else {
                             alert('WarehouseAddSubstructItemQty: Значение к вычитанию не может быть больше текущих остатков на складе!')
                         }
                     }
                 }
             }
-            const updateSubjectQtyBD = async (itemData) => {
+            const updateSubjectQtyBD = async (itemData, actionType) => {
                 spinner.value = true;
                 try{
                     const {error} = await supabase.from('userWarehouse').update({
@@ -111,13 +111,20 @@
                     alert(`Error: ${error.message}`)
                 }
             }
-            const makeRecordInLedgerWarehouse = async (itemData) => {
+            const makeRecordInLedgerWarehouse = async (itemData, actionType) => {
+                let typeOfAction;
+                if(actionType === 'добавить') {
+                    typeOfAction = 'add'
+                } else if (actionType === 'вычесть') {
+                    typeOfAction = 'substract'
+                }
                 try{
                     const { error } = await supabase.from('ledgerWarehouse').insert([{
                         itemID: itemData.id,
                         uid: itemData.uid,
                         estimationType: itemData.estimationType,
-                        qty: itemData.subjectQty,
+                        actionType: typeOfAction,
+                        qty: actionQty.value,
                         userEmail: userEmail.value
                     }])
                     if(error) throw error
@@ -128,23 +135,6 @@
                     alert(`Error: ${error.message}`)
                 }
             }
-
-            // добавляем запись (строку) от транзакции в леджер
-            // const addToLedger = async (amount) => {
-            //     try {
-            //         const { error } = await supabase.from('ledger').insert([{
-            //             dealID: currentDeal.value.id,
-            //             uid: currentDeal.value.uid,
-            //             contactID: currentDeal.value.contactID,
-            //             dealType: currentDeal.value.dealType,
-            //             amount: amount,
-            //             userEmail: currentDeal.value.email
-            //         }])
-            //         if(error) throw error
-            //     } catch (error) {
-            //         alert(`Error: ${error.message}`)
-            //     }
-            // }
 
             return {
                 setTitle, actionQty, setWarehouseLedgerData, spinner, userEmail
