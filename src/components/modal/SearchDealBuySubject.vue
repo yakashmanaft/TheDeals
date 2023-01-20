@@ -67,7 +67,7 @@
     setup(props, {emit}) {
       const searchItem = ref('');
       const itemProperties = ref(props.properties);
-      console.log(itemProperties.value)
+      // console.log(itemProperties.value)
       //
       const itemsList = () => {
         let itemsArray = store.state.dealBuySubjectArray.filter(item => {

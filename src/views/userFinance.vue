@@ -31,7 +31,7 @@
             </div>
 
             <!-- Data -->
-            <div v-if="dataLoaded && myData !== 0" class="ion-text-left ion-margin-bottom">
+            <div v-if="dataLoaded && myData.length !== 0" class="ion-text-left ion-margin-bottom">
                 <!--  -->
                 <div v-for="(date, idx) in getTransactionDateArray()" :key="idx" class="ion-margin-top ion-padding-horizontal">
 
@@ -46,14 +46,13 @@
                     <!-- Транзакция -->
                     <div v-for="transaction in myData" :key="transaction.id" class="ion-margin-top" @click="openTransactionDetailsModal(transaction)">
 
-
                             <!--  -->
                             <div v-if="formattedDate(transaction.created_at) === date" class="ion-no-margin ion-padding-vertical">
 
                                 <ion-grid class="ion-no-padding">
                                     <ion-row class="ion-align-items-center ion-justify-content-between">
     
-                                        <!-- Иконка Контакт  -->
+                                        <!-- Иконка, Контакт  -->
                                         <ion-grid class="ion-no-padding">
                                             <ion-row class="ion-align-items-center">
                                                 
@@ -66,7 +65,7 @@
                                                 <ion-text v-if="transaction.contactID === '000'" color="medium">
                                                     Неизвестный
                                                 </ion-text>
-                                                <ion-text v-else @click.stop="goToContact(transaction.contactID)" color="primary">
+                                                <ion-text v-else color="medium">
                                                     {{translateContactName(transaction.contactID)}}
                                                 </ion-text>
                                             </ion-row>
@@ -130,7 +129,7 @@
     import store from '../store/index';
     import { useRouter } from 'vue-router';
     //
-    import { format, parseISO, formatISO  } from 'date-fns';
+    import { format, parseISO, formatISO } from 'date-fns';
     import { ru } from 'date-fns/locale';
 
     export default defineComponent({
@@ -218,25 +217,18 @@
                 }
             }
 
-            // 
-            // const getDealData = (transactionDealID) => {
-            //     const currentDeal = myDeals.value.filter(item => item.id === transactionDealID)
-            //     console.log(currentDeal)
-            //     return currentDeal
-            // }
-
             //
-            const currentContact = ref()
-            const goToContact = (contactID) => {
-                currentContact.value = myContacts.value.filter(contact => contact.id === +contactID)
-                router.push({
-                    name: 'View-Contact',
-                    params: {
-                        contactId: +contactID,
-                        contact: JSON.stringify(currentContact.value[0])
-                    }
-                })
-            }
+            // const currentContact = ref()
+            // const goToContact = (contactID) => {
+            //     currentContact.value = myContacts.value.filter(contact => contact.id === +contactID)
+            //     router.push({
+            //         name: 'View-Contact',
+            //         params: {
+            //             contactId: +contactID,
+            //             contact: JSON.stringify(currentContact.value[0])
+            //         }
+            //     })
+            // }
 
             // 
             const transactionDetailOpened = ref(false)
@@ -252,7 +244,7 @@
             }
 
             return {
-                user, router, pageTitle, spinner, dataLoaded, myData, daysArray, getTransactionDateArray, formattedDate, arrowUpOutline, arrowDownOutline, currency, getAmountColor, transactionDetailOpened, openTransactionDetailsModal, currentTransaction, myContacts, goToContact, currentContact, translateContactName
+                user, router, pageTitle, spinner, dataLoaded, myData, daysArray, getTransactionDateArray, formattedDate, arrowUpOutline, arrowDownOutline, currency, getAmountColor, transactionDetailOpened, openTransactionDetailsModal, currentTransaction, myContacts, translateContactName
             }
         }
     })

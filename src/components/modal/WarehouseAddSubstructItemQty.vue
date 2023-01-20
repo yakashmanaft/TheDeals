@@ -29,9 +29,9 @@
             <br>
             <br>
             <br>
-            <ion-text>Item</ion-text><br>
+            <!-- <ion-text>Item</ion-text><br>
             <ion-text>{{ data }}</ion-text><br>
-            <ion-text>{{ route }}</ion-text>
+            <ion-text>{{ route }}</ion-text> -->
 
             <ion-item-group v-if="route === 'Warehouse'" class="ion-padding-horizontal">
                 <!-- Заголовок -->
@@ -53,7 +53,7 @@
 
                     <!-- Если предмет был указан -->
                     <ion-grid v-else class="ion-no-padding">
-                        <ion-row @click.stop="searchWarehouseItemMenu = true" class="ion-justify-content-between ion-align-items-center" style="flex-wrap: nowrap;">
+                        <ion-row @click.stop="searchUserWarehouseItemMenu = true" class="ion-justify-content-between ion-align-items-center" style="flex-wrap: nowrap;">
                             <!--  -->
                             <ion-text color="primary">{{ data.name }}</ion-text>
                             <!--  -->
@@ -184,6 +184,7 @@
                     }])
                     if(error) throw error
                     spinner.value = false;
+                    data.value = {}
                     actionQty.value = ''
                     emit('closeModal')
                 } catch (error) {

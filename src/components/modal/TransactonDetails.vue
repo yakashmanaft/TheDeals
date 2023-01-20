@@ -38,6 +38,10 @@
                         Перейти к делу
                     </ion-button>
                 </ion-row>
+
+                <ion-row class="ion-justify-content-center ion-margin-top">
+                    <ion-text color="primary" @click="goToContact(currentTransaction.contactID)">Перейти к контакту</ion-text>
+                </ion-row>
             </ion-grid>
             <!-- {{currentTransaction}} -->
         </ion-content>
@@ -71,10 +75,14 @@
             //
             const currentTransaction = ref()
             const myDeals = ref([])
+            const myContacts = ref([])
             //
             onMounted(async ( ) => {
                 await store.methods.getMyDealsFromBD();
                 myDeals.value = store.state.myDealsArray;
+                //
+                await store.methods.getMyContactsFromDB()
+                myContacts.value = store.state.myContactsArray
             })
 
             //
@@ -105,12 +113,30 @@
                 }
             }
 
+            // 
+            const currentContact = ref()
+            const goToContact = (contactID) => {
+                if(contactID === '000') {
+                    alert('TransactionDetails: данный контакт не найден в Моих контактах')
+                } else {
+                    currentContact.value = myContacts.value.filter(contact => contact.id === +contactID)
+                    router.push({
+                        name: 'View-Contact',
+                        params: {
+                            contactId: +contactID,
+                            contact: JSON.stringify(currentContact.value[0])
+                        }
+                    })
+                    emit('closeModal')
+                }
+            }
+
             watchEffect(() => {
                 currentTransaction.value = props.transaction
             })
 
             return {
-                currentTransaction, myDeals, goToDeal, router, formattedDate, currency, getAmountColor
+                currentTransaction, myDeals, goToDeal, router, formattedDate, currency, getAmountColor, goToContact, currentContact, myContacts
             }
         }
     })
