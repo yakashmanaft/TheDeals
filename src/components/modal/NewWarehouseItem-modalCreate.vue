@@ -97,7 +97,7 @@
                                 Количество 
                                 <span v-if="itemData.estimationType === 'perKilogram'">(в граммах)</span>
                                 <span v-if="itemData.estimationType === 'perUnit'">(шт.)</span>
-                                <span v-if="itemData.estimationType === 'per100gram'">(по 100 гр.)</span>
+                                <!-- <span v-if="itemData.estimationType === 'per100gram'">(по 100 гр.)</span> -->
                             </ion-button>
 
                             <!-- perUnit -->
@@ -237,7 +237,7 @@ import store from '../../store/index';
             // Массив пользователя с вариантам категорий для предметов на складе
             const userWarehouseCategories = ref();
             const userSettings = ref(store.state.userSettings)
-            const priceEstimationType = ref(store.state.priceEstimataionType)
+            const priceEstimationType = ref(store.state.warehouseItemEstimataionType)
             const userWorkProfile = ref(userSettings.value[0].userWorkProfile)
             //
             onMounted( async () => {

@@ -403,14 +403,14 @@
                                 </ion-row>
     
                                 <!-- per100gram -->
-                                <ion-row v-if="item.costEstimation === 'per100gram'" class="ion-justify-content-between ion-align-items-center">
+                                <!-- <ion-row v-if="item.costEstimation === 'per100gram'" class="ion-justify-content-between ion-align-items-center">
                                     <ion-text>{{ translateSelectedProduct(item.selectedProduct) }}</ion-text>
                                     <ion-text>{{ (item.productQuantity).toFixed(2) }} * {{ (item.price).toFixed(2) }} = {{ (item.subjectPrice).toFixed(2) }} </ion-text>
-                                </ion-row>
+                                </ion-row> -->
     
                                 <!-- Описание скидок и вывод название рецептов пока есть толкьо в режиме sale -->
                                 <ion-row class="ion-justify-content-between ion-align-items-center">
-                                    <ion-text color="medium">{{ item.recipe }}</ion-text>
+                                    <ion-text color="medium">{{ showSelectedRecipe(item.recipe) }}</ion-text>
                                     <ion-text v-if="item.subjectDiscount > 0" color="medium">С учетом скидки {{ item.subjectDiscount }}%</ion-text>
                                     <ion-text v-else color="medium">Без скидки</ion-text>
                                 </ion-row>
@@ -454,10 +454,10 @@
                                 </ion-row>
 
                                 <!-- per100gram -->
-                                <ion-row v-if="item.costEstimation === 'per100gram'" class="ion-justify-content-between ion-align-items-center">
+                                <!-- <ion-row v-if="item.costEstimation === 'per100gram'" class="ion-justify-content-between ion-align-items-center">
                                     <ion-text>{{ translateSelectedProduct(item.selectedProduct) }}</ion-text>
                                     <ion-text>{{ (item.productQuantity).toFixed(2) }} * {{ (item.price).toFixed(2) }} = {{ (item.subjectPrice).toFixed(2) }} </ion-text>
-                                </ion-row >
+                                </ion-row > -->
 
                                 <!-- Указатель типа расчета цены -->
                                 <ion-row class="ion-justify-content-between ion-align-items-center">
@@ -559,7 +559,7 @@
                         :balance="availableBalance"
                     />
                 </ion-item-group>
-                {{currentDeal}}
+                <!-- {{currentDeal}} -->
                 <br>
 
                 <!-- ========================== Удалить дело =================================== -->
@@ -1305,9 +1305,10 @@
                         currentDealSubject.value.subjectPrice = +(currentDealSubject.value.price * currentDealSubject.value.productQuantity * ((100 - currentDealSubject.value.subjectDiscount) / 100)).toFixed(0)
                         // calcSubjectTotalPrice()
                         // update();
-                    } else if (currentDealSubject.value.costEstimation === 'per100gram') {
-                        currentDealSubject.value.subjectPrice = +(currentDealSubject.value.price * currentDealSubject.value.productQuantity * ((100 - currentDealSubject.value.subjectDiscount) / 100)).toFixed(0)
-                    }
+                    } 
+                    // else if (currentDealSubject.value.costEstimation === 'per100gram') {
+                    //     currentDealSubject.value.subjectPrice = +(currentDealSubject.value.price * currentDealSubject.value.productQuantity * ((100 - currentDealSubject.value.subjectDiscount) / 100)).toFixed(0)
+                    // }
                 } else if (currentDeal.value.dealType === 'buy') {
                     currentDealSubject.value.price = price;
                     if(currentDealSubject.value.costEstimation === 'perKilogram') {
@@ -1315,9 +1316,10 @@
                         currentDealSubject.value.subjectPrice = +((currentDealSubject.value.price / 1000) * currentDealSubject.value.gramPerPerson).toFixed(2)
                     } else if (currentDealSubject.value.costEstimation === 'perUnit') {
                         currentDealSubject.value.subjectPrice = +(currentDealSubject.value.price * currentDealSubject.value.productQuantity).toFixed(2)
-                    } else if (currentDealSubject.value.costEstimation === 'per100gram') {
-                        currentDealSubject.value.subjectPrice = +(currentDealSubject.value.price * currentDealSubject.value.productQuantity).toFixed(2)
-                    }
+                    } 
+                    // else if (currentDealSubject.value.costEstimation === 'per100gram') {
+                    //     currentDealSubject.value.subjectPrice = +(currentDealSubject.value.price * currentDealSubject.value.productQuantity).toFixed(2)
+                    // }
                 }
                 calcSubjectTotalPrice()
                 update();
@@ -1337,9 +1339,10 @@
                         // Считаем общую totalSubjectPrice по предмету (предмет + д
                         // calcSubjectTotalPrice()
                         // update();
-                    } else if (currentDealSubject.value.costEstimation === 'per100gram') {
-                        currentDealSubject.value.subjectPrice = +(currentDealSubject.value.price * currentDealSubject.value.productQuantity * ((100 - currentDealSubject.value.subjectDiscount) / 100)).toFixed(0)
-                    }
+                    } 
+                    // else if (currentDealSubject.value.costEstimation === 'per100gram') {
+                    //     currentDealSubject.value.subjectPrice = +(currentDealSubject.value.price * currentDealSubject.value.productQuantity * ((100 - currentDealSubject.value.subjectDiscount) / 100)).toFixed(0)
+                    // }
                 } else if (currentDeal.value.dealType === 'buy') {
                     currentDealSubject.value.gramPerPerson = gram;
                     if(currentDealSubject.value.costEstimation === 'perKilogram') {
@@ -1347,9 +1350,10 @@
                         currentDealSubject.value.subjectPrice = +((currentDealSubject.value.price / 1000) * currentDealSubject.value.gramPerPerson).toFixed(0)
                     } else if (currentDealSubject.value.costEstimation === 'perUnit') {
                         currentDealSubject.value.subjectPrice = +(currentDealSubject.value.price * currentDealSubject.value.productQuantity).toFixed(2)
-                    } else if (currentDealSubject.value.costEstimation === 'per100gram') {
-                        currentDealSubject.value.subjectPrice = +(currentDealSubject.value.price * currentDealSubject.value.productQuantity).toFixed(2)
-                    }
+                    } 
+                    // else if (currentDealSubject.value.costEstimation === 'per100gram') {
+                    //     currentDealSubject.value.subjectPrice = +(currentDealSubject.value.price * currentDealSubject.value.productQuantity).toFixed(2)
+                    // }
                 }
                 calcSubjectTotalPrice()
                 update();
@@ -1370,9 +1374,10 @@
                         // setCountQtyButtonColor(qty)
                         // calcSubjectTotalPrice()
                         // update();
-                    } else if (currentDealSubject.value.costEstimation === 'per100gram') {
-                        currentDealSubject.value.subjectPrice = +(currentDealSubject.value.price * currentDealSubject.value.productQuantity * ((100 - currentDealSubject.value.subjectDiscount) / 100)).toFixed(0)
-                    }
+                    } 
+                    // else if (currentDealSubject.value.costEstimation === 'per100gram') {
+                    //     currentDealSubject.value.subjectPrice = +(currentDealSubject.value.price * currentDealSubject.value.productQuantity * ((100 - currentDealSubject.value.subjectDiscount) / 100)).toFixed(0)
+                    // }
                 } else if (currentDeal.value.dealType === 'buy') {
                     currentDealSubject.value.productQuantity = qty;
                     if(currentDealSubject.value.costEstimation === 'perKilogram') {
@@ -1380,9 +1385,10 @@
                         currentDealSubject.value.subjectPrice = +((currentDealSubject.value.price / 1000) * currentDealSubject.value.gramPerPerson).toFixed(0)
                     } else if (currentDealSubject.value.costEstimation === 'perUnit') {
                         currentDealSubject.value.subjectPrice = +(currentDealSubject.value.price * currentDealSubject.value.productQuantity).toFixed(2)
-                    } else if (currentDealSubject.value.costEstimation === 'per100gram') {
-                        currentDealSubject.value.subjectPrice = +(currentDealSubject.value.price * currentDealSubject.value.productQuantity).toFixed(2)
-                    }
+                    } 
+                    // else if (currentDealSubject.value.costEstimation === 'per100gram') {
+                    //     currentDealSubject.value.subjectPrice = +(currentDealSubject.value.price * currentDealSubject.value.productQuantity).toFixed(2)
+                    // }
                 }
                 setCountQtyButtonColor(qty)
                 calcSubjectTotalPrice()
@@ -1397,9 +1403,10 @@
                         currentDealSubject.value.subjectPrice = +((currentDealSubject.value.price / 1000) * (currentDealSubject.value.personQuantity * currentDealSubject.value.gramPerPerson) * currentDealSubject.value.productQuantity * ((100 - currentDealSubject.value.subjectDiscount) / 100)).toFixed(0)
                     } else if (currentDealSubject.value.costEstimation === 'perUnit') {
                         // Пока не используется в perUnit
-                    } else if (currentDealSubject.value.costEstimation === 'per100gram') {
-                        // Пока не используется в per100gram
-                    }
+                    } 
+                    // else if (currentDealSubject.value.costEstimation === 'per100gram') {
+                    //     // Пока не используется в per100gram
+                    // }
                 } else if(currentDeal.value.dealType === 'buy') {
                     // Если не понадобится - удалить
                     console.log('В разработке')
@@ -1423,9 +1430,10 @@
                         currentDealSubject.value.subjectPrice = +(currentDealSubject.value.price * currentDealSubject.value.productQuantity * ((100 - currentDealSubject.value.subjectDiscount) / 100)).toFixed(0)
                         // calcSubjectTotalPrice()
                         // update();
-                    } else if (currentDealSubject.value.costEstimation === 'per100gram') {
-                        currentDealSubject.value.subjectPrice = +(currentDealSubject.value.price * currentDealSubject.value.productQuantity * ((100 - currentDealSubject.value.subjectDiscount) / 100)).toFixed(0)
-                    }
+                    } 
+                    // else if (currentDealSubject.value.costEstimation === 'per100gram') {
+                    //     currentDealSubject.value.subjectPrice = +(currentDealSubject.value.price * currentDealSubject.value.productQuantity * ((100 - currentDealSubject.value.subjectDiscount) / 100)).toFixed(0)
+                    // }
                 } else if (currentDeal.value.dealType === 'buy') {
                     // Если не понадобится - удалить
                     console.log('В разработке')
@@ -1464,9 +1472,10 @@
                     } else if (currentSubject.value.costEstimation === 'perUnit') {
                         currentSubject.value.subjectPrice = +(currentSubject.value.price * currentSubject.value.productQuantity * ((100 - currentSubject.value.subjectDiscount) / 100)).toFixed(0)
                         // calcNewSubjectTotalPrice()   
-                    } else if (currentSubject.value.costEstimation === 'per100gram') {
-                        currentSubject.value.subjectPrice = +(currentSubject.value.price * currentSubject.value.productQuantity * ((100 - currentSubject.value.subjectDiscount) / 100)).toFixed(0)
-                    }
+                    } 
+                    // else if (currentSubject.value.costEstimation === 'per100gram') {
+                    //     currentSubject.value.subjectPrice = +(currentSubject.value.price * currentSubject.value.productQuantity * ((100 - currentSubject.value.subjectDiscount) / 100)).toFixed(0)
+                    // }
                 } else if (currentDeal.value.dealType === 'buy') {
                     currentSubject.value.price = price;
                     if(currentSubject.value.costEstimation === 'perKilogram') {
@@ -1474,9 +1483,10 @@
                         currentSubject.value.subjectPrice = +((currentSubject.value.price / 1000) * currentSubject.value.gramPerPerson).toFixed(2)
                     } else if (currentSubject.value.costEstimation === 'perUnit') {
                         currentSubject.value.subjectPrice = +(currentSubject.value.price * currentSubject.value.productQuantity).toFixed(2)
-                    } else if (currentSubject.value.costEstimation === 'per100gram') {
-                        currentSubject.value.subjectPrice = +(currentSubject.value.price * currentSubject.value.productQuantity).toFixed(2)
-                    }
+                    } 
+                    // else if (currentSubject.value.costEstimation === 'per100gram') {
+                    //     currentSubject.value.subjectPrice = +(currentSubject.value.price * currentSubject.value.productQuantity).toFixed(2)
+                    // }
                 }
                 calcNewSubjectTotalPrice()
             }
@@ -1492,9 +1502,10 @@
                     } else if (currentSubject.value.costEstimation === 'perUnit') {
                         currentSubject.value.subjectPrice = +(currentSubject.value.price * currentSubject.value.productQuantity * ((100 - currentSubject.value.subjectDiscount) / 100)).toFixed(0)
                         // calcNewSubjectTotalPrice()
-                    } else if (currentSubject.value.costEstimation === 'per100gram') {
-                        currentSubject.value.subjectPrice = +(currentSubject.value.price * currentSubject.value.productQuantity * ((100 - currentSubject.value.subjectDiscount) / 100)).toFixed(0)
-                    }
+                    } 
+                    // else if (currentSubject.value.costEstimation === 'per100gram') {
+                    //     currentSubject.value.subjectPrice = +(currentSubject.value.price * currentSubject.value.productQuantity * ((100 - currentSubject.value.subjectDiscount) / 100)).toFixed(0)
+                    // }
                 } else if (currentDeal.value.dealType === 'buy') {
                     currentSubject.value.gramPerPerson = gram;
                     if(currentSubject.value.costEstimation === 'perKilogram') {
@@ -1502,9 +1513,10 @@
                         currentSubject.value.subjectPrice = +((currentSubject.value.price / 1000) * currentSubject.value.gramPerPerson).toFixed(0)
                     } else if (currentSubject.value.costEstimation === 'perUnit') {
                         currentSubject.value.subjectPrice = +(currentSubject.value.price * currentSubject.value.productQuantity).toFixed(0)
-                    } else if (currentSubject.value.costEstimation === 'per100gram') {
-                        currentSubject.value.subjectPrice = +(currentSubject.value.price * currentSubject.value.productQuantity).toFixed(0)
-                    }
+                    } 
+                    // else if (currentSubject.value.costEstimation === 'per100gram') {
+                    //     currentSubject.value.subjectPrice = +(currentSubject.value.price * currentSubject.value.productQuantity).toFixed(0)
+                    // }
                 }
                 calcNewSubjectTotalPrice()
             }
@@ -1520,9 +1532,10 @@
                     } else if(currentSubject.value.costEstimation === 'perUnit') {
                         currentSubject.value.subjectPrice = +(currentSubject.value.price * currentSubject.value.productQuantity * ((100 - currentSubject.value.subjectDiscount) / 100)).toFixed(0)
                         // calcNewSubjectTotalPrice()
-                    } else if (currentSubject.value.costEstimation === 'per100gram') {
-                        currentSubject.value.subjectPrice = +(currentSubject.value.price * currentSubject.value.productQuantity * ((100 - currentSubject.value.subjectDiscount) / 100)).toFixed(0)
-                    }
+                    } 
+                    // else if (currentSubject.value.costEstimation === 'per100gram') {
+                    //     currentSubject.value.subjectPrice = +(currentSubject.value.price * currentSubject.value.productQuantity * ((100 - currentSubject.value.subjectDiscount) / 100)).toFixed(0)
+                    // }
                 } else if (currentDeal.value.dealType === 'buy') {
                     currentSubject.value.productQuantity = qty;
                     if (currentSubject.value.costEstimation === 'perKilogram') {
@@ -1530,9 +1543,10 @@
                         currentSubject.value.subjectPrice = +((currentSubject.value.price / 1000) * currentSubject.value.gramPerPerson).toFixed(0) 
                     } else if (currentSubject.value.costEstimation === 'perUnit') {
                         currentSubject.value.subjectPrice = +(currentSubject.value.price * currentSubject.value.productQuantity).toFixed(0)
-                    } else if (currentSubject.value.costEstimation === 'per100gram') {
-                        currentSubject.value.subjectPrice = +(currentSubject.value.price * currentSubject.value.productQuantity).toFixed(0)
-                    }
+                    } 
+                    // else if (currentSubject.value.costEstimation === 'per100gram') {
+                    //     currentSubject.value.subjectPrice = +(currentSubject.value.price * currentSubject.value.productQuantity).toFixed(0)
+                    // }
                 }
                 calcNewSubjectTotalPrice()
             }
@@ -1545,9 +1559,10 @@
                         currentSubject.value.subjectPrice = +((currentSubject.value.price / 1000) * (currentSubject.value.personQuantity * currentSubject.value.gramPerPerson) * currentSubject.value.productQuantity * ((100 - currentSubject.value.subjectDiscount) / 100)).toFixed(0)
                     } else if(currentSubject.value.costEstimation === 'perUnit') {
                         // Не используется
-                    } else if (currentSubject.value.costEstimation === 'per100gram') {
-                        // Не используется
-                    }
+                    } 
+                    // else if (currentSubject.value.costEstimation === 'per100gram') {
+                    //     // Не используется
+                    // }
                 } else if (currentDeal.value.dealType === 'buy') {
                     // Если не понадобится - удалить
                     console.log('В разработке')
@@ -1567,9 +1582,10 @@
                     } else if (currentSubject.value.costEstimation === 'perUnit') {
                         currentSubject.value.subjectPrice = +(currentSubject.value.price * currentSubject.value.productQuantity * ((100 - currentSubject.value.subjectDiscount) / 100)).toFixed(0)
                         // calcNewSubjectTotalPrice()
-                    } else if (currentSubject.value.costEstimation === 'per100gram') {
-                        currentSubject.value.subjectPrice = +(currentSubject.value.price * currentSubject.value.productQuantity * ((100 - currentSubject.value.subjectDiscount) / 100)).toFixed(0)
-                    }
+                    } 
+                    // else if (currentSubject.value.costEstimation === 'per100gram') {
+                    //     currentSubject.value.subjectPrice = +(currentSubject.value.price * currentSubject.value.productQuantity * ((100 - currentSubject.value.subjectDiscount) / 100)).toFixed(0)
+                    // }
                 } else if (currentDeal.value.dealType === 'buy') {
                     // Если не понадобится - удалить
                     console.log('В разработке')

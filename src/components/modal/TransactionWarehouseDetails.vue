@@ -37,7 +37,7 @@
                         {{currentTransaction.qty.toFixed(2)}} 
                         <span v-if="currentTransaction.estimationType === 'perKilogram'">в граммах</span>
                         <span v-if="currentTransaction.estimationType === 'perUnit'">шт.</span>
-                        <span v-if="currentTransaction.estimationType === 'per100gram'">по 100 гр.</span>
+                        <!-- <span v-if="currentTransaction.estimationType === 'per100gram'">по 100 гр.</span> -->
                     </ion-text>
                 </ion-row>
 

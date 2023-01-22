@@ -191,9 +191,10 @@
                     return 'гр.'
                 } else if (estimationType === 'perUnit') {
                     return 'шт.'
-                } else if (estimationType === 'per100gram') {
-                    return 'по 100 гр.'
-                }
+                } 
+                // else if (estimationType === 'per100gram') {
+                //     return 'по 100 гр.'
+                // }
             }
 
             //

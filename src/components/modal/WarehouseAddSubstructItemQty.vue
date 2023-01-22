@@ -71,7 +71,7 @@
                     <h4>Сколько {{ actionType }} 
                         <span v-if="data.estimationType === 'perKilogram'">в граммах</span>
                         <span v-if="data.estimationType === 'perUnit'">шт.</span>
-                        <span v-if="data.estimationType === 'per100gram'">по 100 гр.</span>
+                        <!-- <span v-if="data.estimationType === 'per100gram'">по 100 гр.</span> -->
                     </h4>
                 </ion-text>
 

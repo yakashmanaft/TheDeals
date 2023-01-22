@@ -36,7 +36,7 @@
                 // console.log(`Это из select currentValue: ${currentValue}`)
                 // console.log(`Это props: ${props.dealStatusCurrentValue}`)
                 emit('date-updated', {currentValue})
-                console.log(status.value)
+                // console.log(status.value)
             })
             watchEffect(() => {
                 status.value = props.dealStatus

@@ -186,9 +186,11 @@
                     return 'Цена за 1кг.'
                 } else if (type === 'perUnit') {
                     return 'Цена за 1шт.'
-                } else if (type === 'per100gram') {
-                    return 'Цена за 100г.'
-                } else if (type === 'sale') {
+                } 
+                // else if (type === 'per100gram') {
+                //     return 'Цена за 100г.'
+                // } 
+                else if (type === 'sale') {
                     return 'Продажа'
                 } else if (type === 'rent') {
                     return 'Аренда'

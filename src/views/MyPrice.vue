@@ -520,9 +520,10 @@
                     return 'Цена за 1кг.'
                 } else if (type === 'perUnit') {
                     return 'Цена за 1шт.'
-                } else if (type === 'per100gram') {
-                    return 'Цена за 100г.'
-                }
+                } 
+                // else if (type === 'per100gram') {
+                //     return 'Цена за 100г.'
+                // }
             }
             // 
             const setCostEstimation = (costEstimation) => {

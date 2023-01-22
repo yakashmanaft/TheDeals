@@ -93,7 +93,7 @@
                             <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
                                 <span v-if="currentItem.estimationType === 'perKilogram'">в граммах</span>
                                 <span v-if="currentItem.estimationType === 'perUnit'">шт.</span>
-                                <span v-if="currentItem.estimationType === 'per100gram'">по 100 гр.</span>
+                                <!-- <span v-if="currentItem.estimationType === 'per100gram'">по 100 гр.</span> -->
                             </ion-button>
 
                             <!--  -->

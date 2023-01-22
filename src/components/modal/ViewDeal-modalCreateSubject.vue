@@ -225,42 +225,40 @@
                         </ion-row>
                     </ion-grid>
                     <!-- PER 100 GRAM -->
-                    <ion-grid v-if="subjectData.costEstimation === 'per100gram'" class="ion-no-padding">
-                        <!-- Цена за 100 грамм -->
+                    <!-- <ion-grid v-if="subjectData.costEstimation === 'per100gram'" class="ion-no-padding">
                         <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
                             <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
                                 Цена за 100 гр. ({{ systemCurrency.name }})
                             </ion-button>
-                            <!--  -->
                             <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
                                 <ion-input type="number" v-model="subjectPrice" inputmode="decimal" :value="subjectData.price" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
                             </ion-button>
                         </ion-row>
-                        <!-- Количество раз по 100 грамм -->
+                        
                         <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
                             <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
                                 Количество, шт
                             </ion-button>
-                            <!--  -->
+                            
                             <div>
                                 <ion-grid class="ion-no-padding">
                                     <ion-row class="ion-align-items-center">
-                                        <!-- Subtract -->
+                                        
                                         <ion-icon class="countQty_button" @click="changeQty('sub')" :icon="removeCircleOutline" :color="countQtyButtonColor"></ion-icon>
-                                        <!-- Show data -->
+                                        
                                         <ion-text class="ion-padding-horizontal countQty_count" color="primary">{{ subjectData.productQuantity }}</ion-text>
-                                        <!-- Add -->
+                                        
                                         <ion-icon class="countQty_button" @click="changeQty('add')" color="primary" :icon="addCircleOutline"></ion-icon>
                                     </ion-row>
                                 </ion-grid>
                             </div>
                         </ion-row>
-                        <!-- Скидка -->
+                        
                         <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
                             <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
                                 Скидка, {{subjectData.subjectDiscount}}%
                             </ion-button>
-                            <!-- Скидка на предмет: (%): {{ subjectData.subjectDiscount }} -->
+                            
                             <ion-range 
                                 class="ion-no-padding ion-padding-horizontal ion-margin-start" 
                                 :min="setDiscountRange('min')" 
@@ -272,7 +270,7 @@
                                 :snaps="false">
                             </ion-range>
                         </ion-row>
-                    </ion-grid>
+                    </ion-grid> -->
                     <!-- PER UNIT -->
                     <ion-grid v-if="subjectData.costEstimation === 'perUnit'" class="ion-no-padding">
                         <!-- Цена за 1 шт -->
@@ -459,37 +457,37 @@
 
                     </ion-grid>
                     <!-- PER 100 GRAM -->
-                    <ion-grid v-if="subjectData.costEstimation === 'per100gram'" class="ion-no-padding">
-                        <!-- Цена за 100 грамм -->
+                    <!-- <ion-grid v-if="subjectData.costEstimation === 'per100gram'" class="ion-no-padding">
+                        
                         <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
                             <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
                                 Цена за 100 гр. ({{ systemCurrency.name }})
                             </ion-button>
-                            <!--  -->
+                            
                             <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
                                 <ion-input type="number" v-model="subjectPrice" inputmode="decimal" :value="subjectData.price" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
                             </ion-button>
                         </ion-row>
-                        <!-- Количество -->
+                        
                         <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
                             <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
                                 Количество, шт
                             </ion-button>
-                            <!--  -->
+                            
                             <div>
                                 <ion-grid class="ion-no-padding">
                                     <ion-row class="ion-align-items-center">
-                                        <!-- Subtract -->
+                                        
                                         <ion-icon class="countQty_button" @click="changeQty('sub')" :icon="removeCircleOutline" :color="countQtyButtonColor"></ion-icon>
-                                        <!-- Show data -->
+                                        
                                         <ion-text class="ion-padding-horizontal countQty_count" color="primary">{{ subjectData.productQuantity }}</ion-text>
-                                        <!-- Add -->
+                                        
                                         <ion-icon class="countQty_button" @click="changeQty('add')" color="primary" :icon="addCircleOutline"></ion-icon>
                                     </ion-row>
                                 </ion-grid>
                             </div>
                         </ion-row>
-                    </ion-grid>
+                    </ion-grid> -->
                     <!-- PER UNIT -->
                     <ion-grid v-if="subjectData.costEstimation === 'perUnit'" class="ion-no-padding">
                         <!-- Цена за 1 шт -->
@@ -774,18 +772,20 @@
                     } else if (subjectData.value.costEstimation === 'perKilogram') {
                         subjectData.value.subjectPrice = (subjectData.value.price / 1000) * (subjectData.value.personQuantity * subjectData.value.gramPerPerson) * subjectData.value.productQuantity * ((100 - subjectData.value.subjectDiscount) / 100) 
                         sumAttributesPriceFunc(subjectData.value.additionalAttributes)
-                    } else if (subjectData.value.costEstimation === 'per100gram') {
-                        subjectData.value.subjectPrice = subjectData.value.productQuantity * subjectPrice.value;
-                        sumAttributesPriceFunc(subjectData.value.additionalAttributes)
-                    }
+                    } 
+                    // else if (subjectData.value.costEstimation === 'per100gram') {
+                    //     subjectData.value.subjectPrice = subjectData.value.productQuantity * subjectPrice.value;
+                    //     sumAttributesPriceFunc(subjectData.value.additionalAttributes)
+                    // }
                 } else if (currentDealType.value === 'buy') {
                     if (subjectData.value.costEstimation === 'perKilogram') {
                         subjectData.value.subjectPrice = subjectData.value.price / 1000 * subjectData.value.gramPerPerson;
                     } else if (subjectData.value.costEstimation === 'perUnit') {
                         subjectData.value.subjectPrice = subjectData.value.productQuantity * subjectPrice.value;
-                    } else if (subjectData.value.costEstimation === 'per100gram') {
-                        subjectData.value.subjectPrice = subjectData.value.productQuantity * subjectPrice.value;
-                    }
+                    } 
+                    // else if (subjectData.value.costEstimation === 'per100gram') {
+                    //     subjectData.value.subjectPrice = subjectData.value.productQuantity * subjectPrice.value;
+                    // }
                 }
             }
             // Задаем из выбранного списка значение для recipe
@@ -1096,12 +1096,13 @@
             //
             const setCostEstimation = (costEstimation) => {
                 if(costEstimation === 'perKilogram') {
-                    return 'закуп в кг. / г.'
+                    return 'Расчет по весу.'
                 } else if (costEstimation === 'perUnit') {
-                    return 'закуп в шт.'
-                } else if(costEstimation === 'per100gram') {
-                    return 'закуп в упаковках по 100г'
-                }
+                    return 'Расчет по количеству'
+                } 
+                // else if(costEstimation === 'per100gram') {
+                //     return 'закуп в упаковках по 100г'
+                // }
             }
 
             return {

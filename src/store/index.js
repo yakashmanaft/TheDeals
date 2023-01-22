@@ -167,17 +167,30 @@ const state = reactive({
   priceEstimataionType: [
     {
       value: 'perKilogram',
-      name: 'кг.'
+      name: 'Цена за 1 кг.'
     },
-    {
-      value: 'per100gram',
-      name: '100г.'
-    },
+    // {
+    //   value: 'per100gram',
+    //   name: '100г.'
+    // },
     {
       value: 'perUnit',
-      name: 'шт.'
+      name: 'Цена за 1 шт.'
     },
-
+  ],
+  warehouseItemEstimataionType: [
+    {
+      value: 'perKilogram',
+      name: 'По весу'
+    },
+    // {
+    //   value: 'per100gram',
+    //   name: '100г.'
+    // },
+    {
+      value: 'perUnit',
+      name: 'По количеству'
+    },
   ],
   //
   priceAttributeType: [
@@ -305,7 +318,8 @@ const state = reactive({
     {
       value: 'sugar-powder',
       name: 'Сахарная пудра',
-      costEstimation: 'per100gram',
+      // costEstimation: 'per100gram',
+      costEstimation: 'perKilogram',
       isIngredient: true,
       warehouseSuitable: true,
     },
