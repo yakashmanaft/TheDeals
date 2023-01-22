@@ -916,6 +916,7 @@
                 }
             }
             const closeModalCalendar = (executionDate) => {
+                // Может входящие данные-то и не нужны в этой функции???
                 executionDate = currentDeal.value.executionDate
                 isCalendarOpened.value = false;
             }
