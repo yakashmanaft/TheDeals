@@ -161,7 +161,7 @@
                             <ion-button size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click="openModalCalendar()">Изменить</ion-button>
                         </ion-row>
                     </ion-grid>
-                    <!--  -->
+                    <!--  --> 
                     <ModalCalendar 
                         :is-open="isCalendarOpened" 
                         @date-updated="(pickedDate) => executionDate = pickedDate.currentValue"
@@ -929,7 +929,7 @@
                 try {
                     spinner.value = true;
                     // Вынести в store?
-                    console.log(`Deal ${currentId} is updated`);
+                    // console.log(`Deal ${currentId} is updated`);
                     //
                     const {error} = await supabase.from('deals').update({
                         executionDate: executionDate.value,
@@ -1734,9 +1734,9 @@
                 isDealPaidMenuOpened.value = false
             }
             // функция обнуления пропса по начальному значению суммы оплаты (для DealPaidMenu)
-            const dealPaidAmountValue = () => {
-                return 0
-            }
+            // const dealPaidAmountValue = () => {
+            //     return 0
+            // }
             // функция обновления пропса по задолженности (для DealPaidMenu)
             const refreshDebtValue = () => {
                 return debt.value
@@ -1847,14 +1847,28 @@
             //const currentDeal = ref(JSON.parse(info.deal))
             const dealImportance = ref(currentDeal.value.dealImportance)
             //
-            const setRatingValue = (ratingValue) => {
+            const setRatingValue = async (ratingValue) => {
                 if(currentDeal.value.dealStatus === 'deal-complete') {
                     // alert('ViewDeal: вы не можете изменить дело, если статус Завершен')
+                    // выводим уведомление (о невозможности изменить) в комопненте StarRating.vue
                 } else {
                     // console.log(ratingValue)
                     dealImportance.value = ratingValue
-                    update()
-                }
+                    // update()
+                    try {
+                    // spinner.value = true;
+                    //
+                    const {error} = await supabase.from('deals').update({
+                        dealImportance: dealImportance.value,
+                    }).eq('id', currentId);
+                    if(error) throw error;
+                    // Дело успешно обновлено
+                    } catch (error) {
+                        // alert(`Error: ${error.message}`)
+                    }
+                    // edit.value = !edit.value;
+                    spinner.value = false;
+                    }
             }
 
             // добавляем запись (строку) от транзакции в леджер
@@ -1879,13 +1893,26 @@
             }
             //
             const dealComments = ref(currentDeal.value.comments);
-            watch(dealComments, () => {
+            watch(dealComments, async () => {
                 currentDeal.value.comments = dealComments.value
-                update()
+                // update()
+                try {
+                    spinner.value = true;
+                    //
+                    const {error} = await supabase.from('deals').update({
+                        comments: currentDeal.value.comments
+
+                    }).eq('id', currentId);
+                    if(error) throw error;
+                    // Дело успешно обновлено
+                } catch (error) {
+                    // alert(`Error: ${error.message}`)
+                }
+                spinner.value = false;
             })
 
             return {
-                currency, spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, setPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setNewPersonQty, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, shippingTypeList, dealShippingType, shippingPrice, setProductNotePlaceholder, shippingAddress, editShippingAddress, toggleEditShippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, translateShippingType, translateSelectedProduct, culcSubjectWeight, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, culcBuySubjectWeight, debt, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, refreshDebtValue, dealPaidAmountValue, finishDeal, setMarkerAttrColor, shapes, checkmarkDone, availableBalance, currentPriceSubject, personPortionGram, dealImportance, setRatingValue, addToLedger, dealComments, substructFromWarehouseToast, addToWarehouseFunc, showSelectedRecipe, userRecipeArray, openSearchContactMenu
+                currency, spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, setPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setNewPersonQty, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, shippingTypeList, dealShippingType, shippingPrice, setProductNotePlaceholder, shippingAddress, editShippingAddress, toggleEditShippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, translateShippingType, translateSelectedProduct, culcSubjectWeight, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, culcBuySubjectWeight, debt, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, refreshDebtValue, finishDeal, setMarkerAttrColor, shapes, checkmarkDone, availableBalance, currentPriceSubject, personPortionGram, dealImportance, setRatingValue, addToLedger, dealComments, substructFromWarehouseToast, addToWarehouseFunc, showSelectedRecipe, userRecipeArray, openSearchContactMenu
             }
         }
     })
