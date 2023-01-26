@@ -54,10 +54,12 @@
             <!-- Модалка по созданию нового дела -->
             <CreateNewDeal
                 :isOpen="isViewDealModalOpened"
+                :userRecipeArray="userRecipes"
                 @closeModal="setOpen"
                 @createDeal="createNew"
                 :dealData="dealData"
                 :myContacts="myContacts"
+                @date-updated="(dealContactID) => dealData.contactID = dealContactID.currentValue"
                 @addSubject="addSubject"
                 @deleteSubject="deleteSubject"
                 :walletBalance="availableBalance"
@@ -180,7 +182,9 @@
             //
             const dateCreate = ref();
             // Храним данные контакта
-            const myContacts = ref([])
+            const myContacts = ref([]);
+            //
+            const userRecipes = ref();
             // массив с датами типа День без дел
             const weekendDays = ref([]);
             // Переменная для наблюдателя по смене месяцев
@@ -199,6 +203,9 @@
                 // console.log(weekendDays.value)
                 // avatarFileName.value = userSettings.value.avatar_url
                 // console.log(userSettings.value.avatar_url)
+                //
+                await store.methods.getUserRecipesFromBD();
+                userRecipes.value = store.state.userRecipeArray;
                 //
                 await store.methods.getMyContactsFromDB()
                 myContacts.value = store.state.myContactsArray
@@ -679,7 +686,7 @@
             }
 
             return {
-                menu, user, router, pageTitle, choosenDate, spinner, dataLoaded, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle, observer, availableBalance, addToLedger, toggleSettingsModal, isSettingsModalOpened, updateDaySaturation
+                menu, user, router, pageTitle, choosenDate, spinner, dataLoaded, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle, observer, availableBalance, addToLedger, toggleSettingsModal, isSettingsModalOpened, updateDaySaturation, userRecipes
             }
         }
     })

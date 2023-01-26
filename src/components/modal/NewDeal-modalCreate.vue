@@ -52,452 +52,456 @@
                 />
             </ion-item-group>
 
-            <!-- ============================ Контакт по делу ===================================== -->
-            <ion-item-group class="ion-padding-horizontal">
-                <!-- заголовок -->
-                <ion-text>
-                    <h4>Контакт</h4>
-                </ion-text>
-                <!-- Показываем контакт по делу -->
-                <ion-grid class="ion-no-padding">
-                    <ion-row class="ion-justify-content-between ion-align-items-center">
-                        <ion-button color="primary" size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click="searchContactMenu = true">{{dealContact}}</ion-button>
-                    </ion-row>
-                </ion-grid>
-                <!-- модалка для выбора (ПОИСК КОНТАКТА) контакта по делу -->
-                <!-- Может быть вынести в отдельны компонент? -->
-                <ion-modal :isOpen="searchContactMenu" >
-                    <ion-searchbar class="ion-text-left" placeholder="Поиск..." v-model="searchDealContact" show-cancel-button="always" cancelButtonText="Отменить" @ionCancel="searchContactMenu = false"></ion-searchbar>
-                    <ion-content style="height: 90vh">
-                        <ion-item v-for="contact in searchedContacts" :key="contact.id" @click="choose(contact)">
-                            <ion-grid>
-                                <ion-row>
-                                    <ion-text>{{contact.contactInfo.surname}} {{contact.contactInfo.name}}</ion-text>
-                                </ion-row>
-                                <ion-row>
-                                    <ion-text style="font-size: 1rem;" color="medium">{{contact.contactInfo.company}}</ion-text>
-                                </ion-row>
-                            </ion-grid>
-                        </ion-item>
-                        <!-- Если поиском в списке контактов ничего не найдено -->
-                        <ion-item lines="none" v-if="searchedContacts.length <= 0">
-                            <ion-text color="medium">Ничего не найдено</ion-text>
-                        </ion-item>
-                    </ion-content>
-                </ion-modal>
-            </ion-item-group>
-
-            <!-- ========================== Дата и время исполнения ============================== -->
-            <ion-item-group class="ion-padding-horizontal">
-                <!-- заголовок -->
-                <ion-text>
-                    <h4>Дата и время исполнения</h4>
-                </ion-text>
-                <!-- Кнопка активации компонента, она же показывает выбранное -->
-                <ion-button color="primary" size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click="isCalendarOpened = true">{{datepicker(dealData.executionDate)}}</ion-button>
-                <!-- Компонент выбора даты -->
-                <ModalCalendar 
-                    :is-open="isCalendarOpened" 
-                    @date-updated="(pickedDate) => dealData.executionDate = pickedDate.currentValue"
-                    @closeModal="closeModalCalendar()"
-                    @updateDate="updateExecutionDate(date)"
-                    @didDismiss="isCalendarOpened = false"
-                    :date="dealData.executionDate"
-                    />
-                    <!-- :date="currentDeal.executionDate" -->
-                    <!-- :date="dealData.executionDate" -->
-            </ion-item-group>
-
-            <!-- ============================ Предмет дела =================================== -->
-            <ion-item-group class="ion-margin-top">
-                <!-- Заголовок -->
-                <ion-text>
-                    <ion-grid class="ion-no-padding ion-padding-horizontal">
-                        <ion-row class="ion-align-items-center ion-justify-content-between">
-                            <h4 class="ion-no-margin">Предмет дела</h4>
-                            <ion-text color="medium">Всего {{ dealData.dealsList.length }}</ion-text>
+            <div v-if="dealData.dealType !== ''">
+                <!-- {{ dealData.dealType }} -->
+                <!-- ============================ Контакт по делу ===================================== -->
+                <ion-item-group class="ion-padding-horizontal">
+                    <!-- заголовок -->
+                    <ion-text>
+                        <h4>Контакт</h4>
+                    </ion-text>
+                    <!-- Показываем контакт по делу -->
+                    <ion-grid class="ion-no-padding">
+                        <ion-row class="ion-justify-content-between ion-align-items-center">
+                            <ion-button color="primary" size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click="searchContactMenu = true">{{dealContact}}</ion-button>
                         </ion-row>
                     </ion-grid>
-                </ion-text>
-                <!--  -->
-                <ion-grid class="ion-no-padding">
-                    <ion-row class="ion-nowrap horizontal-scroll">
-                        <!-- Карточки предметов заказа -->
-                        <ion-card @click.stop="openCurrentDealSubject(index, item)" class="ion-padding ion-text-center card-center relative" v-for="(item, index) in dealData.dealsList" :key="item.id">
-                            <!-- Кнопка удалить конкретный предмет дела -->
-                            <ion-icon @click.stop="openDeleteSubjectModal(item.id)" class="icon_size icon_del absolute" :icon="closeCircleOutline"></ion-icon>
-                            <!-- Item -->
-                            <ion-thumbnail v-if="item.selectedProduct !== ''" style="height: 64px; width: 64px; margin: 0 auto" class="relative">
-                                <!-- Если тип дела Продажа -->
-                                <div v-if="dealData.dealType === 'sale'">
-                                    <ion-img style="height: 100%" :src="`../img/subjects/sale/${item.selectedProduct}.webp`"></ion-img>
-                                </div>
-                                <!-- Если тип дела Закупка -->
-                                <div v-if="dealData.dealType === 'buy'">
-                                    <ion-img style="height: 100%" :src="`../img/subjects/buy/${item.selectedProduct}.webp`"></ion-img>
-                                </div>
-                                <!-- mark where subject has attribute -->
-                                <div v-if="checkRentAttr(item)" class="absolute mark-atribute"></div>
-                            </ion-thumbnail>
-                            <ion-label style="font-size: 12px">
-                                x{{item.productQuantity}}
-                            </ion-label>
-                            <ion-text style="white-space: normal">{{ item.recipe }}</ion-text>
-                        </ion-card>
-                        <!-- Открываем меню создания предмета к делу -->
-                        <ion-card class="ion-padding card-center card-add" @click="openCreateSubjectModal()">
-                            <ion-icon :icon="addCircleOutline" color="primary" class="icon_size"></ion-icon>
-                            <ion-text class="ion-text-center ion-margin-top" color="primary">
-                                Добавить
-                            </ion-text> 
-                        </ion-card>
-                        <!-- Компонент создания нового предмета к делу -->
-                        <CreateDealSubject
-                            :is-open="isCreateNewSubjectOpened"
-                            @closeModal="closeCreateSubjectModal"
-                            @createSubject="addNewSubject"
-                            :subjectData="currentSubject"
-                            :currentDealType="dealData.dealType"
-                            @getSubjectPrice="setNewSubjectPrice"
-                            @getGramPerPerson="setNewGramPerPerson"
-                            @getSubjectQty="setNewSubjectQty"
-                            @getPersonQty="setNewPersonQty"
-                            @getSubjectDiscount="setNewSubjectDiscount"
+                    <!-- модалка для выбора (ПОИСК КОНТАКТА) контакта по делу -->
+                    <!-- Может быть вынести в отдельны компонент? -->
+                    <ion-modal :isOpen="searchContactMenu" >
+                        <ion-searchbar class="ion-text-left" placeholder="Поиск..." v-model="searchDealContact" show-cancel-button="always" cancelButtonText="Отменить" @ionCancel="searchContactMenu = false"></ion-searchbar>
+                        <ion-content style="height: 90vh">
+                            <ion-item v-for="contact in searchedContacts" :key="contact.id" @click="choose(contact)">
+                                <ion-grid>
+                                    <ion-row>
+                                        <ion-text>{{contact.contactInfo.surname}} {{contact.contactInfo.name}}</ion-text>
+                                    </ion-row>
+                                    <ion-row>
+                                        <ion-text style="font-size: 1rem;" color="medium">{{contact.contactInfo.company}}</ion-text>
+                                    </ion-row>
+                                </ion-grid>
+                            </ion-item>
+                            <!-- Если поиском в списке контактов ничего не найдено -->
+                            <ion-item lines="none" v-if="searchedContacts.length <= 0">
+                                <ion-text color="medium">Ничего не найдено</ion-text>
+                            </ion-item>
+                        </ion-content>
+                    </ion-modal>
+                </ion-item-group>
+    
+                <!-- ========================== Дата и время исполнения ============================== -->
+                <ion-item-group class="ion-padding-horizontal">
+                    <!-- заголовок -->
+                    <ion-text>
+                        <h4>Дата и время исполнения</h4>
+                    </ion-text>
+                    <!-- Кнопка активации компонента, она же показывает выбранное -->
+                    <ion-button color="primary" size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click="isCalendarOpened = true">{{datepicker(dealData.executionDate)}}</ion-button>
+                    <!-- Компонент выбора даты -->
+                    <ModalCalendar 
+                        :is-open="isCalendarOpened" 
+                        @date-updated="(pickedDate) => dealData.executionDate = pickedDate.currentValue"
+                        @closeModal="closeModalCalendar()"
+                        @updateDate="updateExecutionDate(date)"
+                        @didDismiss="isCalendarOpened = false"
+                        :date="dealData.executionDate"
                         />
-                        <!-- Компонент просмотра предмета по делу -->
-                        <ViewDealSubject
-                            :is-open="isViewDealSubjectOpened"
-                            @closeModal="isViewDealSubjectOpened = false"
-                            :subjectData="currentDealSubject"
-                            :currentDealType="dealData.dealType"
-                            :currentSubjectPrice="currentPriceSubject"
-                            :personGram="personPortionGram"
-                            @getSubjectPrice="setSubjectPrice"
-                            @getGramPerPerson="setGramPerPerson"
-                            @getSumAttributesPriceValue="setSumAttributesPriceValue"
-                            @getSubjectQty="setSubjectQty"
-                            @getPersonQty="setPersonQty"
-                            :countQtyButtonColor="countQtyButtonColor"
-                            :countPersonQtyButtonColor="countPersonQtyButtonColor"
-                            @getSubjectDiscount="setSubjectDiscount"
-                        />
-                    </ion-row>
-                </ion-grid>
-            </ion-item-group>
-            <!-- Всплывашка подтверждение удаления предмета заказа -->
-            <ion-action-sheet
-                :is-open="deleteSubject"
-                header="Точно удалить?"
-                :buttons="deleteDealSubjectButtons"
-                @didDismiss="deleteSubject = false"
-            >
-            </ion-action-sheet>
-
-            <!-- ========================== Доставка ================================================= -->
-            <!-- SALE -->
-            <ion-item-group class="ion-text-left ion-padding-horizontal" v-if="dealData.dealType === 'sale'">
-                <!-- Заголовок -->
-                <ion-text>
-                    <h4 class="ion-no-margin" >Доставка</h4>
-                </ion-text>
-                <!-- Тип доставки -->
-                <ion-grid class="ion-no-padding">
-                    <ion-row class="ion-justify-content-between ion-align-items-center">
-                        <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">Тип доставки</ion-button>
-                            <ion-chip :color="setChipColor(dealData.shipping.typeOfShipping)">
-                                <Select
-                                    :data="shippingTypeList" 
-                                    placeholder="Не выбран"
-                                    @date-updated="(selected) => dealShippingType = selected.currentValue"
-                                />
-                            </ion-chip>
-                        </ion-row>
-                </ion-grid>
-                <!-- Стоимость доставки -->
-                <!-- Вариант с доставкой -->
-                <ion-grid v-if="dealData.shipping.typeOfShipping === 'shipping-delivery'" class="ion-no-padding">
-                    <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
-                            <!-- Заголовок -->
-                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                                Стоимость доставки ({{ currency }})
-                            </ion-button>
-                            <!-- Ценник -->
-                        <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                                <ion-input type="number" v-model="shippingPrice" :value="dealData.shipping.shippingPrice" placeholder="0" inputmode="decimal" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
-                        </ion-button>
-                    </ion-row>
-                </ion-grid>
-                <!-- Вариант при самовывозе (disabled изменения input) -->
-                <ion-grid v-if="dealData.shipping.typeOfShipping === 'shipping-pickup'" class="ion-no-padding border-bottom">
-                    <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
-                        <!-- Заголовок -->
-                        <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                            Стоимость доставки ({{ currency }})
-                        </ion-button>
-                        <!-- Ценник -->
-                        <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                        <ion-input type="number" disabled="true" v-model="shippingPrice" :value="dealData.shipping.shippingPrice" placeholder="0" inputmode="decimal" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
-                    </ion-button>
-
-                    </ion-row>
-                </ion-grid>
-                <!-- Адрес доставки -->
-                <ion-grid v-if="dealData.shipping.typeOfShipping === 'shipping-delivery'" class="ion-no-padding border-bottom">
-                    <!-- Header -->
-                    <ion-row class="ion-justify-content-between ion-align-items-center">
-                        <!-- Заголовок -->
-                        <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                            Адрес доставки
-                        </ion-button>
-                    </ion-row>
-                    <!-- Content -->
-                    <ion-row class="ion-margin-bottom">
-                        <ion-textarea  autoGrow="true" placeholder="Впишите адрес" class="ion-margin-bottom" autocapitalize="on" v-model="shippingAddress"></ion-textarea>
-                    </ion-row>
-                </ion-grid>
-            </ion-item-group>
-            <!-- BUY -->
-            <ion-item-group class="ion-text-left ion-padding-horizontal" v-if="dealData.dealType === 'buy'">
-                <!-- Заголовок -->
-                <ion-text>
-                    <h4 class="ion-no-margin" >Доставка</h4>
-                </ion-text>
-                <!-- Тип доставки -->
-                <ion-grid class="ion-no-padding">
-                    <ion-row class="ion-justify-content-between ion-align-items-center">
-                        <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">Тип доставки</ion-button>
-                            <ion-chip :color="setChipColor(dealData.shipping.typeOfShipping)">
-                                <Select
-                                    :data="shippingTypeList" 
-                                    placeholder="Не выбран"
-                                    @date-updated="(selected) => dealShippingType = selected.currentValue"
-                                />
-                            </ion-chip>
-                        </ion-row>
-                </ion-grid>
-
-                <!-- Стоимость доставки -->
-
-                <!-- Вариант с доставкой -->
-                <ion-grid v-if="dealData.shipping.typeOfShipping === 'shipping-delivery'" class="ion-no-padding">
-                    <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
-                            <!-- Заголовок -->
-                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                                Стоимость доставки ({{ currency }})
-                            </ion-button>
-                            <!-- Ценник -->
-                        <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                                <ion-input type="number" v-model="shippingPrice" :value="dealData.shipping.shippingPrice" placeholder="0" inputmode="decimal" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
-                        </ion-button>
-                    </ion-row>
-                </ion-grid>
-                <!-- Вариант при самовывозе (в данном случае disabled="false") -->
-                <ion-grid v-if="dealData.shipping.typeOfShipping === 'shipping-pickup'" class="ion-no-padding border-bottom">
-                    <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
-                        <!-- Заголовок -->
-                        <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                            Стоимость доставки ({{ currency }})
-                        </ion-button>
-                        <!-- Ценник -->
-                        <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
-                        <ion-input type="number" disabled="true" v-model="shippingPrice" :value="dealData.shipping.shippingPrice" placeholder="0" inputmode="decimal" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
-                    </ion-button>
-
-                    </ion-row>
-                </ion-grid>
-            </ion-item-group>
-            
-            <!-- ============================ КОММЕНТАРИИ К ДЕЛУ ==================================================== -->
-            <ion-item-group class="ion-text-left ion-padding-horizontal ion-margin-top">
-
-                <!-- Заголовок -->
-                <ion-text>
-                    <h4 class="ion-no-margin" >Комментарии к делу</h4>
-                </ion-text>
-
-                <!--  -->
-                <ion-grid class="border-bottom ion-no-padding ion-padding-bottom">
-                    <ion-textarea
-                        class="ion-no-padding ion-margin-top"
-                        color="medium"
-                        autoGrow="true"
-                        autocapitalize="on"
-                        v-model="dealComments"
-                        placeholder="Написать комментарий"
-                    ></ion-textarea>
-                </ion-grid>
-            </ion-item-group>
-
-            <!-- ============================ ИТОГ ==================================================== -->
-            <ion-item-group class="ion-text-left ion-padding-horizontal">
-                <!-- Заголовок -->
-                <ion-text>
-                    <h4>Итого</h4>
-                </ion-text>
-
-                <!-- Итог предметов в режиме sale -->
-                <div v-if="dealData.dealType === 'sale'">
-                    <!-- ЕСЛИ ПРЕДМЕТОВ НЕТ -->
-                    <ion-list v-if="dealData.dealsList.length === 0" style="font-size: 0.8rem" class="border-bottom ion-padding-bottom ion-margin-bottom">
-                        Нет предметов в деле
-                    </ion-list>
-                    <!-- ЕСЛИ ПРЕДМЕТОВ ЕСТЬ -->
-                    <ion-list v-for="item in dealData.dealsList" :key="item.id" style="font-size: 0.8rem" class="border-bottom ion-padding-bottom ion-margin-bottom">
-                        <ion-grid class="ion-no-padding">
-
-                            <!-- perUnit -->
-                            <ion-row v-if="item.costEstimation === 'perUnit'" class="ion-justify-content-between ion-align-items-center">
-                                <ion-text>{{ translateSelectedProduct(item.selectedProduct) }}</ion-text>
-                                <ion-text>{{ (item.productQuantity).toFixed(2) }} * {{ (item.price).toFixed(2) }} = {{ (item.subjectPrice).toFixed(2) }} </ion-text>
-                            </ion-row>
-
-                            <!-- perKilogram -->
-                            <ion-row v-if="item.costEstimation === 'perKilogram'" class="ion-justify-content-between ion-align-items-center">
-                                <ion-text>{{ translateSelectedProduct(item.selectedProduct) }}</ion-text>
-                                <ion-text>{{ culcSubjectWeight(item.personQuantity, item.gramPerPerson) }} * {{ (item.price).toFixed(2) }} = {{ (item.subjectPrice).toFixed(2) }}</ion-text>
-                            </ion-row>
-
-                            <!-- per100gram -->
-                            <!-- <ion-row v-if="item.costEstimation === 'per100gram'" class="ion-justify-content-between ion-align-items-center">
-                                <ion-text>{{ translateSelectedProduct(item.selectedProduct) }}</ion-text>
-                                <ion-text>{{ (item.productQuantity).toFixed(2) }} * {{ (item.price).toFixed(2) }} = {{ (item.subjectPrice).toFixed(2) }} </ion-text>
-                            </ion-row> -->
-
-                            <!-- Описание скидок и вывод название рецептов пока есть толкьо в режиме sale -->
-                            <ion-row class="ion-justify-content-between ion-align-items-center">
-                                <ion-text color="medium">{{ item.recipe }}</ion-text>
-                                <ion-text v-if="item.subjectDiscount > 0" color="medium">С учетом скидки</ion-text>
-                                <ion-text v-else color="medium">Без скидки</ion-text>
+                        <!-- :date="currentDeal.executionDate" -->
+                        <!-- :date="dealData.executionDate" -->
+                </ion-item-group>
+    
+                <!-- ============================ Предмет дела =================================== -->
+                <ion-item-group class="ion-margin-top">
+                    <!-- Заголовок -->
+                    <ion-text>
+                        <ion-grid class="ion-no-padding ion-padding-horizontal">
+                            <ion-row class="ion-align-items-center ion-justify-content-between">
+                                <h4 class="ion-no-margin">Предмет дела</h4>
+                                <ion-text color="medium">Всего {{ dealData.dealsList.length }}</ion-text>
                             </ion-row>
                         </ion-grid>
-                        <!-- Атрибуты у предметов дела пока есть только в режиме sale -->
-                        <div v-if="item.additionalAttributes.length !== 0" class="ion-margin-start">
-                            <ion-grid v-for="attribute in item.additionalAttributes" :key="attribute.id" class="ion-no-padding ion-margin-top">
-                                <ion-row class="ion-justify-content-between ion-align-items-center">
-                                    <ion-text>{{ attribute.name }}</ion-text>
-                                    <ion-text>{{ (attribute.qty).toFixed(2) }} * {{ (attribute.price).toFixed(2) }} = {{ (attribute.totalPrice).toFixed(2) }}</ion-text>
+                    </ion-text>
+                    <!--  -->
+                    <ion-grid class="ion-no-padding">
+                        <ion-row class="ion-nowrap horizontal-scroll">
+                            <!-- Карточки предметов заказа -->
+                            <ion-card @click.stop="openCurrentDealSubject(index, item)" class="ion-padding ion-text-center card-center relative" v-for="(item, index) in dealData.dealsList" :key="item.id">
+                                <!-- Кнопка удалить конкретный предмет дела -->
+                                <ion-icon @click.stop="openDeleteSubjectModal(item.id)" class="icon_size icon_del absolute" :icon="closeCircleOutline"></ion-icon>
+                                <!-- Item -->
+                                <ion-thumbnail v-if="item.selectedProduct !== ''" style="height: 64px; width: 64px; margin: 0 auto" class="relative">
+                                    <!-- Если тип дела Продажа -->
+                                    <div v-if="dealData.dealType === 'sale'">
+                                        <ion-img style="height: 100%" :src="`../img/subjects/sale/${item.selectedProduct}.webp`"></ion-img>
+                                    </div>
+                                    <!-- Если тип дела Закупка -->
+                                    <div v-if="dealData.dealType === 'buy'">
+                                        <ion-img style="height: 100%" :src="`../img/subjects/buy/${item.selectedProduct}.webp`"></ion-img>
+                                    </div>
+                                    <!-- mark where subject has attribute -->
+                                    <div v-if="checkRentAttr(item)" class="absolute mark-atribute"></div>
+                                </ion-thumbnail>
+                                <ion-label style="font-size: 12px">
+                                    x{{item.productQuantity}}
+                                </ion-label>
+                                <ion-text style="white-space: normal">{{ showSelectedRecipe(item.recipe) }}</ion-text>
+                            </ion-card>
+                            <!-- Открываем меню создания предмета к делу -->
+                            <ion-card class="ion-padding card-center card-add" @click="openCreateSubjectModal()">
+                                <ion-icon :icon="addCircleOutline" color="primary" class="icon_size"></ion-icon>
+                                <ion-text class="ion-text-center ion-margin-top" color="primary">
+                                    Добавить
+                                </ion-text> 
+                            </ion-card>
+                            <!-- Компонент создания нового предмета к делу -->
+                            <CreateDealSubject
+                                :is-open="isCreateNewSubjectOpened"
+                                @closeModal="closeCreateSubjectModal"
+                                @createSubject="addNewSubject"
+                                :subjectData="currentSubject"
+                                :currentDealType="dealData.dealType"
+                                @getSubjectPrice="setNewSubjectPrice"
+                                @getGramPerPerson="setNewGramPerPerson"
+                                @getSubjectQty="setNewSubjectQty"
+                                @getPersonQty="setNewPersonQty"
+                                @getSubjectDiscount="setNewSubjectDiscount"
+                            />
+                            <!-- Компонент просмотра предмета по делу -->
+                            <ViewDealSubject
+                                :is-open="isViewDealSubjectOpened"
+                                @closeModal="isViewDealSubjectOpened = false"
+                                :subjectData="currentDealSubject"
+                                :currentDealType="dealData.dealType"
+                                :currentSubjectPrice="currentPriceSubject"
+                                :personGram="personPortionGram"
+                                @getSubjectPrice="setSubjectPrice"
+                                @getGramPerPerson="setGramPerPerson"
+                                @getSumAttributesPriceValue="setSumAttributesPriceValue"
+                                @getSubjectQty="setSubjectQty"
+                                @getPersonQty="setPersonQty"
+                                :countQtyButtonColor="countQtyButtonColor"
+                                :countPersonQtyButtonColor="countPersonQtyButtonColor"
+                                @getSubjectDiscount="setSubjectDiscount"
+                            />
+                        </ion-row>
+                    </ion-grid>
+                </ion-item-group>
+                <!-- Всплывашка подтверждение удаления предмета заказа -->
+                <ion-action-sheet
+                    :is-open="deleteSubject"
+                    header="Точно удалить?"
+                    :buttons="deleteDealSubjectButtons"
+                    @didDismiss="deleteSubject = false"
+                >
+                </ion-action-sheet>
+    
+                <!-- ========================== Доставка ================================================= -->
+                <!-- SALE -->
+                <ion-item-group class="ion-text-left ion-padding-horizontal" v-if="dealData.dealType === 'sale'">
+                    <!-- Заголовок -->
+                    <ion-text>
+                        <h4 class="ion-no-margin" >Доставка</h4>
+                    </ion-text>
+                    <!-- Тип доставки -->
+                    <ion-grid class="ion-no-padding">
+                        <ion-row class="ion-justify-content-between ion-align-items-center">
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">Тип доставки</ion-button>
+                                <ion-chip :color="setChipColor(dealData.shipping.typeOfShipping)">
+                                    <Select
+                                        :data="shippingTypeList" 
+                                        placeholder="Не выбран"
+                                        @date-updated="(selected) => dealShippingType = selected.currentValue"
+                                    />
+                                </ion-chip>
+                            </ion-row>
+                    </ion-grid>
+                    <!-- Стоимость доставки -->
+                    <!-- Вариант с доставкой -->
+                    <ion-grid v-if="dealData.shipping.typeOfShipping === 'shipping-delivery'" class="ion-no-padding">
+                        <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
+                                <!-- Заголовок -->
+                                <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                    Стоимость доставки ({{ currency }})
+                                </ion-button>
+                                <!-- Ценник -->
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                    <ion-input type="number" v-model="shippingPrice" :value="dealData.shipping.shippingPrice" placeholder="0" inputmode="decimal" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
+                            </ion-button>
+                        </ion-row>
+                    </ion-grid>
+                    <!-- Вариант при самовывозе (disabled изменения input) -->
+                    <ion-grid v-if="dealData.shipping.typeOfShipping === 'shipping-pickup'" class="ion-no-padding border-bottom">
+                        <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
+                            <!-- Заголовок -->
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                Стоимость доставки ({{ currency }})
+                            </ion-button>
+                            <!-- Ценник -->
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                            <ion-input type="number" disabled="true" v-model="shippingPrice" :value="dealData.shipping.shippingPrice" placeholder="0" inputmode="decimal" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
+                        </ion-button>
+    
+                        </ion-row>
+                    </ion-grid>
+                    <!-- Адрес доставки -->
+                    <ion-grid v-if="dealData.shipping.typeOfShipping === 'shipping-delivery'" class="ion-no-padding border-bottom">
+                        <!-- Header -->
+                        <ion-row class="ion-justify-content-between ion-align-items-center">
+                            <!-- Заголовок -->
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                Адрес доставки
+                            </ion-button>
+                        </ion-row>
+                        <!-- Content -->
+                        <ion-row class="ion-margin-bottom">
+                            <ion-textarea  autoGrow="true" placeholder="Впишите адрес" class="ion-margin-bottom" autocapitalize="on" v-model="shippingAddress"></ion-textarea>
+                        </ion-row>
+                    </ion-grid>
+                </ion-item-group>
+                <!-- BUY -->
+                <ion-item-group class="ion-text-left ion-padding-horizontal" v-if="dealData.dealType === 'buy'">
+                    <!-- Заголовок -->
+                    <ion-text>
+                        <h4 class="ion-no-margin" >Доставка</h4>
+                    </ion-text>
+                    <!-- Тип доставки -->
+                    <ion-grid class="ion-no-padding">
+                        <ion-row class="ion-justify-content-between ion-align-items-center">
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">Тип доставки</ion-button>
+                                <ion-chip :color="setChipColor(dealData.shipping.typeOfShipping)">
+                                    <Select
+                                        :data="shippingTypeList" 
+                                        placeholder="Не выбран"
+                                        @date-updated="(selected) => dealShippingType = selected.currentValue"
+                                    />
+                                </ion-chip>
+                            </ion-row>
+                    </ion-grid>
+    
+                    <!-- Стоимость доставки -->
+    
+                    <!-- Вариант с доставкой -->
+                    <ion-grid v-if="dealData.shipping.typeOfShipping === 'shipping-delivery'" class="ion-no-padding">
+                        <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
+                                <!-- Заголовок -->
+                                <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                    Стоимость доставки ({{ currency }})
+                                </ion-button>
+                                <!-- Ценник -->
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                    <ion-input type="number" v-model="shippingPrice" :value="dealData.shipping.shippingPrice" placeholder="0" inputmode="decimal" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
+                            </ion-button>
+                        </ion-row>
+                    </ion-grid>
+                    <!-- Вариант при самовывозе (в данном случае disabled="false") -->
+                    <ion-grid v-if="dealData.shipping.typeOfShipping === 'shipping-pickup'" class="ion-no-padding border-bottom">
+                        <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
+                            <!-- Заголовок -->
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                                Стоимость доставки ({{ currency }})
+                            </ion-button>
+                            <!-- Ценник -->
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">
+                            <ion-input type="number" disabled="true" v-model="shippingPrice" :value="dealData.shipping.shippingPrice" placeholder="0" inputmode="decimal" class="ion-text-end ion-no-padding" style="font-size: 24px" color="primary"></ion-input>
+                        </ion-button>
+    
+                        </ion-row>
+                    </ion-grid>
+                </ion-item-group>
+                
+                <!-- ============================ КОММЕНТАРИИ К ДЕЛУ ==================================================== -->
+                <ion-item-group class="ion-text-left ion-padding-horizontal ion-margin-top">
+    
+                    <!-- Заголовок -->
+                    <ion-text>
+                        <h4 class="ion-no-margin" >Комментарии к делу</h4>
+                    </ion-text>
+    
+                    <!--  -->
+                    <ion-grid class="border-bottom ion-no-padding ion-padding-bottom">
+                        <ion-textarea
+                            class="ion-no-padding ion-margin-top"
+                            color="medium"
+                            autoGrow="true"
+                            autocapitalize="on"
+                            v-model="dealComments"
+                            placeholder="Написать комментарий"
+                        ></ion-textarea>
+                    </ion-grid>
+                </ion-item-group>
+    
+                <!-- ============================ ИТОГ ==================================================== -->
+                <ion-item-group class="ion-text-left ion-padding-horizontal">
+                    <!-- Заголовок -->
+                    <ion-text>
+                        <h4>Итого</h4>
+                    </ion-text>
+    
+                    <!-- Итог предметов в режиме sale -->
+                    <div v-if="dealData.dealType === 'sale'">
+                        <!-- ЕСЛИ ПРЕДМЕТОВ НЕТ -->
+                        <ion-list v-if="dealData.dealsList.length === 0" style="font-size: 0.8rem" class="border-bottom ion-padding-bottom ion-margin-bottom">
+                            Нет предметов в деле
+                        </ion-list>
+                        <!-- ЕСЛИ ПРЕДМЕТОВ ЕСТЬ -->
+                        <ion-list v-for="item in dealData.dealsList" :key="item.id" style="font-size: 0.8rem" class="border-bottom ion-padding-bottom ion-margin-bottom">
+                            <ion-grid class="ion-no-padding">
+    
+                                <!-- perUnit -->
+                                <ion-row v-if="item.costEstimation === 'perUnit'" class="ion-justify-content-between ion-align-items-center">
+                                    <ion-text>{{ translateSelectedProduct(item.selectedProduct) }}</ion-text>
+                                    <ion-text>{{ (item.productQuantity).toFixed(2) }} * {{ (item.price).toFixed(2) }} = {{ (item.subjectPrice).toFixed(2) }} </ion-text>
                                 </ion-row>
+    
+                                <!-- perKilogram -->
+                                <ion-row v-if="item.costEstimation === 'perKilogram'" class="ion-justify-content-between ion-align-items-center">
+                                    <ion-text>{{ translateSelectedProduct(item.selectedProduct) }}</ion-text>
+                                    <ion-text>{{ culcSubjectWeight(item.personQuantity, item.gramPerPerson) }} * {{ (item.price).toFixed(2) }} = {{ (item.subjectPrice).toFixed(2) }}</ion-text>
+                                </ion-row>
+    
+                                <!-- per100gram -->
+                                <!-- <ion-row v-if="item.costEstimation === 'per100gram'" class="ion-justify-content-between ion-align-items-center">
+                                    <ion-text>{{ translateSelectedProduct(item.selectedProduct) }}</ion-text>
+                                    <ion-text>{{ (item.productQuantity).toFixed(2) }} * {{ (item.price).toFixed(2) }} = {{ (item.subjectPrice).toFixed(2) }} </ion-text>
+                                </ion-row> -->
+    
+                                <!-- Описание скидок и вывод название рецептов пока есть толкьо в режиме sale -->
                                 <ion-row class="ion-justify-content-between ion-align-items-center">
-                                    <ion-text color="medium">Атрибут</ion-text>
-                                    <!-- <ion-text style="font-size: 0.8rem" color="medium">С учетом скидки</ion-text> -->
+                                    <ion-text color="medium">{{ item.recipe }}</ion-text>
+                                    <ion-text v-if="item.subjectDiscount > 0" color="medium">С учетом скидки</ion-text>
+                                    <ion-text v-else color="medium">Без скидки</ion-text>
                                 </ion-row>
                             </ion-grid>
-                        </div>
-                    </ion-list>
-                </div>
-
-                <!-- Итог предметов в режиме sale -->
-                <div v-if="dealData.dealType === 'buy'">
-                    <!-- ЕСЛИ ПРЕДМЕТОВ НЕТ -->
-                    <ion-list v-if="dealData.dealsList.length === 0" style="font-size: 0.8rem" class="border-bottom ion-padding-bottom ion-margin-bottom">
-                        Нет предметов в деле
-                    </ion-list>
-                    <!-- ЕСЛИ ПРЕДМЕТЫ ЕСТЬ -->
-                    <ion-list v-for="item in dealData.dealsList" :key="item.id" style="font-size: 0.8rem" class="border-bottom ion-padding-bottom ion-margin-bottom">
-                         <ion-grid class="ion-no-padding">
-
-                            <!-- PerUnit -->
-                            <ion-row v-if="item.costEstimation === 'perUnit'" class="ion-justify-content-between ion-align-items-center">
-                                <ion-text>{{ translateSelectedProduct(item.selectedProduct) }}</ion-text>
-                                <ion-text>{{ (item.productQuantity).toFixed(2) }} * {{ (item.price).toFixed(2) }} = {{ (item.subjectPrice).toFixed(2) }}</ion-text>
-                            </ion-row>
-
-                            <!-- PerKilogram -->
-                            <ion-row v-if="item.costEstimation === 'perKilogram'" class="ion-justify-content-between ion-align-items-center">
-                                <ion-text>{{ translateSelectedProduct(item.selectedProduct) }}</ion-text>
-                                <ion-text>{{ culcBuySubjectWeight(item.gramPerPerson) }} * {{ (item.price).toFixed(2) }} = {{ (item.subjectPrice).toFixed(2) }}</ion-text>
-                            </ion-row>
-
-                            <!-- Per100gram -->
-                            <!-- <ion-row v-if="item.costEstimation === 'per100gram'" class="ion-justify-content-between ion-align-items-center">
+                            <!-- Атрибуты у предметов дела пока есть только в режиме sale -->
+                            <div v-if="item.additionalAttributes.length !== 0" class="ion-margin-start">
+                                <ion-grid v-for="attribute in item.additionalAttributes" :key="attribute.id" class="ion-no-padding ion-margin-top">
+                                    <ion-row class="ion-justify-content-between ion-align-items-center">
+                                        <ion-text>{{ attribute.name }}</ion-text>
+                                        <ion-text>{{ (attribute.qty).toFixed(2) }} * {{ (attribute.price).toFixed(2) }} = {{ (attribute.totalPrice).toFixed(2) }}</ion-text>
+                                    </ion-row>
+                                    <ion-row class="ion-justify-content-between ion-align-items-center">
+                                        <ion-text color="medium">Атрибут</ion-text>
+                                        <!-- <ion-text style="font-size: 0.8rem" color="medium">С учетом скидки</ion-text> -->
+                                    </ion-row>
+                                </ion-grid>
+                            </div>
+                        </ion-list>
+                    </div>
+    
+                    <!-- Итог предметов в режиме sale -->
+                    <div v-if="dealData.dealType === 'buy'">
+                        <!-- ЕСЛИ ПРЕДМЕТОВ НЕТ -->
+                        <ion-list v-if="dealData.dealsList.length === 0" style="font-size: 0.8rem" class="border-bottom ion-padding-bottom ion-margin-bottom">
+                            Нет предметов в деле
+                        </ion-list>
+                        <!-- ЕСЛИ ПРЕДМЕТЫ ЕСТЬ -->
+                        <ion-list v-for="item in dealData.dealsList" :key="item.id" style="font-size: 0.8rem" class="border-bottom ion-padding-bottom ion-margin-bottom">
+                             <ion-grid class="ion-no-padding">
+    
+                                <!-- PerUnit -->
+                                <ion-row v-if="item.costEstimation === 'perUnit'" class="ion-justify-content-between ion-align-items-center">
                                     <ion-text>{{ translateSelectedProduct(item.selectedProduct) }}</ion-text>
                                     <ion-text>{{ (item.productQuantity).toFixed(2) }} * {{ (item.price).toFixed(2) }} = {{ (item.subjectPrice).toFixed(2) }}</ion-text>
-                            </ion-row > -->
-
-                            <!-- Указатель типа расчета цены -->
-                            <ion-row class="ion-justify-content-between ion-align-items-center">
-                                <ion-text color="medium" v-if="item.costEstimation === 'perKilogram' || item.costEstimation === 'per100gram'">Расчет цены по весу</ion-text>
-                                <ion-text color="medium" v-if="item.costEstimation === 'perUnit'">Расчет цены по единицам</ion-text>
+                                </ion-row>
+    
+                                <!-- PerKilogram -->
+                                <ion-row v-if="item.costEstimation === 'perKilogram'" class="ion-justify-content-between ion-align-items-center">
+                                    <ion-text>{{ translateSelectedProduct(item.selectedProduct) }}</ion-text>
+                                    <ion-text>{{ culcBuySubjectWeight(item.gramPerPerson) }} * {{ (item.price).toFixed(2) }} = {{ (item.subjectPrice).toFixed(2) }}</ion-text>
+                                </ion-row>
+    
+                                <!-- Per100gram -->
+                                <!-- <ion-row v-if="item.costEstimation === 'per100gram'" class="ion-justify-content-between ion-align-items-center">
+                                        <ion-text>{{ translateSelectedProduct(item.selectedProduct) }}</ion-text>
+                                        <ion-text>{{ (item.productQuantity).toFixed(2) }} * {{ (item.price).toFixed(2) }} = {{ (item.subjectPrice).toFixed(2) }}</ion-text>
+                                </ion-row > -->
+    
+                                <!-- Указатель типа расчета цены -->
+                                <ion-row class="ion-justify-content-between ion-align-items-center">
+                                    <ion-text color="medium" v-if="item.costEstimation === 'perKilogram' || item.costEstimation === 'per100gram'">Расчет цены по весу</ion-text>
+                                    <ion-text color="medium" v-if="item.costEstimation === 'perUnit'">Расчет цены по единицам</ion-text>
+                                </ion-row>
+                             </ion-grid>
+                        </ion-list>
+                    </div>
+    
+                    <!-- =========================== СВОД ====================================== -->
+                    <ion-grid class="ion-no-padding">
+                        
+                        <!-- Итог -->
+                        <ion-row class="ion-justify-content-between ion-align-items-center">
+                            <ion-text>Итог:</ion-text>
+                            <ion-text>{{ (sumAllTotalSubjectPriceFunc(dealData.dealsList)).toFixed(2) }} {{ currency }}</ion-text>
+                        </ion-row>
+    
+                        <!-- Доставка -->
+                        <!-- SALE -->
+                        <div v-if="dealData.dealType === 'sale'">
+                            <ion-row v-if="dealData.shipping.typeOfShipping === 'shipping-delivery'" class="ion-margin-top ion-justify-content-between ion-align-items-center">
+                                <ion-text>Доставка: </ion-text>
+                                <ion-text>{{ (dealData.shipping.shippingPrice).toFixed(2) }} {{ currency }}</ion-text>
                             </ion-row>
-                         </ion-grid>
-                    </ion-list>
-                </div>
-
-                <!-- =========================== СВОД ====================================== -->
-                <ion-grid class="ion-no-padding">
-                    
-                    <!-- Итог -->
-                    <ion-row class="ion-justify-content-between ion-align-items-center">
-                        <ion-text>Итог:</ion-text>
-                        <ion-text>{{ (sumAllTotalSubjectPriceFunc(dealData.dealsList)).toFixed(2) }} {{ currency }}</ion-text>
-                    </ion-row>
-
-                    <!-- Доставка -->
-                    <!-- SALE -->
-                    <div v-if="dealData.dealType === 'sale'">
-                        <ion-row v-if="dealData.shipping.typeOfShipping === 'shipping-delivery'" class="ion-margin-top ion-justify-content-between ion-align-items-center">
-                            <ion-text>Доставка: </ion-text>
-                            <ion-text>{{ (dealData.shipping.shippingPrice).toFixed(2) }} {{ currency }}</ion-text>
+                        </div>
+                        <!-- BUY -->
+                        <div v-if="dealData.dealType === 'buy'">
+                            <!--  -->
+                            <ion-row v-if="dealData.shipping.typeOfShipping === 'shipping-pickup'" class="ion-margin-top ion-justify-content-between ion-align-items-center">
+                                <ion-text>Самовывоз: </ion-text>
+                                <ion-text>{{ (dealData.shipping.shippingPrice).toFixed(2) }} {{ currency }}</ion-text>
+                            </ion-row>
+                            <!--  -->
+                            <ion-row v-if="dealData.shipping.typeOfShipping === 'shipping-delivery'" class="ion-margin-top ion-justify-content-between ion-align-items-center">
+                                <ion-text>Доставка: </ion-text>
+                                <ion-text>{{ (dealData.shipping.shippingPrice).toFixed(2) }} {{ currency }}</ion-text>
+                            </ion-row>
+                        </div>
+    
+                        <!-- Сумма к оплате -->
+                        <ion-row class="ion-margin-top ion-justify-content-between ion-align-items-center">
+                            <ion-text style="font-weight: bold;">Сумма к оплате: </ion-text>
+                            <ion-text>{{ (dealData.totalDealPrice).toFixed(2) }} {{ currency }}</ion-text>
                         </ion-row>
+    
+                        <!-- Оплачено -->
+                        <ion-row class="ion-margin-top ion-justify-content-between ion-align-items-center">  
+                            <ion-text style="font-weight: bold">Оплачено: </ion-text>
+                            <ion-text>{{ (dealData.dealPaid).toFixed(2) }} {{ currency }} </ion-text>
+                        </ion-row>
+    
+                        <!-- Задолженность -->
+                        <ion-row class="ion-margin-top ion-justify-content-between ion-align-items-center">
+                            <ion-text style="font-weight: bold">Остаток: </ion-text>
+                            <ion-text>{{ (culcDealDebt(dealData.totalDealPrice, dealData.dealPaid)).toFixed(2) }} {{ currency }}</ion-text>
+                        </ion-row>
+                    </ion-grid>
+    
+                    <!-- КНОПКИ СОЗДАТЬ && ОПЛАТИТЬ -->
+                    <div class="ion-padding border-top" style="position: fixed; bottom: 0; left: 0; width: 100%; background-color: #fff; z-index: 999999">
+                        <!-- Кнопка внести средства -->
+                        <ion-button  v-if="debt > 0" color="dark" @click="openDealPaidMenu" expand="block" class="ion-margin-top">
+                            Внести предоплату
+                        </ion-button>
+                        <!-- Кнопка дубляж СОЗДАТЬ ДЕЛО -->
+                        <ion-button :color="setAddButtonColor()" expand="block" class="ion-margin-top" @click="$emit('createDeal', dealData)">
+                            Создать дело
+                        </ion-button>
                     </div>
-                    <!-- BUY -->
-                    <div v-if="dealData.dealType === 'buy'">
-                        <!--  -->
-                        <ion-row v-if="dealData.shipping.typeOfShipping === 'shipping-pickup'" class="ion-margin-top ion-justify-content-between ion-align-items-center">
-                            <ion-text>Самовывоз: </ion-text>
-                            <ion-text>{{ (dealData.shipping.shippingPrice).toFixed(2) }} {{ currency }}</ion-text>
-                        </ion-row>
-                        <!--  -->
-                        <ion-row v-if="dealData.shipping.typeOfShipping === 'shipping-delivery'" class="ion-margin-top ion-justify-content-between ion-align-items-center">
-                            <ion-text>Доставка: </ion-text>
-                            <ion-text>{{ (dealData.shipping.shippingPrice).toFixed(2) }} {{ currency }}</ion-text>
-                        </ion-row>
-                    </div>
+    
+                    <!--  -->
+                    <DealPaidMenu
+                        :is-open="isDealPaidMenuOpened"
+                        @didDismiss="isDealPaidMenuOpened = false"
+                        @closeModal="closeDealPaidMenu"
+                        :currentDeal="dealData"
+                        :debt="refreshDebtValue()"
+                        :amount="dealPaidAmountValue()"
+                        @getAmountValue="setAmountValue"
+                        :balance="availableBalance"
+                        :isDealPaidMenuOpenedValue="isDealPaidMenuOpened"
+                    />
+                </ion-item-group>
+            </div>
 
-                    <!-- Сумма к оплате -->
-                    <ion-row class="ion-margin-top ion-justify-content-between ion-align-items-center">
-                        <ion-text style="font-weight: bold;">Сумма к оплате: </ion-text>
-                        <ion-text>{{ (dealData.totalDealPrice).toFixed(2) }} {{ currency }}</ion-text>
-                    </ion-row>
-
-                    <!-- Оплачено -->
-                    <ion-row class="ion-margin-top ion-justify-content-between ion-align-items-center">  
-                        <ion-text style="font-weight: bold">Оплачено: </ion-text>
-                        <ion-text>{{ (dealData.dealPaid).toFixed(2) }} {{ currency }} </ion-text>
-                    </ion-row>
-
-                    <!-- Задолженность -->
-                    <ion-row class="ion-margin-top ion-justify-content-between ion-align-items-center">
-                        <ion-text style="font-weight: bold">Остаток: </ion-text>
-                        <ion-text>{{ (culcDealDebt(dealData.totalDealPrice, dealData.dealPaid)).toFixed(2) }} {{ currency }}</ion-text>
-                    </ion-row>
-                </ion-grid>
-
-                <!-- КНОПКИ СОЗДАТЬ && ОПЛАТИТЬ -->
-                <div class="ion-padding border-top" style="position: fixed; bottom: 0; left: 0; width: 100%; background-color: #fff; z-index: 999999">
-                    <!-- Кнопка внести средства -->
-                    <ion-button  v-if="debt > 0" color="dark" @click="openDealPaidMenu" expand="block" class="ion-margin-top">
-                        Внести предоплату
-                    </ion-button>
-                    <!-- Кнопка дубляж СОЗДАТЬ ДЕЛО -->
-                    <ion-button :color="setAddButtonColor()" expand="block" class="ion-margin-top" @click="$emit('createDeal', dealData)">
-                        Создать дело
-                    </ion-button>
-                </div>
-
-                <!--  -->
-                <DealPaidMenu
-                    :is-open="isDealPaidMenuOpened"
-                    @didDismiss="isDealPaidMenuOpened = false"
-                    @closeModal="closeDealPaidMenu"
-                    :currentDeal="dealData"
-                    :debt="refreshDebtValue()"
-                    :amount="dealPaidAmountValue()"
-                    @getAmountValue="setAmountValue"
-                    :balance="availableBalance"
-                    :isDealPaidMenuOpenedValue="isDealPaidMenuOpened"
-                />
-            </ion-item-group>
 
             <br>
             {{dealData}}
@@ -517,7 +521,7 @@
 </template>
 
 <script>
-    import { defineComponent, ref, computed, watch, watchEffect } from 'vue';
+    import { defineComponent, ref, onMounted, computed, watch, watchEffect } from 'vue';
     import store from '../../store/index'; 
     import { uid } from 'uid';
     import { supabase } from '../../supabase/init';
@@ -538,7 +542,7 @@
     import { searchFilter } from '../../helpers/filterMyContacts'; 
     import { setColorByDealType } from '../../helpers/setColorBy';
     import { setIconByDealType } from '../../helpers/setIconBy';
-    import { translateValue } from '../../helpers/translateValue';
+    import { translateValue, translateRecipeID } from '@/helpers/translateValue';
     //
     export default defineComponent({
         name: 'CreateNewDeal',
@@ -546,7 +550,8 @@
         props: {
             dealData: Object,
             myContacts: Array,
-            walletBalance: Number
+            walletBalance: Number,
+            userRecipeArray: Array
         },
         components: {
             IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonInput, ModalCalendar, IonSearchbar, IonItem, Select, IonChip, IonIcon, IonCard, CreateDealSubject, ViewDealSubject, IonActionSheet, IonThumbnail, IonImg, IonLabel, IonTextarea, IonList, DealPaidMenu, StarRaiting
@@ -775,19 +780,6 @@
                 setCountQtyButtonColor(currentDealSubject.value.productQuantity)
                 setCountPersonQtyButtonColor(currentDealSubject.value.personQuantity)
             }
-            // Переводчик названий рецептов
-            // const userRecipeArray = ref(store.state.userRecipeArray)
-            // const translateDealSubjectRecipe = (value) => {
-            //     // console.log(value)
-            //     if(dealData.value.dealType === 'sale') {
-            //         if(value === 'no-recipe' || value === '') {
-            //             return 'Без рецепта'
-            //         } else {
-            //             console.log(userRecipeArray.value)
-            //             return translateValue(value, userRecipeArray.value)
-            //         }
-            //     }
-            // }
             // 
             const currentDealType = ref('');
             const dealImportance = ref()
@@ -816,7 +808,8 @@
                 // dealData.value.executionDate = ''
                 dealData.value.dealPaid = 0
                 dealData.value.cancelledReason = ''
-                dealData.value.dealImportance = 1
+                // убрать, если не пригодится
+                // dealData.value.dealImportance = 1
             })
 
             // ================================== New Deal Modal Create Subject ============================================
@@ -1339,9 +1332,18 @@
             //         alert(`Error: ${error.message}`)
             //     }
             // }
+            //
+            // 
+            const recipeArray = ref([])
+            const showSelectedRecipe = (recipeID) => {
+                recipeArray.value = props.userRecipeArray
+                // console.log(recipeArray.value)
+                return translateRecipeID(recipeID, recipeArray.value)
+                // return recipeID
+            }
 
             return {
-                currency, dealContact, dealContactID , searchContactMenu, choose, isCalendarOpened, closeModalCalendar, updateExecutionDate, datepicker, myContactsArray, searchDealContact, searchedContacts, dealTypes, addCircleOutline, closeCircleOutline, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, openDeleteSubjectModal, subjectToDelete, deleteDealSubjectButtons, addNewSubject, deleteSubject, dealData, currentDealSubject, isViewDealSubjectOpened, openCurrentDealSubject, checkRentAttr, setColorByDealType, setIconByDealType, currentDealType, isAttributesMenuOpened, setNewSubjectPrice, calcNewSubjectTotalPrice, sumAttributesPriceValue, setSumAttributesPriceValue, setSubjectPrice, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, calcSubjectTotalPrice, setNewSubjectQty, setPersonQty, setNewPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, setChipColor, shippingTypeList, dealShippingType, shippingPrice, shippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, calcTotalDealPrice, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, translateSelectedProduct, culcSubjectWeight, culcBuySubjectWeight, culcDealDebt, setAmountValue, debt, refreshDebtValue, dealPaidAmountValue, setAddButtonColor, currentPriceSubject, personPortionGram, availableBalance, myDeals, setRatingValue, dealImportance, dealComments
+                currency, dealContact, dealContactID , searchContactMenu, choose, isCalendarOpened, closeModalCalendar, updateExecutionDate, datepicker, myContactsArray, searchDealContact, searchedContacts, dealTypes, addCircleOutline, closeCircleOutline, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, openDeleteSubjectModal, subjectToDelete, deleteDealSubjectButtons, addNewSubject, deleteSubject, dealData, currentDealSubject, isViewDealSubjectOpened, openCurrentDealSubject, checkRentAttr, setColorByDealType, setIconByDealType, currentDealType, isAttributesMenuOpened, setNewSubjectPrice, calcNewSubjectTotalPrice, sumAttributesPriceValue, setSumAttributesPriceValue, setSubjectPrice, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, calcSubjectTotalPrice, setNewSubjectQty, setPersonQty, setNewPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, setChipColor, shippingTypeList, dealShippingType, shippingPrice, shippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, calcTotalDealPrice, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, translateSelectedProduct, culcSubjectWeight, culcBuySubjectWeight, culcDealDebt, setAmountValue, debt, refreshDebtValue, dealPaidAmountValue, setAddButtonColor, currentPriceSubject, personPortionGram, availableBalance, myDeals, setRatingValue, dealImportance, dealComments, showSelectedRecipe, recipeArray
             }
         }
     })

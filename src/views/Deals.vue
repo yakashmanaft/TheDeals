@@ -29,6 +29,7 @@
             @date-updated="(dealContactID) => dealData.contactID = dealContactID.currentValue"
             @addSubject="addSubject"
             @deleteSubject="deleteSubject"
+            :userRecipeArray="userRecipes"
         />
         <ion-content 
             :scroll-events="true"
@@ -317,6 +318,7 @@
             const spinner = ref(null);
             const dataLoaded = ref(null);
             const myDeals = ref([]);
+            const userRecipes = ref();
             // счетчик количества дел по конкретному статусу
             // const countDealsByCurrentStatus = ref(null);
             // Статусы дел
@@ -334,6 +336,8 @@
                 // daysArray.value = []
                 await store.methods.getMyDealsFromBD();
                 myDeals.value = store.state.myDealsArray;
+                await store.methods.getUserRecipesFromBD();
+                userRecipes.value = store.state.userRecipeArray;
                 spinner.value = false
                 dataLoaded.value = true;
                 refreshData();
@@ -890,7 +894,7 @@
             ]
 
             return {
-                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isViewDealModalOpened, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translateValue, refreshData, myContacts, getContact, showNameByID, checkRentAttr, dealTypesList, dealByType, showDealByType, helpOutline, addSubject, deleteSubject, setIconByDealType, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, dealStatus, dealWhereChangeStatus, prevDealStatus, debt, culcDealDebt, openDealPaidMenu, isDealPaidMenuOpened, refreshDebtValue, closeDealPaidMenu, dealPaidAmountValue, setAmountValue, isAllAttrReturnedFunc, currency, isAllAttrReturned, update, setMarkerAttrColor, shapes, addToLedger, setFilterFunc, setDealTypeMenu, setDealTypeMenuButtons, addToWarehouseToast, substructFromWarehouseToast
+                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isViewDealModalOpened, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translateValue, refreshData, myContacts, getContact, showNameByID, checkRentAttr, dealTypesList, dealByType, showDealByType, helpOutline, addSubject, deleteSubject, setIconByDealType, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, dealStatus, dealWhereChangeStatus, prevDealStatus, debt, culcDealDebt, openDealPaidMenu, isDealPaidMenuOpened, refreshDebtValue, closeDealPaidMenu, dealPaidAmountValue, setAmountValue, isAllAttrReturnedFunc, currency, isAllAttrReturned, update, setMarkerAttrColor, shapes, addToLedger, setFilterFunc, setDealTypeMenu, setDealTypeMenuButtons, addToWarehouseToast, substructFromWarehouseToast, userRecipes
             }
         }
     })

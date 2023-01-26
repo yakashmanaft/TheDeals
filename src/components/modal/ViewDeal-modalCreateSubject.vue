@@ -17,8 +17,8 @@
 
         <!--  -->
         <ion-content forceOverscroll="false" style="position: relative">
-            {{currentDealType}}
-            {{subjectData}}
+            <!-- {{currentDealType}}
+            {{subjectData}} -->
             <!-- Выбор предмета к делу -->
             <ion-item-group class="ion-padding-horizontal">
                 <!-- заголовок -->
