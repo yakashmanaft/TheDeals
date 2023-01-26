@@ -24,6 +24,7 @@
             :contactData="contactData"
             @addPhoneNumber="addPhoneNumber"
             @addEmail="addEmail"
+            @addAddress="addAddress"
             @deletePhoneNumber="deletePhoneNumber"
             @deleteEmail="deleteEmail"
             @addSocial="addSocial"
@@ -218,7 +219,8 @@
                 phoneNumbers: [],
                 emails: [],
                 socialNetworks: [],
-                contactEvents: []
+                contactEvents: [],
+                addresses: [],
             })
 
             // При закрытии или открытии modal очищаем шаблон контакта
@@ -237,7 +239,8 @@
                     phoneNumbers: [],
                     emails: [],
                     socialNetworks: [],
-                    contactEvents: []
+                    contactEvents: [],
+                    addresses: [],
                 }
             };
             // Добавляем телефоны к объекту контакта
@@ -270,6 +273,16 @@
                     email: ''
                 })
             }
+            // Добавляем addresses к объекту контакта
+            // Оптимизировать в одну функцию добавления
+            const addAddress = () => {
+                contactData.value.addAddress.push({
+                    id: uid(),
+                    type: '',
+                    address: ''
+                })
+            }
+
             // Добавляем social networks к объекту контакта
             // Оптимизировать в одну функцию добавления
             const addSocial = () => {
@@ -347,7 +360,7 @@
 
 
             return {
-                user, router, pageTitle, userEmail, myContacts, spinner, dataLoaded, search, searchedContacts, isOpen, setOpen, createNew, contactData, addPhoneNumber, addEmail, deletePhoneNumber, deleteEmail, addSocial, deleteSocial, addContactEvent, deleteContactEvent
+                user, router, pageTitle, userEmail, myContacts, spinner, dataLoaded, search, searchedContacts, isOpen, setOpen, createNew, contactData, addPhoneNumber, addEmail, deletePhoneNumber, deleteEmail, addSocial, deleteSocial, addContactEvent, deleteContactEvent, addAddress
             }
         }
     })

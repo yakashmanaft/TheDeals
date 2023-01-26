@@ -106,8 +106,8 @@
                                 <ion-label position="stacked">
                                     Тип номера телефона
                                 </ion-label>
-                                <ion-chip>
-                                    <Select :data="phoneEmailTypes" :placeholder="setSelectPlaceholderValue(number.type)" @date-updated="(selected) => number.type = selected.currentValue"/>
+                                <ion-chip class="ion-no-margin">
+                                    <Select :data="phoneEmailAddressTypes" :placeholder="setSelectPlaceholderValue(number.type)" @date-updated="(selected) => number.type = selected.currentValue"/>
                                 </ion-chip>
                             </div>
                             <!-- link to messengers -->
@@ -176,6 +176,7 @@
                     </ion-item>
                     <!-- Если emails уже есть (добавлен шаблон или имелись в БД)  -->
                     <ion-item-group v-for="(email, index) in currentContact.emails" :key="index" class="ion-text-left">
+
                         <!-- Показываем в режиме edit -->
                         <div v-if="edit" class="current-content ion-margin-horizontal">
                             <!-- sequence number &  delete current email btn-->
@@ -198,11 +199,12 @@
                                 <ion-label position="stacked">
                                     Тип электронной почты
                                 </ion-label>
-                                <ion-chip>
-                                    <Select :data="phoneEmailTypes" :placeholder="setSelectPlaceholderValue(email.type)" @date-updated="(selected) => email.type = selected.currentValue"/>
+                                <ion-chip class="ion-no-margin">
+                                    <Select :data="phoneEmailAddressTypes" :placeholder="setSelectPlaceholderValue(email.type)" @date-updated="(selected) => email.type = selected.currentValue"/>
                                 </ion-chip>
                             </div>
                         </div>
+
                         <!-- Показываем в режиме просмотра -->
                         <ion-item v-else lines="none" class="ion-no-padding">
                             <a :href="`mailto:${email.email}`" target="_blank">
@@ -222,6 +224,79 @@
                     <ion-row class="ion-justify-content-end ion-padding-end">
                         <ion-text color="primary" v-if="edit && currentContact.emails.length" @click="addEmail">Добавить еще</ion-text>
                     </ion-row>
+                </ion-item-group>
+
+                <ion-item-group>
+                    <!-- Заголовок -->
+                    <ion-item v-if="edit" lines="none">
+                        <ion-text>
+                            <h4 class="ion-no-margin ion-margin-top">Адрес</h4>
+                        </ion-text>
+                    </ion-item>
+
+                    <!-- Если ни одного адреса не добавлено -->
+                    <ion-item v-if="!currentContact.addresses.length" lines="none">
+                        <ion-grid class="ion-no-padding">
+                            <ion-row class="ion-justify-content-between">
+                                <ion-text>Нет адресов</ion-text>
+                                <!-- Если включен режим редактирования -->
+                                <ion-text v-if="edit" @click="addAddress" color="primary">Добавить</ion-text>
+                            </ion-row>
+                        </ion-grid>
+                    </ion-item>
+
+                    <!-- Если адреса уже есть (добавлен шаблон или имелись в БД)  -->
+                    <ion-item-group v-for="(address, index) in currentContact.addresses" :key="index" class="ion-text-left">
+
+                        <!-- Показываем в режиме edit -->
+                        <div v-if="edit" class="current-content ion-margin-horizontal">
+                            <!-- sequence number &  delete current address btn-->
+                            <ion-grid class="ion-no-padding">
+                                <ion-row class="ion-padding-start ion-justify-content-between ion-align-items-center">
+                                    <!-- sequence number -->
+                                    <ion-text position="stacked">Адрес #{{ index + 1 }}</ion-text>
+                                    <!-- delete current address btn -->
+                                    <ion-button fill="clear" @click="deleteAddress(address.id)">
+                                        <ion-icon :icon="closeOutline" color="danger" slot="end"></ion-icon>
+                                    </ion-button>
+                                </ion-row>
+                            </ion-grid>
+
+                            <!-- Адрес -->
+                            <ion-item>
+                                <ion-input inputmode="text" placeholder="Укажите адрес" v-model="address.address"></ion-input>
+                            </ion-item>
+
+                            <!-- Тип адрес -->
+                            <div class="ion-padding-start ion-padding-top">
+                                <ion-label position="stacked">
+                                    Тип адреса
+                                </ion-label>
+                                <ion-chip class="ion-no-margin">
+                                    <Select :data="phoneEmailAddressTypes" :placeholder="setSelectPlaceholderValue(address.type)" @date-updated="(selected) => address.type = selected.currentValue"/>
+                                </ion-chip>
+                            </div>
+                        </div>
+
+                        <!-- Показываем в режиме просмотра -->
+                        <ion-item v-else lines="none" class="ion-no-padding ion-margin-vertical">
+                            <ion-grid class="ion-no-padding ion-margin-start">
+                                <ion-row class="ion-align-items-center">
+                                    <ion-icon class="ion-margin-end" color="primary" :icon="homeOutline"></ion-icon>
+                                    <div class="flex flex-col" >
+                                        <ion-text color="medium">{{ address.type }}</ion-text>
+                                        <ion-text>{{ address.address }}</ion-text>
+                                    </div>
+                                </ion-row>
+                            </ion-grid>
+                        </ion-item>
+                    </ion-item-group>
+
+                    <!-- Button to add new address to current contact -->
+                    <ion-row class="ion-justify-content-end ion-padding-end">
+                        <ion-text color="primary" v-if="edit && currentContact.addresses.length" @click="addAddress">Добавить еще</ion-text>
+                    </ion-row>
+
                 </ion-item-group>
 
                 <!-- ===================== Socials ===================== -->
@@ -266,7 +341,7 @@
                                 <ion-label position="stacked">
                                     Название социальной сети
                                 </ion-label>
-                                <ion-chip>
+                                <ion-chip class="ion-no-margin">
                                     <Select :data="myContactSocialNetworksType" :placeholder="setSelectPlaceholderValue(social.name)" @date-updated="(selected) => social.name = selected.currentValue"/>
                                 </ion-chip>
                             </div>
@@ -275,7 +350,7 @@
                     <!-- Показываем в режиме просмотра -->
                     <!-- Как можно динамики добавить? -->
                     <ion-item v-if="!edit && currentContact.socialNetworks.length" lines="none">
-                        <a v-for="(social, index) in currentContact.socialNetworks" :key="index" :href="`${social.link}`" target="_blank" class="ion-margin-top ion-margin-end">
+                        <a v-for="(social, index) in currentContact.socialNetworks" :key="index" :href="`${social.link}`" target="_blank" class="ion-margin-end">
                                 <ion-icon v-if="social.name === 'Telegram'" :icon="paperPlaneOutline"></ion-icon>
                                 <ion-icon v-if="social.name === 'Instagram'" :icon="logoInstagram"></ion-icon>
                                 <ion-icon v-if="social.name === 'Vkontakte'" :icon="logoVk"></ion-icon>
@@ -296,7 +371,6 @@
                     <!-- <a href="skype:LOGIN?add">Добавить в список контактов Skype</a> -->
 
                 </ion-item-group>
-
 
                 <!-- ======================= Events ==================== -->
                 <ion-item-group>
@@ -430,7 +504,7 @@
     import Spinner from '../../components/Spinner.vue';
     import Select from '../../components/Select.vue';
     import { IonContent, IonHeader, IonButton, IonToolbar, IonButtons, IonBackButton, IonRow, IonAvatar, IonText, IonItem, IonLabel, IonInput, IonItemGroup, IonGrid, IonIcon, IonToggle, IonActionSheet, IonTextarea, IonChip } from '@ionic/vue';
-    import { callOutline, logoWhatsapp, closeOutline, mailOutline, paperPlaneOutline, logoInstagram, logoVk } from 'ionicons/icons';
+    import { callOutline, logoWhatsapp, closeOutline, mailOutline, paperPlaneOutline, logoInstagram, logoVk, homeOutline } from 'ionicons/icons';
     import ModalCalendar from '../../components/modal/NewContact-modalCalendar.vue';    
     import { format, parseISO } from 'date-fns';
     import { ru } from 'date-fns/locale'
@@ -453,7 +527,7 @@
             //
             const spinner = ref(null);
             // храним массив со списком типов телефона (личный, рабочий и т.д.)
-            const phoneEmailTypes = ref(store.state.myContactPhoneEmailTypes)
+            const phoneEmailAddressTypes = ref(store.state.myContactPhoneEmailTypes)
             const myContactSocialNetworksType = ref(store.state.myContactSocialNetworksType)
 
             // Edit contact info
@@ -541,23 +615,47 @@
             // update current contact function
             // вынести в store
             const update = async () => {
-                try { 
-                    spinner.value = true;
-                    // Вынести в store?
-                    const { error } = await supabase.from('myContacts').update({
-                        contactInfo: currentContact.value.contactInfo,
-                        phoneNumbers: currentContact.value.phoneNumbers,
-                        emails: currentContact.value.emails,
-                        socialNetworks: currentContact.value.socialNetworks,
-                        contactEvents: currentContact.value.contactEvents,
-                    }).eq('id', currentId)
-                    if(error) throw error;
-                    // Контакт успешно обновлен
-                } catch (error) {
-                    alert(`Error: ${error.message}`)
+
+                // Валидация адресов
+                let hasEmptyAddressType = [];
+                let hasEmptyAddressValue = [];
+                currentContact.value.addresses.forEach(address => {
+                    if(address.type === '') {
+                        hasEmptyAddressType.push(true)
+                    } else if (address.address === '') {
+                        hasEmptyAddressValue.push(true)
+                    }
+                })
+
+
+                // Валидация адресов
+                if(hasEmptyAddressType.includes(true)) {
+                    alert('ViewContact: Вы не указали тип адреса')
+                } else if (hasEmptyAddressValue.includes(true)) {
+                    alert('ViewContact: Вы не указали сам адрес')
                 }
-                edit.value = !edit.value;
-                spinner.value = false;
+                // СОХРАНЕНИЕ В БД
+                else {
+                    try { 
+                        spinner.value = true;
+                        // Вынести в store?
+                        const { error } = await supabase.from('myContacts').update({
+                            contactInfo: currentContact.value.contactInfo,
+                            phoneNumbers: currentContact.value.phoneNumbers,
+                            emails: currentContact.value.emails,
+                            addresses: currentContact.value.addresses,
+                            socialNetworks: currentContact.value.socialNetworks,
+                            contactEvents: currentContact.value.contactEvents,
+                        }).eq('id', currentId)
+                        if(error) throw error;
+                        // Контакт успешно обновлен
+                    } catch (error) {
+                        alert(`Error: ${error.message}`)
+                    }
+                    edit.value = !edit.value;
+                    spinner.value = false;
+                }
+
             }
 
             // В режиме редактирования, добавляем телефону к контакту
@@ -586,6 +684,14 @@
                     id: uid(),
                     type: '',
                     email: ''
+                })
+            }
+            // в режиме редактирования, добавляем address к контакту
+            const addAddress = () => {
+                currentContact.value.addresses.push({
+                    id: uid(),
+                    type: '',
+                    address: ''
                 })
             }
             // В режиме редактирования, добавляем social к контакту
@@ -668,6 +774,12 @@
                 currentContact.value.emails = currentContact.value.emails.filter(number => number.id !== id);
                 return;
             }
+            // Delete address of Current Contact
+            // вынести в store и объединить что ли в одну
+            const deleteAddress = (id) => {
+                currentContact.value.addresses = currentContact.value.addresses.filter(address => address.id !== id);
+                return;
+            }
             // Delete social of Current Contact
             // вынести в store и объединить что ли в одну
             const deleteSocial = (id) => {
@@ -729,7 +841,7 @@
 
 
             return {
-                currentId, info, currentContact, checkInitials, edit, editMode, cancelEdit, update, spinner, deleteContact, addPhoneNumber, callOutline, checkMobile, logoWhatsapp, cutPhoneNumber, phoneEmailTypes, deletePhoneNumber, closeOutline, setSelectPlaceholderValue, isOpenRef, setOpen, buttons, checkEmptyPhoneEmailType, addEmail, deleteEmail, mailOutline, addSocial, deleteSocial, myContactSocialNetworksType, paperPlaneOutline, logoInstagram, logoVk, addContactEvent, deleteContactEvent, datepicker, checkHasDate, calcDaysUntilDate, openModalCalendar, closeModalCalendar
+                currentId, info, currentContact, checkInitials, edit, editMode, cancelEdit, update, spinner, deleteContact, addPhoneNumber, callOutline, checkMobile, logoWhatsapp, cutPhoneNumber, phoneEmailAddressTypes, deletePhoneNumber, closeOutline, setSelectPlaceholderValue, isOpenRef, setOpen, buttons, checkEmptyPhoneEmailType, addEmail, deleteEmail, mailOutline, addSocial, deleteSocial, myContactSocialNetworksType, paperPlaneOutline, logoInstagram, logoVk, addContactEvent, deleteContactEvent, datepicker, checkHasDate, calcDaysUntilDate, openModalCalendar, closeModalCalendar, addAddress, deleteAddress, homeOutline
             }
         }
     })
