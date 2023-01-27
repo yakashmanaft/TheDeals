@@ -188,10 +188,20 @@
 
             // Register function
             const register = async () => {
+                await store.methods.getAllSettingsFromDB()
+                // console.log(email.value)         
+                let allSettings = store.state.allSettings
+                let allAccountEmails = []
+                allSettings.forEach(account => {
+                    allAccountEmails.push(account.email)
+                })
+
             if (userWorkProfile.value === '') {
                 alert('Register: Выберите профиль')
             } else if (password.value !== confirmPassword.value) {
                 alert('Register: Пароль не совпадает')
+            } else if (allAccountEmails.includes(email.value)) {
+                alert('Register: Аккаунт с указанным имейлом уже существует')
             } else if (password.value === confirmPassword.value) {
                 try {
                 const { error } = await supabase.auth.signUp({

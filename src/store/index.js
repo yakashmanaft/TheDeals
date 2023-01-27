@@ -71,8 +71,10 @@ const state = reactive({
         icon: cubeOutline
       }
   ],
-  // user price list
+  // user settings
   userSettings: [],
+  // all settings
+  allSettings: [],
   // contact array in page Contacts
   myContactsArray: [],
   // deals array in page Deals
@@ -749,6 +751,17 @@ const methods = {
       state.userEmail = state.user.email;
     }
   },
+  //
+  getAllSettingsFromDB: async () => {
+    try {
+      let { data: accountSettings, error } = await supabase.from('accountSettings').select('*');
+      if (error) throw error;
+      const userSettings = accountSettings;
+      state.allSettings = accountSettings;
+    } catch (error) {
+      console.log(error);
+    }
+  }
 };
 
 export default {

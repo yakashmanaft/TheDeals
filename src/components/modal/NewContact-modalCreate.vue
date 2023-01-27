@@ -110,7 +110,7 @@
                         </ion-row>
                     </ion-grid>
                 </ion-item>
-                <!-- Если телефоны указаны -->
+                <!-- Если адреса почты указаны -->
                 <div class="current-phone-content" v-for="(email, index) in contactData.emails" :key="index">
                     <!-- sequence number &  delete current phone btn-->
                     <ion-grid class="ion-no-padding">
@@ -140,6 +140,34 @@
                 <!-- Кнопка добавить еще один email к контакту -->
                 <ion-row class="ion-justify-content-end">
                     <ion-text color="primary" v-if="contactData.emails.length" @click="$emit('addEmail')">Добавить еще</ion-text>
+                </ion-row>
+            </ion-item-group>
+
+            <!-- ===================== Адреса ====================== -->
+            <ion-item-group>
+                <!-- Заголовок -->
+                <ion-text>
+                    <h4 class="ion-no-margin ion-margin-top">Адреса</h4>
+                </ion-text>
+
+                <!-- Если адреса не указаны -->
+                <ion-item v-if="!contactData.addresses.length" lines="none">
+                    <ion-grid class="ion-no-padding">
+                        <ion-row class="ion-justify-content-between">
+                            <ion-text color="medium">Не указаны</ion-text>
+                            <ion-text color="primary" @click="$emit('addAddress')">Добавить</ion-text>
+                        </ion-row>
+                    </ion-grid>
+                </ion-item>
+
+                <!-- Если адреса указаны -->
+                <div class="current-phone-content" v-for="(address, index) in contactData.addresses" :key="index">
+                    {{ address }}
+                </div>
+
+                <!-- Кнопка добавить еще один адрес к контакту -->
+                <ion-row class="ion-justify-content-end">
+                    <ion-text color="primary" v-if="contactData.addresses.length" @click="$emit('addAddress')">Добавить еще</ion-text>
                 </ion-row>
             </ion-item-group>
 

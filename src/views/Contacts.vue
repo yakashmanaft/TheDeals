@@ -276,7 +276,7 @@
             // Добавляем addresses к объекту контакта
             // Оптимизировать в одну функцию добавления
             const addAddress = () => {
-                contactData.value.addAddress.push({
+                contactData.value.addresses.push({
                     id: uid(),
                     type: '',
                     address: ''
@@ -336,7 +336,10 @@
                     alert('Имя не может быть пустой строкой')
                 } else if (contactData.value.contactInfo.surname === '') {
                     alert('Фамилия не может быть пустой строкой')
-                } else {
+                } 
+                
+                // Сохраняем в БД
+                else {
                     try { 
                         // Добавляем в БД инфу по новому контакту
                         // Скорей всего надо будет вынести в store или нет

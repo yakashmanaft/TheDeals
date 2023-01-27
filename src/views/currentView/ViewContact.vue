@@ -226,6 +226,7 @@
                     </ion-row>
                 </ion-item-group>
 
+                <!-- ===================== Адреса ====================== -->
                 <ion-item-group>
                     <!-- Заголовок -->
                     <ion-item v-if="edit" lines="none">
