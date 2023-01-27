@@ -239,8 +239,9 @@
             }
             //
             const translateContactName = (contactID) => {
-                const contact = myContacts.value.filter(contact => contact.id === +contactID)
-                return `${contact[0].contactInfo.surname} ${contact[0].contactInfo.name}`
+                // const contact = myContacts.value.filter(contact => contact.id === +contactID)
+                // return `${contact[0].contactInfo.surname} ${contact[0].contactInfo.name}`
+                return contactID
             }
 
             return {

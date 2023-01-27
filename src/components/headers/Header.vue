@@ -71,13 +71,14 @@
             // console.log(router.options.history.state.back)
             const isHasSubstring = () => {
                 let historyBack = router.options.history.state.back
-                let substring = '/view-deal/'
-                if(historyBack === null || historyBack.indexOf(substring) === -1) {
+                let substring1 = '/view-deal/'
+                if(historyBack === null || historyBack.indexOf(substring1) === -1) {
                     return false
                 } else {
                     return true
                 }
             }
+            console.log(router.currentRoute._value.meta.title)
 
             return {
                 user, router, menu, walletOutline, settingsOutline, qrCodeOutline, settingsOutline, storefrontOutline, bagOutline, funnelOutline, isHasSubstring

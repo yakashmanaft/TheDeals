@@ -27,6 +27,7 @@
             @addAddress="addAddress"
             @deletePhoneNumber="deletePhoneNumber"
             @deleteEmail="deleteEmail"
+            @deleteAddress="deleteAddress"
             @addSocial="addSocial"
             @deleteSocial="deleteSocial"
             @addContactEvent="addContactEvent"
@@ -314,6 +315,12 @@
                 contactData.value.emails = contactData.value.emails.filter(email => email.id !== id);
                 return;
             }
+            // Удаляем email у создаваемого контакта
+            // Оптимизировать в одну функцию удаления
+            const deleteAddress = (id) => {
+                contactData.value.addresses = contactData.value.addresses.filter(address => address.id !== id);
+                return;
+            }
             // Удаляем social у создаваемого контакта
             // Оптимизировать в одну функцию удаления
             const deleteSocial = (id) => {
@@ -331,14 +338,33 @@
                 // принимаем инфу по контакту из modal
                 contactData.value = newContactData;
                 spinner.value = true;
+                // =========================== СБОР ДАННЫХ ДЛЯ ВАЛИДАЦИИ ====================
+                // Для валидации адресов
+                let hasEmptyAddressType = [];
+                let hasEmptyAddressValue = [];
+                if(contactData.value.addresses.length !== 0) {
+                    contactData.value.addresses.forEach(address => {
+                        if(address.type === '') {
+                            hasEmptyAddressType.push(true)
+                        } else if (address.address === '') {
+                            hasEmptyAddressValue.push(true)
+                        }
+                    })
+                }
+                // =================================== ВАЛИДАЦИЯ ============================
                 // Если строки Имя Фамилия пустые или не пустые 
                 if(contactData.value.contactInfo.name === '') {
                     alert('Имя не может быть пустой строкой')
                 } else if (contactData.value.contactInfo.surname === '') {
                     alert('Фамилия не может быть пустой строкой')
                 } 
-                
-                // Сохраняем в БД
+                // Валидация адресов
+                else if (hasEmptyAddressType.includes(true)) {
+                    alert('ViewContact: Вы не указали тип адреса')
+                } else if (hasEmptyAddressValue.includes(true)) {
+                    alert('ViewContact: Вы не указали сам адрес')
+                }
+                // СОХРАНЕНИЕ в БД
                 else {
                     try { 
                         // Добавляем в БД инфу по новому контакту
@@ -363,7 +389,7 @@
 
 
             return {
-                user, router, pageTitle, userEmail, myContacts, spinner, dataLoaded, search, searchedContacts, isOpen, setOpen, createNew, contactData, addPhoneNumber, addEmail, deletePhoneNumber, deleteEmail, addSocial, deleteSocial, addContactEvent, deleteContactEvent, addAddress
+                user, router, pageTitle, userEmail, myContacts, spinner, dataLoaded, search, searchedContacts, isOpen, setOpen, createNew, contactData, addPhoneNumber, addEmail, deletePhoneNumber, deleteEmail, addSocial, deleteSocial, addContactEvent, deleteContactEvent, addAddress, deleteAddress
             }
         }
     })

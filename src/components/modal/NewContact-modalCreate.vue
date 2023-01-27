@@ -56,7 +56,7 @@
                     <ion-grid class="ion-no-padding">
                         <ion-row class="ion-padding-start ion-justify-content-between ion-align-items-center">
                             <!-- sequence number -->
-                                <ion-text position="stacked">Телефон #{{index + 1}}</ion-text>
+                            <ion-text position="stacked">Телефон #{{index + 1}}</ion-text>
                             <!-- delete current phone btn -->
                             <ion-button fill="clear" class="btn-delete-phone" @click="$emit('deletePhoneNumber', number.id)">
                                 <ion-icon :icon="closeOutline" color="danger" slot="end"></ion-icon>
@@ -64,20 +64,20 @@
                         </ion-row>
                     </ion-grid>
                     <!-- Phone number -->
-                    <ion-item>
+                    <ion-item class="ion-padding-start">
                         <ion-input inputmode="tel" placeholder="Укажите номер телефона" v-model="number.phone"></ion-input>
                     </ion-item>
-                    <!-- Type of numper -->
+                    <!-- Type of number -->
                     <div class="ion-padding-start ion-padding-top">
                         <ion-label position="stacked">
                             Тип номера телефона
                         </ion-label>
-                        <ion-chip>
-                            <Select :data="phoneTypes" :placeholder="'Тип номера'" @date-updated="(selected) => number.type = selected.currentValue"/>
+                        <ion-chip class="ion-no-margin">
+                            <Select :data="contactPhoneEmailAddressTypes" :placeholder="'Тип номера'" @date-updated="(selected) => number.type = selected.currentValue"/>
                         </ion-chip>
                     </div>
                     <!-- link to messengers -->
-                    <ion-item lines="none">
+                    <ion-item lines="none" class="ion-padding-start">
                         <ion-label position="stacked">Привязка к мессенджерам</ion-label>
                         <ion-grid class="ion-no-margin ion-no-padding">
                             <ion-row class="margin-top ion-justify-content-between ion-align-items-center" v-for="(messenger, index) in number.messengers" :key="index">
@@ -90,8 +90,8 @@
                     </ion-item>
                 </div>
                 <!-- Кнопка добавить еще один телефон к контакту -->
-                <ion-row class="ion-justify-content-end">
-                    <ion-text color="primary" v-if="contactData.phoneNumbers.length" @click="$emit('addPhoneNumber')">Добавить еще</ion-text>
+                <ion-row v-if="contactData.phoneNumbers.length" class="ion-justify-content-start ion-margin-top ion-padding-bottom ion-padding-start" style="border-bottom: 1px solid var(--ion-color-light);">
+                    <ion-text color="primary" @click="$emit('addPhoneNumber')">Добавить еще</ion-text>
                 </ion-row>
             </ion-item-group>
 
@@ -124,7 +124,7 @@
                         </ion-row>
                     </ion-grid>
                     <!-- Email address -->
-                    <ion-item>
+                    <ion-item class="ion-padding-start">
                         <ion-input inputmode="email" placeholder="Укажите адрес почты" v-model="email.email"></ion-input>
                     </ion-item>
                     <!-- Type of email -->
@@ -132,14 +132,14 @@
                         <ion-label position="stacked">
                             Тип электронной почты
                         </ion-label>
-                        <ion-chip>
-                            <Select :data="phoneTypes" :placeholder="'Тип почты'" @date-updated="(selected) => email.type = selected.currentValue"/>
+                        <ion-chip class="ion-no-margin">
+                            <Select :data="contactPhoneEmailAddressTypes" :placeholder="'Тип почты'" @date-updated="(selected) => email.type = selected.currentValue"/>
                         </ion-chip>
                     </div>
                 </div>
                 <!-- Кнопка добавить еще один email к контакту -->
-                <ion-row class="ion-justify-content-end">
-                    <ion-text color="primary" v-if="contactData.emails.length" @click="$emit('addEmail')">Добавить еще</ion-text>
+                <ion-row v-if="contactData.emails.length" class="ion-justify-content-start ion-margin-top ion-padding-bottom ion-padding-start" style="border-bottom: 1px solid var(--ion-color-light);">
+                    <ion-text color="primary" @click="$emit('addEmail')">Добавить еще</ion-text>
                 </ion-row>
             </ion-item-group>
 
@@ -162,12 +162,38 @@
 
                 <!-- Если адреса указаны -->
                 <div class="current-phone-content" v-for="(address, index) in contactData.addresses" :key="index">
-                    {{ address }}
+
+                    <!-- sequence address & delete current address btn-->
+                    <ion-grid class="ion-no-padding">
+                        <ion-row class="ion-padding-start ion-justify-content-between ion-align-items-center">
+                            <!-- sequence address -->
+                            <ion-text position="stacked">Адрес #{{index + 1}}</ion-text>
+                            <!-- delete current address btn -->
+                            <ion-button fill="clear" class="btn-delete-phone" @click="$emit('deleteAddress', address.id)">
+                                <ion-icon :icon="closeOutline" color="danger" slot="end"></ion-icon>
+                            </ion-button>
+                        </ion-row>
+                    </ion-grid>
+
+                    <!-- Address -->
+                    <ion-item class="ion-padding-start">
+                        <ion-input inputmode="text" placeholder="Укажите адрес" v-model="address.address"></ion-input>
+                    </ion-item>
+
+                    <!-- Type of address -->
+                    <div class="ion-padding-start ion-padding-top">
+                        <ion-label position="stacked">
+                            Тип адреса
+                        </ion-label>
+                        <ion-chip class="ion-no-margin">
+                            <Select :data="contactPhoneEmailAddressTypes" :placeholder="'Тип адреса'" @date-updated="(selected) => address.type = selected.currentValue"/>
+                        </ion-chip>
+                    </div>
                 </div>
 
                 <!-- Кнопка добавить еще один адрес к контакту -->
-                <ion-row class="ion-justify-content-end">
-                    <ion-text color="primary" v-if="contactData.addresses.length" @click="$emit('addAddress')">Добавить еще</ion-text>
+                <ion-row v-if="contactData.addresses.length" class="ion-justify-content-start ion-margin-top ion-padding-bottom ion-padding-start" style="border-bottom: 1px solid var(--ion-color-light);">
+                    <ion-text color="primary" @click="$emit('addAddress')">Добавить еще</ion-text>
                 </ion-row>
             </ion-item-group>
 
@@ -200,7 +226,7 @@
                         </ion-row>
                     </ion-grid>
                     <!-- social link -->
-                    <ion-item>
+                    <ion-item class="ion-padding-start">
                         <ion-input inputmode="email" placeholder="Укажите ссылку на аккаунт" v-model="social.link"></ion-input>
                     </ion-item>
                     <!-- name of social network -->
@@ -208,14 +234,14 @@
                         <ion-label position="stacked">
                             Укажите название соц.сети
                         </ion-label>
-                        <ion-chip>
+                        <ion-chip class="ion-no-margin">
                             <Select :data="myContactSocialNetworksType" :placeholder="'Выберите соцсеть'" @date-updated="(selected) => social.name = selected.currentValue"/>
                         </ion-chip>
                     </div>
                 </div>
                 <!-- Кнопка добавить еще один social к контакту -->
-                <ion-row class="ion-justify-content-end">
-                    <ion-text color="primary" v-if="contactData.socialNetworks.length" @click="$emit('addSocial')">Добавить еще</ion-text>
+                <ion-row v-if="contactData.socialNetworks.length" class="ion-justify-content-start ion-margin-top ion-padding-bottom ion-padding-start" style="border-bottom: 1px solid var(--ion-color-light);">
+                    <ion-text color="primary" @click="$emit('addSocial')">Добавить еще</ion-text>
                 </ion-row>
             </ion-item-group>
 
@@ -248,7 +274,7 @@
                         </ion-row>
                     </ion-grid>
                     <!-- event title -->
-                    <ion-item>
+                    <ion-item class="ion-padding-start">
                         <ion-input inputmode="text" placeholder="Название события" v-model="event.title" autocapitalize="on"></ion-input>
                     </ion-item>
                     <!-- date of event -->
@@ -269,8 +295,8 @@
 
                 </div>
                 <!-- Кнопка добавить еще один social к контакту -->
-                <ion-row class="ion-justify-content-end">
-                    <ion-text color="primary" v-if="contactData.contactEvents.length" @click="$emit('addContactEvent')">Добавить еще</ion-text>
+                <ion-row v-if="contactData.contactEvents.length" class="ion-justify-content-start ion-margin-top ion-padding-bottom ion-padding-start" style="border-bottom: 1px solid var(--ion-color-light);">
+                    <ion-text color="primary" @click="$emit('addContactEvent')">Добавить еще</ion-text>
                 </ion-row>
             </ion-item-group>
 
@@ -313,7 +339,7 @@
         },
         setup() {
             // Типы Рабочий /Личный
-            const phoneTypes = ref(store.state.myContactPhoneEmailTypes)
+            const contactPhoneEmailAddressTypes = ref(store.state.myContactPhoneEmailTypes)
             // Типы соц сетей (Инста, Вконтакте и т.д.)
             const myContactSocialNetworksType = ref(store.state.myContactSocialNetworksType)
             // Управление модалкой календаря
@@ -334,7 +360,7 @@
             }
 
             return {
-                phoneTypes, myContactSocialNetworksType, closeOutline, datepicker, openModalCalendar, closeModalCalendar
+                contactPhoneEmailAddressTypes, myContactSocialNetworksType, closeOutline, datepicker, openModalCalendar, closeModalCalendar
             }
         }
     })

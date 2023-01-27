@@ -151,9 +151,13 @@
                         </div>
                     </ion-item-group>
                     <!-- Button to add new phone to current contact -->
-                    <ion-row class="ion-justify-content-end ion-padding-end">
-                        <ion-text color="primary" v-if="edit && currentContact.phoneNumbers.length" @click="addPhoneNumber">Добавить еще</ion-text>
+                    <ion-row v-if="edit && currentContact.phoneNumbers.length" class="ion-justify-content-start ion-margin-horizontal ion-padding-bottom ion-padding-start" style="border-bottom: 1px solid var(--ion-color-light);">
+                        <ion-text color="primary" @click="addPhoneNumber">Добавить еще</ion-text>
                     </ion-row>
+
+                    <!-- <ion-row v-if="contactData.phoneNumbers.length" class="ion-justify-content-start ion-margin-top ion-padding-bottom" style="border-bottom: 1px solid var(--ion-color-light);">
+                    <ion-text color="primary" @click="$emit('addPhoneNumber')">Добавить еще</ion-text>
+                </ion-row> -->
                 </ion-item-group>
 
                 <!-- ===================== Emails ====================== -->
@@ -221,8 +225,8 @@
                         </ion-item>
                     </ion-item-group>
                     <!-- Button to add new email to current contact -->
-                    <ion-row class="ion-justify-content-end ion-padding-end">
-                        <ion-text color="primary" v-if="edit && currentContact.emails.length" @click="addEmail">Добавить еще</ion-text>
+                    <ion-row v-if="edit && currentContact.emails.length" class="ion-justify-content-start ion-margin-horizontal ion-padding-bottom ion-padding-start" style="border-bottom: 1px solid var(--ion-color-light);">
+                        <ion-text color="primary" @click="addEmail">Добавить еще</ion-text>
                     </ion-row>
                 </ion-item-group>
 
@@ -294,8 +298,8 @@
                     </ion-item-group>
 
                     <!-- Button to add new address to current contact -->
-                    <ion-row class="ion-justify-content-end ion-padding-end">
-                        <ion-text color="primary" v-if="edit && currentContact.addresses.length" @click="addAddress">Добавить еще</ion-text>
+                    <ion-row v-if="edit && currentContact.addresses.length" class="ion-justify-content-start ion-margin-horizontal ion-padding-bottom ion-padding-start" style="border-bottom: 1px solid var(--ion-color-light);">
+                        <ion-text color="primary" @click="addAddress">Добавить еще</ion-text>
                     </ion-row>
 
                 </ion-item-group>
@@ -360,8 +364,8 @@
                         </a>
                     </ion-item>
                     <!-- Button to add new email to current contact -->
-                    <ion-row class="ion-justify-content-end ion-padding-end">
-                        <ion-text color="primary" v-if="edit && currentContact.socialNetworks.length" @click="addSocial">Добавить еще</ion-text>
+                    <ion-row v-if="edit && currentContact.socialNetworks.length" class="ion-justify-content-start ion-margin-horizontal ion-padding-bottom ion-padding-start" style="border-bottom: 1px solid var(--ion-color-light);">
+                        <ion-text color="primary" @click="addSocial">Добавить еще</ion-text>
                     </ion-row>
                     <!-- На заметку -->
                     <!-- Если нет имени, но есть логин в инсте или другой сети... ставить вместо фамилии ) -->
@@ -441,8 +445,8 @@
                         </ion-item>
                     </ion-item-group>
                     <!-- Button to add new event to current contact -->
-                    <ion-row class="ion-justify-content-end ion-padding-end">
-                        <ion-text color="primary" v-if="edit && currentContact.contactEvents.length" @click="addContactEvent">Добавить еще</ion-text>
+                    <ion-row v-if="edit && currentContact.contactEvents.length" class="ion-justify-content-start ion-margin-horizontal ion-padding-bottom ion-padding-start" style="border-bottom: 1px solid var(--ion-color-light);">
+                        <ion-text color="primary" @click="addContactEvent">Добавить еще</ion-text>
                     </ion-row>
                 </ion-item-group>
 
@@ -617,7 +621,8 @@
             // вынести в store
             const update = async () => {
 
-                // Валидация адресов
+                // =========================== СБОР ДАННЫХ ДЛЯ ВАЛИДАЦИИ ====================
+                // Для валидации адресов
                 let hasEmptyAddressType = [];
                 let hasEmptyAddressValue = [];
                 currentContact.value.addresses.forEach(address => {
@@ -628,7 +633,7 @@
                     }
                 })
 
-
+                // =================================== ВАЛИДАЦИЯ ============================
                 // Валидация адресов
                 if(hasEmptyAddressType.includes(true)) {
                     alert('ViewContact: Вы не указали тип адреса')
