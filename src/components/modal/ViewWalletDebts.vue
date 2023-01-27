@@ -41,10 +41,10 @@
                     <!--  -->
                     <ion-row class="ion-justify-content-end ion-align-items-center ion-margin-top">
                         <!-- <ion-text>
-                            Дата исполнения:
+                            Дедлайн:
                         </ion-text> -->
                         <ion-text style="padding: 0 12px 0 12px">
-                            {{formattedDate(deal.executionDate)}}
+                            Дата исполнения: {{formattedDate(deal.executionDate)}}
                         </ion-text>
                     </ion-row>
                     <!--  -->
@@ -132,16 +132,16 @@
             }
             //
             const formattedDate = (day) => {
-                const formattedString = format(parseISO(day), 'd.M.Y');
+                const formattedString = format(parseISO(day), 'dd.MM.Y');
                 // const formattedString = format(parseISO(day), 'd MMMM Y', { locale: ru });
                 return formattedString;
             }
             
             //
             const translateContactName = (contactID) => {
-                const contact = myContacts.value.filter(contact => contact.id === +contactID)
-                return `${contact[0].contactInfo.surname} ${contact[0].contactInfo.name}`
-                // return contactID
+                // const contact = myContacts.value.filter(contact => contact.id === +contactID)
+                // return `${contact[0].contactInfo.surname} ${contact[0].contactInfo.name}`
+                return contactID
             }
             //
             const currentContact = ref()

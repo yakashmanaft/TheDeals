@@ -546,7 +546,7 @@
     //
     export default defineComponent({
         name: 'CreateNewDeal',
-        emits: ['date-updated', 'closeModal', 'createDeal', 'updateDate', 'addSubject', 'deleteSubject'],
+        emits: ['date-updated', 'closeModal', 'createDeal', 'updateDate', 'addSubject', 'deleteSubject', 'closeSelf'],
         props: {
             dealData: Object,
             myContacts: Array,
@@ -588,6 +588,7 @@
             //         availableBalance.value = store.state.availableBalance
             //     } 
             // })
+            //
             // следим за изменениями в ID и передаем наверх
             watch(dealContactID, (currentValue) => {
                 emit('date-updated', {currentValue})
@@ -661,6 +662,8 @@
             // Закрываем модалку создания нового предмета к текущему делу
             const closeCreateSubjectModal = () => {
                 isCreateNewSubjectOpened.value = false
+                emit('closeSelf')
+                // console.log('clicked')
                 // Обнуляем шаблон нового предмета у дела согласно dealType
                 // if (dealData.value.dealType === 'sale') {
                 //     currentSubject.value = {

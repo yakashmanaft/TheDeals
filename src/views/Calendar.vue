@@ -56,6 +56,7 @@
                 :isOpen="isViewDealModalOpened"
                 :userRecipeArray="userRecipes"
                 @closeModal="setOpen"
+                @closeSelf="isViewDealModalOpened = false"
                 @createDeal="createNew"
                 :dealData="dealData"
                 :myContacts="myContacts"
@@ -63,6 +64,7 @@
                 @addSubject="addSubject"
                 @deleteSubject="deleteSubject"
                 :walletBalance="availableBalance"
+
             />
 
             <!-- Всплывашка об удалении выбранной даты из массива дат "ДЕнь без дел" -->

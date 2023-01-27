@@ -23,6 +23,7 @@
         <CreateNewDeal
             :isOpen="isViewDealModalOpened"
             @closeModal="setOpen"
+            @closeSelf="isViewDealModalOpened = false"
             @createDeal="createNew"
             :dealData="dealData"
             :myContacts="myContacts"
