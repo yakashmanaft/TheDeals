@@ -7,10 +7,12 @@
             <ion-buttons slot="start">
 
                 <!-- КНОПКА НАЗАД -->
-                <ion-back-button class="color-primary" v-if="(router.currentRoute._value.meta.title !== 'Calendar' || router.currentRoute._value.meta.title === 'My finance') && isHasSubstring() === false" default-href="/" text="Назад"></ion-back-button>
+                <ion-back-button class="color-primary" v-if="router.currentRoute._value.meta.title !== 'Calendar' || router.currentRoute._value.meta.title === 'My finance'" default-href="/" text="Назад"></ion-back-button>
 
                 <!-- КНОПКА НА ГЛАВНУЮ -->
-                <ion-button class="color-primary" v-if="isHasSubstring() === true" @click.stop="router.push({ path: '/' })">На главную</ion-button>
+                <!-- <ion-button class="color-primary" v-if="isHasSubstring() === true" @click.stop="router.push({ path: '/' })">
+                    Главная
+                </ion-button> -->
             </ion-buttons>
 
             <!-- ЗАГОЛОВОК В СЕРЕДИНЕ -->
@@ -69,19 +71,29 @@
             const user = computed(() => store.state.user);
             const router = useRouter();
             // console.log(router.options.history.state.back)
-            const isHasSubstring = () => {
-                let historyBack = router.options.history.state.back
-                let substring1 = '/view-deal/'
-                if(historyBack === null || historyBack.indexOf(substring1) === -1) {
-                    return false
-                } else {
-                    return true
-                }
-            }
-            console.log(router.currentRoute._value.meta.title)
+            // const isHasSubstring = () => {
+            //     let historyBack = router.options.history.state.back
+            //     let substring1 = '/view-deal/'
+            //     if(historyBack === null || historyBack.indexOf(substring1) === -1) {
+            //         return false
+            //     } else {
+            //         return true
+            //     }
+            // }
+            // console.log(router.options.history.state)
+            // Используем когда удаляем конкретный контакт
+            // const isBackExists = () => {
+            //     let historyBack = router.options.history.state.back
+            //     let substring = '/view-contact/'
+            //     if(historyBack === null || historyBack.indexOf(substring) === -1) {
+            //         return false
+            //     } else {
+            //         return true
+            //     }
+            // }
 
             return {
-                user, router, menu, walletOutline, settingsOutline, qrCodeOutline, settingsOutline, storefrontOutline, bagOutline, funnelOutline, isHasSubstring
+                user, router, menu, walletOutline, settingsOutline, qrCodeOutline, settingsOutline, storefrontOutline, bagOutline, funnelOutline
             }
         }
     }

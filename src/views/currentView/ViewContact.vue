@@ -480,7 +480,7 @@
                 </ion-item-group>
 
                 <br>
-                <!-- Кнопка удалить контакта -->
+                <!-- Кнопка удалить контакт -->
                 <!-- Не показываем в режиме edit -->
                 <ion-button v-if="!edit" @click="setOpen(true)" fill="clear" color="danger">Удалить контакт</ion-button>
                 <!-- Всплывашка подтверждение -->
@@ -805,7 +805,8 @@
                 try {
                     const { error } = await supabase.from('myContacts').delete().eq('id', currentId);
                     if (error) throw error;
-                    router.push({ name: 'Contacts' })
+                    // router.push({ name: 'Contacts' })
+                    router.go(-1)
                 } catch (error) {
                     alert(`Error: ${error.message}`)
                 }
