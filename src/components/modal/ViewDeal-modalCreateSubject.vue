@@ -532,7 +532,7 @@
                 </ion-text>
                 <ion-textarea class="ion-margin-bottom" autoGrow="true" autocapitalize="on" v-model="subjectData.productNote" placeholder="Написать..."></ion-textarea>
             </ion-item-group>
-
+            {{subjectData}}
             <br>
             <br>
             <br>
@@ -575,6 +575,7 @@
             <ion-button expand="block" :color="setAddButtonColor()" @click="$emit('createSubject', subjectData, isAttributesMenuOpened)" class="ion-margin-top">
                 Добавить к делу
             </ion-button>
+
         </ion-grid>
     </ion-modal>
 </template>
@@ -692,6 +693,7 @@
             }
             //
             const showSelectedRecipe = (recipeID) => {
+                // По логике здесь не получится поставить рецепт и затем удалить его, поэтому оставляем функцию как есть...
                 if(subjectData.value.recipe !== '') {
                     return translateRecipeID(recipeID, userRecipeArray.value)
                 } else {
@@ -792,9 +794,11 @@
             const chooseRecipe = (recipe) => {
                 console.log(recipe)
                 if(recipe.uid === undefined) {
-                    subjectData.value.recipe = '111'; //Тип без рецепта id
+                    subjectData.value.recipe = '111';
+                    subjectData.value.tempRecipeName = 'Без рецепта' //Тип без рецепта id
                 } else {
                     subjectData.value.recipe = recipe.uid;
+                    subjectData.value.tempRecipeName = recipe.name
                 }
                 searchRecipeMenu.value = false;
             }

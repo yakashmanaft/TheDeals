@@ -639,6 +639,7 @@
                             subjectDiscount: 0,
                             subjectPrice: 0,
                             recipe: '',
+                            tempRecipeName: '',
                             productQuantity: 1,
                             additionalAttributes: [],
                             totalSubjectPrice: 0, 
@@ -655,6 +656,7 @@
                             productQuantity: 1,
                             totalSubjectPrice: 0, 
                             productNote: '',
+                            // tempRecipeName: '',
                         }
                     }
                 } else {

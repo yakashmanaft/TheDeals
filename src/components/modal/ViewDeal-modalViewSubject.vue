@@ -52,7 +52,11 @@
                     <!-- Показ и кнопка изменения рецепта к предмету -->
                     <ion-grid class="ion-no-padding border-bottom">
                         <ion-row class="ion-justify-content-between ion-align-items-center">
-                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">{{ showSelectedRecipe(subjectData.recipe) }}</ion-button>
+                            <!--  -->
+                            <ion-text color="primary" style="border-bottom: 1px dashed var(--ion-color-primary)" @click.prevent.stop="goToRecipe(subjectData.recipe)">
+                                {{ showSelectedRecipe(subjectData.recipe, subjectData.tempRecipeName) }}
+                            </ion-text>
+                            <!--  -->
                             <ion-button color="primary" size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click="searchRecipeMenu = true">
                                 Изменить
                             </ion-button>
@@ -611,9 +615,11 @@
             // Задаем из выбранного списка значение для recipe
             const chooseRecipe = (recipe) => {
                 if(recipe.uid === undefined) {
-                    subjectData.value.recipe = '111' //Тип без рецепта id
+                    subjectData.value.recipe = '111'
+                    subjectData.value.tempRecipeName = 'Без рецепта' //Тип без рецепта id
                 } else {
                     subjectData.value.recipe = recipe.uid;
+                    subjectData.value.tempRecipeName = recipe.name
                 }
                 searchRecipeMenu.value = false;
                 emit('updateBD');
@@ -682,8 +688,14 @@
                 emit('updateBD');
             }
 
-            const showSelectedRecipe = (recipeID) => {
-                return translateRecipeID(recipeID, userRecipeArray.value)
+            const showSelectedRecipe = (recipeID, tempName) => {
+                const recipe = userRecipeArray.value.filter(recipe => recipe.uid === recipeID)
+                // Проверяем по наличию в книге рецептов у пользователя
+                if(recipe.length === 0) {
+                    return tempName
+                } else {
+                    return translateRecipeID(recipeID, userRecipeArray.value)
+                }
             }
             // ================ Работа с атрибутами предмета
             const currentSubjectAttribute = ref()
@@ -896,6 +908,27 @@
                 // alert('ViewDeal-modalCreateSubject: функционал в разработке (addNewRecipe)')
                 isModalCreateNewRecipeOpened.value = true;
             }
+
+            //
+            const goToRecipe = (recipeUid) => {
+                const recipe = userRecipeArray.value.filter(recipe => recipe.uid === recipeUid)
+                // Проверяем по наличию в книге рецептов пользователя
+                if(recipe.length === 0) {
+                    alert('ViewDeal-modalViewSubject: данный рецепт не найден в Моих рецептах')
+                } else {
+                    router.replace({
+                        name: 'View-Recipe',
+                        params: {
+                            recipeId: recipe[0].id,
+                            recipeUid: recipeUid,
+                            recipe: JSON.stringify(recipe[0])
+                        }
+                    })
+                    emit('closeModal')
+                }
+                // console.log(recipe)
+            }
+
             //
             watchEffect(() => {
                 subjectData.value = props.subjectData;
@@ -907,7 +940,7 @@
 
 
             return {
-                systemCurrency, userSettings, subjectData, currentDealType, searchRecipeMenu, searchRecipe, chooseRecipe, noRecipe, searchedRecipe, userRecipeArray, showSelectedRecipe, translateProductValue, dealSaleSubjectArray, dealBuySubjectArray, addOutline, closeCircleOutline, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, openDeleteAttributeModal, deleteAttributeFunc, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, currentSubjectAttribute, isItemAlreadyHave, searchAttributeMenu, searchAdditionalAttributes, searchedAdditionalAttributes, dealAdditionalAttributesArray, chooseAttribute, setAttributeRentType, setProductPrice, setProductQty, sumAttributesPriceFunc, productNote, setProductNotePlaceholder, calcTotalSubjectPrice, subjectPrice, newAttribute, sumAttributesPriceValue, subjectQty, removeCircleOutline, addCircleOutline, changeQty, changePersonQty, gramPerPerson, setDiscountRange, subjectDiscount, setIsReturned, addNewAttrToPrice, sync, checkmark, setMarkerCurrentAttrColor, addNewRecipe, isModalCreateNewRecipeOpened, setOpen, goToRecipesStore, searchedRecipeFunc, attributePrice, router, goToMyRecipes
+                systemCurrency, userSettings, subjectData, currentDealType, searchRecipeMenu, searchRecipe, chooseRecipe, noRecipe, searchedRecipe, userRecipeArray, showSelectedRecipe, translateProductValue, dealSaleSubjectArray, dealBuySubjectArray, addOutline, closeCircleOutline, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, openDeleteAttributeModal, deleteAttributeFunc, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, currentSubjectAttribute, isItemAlreadyHave, searchAttributeMenu, searchAdditionalAttributes, searchedAdditionalAttributes, dealAdditionalAttributesArray, chooseAttribute, setAttributeRentType, setProductPrice, setProductQty, sumAttributesPriceFunc, productNote, setProductNotePlaceholder, calcTotalSubjectPrice, subjectPrice, newAttribute, sumAttributesPriceValue, subjectQty, removeCircleOutline, addCircleOutline, changeQty, changePersonQty, gramPerPerson, setDiscountRange, subjectDiscount, setIsReturned, addNewAttrToPrice, sync, checkmark, setMarkerCurrentAttrColor, addNewRecipe, isModalCreateNewRecipeOpened, setOpen, goToRecipesStore, searchedRecipeFunc, attributePrice, router, goToMyRecipes, goToRecipe
             }
         }
     })

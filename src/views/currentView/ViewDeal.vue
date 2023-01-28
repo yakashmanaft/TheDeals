@@ -215,7 +215,7 @@
                                 <ion-label style="font-size: 12px">
                                     x{{item.productQuantity}}
                                 </ion-label>
-                                <ion-text v-if="currentDeal.dealType === 'sale'" style="white-space: normal">{{ showSelectedRecipe(item.recipe) }}</ion-text>
+                                <ion-text v-if="currentDeal.dealType === 'sale'" style="white-space: normal">{{ showSelectedRecipe(item.recipe, item.tempRecipeName) }}</ion-text>
                             </ion-card>
                             <!-- Добавить еще предмет к заказу -->
                             <ion-card class="ion-padding card-center card-add" @click="openCreateSubjectModal()">
@@ -415,7 +415,7 @@
     
                                 <!-- Описание скидок и вывод название рецептов пока есть толкьо в режиме sale -->
                                 <ion-row class="ion-justify-content-between ion-align-items-center">
-                                    <ion-text color="medium">{{ showSelectedRecipe(item.recipe) }}</ion-text>
+                                    <ion-text color="medium">{{ showSelectedRecipe(item.recipe, item.tempRecipeName) }}</ion-text>
                                     <ion-text v-if="item.subjectDiscount > 0" color="medium">С учетом скидки {{ item.subjectDiscount }}%</ion-text>
                                     <ion-text v-else color="medium">Без скидки</ion-text>
                                 </ion-row>
@@ -703,7 +703,7 @@
             const goToContact = (id) => {
                 const contact = myContacts.value.filter(contact => contact.id === +id)
                 // const contact = dealContactID.value
-                // Проверяем по наличии в книге контактов
+                // Проверяем по наличию в книге контактов пользователя
                 if(contact.length === 0) {
                     alert('TransactionDetails: данный контакт не найден в Моих контактах')
                 } else {
@@ -716,6 +716,7 @@
                     })
                 }
             }
+
             //
             const showNameByID = (contactID) => {
                 const contact = myContacts.value.filter(contact => contact.id === +contactID)
@@ -1187,6 +1188,7 @@
                             subjectDiscount: 0,
                             subjectPrice: 0,
                             recipe: '',
+                            tempRecipeName: '',
                             productQuantity: 1,
                             additionalAttributes: [],
                             totalSubjectPrice: 0, 
@@ -1203,6 +1205,7 @@
                             productQuantity: 1,
                             totalSubjectPrice: 0, 
                             productNote: '',
+                            // tempRecipeName: '',
                         }
                     }
                 }
@@ -1903,8 +1906,14 @@
                 }
             }
             //
-            const showSelectedRecipe = (recipeID) => {
-                return translateRecipeID(recipeID, userRecipeArray.value)
+            const showSelectedRecipe = (recipeID, tempName) => {
+                const recipe = userRecipeArray.value.filter(recipe => recipe.uid === recipeID)
+                // Проверяем по наличию в книге рецептов у пользователя
+                if(recipe.length === 0) {
+                    return tempName
+                } else {
+                    return translateRecipeID(recipeID, userRecipeArray.value)
+                }
             }
             //
             const dealComments = ref(currentDeal.value.comments);

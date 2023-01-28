@@ -467,6 +467,7 @@
                     subjectDiscount: subjectData.subjectDiscount,
                     subjectPrice: subjectData.subjectPrice,
                     recipe: subjectData.recipe, 
+                    tempRecipeName: subjectData.tempRecipeName,
                     productQuantity: subjectData.productQuantity,
                     // массив пока шаблоном, в modalCreateSubject задавать значения
                     additionalAttributes: subjectData.additionalAttributes,
