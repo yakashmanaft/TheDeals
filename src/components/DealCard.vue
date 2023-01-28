@@ -16,12 +16,13 @@
                         </div>
                     </div>
                     <!-- Контакт по делу -->
-                    <div>
+                    <!-- <div>
                         <ion-text v-if="deal.contactID === '000'" color="primary">Неизвестный</ion-text>
                         <ion-text v-else color="primary" @click.prevent.stop="$emit('getContact', deal.contactID)">
                             {{contactName}}
                         </ion-text>
-                    </div>
+                    </div> -->
+                    <ion-text @click.prevent.stop="$emit('getContact', deal.contactID)">{{contactName}}</ion-text>
                 </ion-row>
             </ion-grid>
         </ion-card-header>

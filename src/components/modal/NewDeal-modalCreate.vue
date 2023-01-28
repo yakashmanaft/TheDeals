@@ -157,6 +157,7 @@
                             <CreateDealSubject
                                 :is-open="isCreateNewSubjectOpened"
                                 @closeModal="closeCreateSubjectModal"
+                                @closeModalRouterReplace="closeModalRouterReplace"
                                 @createSubject="addNewSubject"
                                 :subjectData="currentSubject"
                                 :currentDealType="dealData.dealType"
@@ -570,6 +571,7 @@
             const searchContactMenu = ref(false)
             const choose = (contact) => {
                 dealContact.value = `${contact.contactInfo.name} ${contact.contactInfo.surname}`
+                dealData.value.tempContactName = `${contact.contactInfo.name} ${contact.contactInfo.surname}`
                 dealContactID.value = contact.id
                 searchContactMenu.value = false
             }
@@ -659,10 +661,16 @@
                     alert('NewDeal-modalCreate: Вы не указали тип дела')
                 }
             }
+            // Закрываем модалку создания нового предмета к делу и перемещаемся
+            const closeModalRouterReplace = () => {
+                closeCreateSubjectModal()
+                emit('closeSelf')
+            }
+
             // Закрываем модалку создания нового предмета к текущему делу
             const closeCreateSubjectModal = () => {
                 isCreateNewSubjectOpened.value = false
-                emit('closeSelf')
+                // emit('closeSelf')
                 // console.log('clicked')
                 // Обнуляем шаблон нового предмета у дела согласно dealType
                 // if (dealData.value.dealType === 'sale') {
@@ -1346,7 +1354,7 @@
             }
 
             return {
-                currency, dealContact, dealContactID , searchContactMenu, choose, isCalendarOpened, closeModalCalendar, updateExecutionDate, datepicker, myContactsArray, searchDealContact, searchedContacts, dealTypes, addCircleOutline, closeCircleOutline, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, openDeleteSubjectModal, subjectToDelete, deleteDealSubjectButtons, addNewSubject, deleteSubject, dealData, currentDealSubject, isViewDealSubjectOpened, openCurrentDealSubject, checkRentAttr, setColorByDealType, setIconByDealType, currentDealType, isAttributesMenuOpened, setNewSubjectPrice, calcNewSubjectTotalPrice, sumAttributesPriceValue, setSumAttributesPriceValue, setSubjectPrice, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, calcSubjectTotalPrice, setNewSubjectQty, setPersonQty, setNewPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, setChipColor, shippingTypeList, dealShippingType, shippingPrice, shippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, calcTotalDealPrice, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, translateSelectedProduct, culcSubjectWeight, culcBuySubjectWeight, culcDealDebt, setAmountValue, debt, refreshDebtValue, dealPaidAmountValue, setAddButtonColor, currentPriceSubject, personPortionGram, availableBalance, myDeals, setRatingValue, dealImportance, dealComments, showSelectedRecipe, recipeArray
+                currency, dealContact, dealContactID , searchContactMenu, choose, isCalendarOpened, closeModalCalendar, updateExecutionDate, datepicker, myContactsArray, searchDealContact, searchedContacts, dealTypes, addCircleOutline, closeCircleOutline, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, openDeleteSubjectModal, subjectToDelete, deleteDealSubjectButtons, addNewSubject, deleteSubject, dealData, currentDealSubject, isViewDealSubjectOpened, openCurrentDealSubject, checkRentAttr, setColorByDealType, setIconByDealType, currentDealType, isAttributesMenuOpened, setNewSubjectPrice, calcNewSubjectTotalPrice, sumAttributesPriceValue, setSumAttributesPriceValue, setSubjectPrice, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, calcSubjectTotalPrice, setNewSubjectQty, setPersonQty, setNewPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, setChipColor, shippingTypeList, dealShippingType, shippingPrice, shippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, calcTotalDealPrice, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, translateSelectedProduct, culcSubjectWeight, culcBuySubjectWeight, culcDealDebt, setAmountValue, debt, refreshDebtValue, dealPaidAmountValue, setAddButtonColor, currentPriceSubject, personPortionGram, availableBalance, myDeals, setRatingValue, dealImportance, dealComments, showSelectedRecipe, recipeArray, closeModalRouterReplace
             }
         }
     })

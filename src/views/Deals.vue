@@ -22,15 +22,15 @@
         <!-- popup создания нового дела -->
         <CreateNewDeal
             :isOpen="isViewDealModalOpened"
+            :userRecipeArray="userRecipes"
+            :dealData="dealData"
+            :myContacts="myContacts"
             @closeModal="setOpen"
             @closeSelf="isViewDealModalOpened = false"
             @createDeal="createNew"
-            :dealData="dealData"
-            :myContacts="myContacts"
             @date-updated="(dealContactID) => dealData.contactID = dealContactID.currentValue"
             @addSubject="addSubject"
             @deleteSubject="deleteSubject"
-            :userRecipeArray="userRecipes"
         />
         <ion-content 
             :scroll-events="true"
@@ -120,17 +120,9 @@
                                                     </div>
                                                 </div>
                                                 <!-- Контакт по делу -->
-                                                <div>
-                                                    <ion-text v-if="deal.contactID === '000'" color="primary">Неизвестный</ion-text>
-                                                    <ion-text v-else>
-                                                        <router-link 
-                                                            :to="{ name: 'View-Contact', params: { 
-                                                                contactId: deal.contactID,
-                                                                contact: getContact(deal.contactID)
-                                                                }}"
-                                                        >{{showNameByID(deal.contactID, myContacts)}}</router-link>
-                                                    </ion-text>
-                                                </div>
+                                                <ion-text @click.prevent.stop="goToContact(deal.contactID)">
+                                                    {{showNameByID(deal.contactID, myContacts, deal.tempContactName)}}
+                                                </ion-text>
                                             </ion-row>
                                         </ion-grid>
                                     </ion-card-header>
@@ -418,13 +410,7 @@
             onMounted( async () => {
                 await store.methods.getMyContactsFromDB()
                 myContacts.value = store.state.myContactsArray
-            })
-            // Передаем в роут данные ко конкретному контакту
-            const getContact = (contactID) => {
-                const result = myContacts.value.filter(contact => contact.id === +contactID)
-                const contact = result[0]
-                return JSON.stringify(contact)
-            }          
+            })        
             // ====================================================================
             // Work with Modal Create New Deal
             const isViewDealModalOpened = ref(false)
@@ -442,7 +428,8 @@
                 dealPaid: 0,
                 cancelledReason: '',
                 dealImportance: 1,
-                comments: ''
+                comments: '',
+                tempContactName: 'Неизвестный'
             })
             // При закрытии или открытии modal очищаем шаблон дела
             const setOpen = () => {
@@ -464,7 +451,8 @@
                     dealPaid: 0,
                     cancelledReason: '',
                     dealImportance: 1,
-                    comments: ''
+                    comments: '',
+                    tempContactName: 'Неизвестный'
                 }
             }
             // Создаем новую дело
@@ -830,7 +818,8 @@
                         dealPaid: dealWhereChangeStatus.value.dealPaid,
                         cancelledReason: dealWhereChangeStatus.value.cancelledReason,
                         totalDealPrice: dealWhereChangeStatus.value.totalDealPrice,
-                        dealImportance: dealWhereChangeStatus.value.dealImportance
+                        dealImportance: dealWhereChangeStatus.value.dealImportance,
+                        tempContactName: dealWhereChangeStatus.value.tempContactName
 
                     }).eq('id', dealWhereChangeStatus.value.id);
                     if(error) throw error;
@@ -851,7 +840,8 @@
                         contactID: dealData.value.contactID,
                         dealType: dealData.value.dealType,
                         amount: amount,
-                        userEmail: dealData.value.email
+                        userEmail: dealData.value.email,
+                        tempContactName: dealData.value.tempContactName
                     }])
                     if(error) throw error
                 } catch (error) {
@@ -893,9 +883,24 @@
                     },
                 }
             ]
+            // 
+            const goToContact = (id) => {
+                let contact = myContacts.value.filter(contact => contact.id === +id)
+                if(contact.length === 0) {
+                    alert('ViewWalletDebts: данный контакт не найден в Моих контактах')
+                } else {
+                    router.push({
+                        name: 'View-Contact',
+                        params: {
+                            contactId: +id,
+                            contact: JSON.stringify(contact[0])
+                        }
+                    })
+                }
+            }
 
             return {
-                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isViewDealModalOpened, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translateValue, refreshData, myContacts, getContact, showNameByID, checkRentAttr, dealTypesList, dealByType, showDealByType, helpOutline, addSubject, deleteSubject, setIconByDealType, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, dealStatus, dealWhereChangeStatus, prevDealStatus, debt, culcDealDebt, openDealPaidMenu, isDealPaidMenuOpened, refreshDebtValue, closeDealPaidMenu, dealPaidAmountValue, setAmountValue, isAllAttrReturnedFunc, currency, isAllAttrReturned, update, setMarkerAttrColor, shapes, addToLedger, setFilterFunc, setDealTypeMenu, setDealTypeMenuButtons, addToWarehouseToast, substructFromWarehouseToast, userRecipes
+                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isViewDealModalOpened, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translateValue, refreshData, myContacts, showNameByID, checkRentAttr, dealTypesList, dealByType, showDealByType, helpOutline, addSubject, deleteSubject, setIconByDealType, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, dealStatus, dealWhereChangeStatus, prevDealStatus, debt, culcDealDebt, openDealPaidMenu, isDealPaidMenuOpened, refreshDebtValue, closeDealPaidMenu, dealPaidAmountValue, setAmountValue, isAllAttrReturnedFunc, currency, isAllAttrReturned, update, setMarkerAttrColor, shapes, addToLedger, setFilterFunc, setDealTypeMenu, setDealTypeMenuButtons, addToWarehouseToast, substructFromWarehouseToast, userRecipes, goToContact
             }
         }
     })

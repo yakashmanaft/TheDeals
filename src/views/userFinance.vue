@@ -61,12 +61,12 @@
                                                     <ion-icon v-if="transaction.dealType === 'sale'" :icon="arrowDownOutline" color="light"></ion-icon>
                                                 </div>
     
-                                                <!-- Ссылка на контакт -->
-                                                <ion-text v-if="transaction.contactID === '000'" color="medium">
+                                                <!-- Контакт транзакции-->
+                                                <!-- <ion-text v-if="transaction.contactID === '000'" color="medium">
                                                     Неизвестный
-                                                </ion-text>
-                                                <ion-text v-else color="medium">
-                                                    {{translateContactName(transaction.contactID)}}
+                                                </ion-text> -->
+                                                <ion-text color="medium">
+                                                    {{translateContactName(transaction.contactID, transaction.tempContactName)}}
                                                 </ion-text>
                                             </ion-row>
                                         </ion-grid>
@@ -181,7 +181,7 @@
 
             // функция форматирования даты для сравнения даты дела и даты дня
             const formattedDate = (day) => {
-                const formattedString = format(parseISO(day), 'd.M.Y');
+                const formattedString = format(parseISO(day), 'dd.MM.Y');
                 // const formattedString = format(parseISO(day), 'd MMMM Y', { locale: ru });
                 return formattedString;
             }
@@ -238,10 +238,17 @@
                 currentTransaction.value = transaction
             }
             //
-            const translateContactName = (contactID) => {
+            const translateContactName = (contactID, tempContactName) => {
                 // const contact = myContacts.value.filter(contact => contact.id === +contactID)
-                // return `${contact[0].contactInfo.surname} ${contact[0].contactInfo.name}`
-                return contactID
+                const contact = myContacts.value.filter(contact => contact.id === +contactID)
+                // Проверяка
+                if(contact.length !== 0) {
+                    return `${contact[0].contactInfo.surname} ${contact[0].contactInfo.name}`
+                } else if (contact.length === 0 && tempContactName) {
+                    return tempContactName
+                } else if(contact.length === 0 && !tempContactName) {
+                    return 'Неизвестный'
+                }
             }
 
             return {

@@ -87,6 +87,7 @@
 
             //
             const goToDeal = (dealID) => {
+                // Проверка не требуется. Если в леджер попала транзакция по какому-либо делу - дело уже не может быть удалено
                 const currentDeal = myDeals.value.filter(item => item.id === +dealID)
                 emit('closeModal')
                 router.push({
@@ -120,14 +121,20 @@
                     alert('TransactionDetails: данный контакт не найден в Моих контактах')
                 } else {
                     currentContact.value = myContacts.value.filter(contact => contact.id === +contactID)
-                    router.push({
-                        name: 'View-Contact',
-                        params: {
-                            contactId: +contactID,
-                            contact: JSON.stringify(currentContact.value[0])
-                        }
-                    })
-                    emit('closeModal')
+                    // Проверяем по наличии в книге контактов
+                    if(currentContact.value.length === 0) {
+                        alert('TransactionDetails: данный контакт не найден в Моих контактах')
+                    } else {
+                        // console.log(currentContact.value.length)
+                        router.push({
+                            name: 'View-Contact',
+                            params: {
+                                contactId: +contactID,
+                                contact: JSON.stringify(currentContact.value[0])
+                            }
+                        })
+                        emit('closeModal')
+                    }
                 }
             }
 

@@ -55,11 +55,11 @@
             <CreateNewDeal
                 :isOpen="isViewDealModalOpened"
                 :userRecipeArray="userRecipes"
+                :dealData="dealData"
+                :myContacts="myContacts"
                 @closeModal="setOpen"
                 @closeSelf="isViewDealModalOpened = false"
                 @createDeal="createNew"
-                :dealData="dealData"
-                :myContacts="myContacts"
                 @date-updated="(dealContactID) => dealData.contactID = dealContactID.currentValue"
                 @addSubject="addSubject"
                 @deleteSubject="deleteSubject"
@@ -309,11 +309,23 @@
                 router.push({name: 'View-Deal', params: { dealId: deal.id, deal: JSON.stringify(deal)}})
             }
             // Переходим в выбранный в карточке дела контакт
-            const goToChoosenContact = (dealContactID) => {
-                isViewChoosenDateOpened.value = false
-                const result = myContacts.value.filter(contact => contact.id === +dealContactID)
-                const contact = result[0]
-                router.push({name: 'View-Contact', params: { contactId: dealContactID, contact: JSON.stringify(contact) }})
+            const goToChoosenContact = (id) => {
+                let contact = myContacts.value.filter(contact => contact.id === +id)
+                // const result = myContacts.value.filter(contact => contact.id === +dealContactID)
+                // const contact = result[0]
+                // router.push({name: 'View-Contact', params: { contactId: dealContactID, contact: JSON.stringify(contact) }})
+                if(contact.length === 0) {
+                    alert('ViewWalletDebts: данный контакт не найден в Моих контактах')
+                } else {
+                    router.push({
+                        name: 'View-Contact',
+                        params: {
+                            contactId: +id,
+                            contact: JSON.stringify(contact[0])
+                        }
+                    })
+                    isViewChoosenDateOpened.value = false
+                }
             }
             // ==============================================================
             // Work with Modal Create New Deal
@@ -333,7 +345,8 @@
                 dealPaid: 0,
                 cancelledReason: '',
                 dealImportance: 1,
-                comments: ''
+                comments: '',
+                tempContactName: 'Неизвестный'
             })
             // При закрытии или открытии modal очищаем шаблон дела
             const setOpen = () => {
@@ -356,7 +369,8 @@
                     dealPaid: 0,
                     cancelledReason: '',
                     dealImportance: 1,
-                    comments: ''
+                    comments: '',
+                    tempContactName: 'Неизвестный'
                 }
                 spinner.value = false
             }
@@ -656,7 +670,8 @@
                         contactID: dealData.value.contactID,
                         dealType: dealData.value.dealType,
                         amount: amount,
-                        userEmail: dealData.value.email
+                        userEmail: dealData.value.email,
+                        tempContactName: dealData.value.tempContactName
                     }])
                     if(error) throw error
                 } catch (error) {

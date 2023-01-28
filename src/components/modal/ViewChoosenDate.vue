@@ -41,7 +41,7 @@
                     @click="$emit('viewChoosenDeal', deal)"
                     :deal="deal"
                     @getContact="setContact"
-                    :contactNameByID="showNameByID(deal.contactID, myContacts)"
+                    :contactNameByID="showNameByID(deal.contactID, myContacts, deal.tempContactName)"
                 />
             </div>
             <!-- ==================================== Если завершены ==================================== -->
@@ -54,7 +54,7 @@
                     @click="$emit('viewChoosenDeal', deal)"
                     :deal="deal"
                     @getContact="setContact"
-                    :contactNameByID="showNameByID(deal.contactID, myContacts)"
+                    :contactNameByID="showNameByID(deal.contactID, myContacts, deal.tempContactName)"
                     class="deal-cover deal-cover-success"
                 />
             </div>
@@ -68,7 +68,7 @@
                     @click="$emit('viewChoosenDeal', deal)"
                     :deal="deal"
                     @getContact="setContact"
-                    :contactNameByID="showNameByID(deal.contactID, myContacts)"
+                    :contactNameByID="showNameByID(deal.contactID, myContacts, deal.tempContactName, deal.tempContactName)"
                     class="deal-cover deal-cover-cancelled"
                 />
             </div>

@@ -25,11 +25,11 @@
                 <ion-grid class="ion-no-padding">
                     <!--  -->
                     <ion-row class="ion-justify-content-between ion-align-items-center">
-                        <ion-text v-if="deal.contactID === '000'" color="medium" style="font-size: 1rem;">
+                        <!-- <ion-text v-if="deal.contactID === '000'" color="medium" style="font-size: 1rem;">
                             Неизвестный
-                        </ion-text>
-                        <ion-text v-else color="primary" @click.stop="goToContact(deal.contactID)" style="font-size: 1rem;">
-                            {{translateContactName(deal.contactID)}}
+                        </ion-text> -->
+                        <ion-text color="primary" @click.stop="goToContact(deal.contactID)" style="font-size: 1rem; border-bottom: 1px dashed var(--ion-color-primary) ">
+                            {{translateContactName(deal.contactID, deal.tempContactName)}}
                         </ion-text>
                         <ion-chip v-if="new Date() > new Date(deal.executionDate)" color="warning">
                             Просрочено
@@ -40,9 +40,6 @@
                     </ion-row>
                     <!--  -->
                     <ion-row class="ion-justify-content-end ion-align-items-center ion-margin-top">
-                        <!-- <ion-text>
-                            Дедлайн:
-                        </ion-text> -->
                         <ion-text style="padding: 0 12px 0 12px">
                             Дата исполнения: {{formattedDate(deal.executionDate)}}
                         </ion-text>
@@ -138,23 +135,35 @@
             }
             
             //
-            const translateContactName = (contactID) => {
-                // const contact = myContacts.value.filter(contact => contact.id === +contactID)
-                // return `${contact[0].contactInfo.surname} ${contact[0].contactInfo.name}`
-                return contactID
+            const translateContactName = (contactID, tempContactName) => {
+                const contact = myContacts.value.filter(contact => contact.id === +contactID)
+                // Проверяка
+                if(contact.length !== 0) {
+                    return `${contact[0].contactInfo.surname} ${contact[0].contactInfo.name}`
+                } else if (contact.length === 0 && tempContactName) {
+                    return tempContactName
+                } else if (contact.length === 0 && !tempContactName) {
+                    return 'Неизвестный'
+                }
             }
             //
             const currentContact = ref()
             const goToContact = (contactID) => {
                 currentContact.value = myContacts.value.filter(contact => contact.id === +contactID)
-                emit('closeModal')
-                router.push({
-                    name: 'View-Contact',
-                    params: {
-                        contactId: +contactID,
-                        contact: JSON.stringify(currentContact.value[0])
-                    }
-                })
+                // Проверяем по наличии в книге контактов
+                if(currentContact.value.length === 0) {
+                    alert('ViewWalletDebts: данный контакт не найден в Моих контактах')
+                } else {
+                    router.push({
+                        name: 'View-Contact',
+                        params: {
+                            contactId: +contactID,
+                            contact: JSON.stringify(currentContact.value[0])
+                        }
+                    })
+                    emit('closeModal')
+                }
+
             }
             // Сортируем массив дел с долгами по датам
             const getSortedDealDebtsArray = () => {

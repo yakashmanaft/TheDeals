@@ -116,7 +116,7 @@
                     <!-- Показываем контакт по делу -->
                     <ion-grid class="ion-no-padding border-bottom">
                         <ion-row class="ion-justify-content-between ion-align-items-center">
-                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">{{dealContact}}</ion-button>
+                            <ion-text color="primary" style="border-bottom: 1px dashed var(--ion-color-primary)" @click.stop="goToContact(dealContactID)">{{dealContact}}</ion-text>
                             <ion-button size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click.stop="openSearchContactMenu()">Изменить</ion-button>
                         </ion-row>
                     </ion-grid>
@@ -564,7 +564,7 @@
                         :balance="availableBalance"
                     />
                 </ion-item-group>
-                <!-- {{currentDeal}} -->
+                {{currentDeal}}
                 <br>
 
                 <!-- ========================== Удалить дело =================================== -->
@@ -700,13 +700,33 @@
                 }
             })
             //
+            const goToContact = (id) => {
+                const contact = myContacts.value.filter(contact => contact.id === +id)
+                // const contact = dealContactID.value
+                // Проверяем по наличии в книге контактов
+                if(contact.length === 0) {
+                    alert('TransactionDetails: данный контакт не найден в Моих контактах')
+                } else {
+                    router.replace({
+                        name: 'View-Contact',
+                        params: {
+                            contactId: +id,
+                            contact: JSON.stringify(contact[0])
+                        }
+                    })
+                }
+            }
+            //
             const showNameByID = (contactID) => {
-                const result = myContacts.value.filter(contact => contact.id === +contactID)
-                if(result.length !== 0) {
-                    const nameByID = (result[0].contactInfo.surname + ' ' + result[0].contactInfo.name).toString().replace(/"/g, "")
+                const contact = myContacts.value.filter(contact => contact.id === +contactID)
+                // Проверяка
+                if(contact.length !== 0) {
+                    const nameByID = (contact[0].contactInfo.surname + ' ' + contact[0].contactInfo.name).toString().replace(/"/g, "")
                     return nameByID;
-                } else if (result.length === 0) {
-                    const nameByID = 'Неизвестный'
+                } else if (contact.length === 0 && currentDeal.value.tempContactName) {
+                    return currentDeal.value.tempContactName
+                } else if (contact.length === 0 && !currentDeal.value.tempContactName) {
+                    const nameByID = 'Неизвестный.'
                     return nameByID;
                 }
             }
@@ -859,6 +879,7 @@
                 console.log(`Можно вычитать предметы со склада по делу №${currentDeal.uid}`)
                 currentDeal.dealsList.forEach(item => {
                     console.log(`Рецепт: ${item.recipe}`)
+                    // А если рецепт удален?
 
                     // А если нет атрибутов?
                     item.additionalAttributes.forEach(item => {
@@ -878,8 +899,10 @@
                 }
             }
             //
+            const tempContactName = ref(showNameByID(dealContactID.value))
             const choose = async (contact) => {
                 dealContact.value = `${contact.contactInfo.name} ${contact.contactInfo.surname}`
+                tempContactName.value = `${contact.contactInfo.name} ${contact.contactInfo.surname}`
                 dealContactID.value = contact.id
                 searchContactMenu.value = false
                 try {
@@ -889,6 +912,7 @@
                     //
                     const {error} = await supabase.from('deals').update({
                         contactID: dealContactID.value,
+                        tempContactName: `${contact.contactInfo.name} ${contact.contactInfo.surname}`
                     }).eq('id', currentId);
                     if(error) throw error;
                     // Дело успешно обновлено
@@ -1230,18 +1254,6 @@
                     update();
                 }
             }
-            // Переводчик названий рецептов
-            // const translateDealSubjectRecipe = (value) => {
-            //     if (currentDeal.value.dealType === 'sale') {
-            //         if(value === 'no-recipe' || value === ''){
-            //             return 'Без рецепта'
-            //         } else {
-            //             console.log(userRecipeArray.value)
-            //             return translateValue(value, userRecipeArray.value)
-            //             // return value
-            //         }
-            //     }
-            // }
             // Переводчик названий типов доставки
             const translateShippingType = (value) => {
                 if(value) {
@@ -1882,7 +1894,8 @@
                         contactID: currentDeal.value.contactID,
                         dealType: currentDeal.value.dealType,
                         amount: amount,
-                        userEmail: currentDeal.value.email
+                        userEmail: currentDeal.value.email,
+                        tempContactName: tempContactName.value
                     }])
                     if(error) throw error
                 } catch (error) {
@@ -1914,7 +1927,7 @@
             })
 
             return {
-                currency, spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, setPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setNewPersonQty, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, shippingTypeList, dealShippingType, shippingPrice, setShippingAddresPlaceholder, shippingAddress, editShippingAddress, toggleEditShippingAddress, sumAllTotalSubjectPriceFunc, translateShippingType, translateSelectedProduct, culcSubjectWeight, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, culcBuySubjectWeight, debt, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, refreshDebtValue, finishDeal, setMarkerAttrColor, shapes, checkmarkDone, availableBalance, currentPriceSubject, personPortionGram, dealImportance, setRatingValue, addToLedger, dealComments, substructFromWarehouseToast, addToWarehouseFunc, showSelectedRecipe, userRecipeArray, openSearchContactMenu, calcTotalDealPrice
+                currency, spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, setPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setNewPersonQty, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, shippingTypeList, dealShippingType, shippingPrice, setShippingAddresPlaceholder, shippingAddress, editShippingAddress, toggleEditShippingAddress, sumAllTotalSubjectPriceFunc, translateShippingType, translateSelectedProduct, culcSubjectWeight, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, culcBuySubjectWeight, debt, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, refreshDebtValue, finishDeal, setMarkerAttrColor, shapes, checkmarkDone, availableBalance, currentPriceSubject, personPortionGram, dealImportance, setRatingValue, addToLedger, dealComments, substructFromWarehouseToast, addToWarehouseFunc, showSelectedRecipe, userRecipeArray, openSearchContactMenu, calcTotalDealPrice, goToContact, tempContactName
             }
         }
     })

@@ -600,7 +600,7 @@
     //
     export default defineComponent({
         name: 'CreateDealSubject',
-        emits: ['closeModal', 'createSubject', 'getSubjectPrice', 'getGramPerPerson', 'getSubjectQty', 'getPersonQty', 'getSubjectDiscount'],
+        emits: ['closeModal', 'createSubject', 'getSubjectPrice', 'getGramPerPerson', 'getSubjectQty', 'getPersonQty', 'getSubjectDiscount', 'closeModalRouterReplace'],
         props: {
             subjectData: Object,
             currentDealType: String,
@@ -1027,13 +1027,17 @@
             //
             const goToRecipesStore = () => {
                 // alert('ViewDeal-modalCreateSubject: Магазин в разработке...')
+                // isCreateNewSubjectOpened.value = false
+                // emit('closeSelf')
                 searchRecipeMenu.value = false
                 emit('closeModal')
+                emit('closeModalRouterReplace')
                 router.replace({ path: '/recipes-store' })
             }
             const goToMyRecipes = () => {
                 searchRecipeMenu.value = false
                 emit('closeModal')
+                emit('closeModalRouterReplace')
                 router.replace({ path: '/recipes' })
             }
             // =======================================================================================
