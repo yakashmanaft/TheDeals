@@ -50,10 +50,10 @@
                         <h4 class="ion-no-margin ion-margin-top">Рецепт</h4>
                     </ion-text>
                     <!-- Показ и кнопка изменения рецепта к предмету -->
-                    <ion-grid class="ion-no-padding border-bottom">
-                        <ion-row class="ion-justify-content-between ion-align-items-center">
+                    <ion-grid class="ion-no-padding border-bottom ion-padding-bottom">
+                        <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
                             <!--  -->
-                            <ion-text color="primary" style="border-bottom: 1px dashed var(--ion-color-primary)" @click.prevent.stop="goToRecipe(subjectData.recipe)">
+                            <ion-text color="primary" style="border-bottom: 1px dashed var(--ion-color-primary);" @click.prevent.stop="goToRecipe(subjectData.recipe)" class="ion-margin-end">
                                 {{ showSelectedRecipe(subjectData.recipe, subjectData.tempRecipeName) }}
                             </ion-text>
                             <!--  -->
