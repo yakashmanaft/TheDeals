@@ -883,13 +883,13 @@
                 // alert('ViewDeal-modalViewSubject: Магазин в разработке...')
                 searchRecipeMenu.value = false
                 emit('closeModal')
-                router.push({ path: '/recipes-store' })
+                router.replace({ path: '/recipes-store' })
             }
             //
             const goToMyRecipes = () => {
                 searchRecipeMenu.value = false
                 emit('closeModal')
-                router.push({ path: '/recipes' })
+                router.replace({ path: '/recipes' })
             }
             // =======================================================================================
             const isModalCreateNewRecipeOpened = ref(false)
