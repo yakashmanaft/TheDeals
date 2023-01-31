@@ -1183,7 +1183,7 @@
                 } else if (dealShippingType.value === 'shipping-delivery') {
                     dealData.value.shipping = {
                         typeOfShipping: dealShippingType.value,
-                        shippingAddress: '',
+                        shippingAddress: [],
                         shippingPrice: 0
                     }
                 }

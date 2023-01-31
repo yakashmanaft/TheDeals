@@ -41,6 +41,14 @@
             @getSubjectDiscount="setNewSubjectDiscount"
         />
 
+        <!-- Модалка добавления нового адреса в доставку -->
+        <AddDeliveryAddressMenu
+            :isOpen="isAddDeliveryAddressMenuOpened"
+            :addressesArray="currentDeal.shipping.shippingAddress"
+            :currentAddressIndex="currentDeliveryAddressIndex"
+            @closeModal="isAddDeliveryAddressMenuOpened = false"
+        />
+
         <!-- page-content -->
         <ion-content
             :scroll-events="true"
@@ -243,6 +251,7 @@
                     <ion-text>
                         <h4 class="ion-no-margin" >Доставка</h4>
                     </ion-text>
+
                     <!-- Тип доставки -->
                     <ion-grid class="ion-no-padding">
                         <ion-row class="ion-justify-content-between ion-align-items-center">
@@ -258,6 +267,7 @@
                             </ion-chip>
                         </ion-row>
                     </ion-grid>
+
                     <!-- Стоимость доставки -->
                     <!-- Вариант с доставкой -->
                     <ion-grid v-if="currentDeal.shipping.typeOfShipping === 'shipping-delivery'" class="ion-no-padding">
@@ -272,7 +282,7 @@
                             </ion-button>
                         </ion-row>
                     </ion-grid>
-                    <!-- Вариант при самовывозе (disabled изменения input) -->
+                    <!-- Вариант при самовывозе (input нельзя менять, установлен disabled на input) -->
                     <ion-grid v-if="currentDeal.shipping.typeOfShipping === 'shipping-pickup'" class="ion-no-padding border-bottom">
                         <ion-row class="ion-justify-content-between ion-align-items-center flex_nowrap">
                             <!-- Заголовок -->
@@ -286,6 +296,7 @@
 
                         </ion-row>
                     </ion-grid>
+
                     <!-- Адрес доставки -->
                     <ion-grid v-if="currentDeal.shipping.typeOfShipping === 'shipping-delivery'" class="ion-no-padding border-bottom">
                         <!-- header -->
@@ -295,15 +306,25 @@
                                 Адрес доставки
                             </ion-button>
                             <!-- Кнопка изменить адрес -->
-                            <ion-button v-if="editShippingAddress === false" size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click="toggleEditShippingAddress">Изменить</ion-button>
-                            <ion-button v-if="editShippingAddress === true" size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click="toggleEditShippingAddress">Готово</ion-button>
+                            <!-- <ion-button v-if="editShippingAddress === false" size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click="toggleEditShippingAddress">Изменить</ion-button>
+                            <ion-button v-if="editShippingAddress === true" size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click="toggleEditShippingAddress">Готово</ion-button> -->
                         </ion-row>
                         <!--content -->
-                        <ion-row class="ion-margin-bottom">
-                            <!-- Адрес доставки -->
+                        <!-- <ion-row class="ion-margin-bottom">
                             <ion-text v-if="editShippingAddress === false">{{setShippingAddresPlaceholder(currentDeal.shipping.shippingAddress)}}</ion-text>
                             <ion-textarea v-if="editShippingAddress === true" class="ion-margin-bottom" autocapitalize="on" v-model="shippingAddress" placeholder="Укажите адрес"></ion-textarea>
+                        </ion-row> -->
+                        <ion-row v-if="currentDeal.shipping.shippingAddress && currentDeal.shipping.shippingAddress.length > 0">
+                            <div v-for="(address, index) in currentDeal.shipping.shippingAddress" :key="index">
+                                <ion-text @click.prevent.stop="deleteCurrentDeliveryAddress(index)">Удалить</ion-text>
+
+                                <ion-text @click.prevent.stop="showCurrentDeliveryAddressInfo(index)">
+                                    {{ address }}
+                                </ion-text>
+                            </div>
                         </ion-row>
+                        <!-- Кнопка добавить адрес -->
+                        <ion-chip class="ion-no-margin ion-margin-bottom" color="primary" @click="addDeliveryAddressMenu">Добавить адрес</ion-chip>
                     </ion-grid>
                 </ion-item-group> 
                 
@@ -564,9 +585,12 @@
                         :balance="availableBalance"
                     />
                 </ion-item-group>
+                <br>
+                <br>
+                <br>
+                <br>
                 {{currentDeal}}
                 <br>
-
                 <!-- ========================== Удалить дело =================================== -->
                 <!-- Не показываем в режиме edit -->
                 <!-- <ion-button @click="setOpen(true)" fill="clear"  color="danger" style="opacity: 0.6" class="ion-margin-bottom ion-margin-horizontal">Удалить дело</ion-button> -->
@@ -616,6 +640,7 @@
     import CreateDealSubject from '../../components/modal/ViewDeal-modalCreateSubject.vue';
     import DealPaidMenu from '../../components/DealPaidMenu.vue';
     import StarRaiting from '../../components/StarRaiting.vue';
+    import AddDeliveryAddressMenu from '../../components/modal/AddDeliveryAddressMenu.vue';
     //
     import { format, parseISO } from 'date-fns';
     import { ru } from 'date-fns/locale'
@@ -623,10 +648,6 @@
     export default defineComponent({
         name: 'View-deal',
         components: {
-            Spinner,
-            ViewHeader,
-            ViewDealSubject,
-            CreateDealSubject,
             IonContent,
             IonButton,
             IonActionSheet,
@@ -638,9 +659,7 @@
             IonModal,
             IonItem,
             IonSearchbar,
-            Select,
             IonChip,
-            ModalCalendar,
             IonCard,
             IonImg,
             IonThumbnail,
@@ -649,8 +668,16 @@
             IonInput,
             IonTextarea, 
             IonList,
+            //
+            Spinner,
+            ViewHeader,
+            ViewDealSubject,
+            CreateDealSubject,
+            Select,
+            ModalCalendar,
             DealPaidMenu,
-            StarRaiting
+            StarRaiting,
+            AddDeliveryAddressMenu
         }, 
         setup() {
             // Currency
@@ -1628,7 +1655,7 @@
                 } else if (dealShippingType.value === 'shipping-delivery') {
                     currentDeal.value.shipping = {
                         typeOfShipping: dealShippingType.value,
-                        shippingAddress: '',
+                        shippingAddress: [],
                         shippingPrice: 0
                     }
                 } 
@@ -1711,14 +1738,14 @@
                 }
             }
             //
-            const setShippingAddresPlaceholder = (note) => {
-                if (note === '') {
-                    return 'Адрес не указан'
-                } else {
-                    shippingAddress.value = note
-                    return note
-                }
-            }
+            // const setShippingAddresPlaceholder = (note) => {
+            //     if (note.length === 0) {
+            //         return 'Адрес не указан'
+            //     } else {
+            //         shippingAddress.value = note
+            //         return note
+            //     }
+            // }
             // считаем для свода данных ИТОГО
             // вес при расчете за КГ в режиме sale
             const culcSubjectWeight = (personQty, portionWeight) => {
@@ -1935,8 +1962,30 @@
                 spinner.value = false;
             })
 
+            //
+            const isAddDeliveryAddressMenuOpened = ref()
+            const addDeliveryAddressMenu = () => {
+                currentDeliveryAddressIndex.value = -1
+                isAddDeliveryAddressMenuOpened.value = true
+            } 
+            const deleteCurrentDeliveryAddress = (index) => {
+                if(index > -1) {
+                    if(currentDeal.value.shipping.shippingAddress.length === 1) {
+                        alert('ViewDeal: для доставки должен быть указан хотя бы один адрес')  
+                    } else {
+                        currentDeal.value.shipping.shippingAddress.splice(index, 1)
+                    }
+                } 
+            }
+            const currentDeliveryAddressIndex = ref();
+            const showCurrentDeliveryAddressInfo = (index) => {
+                currentDeliveryAddressIndex.value = index
+                // console.log(index)
+                isAddDeliveryAddressMenuOpened.value = true
+            }
+
             return {
-                currency, spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, setPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setNewPersonQty, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, shippingTypeList, dealShippingType, shippingPrice, setShippingAddresPlaceholder, shippingAddress, editShippingAddress, toggleEditShippingAddress, sumAllTotalSubjectPriceFunc, translateShippingType, translateSelectedProduct, culcSubjectWeight, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, culcBuySubjectWeight, debt, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, refreshDebtValue, finishDeal, setMarkerAttrColor, shapes, checkmarkDone, availableBalance, currentPriceSubject, personPortionGram, dealImportance, setRatingValue, addToLedger, dealComments, substructFromWarehouseToast, addToWarehouseFunc, showSelectedRecipe, userRecipeArray, openSearchContactMenu, calcTotalDealPrice, goToContact, tempContactName
+                currency, spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, setPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setNewPersonQty, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, shippingTypeList, dealShippingType, shippingPrice, shippingAddress, editShippingAddress, toggleEditShippingAddress, sumAllTotalSubjectPriceFunc, translateShippingType, translateSelectedProduct, culcSubjectWeight, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, culcBuySubjectWeight, debt, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, refreshDebtValue, finishDeal, setMarkerAttrColor, shapes, checkmarkDone, availableBalance, currentPriceSubject, personPortionGram, dealImportance, setRatingValue, addToLedger, dealComments, substructFromWarehouseToast, addToWarehouseFunc, showSelectedRecipe, userRecipeArray, openSearchContactMenu, calcTotalDealPrice, goToContact, tempContactName, isAddDeliveryAddressMenuOpened, addDeliveryAddressMenu, deleteCurrentDeliveryAddress, showCurrentDeliveryAddressInfo, currentDeliveryAddressIndex
             }
         }
     })
