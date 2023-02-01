@@ -376,12 +376,24 @@
                     try {
                         // Добавляем в БД инфу по новому предмету
                         const { error } = await supabase.from('userWarehouse').insert([itemData.value])
+
+                        // Добавляем запись в леджер
+                        // await supabase.from('ledgerWarehouse').insert([{
+                        //     // itemID: itemData.value.id,
+                        //     uid: itemData.value.uid,
+                        //     estimationType: newItemData.estimationType,
+                        //     actionType: 'add',
+                        //     qty: itemData.value,
+                        //     userEmail: userEmail.value
+                        // }])
                         if(error) throw error;
                         //
                         await store.methods.getUserWarehouseItemsFromDB();
                         myItems.value = store.state.userWarehouseArray;
                         // ищем созданный новый предмет в массиве всех предметов в store (по uid)
                         const newItem = myItems.value.find(el => el.uid === itemData.value.uid)
+                        // Делаем запись о добавлении в warehouse ledger
+                        makeAddRecordInLedgerWarehouse(newItem)
                         // Сбрасываем заполненные данные и закрываем модалку
                         setOpenCreateNewModal()
                         // переходим на страницу созданного нового контакта
@@ -393,6 +405,24 @@
                     // console.log(newItemData)
                 }
             }
+
+            //
+            const makeAddRecordInLedgerWarehouse = async (item) => {
+                try{
+                    const { error } = await supabase.from('ledgerWarehouse').insert([{
+                        itemID: item.id,
+                        uid: item.uid,
+                        estimationType: item.estimationType,
+                        actionType: 'add',
+                        qty: item.subjectQty,
+                        userEmail: userEmail.value
+                    }])
+                    if(error) throw error
+                } catch (error) {
+                    alert(`Error: ${error.message}`)
+                }
+            }
+
             //
             const filteredMyItemsFunc = (category) => {
                 let filteredMyItems = []
@@ -523,7 +553,7 @@
 
 
             return {
-                route, itemData, dataLoaded, spinner, setOpenCreateNewModal, currency, user, pageTitle, myItems, isOpen, createItem, search, warehouseCategoriesArray, filteredMyItemsFunc, searchedItem, searchedCategory, expendList, closeSettingsModal, isSettingsModalOpened, update, userSettings, userWorkProfile, userWarehouseCategoriesArray, setMeasure, isItemAlreadyAdded, warehouseMenuOpened, warehouseMenuButtons, isWarehouseLedgerOpened, isActionMenuOpened, typeOfAction, actionMenuButtons, isAddSubstructModalOpened, currentRoute, userEmail, currentItem
+                route, itemData, dataLoaded, spinner, setOpenCreateNewModal, currency, user, pageTitle, myItems, isOpen, createItem, search, warehouseCategoriesArray, filteredMyItemsFunc, searchedItem, searchedCategory, expendList, closeSettingsModal, isSettingsModalOpened, update, userSettings, userWorkProfile, userWarehouseCategoriesArray, setMeasure, isItemAlreadyAdded, warehouseMenuOpened, warehouseMenuButtons, isWarehouseLedgerOpened, isActionMenuOpened, typeOfAction, actionMenuButtons, isAddSubstructModalOpened, currentRoute, userEmail, currentItem, makeAddRecordInLedgerWarehouse
             }
         }
     }) 

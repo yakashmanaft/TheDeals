@@ -55,7 +55,7 @@
 
                                             <!-- Наименование предмета -->
                                             <ion-text color="medium">
-                                                {{ translateItemID(transaction.itemID) }}
+                                                {{ translateItemID(transaction.itemID, transaction.tempName) }}
                                             </ion-text>
 
                                         </ion-row>
@@ -198,13 +198,17 @@
             }
 
             // Подумать, как можно доработать, быть может используя temp значения
-            const translateItemID = (itemID) => {
+            const translateItemID = (itemID, tempName) => {
                 const item = userWarehouseItems.value.filter(item => item.id === +itemID)
                 // console.log(item)
                 if(item.length !== 0) {
                     return `${item[0].name}`
                 } else {
-                    return 'Неизвестный предмет'
+                    if(tempName) {
+                        return tempName
+                    } else {
+                        return 'Неизвестный предмет'
+                    }
                 }
             }
 

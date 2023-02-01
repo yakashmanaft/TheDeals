@@ -198,6 +198,7 @@
             const deleteCurrentItem = async () => {
                 // console.log(currentId)
                 try {
+                    makeSubstructRecordInLedgerWarehouse(currentItem.value)
                     const { error } = await supabase.from('userWarehouse').delete().eq('id', currentId)
                     if(error) throw error
                     // router.push({ name: 'Warehouse' })
@@ -206,6 +207,24 @@
                 } catch (error) {
                     // Удалить если не понадобится
                     // alert(`Error: ${error.message}`)
+                }
+            }
+
+            // Делаем запись о вычитании в warehouse ledger
+            const makeSubstructRecordInLedgerWarehouse = async (item) => {
+                try{
+                    const { error } = await supabase.from('ledgerWarehouse').insert([{
+                        itemID: item.id,
+                        uid: item.uid,
+                        estimationType: item.estimationType,
+                        actionType: 'substract',
+                        qty: item.subjectQty,
+                        userEmail: userEmail.value,
+                        tempName: item.name
+                    }])
+                    if(error) throw error
+                } catch (error) {
+                    alert(`Error: ${error.message}`)
                 }
             }
 
@@ -240,7 +259,7 @@
             const isAddSubstructModalOpened = ref(false)
 
             return {
-                route, router, spinner, currentId, info, currentItem, openDeleteMenu, isOpenRef, deleteWarehouseItemButtons, setImgSrc, isActionMenuOpened, actionMenuButtons, isAddSubstructModalOpened, typeOfAction, userEmail, currentRoute
+                route, router, spinner, currentId, info, currentItem, openDeleteMenu, isOpenRef, deleteWarehouseItemButtons, setImgSrc, isActionMenuOpened, actionMenuButtons, isAddSubstructModalOpened, typeOfAction, userEmail, currentRoute, makeSubstructRecordInLedgerWarehouse
             }
         }
     })
