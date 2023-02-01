@@ -86,7 +86,7 @@
                 const currentItem = userWarehouseItems.value.filter(item => item.id === +itemID)
                 // console.log(currentItem)
                 if(currentItem.length === 0) {
-                    alert('TransactionWarehouseDetails: это неизветный предмет и его нет на вашем складе')
+                    alert('TransactionWarehouseDetails: Данного предмета нет на вашем складе')
                 } else {
                     emit('closeModal')
                     emit('closeLedger')
