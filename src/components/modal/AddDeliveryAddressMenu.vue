@@ -4,7 +4,7 @@
         <ion-header translucent="true">
             <ion-toolbar>
                 <ion-buttons slot="start">
-                    <ion-button @click="$emit('closeModal')">Отменить</ion-button>
+                    <ion-button @click="closeMenuModal">Отменить</ion-button>
                 </ion-buttons>
                 <ion-title class="ion-text-center">Добавить адрес</ion-title>
             </ion-toolbar>
@@ -24,26 +24,45 @@
             <!-- {{ addressesArray }} -->
 
             <!-- Notification -->
-            <ion-text v-if="(dealStatus === 'deal-in-delivery' || dealStatus === 'deal-complete') && currentAddressIndexValue !== -1">
-                Вы не можете изменять адрес доставки. Заказ уже {{ dealStatus }} 
+            <div class="notification-element ion-margin-horizontal" v-if="(dealStatus === 'deal-in-delivery' || dealStatus === 'deal-complete') && currentAddressIndexValue !== -1">
                 <!-- В ДОСТАВКЕ // ЗАВЕРШЕН -->
-            </ion-text>
+                Вы не можете изменять адрес доставки. Заказ уже {{ translateDealStatus(dealStatus) }}
+            </div>
 
 
             <!-- Город -->
-            <ion-input v-model="deliveryAddress.city" placeholder="Город" inputmode="text" autocapitalize="on" :disabled="dealStatus === 'deal-in-delivery' || dealStatus === 'deal-complete' ? true : false"></ion-input>
+            <div class="address-item">
+                <ion-text color="medium">Город</ion-text>
+                <ion-input color="primary" v-model="deliveryAddress.city" placeholder="Город" inputmode="text" autocapitalize="on" :disabled="dealStatus === 'deal-in-delivery' || dealStatus === 'deal-complete' ? true : false"></ion-input>
+            </div>
 
             <!-- Улица -->
-            <ion-input v-model="deliveryAddress.street" placeholder="Улица" inputmode="text" autocapitalize="on" :disabled="dealStatus === 'deal-in-delivery' || dealStatus === 'deal-complete' ? true : false"></ion-input>
+            <div class="address-item">
+                <ion-text color="medium">Улица</ion-text>
+                <ion-input color="primary" v-model="deliveryAddress.street" placeholder="Улица" inputmode="text" autocapitalize="on" :disabled="dealStatus === 'deal-in-delivery' || dealStatus === 'deal-complete' ? true : false"></ion-input>
+            </div>
 
             <!-- Дом -->
-            <ion-input v-model="deliveryAddress.building" placeholder="Дом" inputmode="text" autocapitalize="on" :disabled="dealStatus === 'deal-in-delivery' || dealStatus === 'deal-complete' ? true : false"></ion-input>
+            <div class="address-item">
+                <ion-text color="medium">Дом</ion-text>
+                <ion-input color="primary" v-model="deliveryAddress.building" placeholder="Дом" inputmode="text" autocapitalize="on" :disabled="dealStatus === 'deal-in-delivery' || dealStatus === 'deal-complete' ? true : false"></ion-input>
+            </div>
 
             <!-- Квартира / Офис -->
-            <ion-input v-model="deliveryAddress.flat" placeholder="Квартира / Офис" inputmode="text" autocapitalize="on" :disabled="dealStatus === 'deal-in-delivery' || dealStatus === 'deal-complete' ? true : false"></ion-input>
+            <div class="address-item">
+                <ion-text color="medium">Квартира / Офис</ion-text>
+                <ion-input color="primary" v-model="deliveryAddress.flat" placeholder="Квартира / Офис" inputmode="text" autocapitalize="on" :disabled="dealStatus === 'deal-in-delivery' || dealStatus === 'deal-complete' ? true : false"></ion-input>
+            </div>
 
-            <!-- Квартира / Офис -->
-            <ion-textarea v-model="deliveryAddress.comments" placeholder="Комментарий" inputmode="text" autocapitalize="on" :disabled="dealStatus === 'deal-in-delivery' || dealStatus === 'deal-complete' ? true : false"></ion-textarea>
+            <!-- Комментарии к адресу -->
+            <div class="address-item">
+                <ion-text color="medium">Комментарии</ion-text>
+                <ion-textarea v-model="deliveryAddress.comments" placeholder="Укажите комментарии к адресу" autoGrow="true" inputmode="text" autocapitalize="on" :disabled="dealStatus === 'deal-in-delivery' || dealStatus === 'deal-complete' ? true : false"></ion-textarea>
+            </div>
+
+            <br>
+            <br>
+            <br>
 
             <div>
                 {{ dealStatus }}
@@ -64,7 +83,7 @@
     import { defineComponent, ref, onMounted, watchEffect, watch } from 'vue';
     // import { uid } from 'uid';
     //
-    import { IonModal, IonHeader, IonContent, IonToolbar, IonButtons, IonButton, IonTitle, IonInput, IonText, IonTextarea } from '@ionic/vue';
+    import { IonModal, IonHeader, IonContent, IonToolbar, IonButtons, IonButton, IonTitle, IonInput, IonText, IonTextarea, IonLabel } from '@ionic/vue';
 
     export default defineComponent({
         name: 'AddDeliveryAddressMenu',
@@ -75,7 +94,7 @@
             dealStatus: String,
         },
         components: {
-            IonModal, IonHeader, IonContent, IonToolbar, IonButtons, IonButton, IonTitle, IonInput, IonText, IonTextarea
+            IonModal, IonHeader, IonContent, IonToolbar, IonButtons, IonButton, IonTitle, IonInput, IonText, IonTextarea, IonLabel
             //
         },
         setup(props, { emit }) {
@@ -85,8 +104,12 @@
             const deliveryAddress = ref()
             //
             const addDeliveryAddress = () => {
-                if(deliveryAddress.value.street === '') {
+                if (deliveryAddress.value.city === '') {
+                    alert('AddDeliveryAddressMenu: Укажите город доставки')
+                } else if(deliveryAddress.value.street === '') {
                     alert('AddDeliveryAddressMenu: Улица должна быть заполнена')
+                } else if (deliveryAddress.value.building === '') {
+                    alert('AddDeliveryAddressMenu: У здания должен быть номер')
                 } else {
                     props.addressesArray.push(deliveryAddress.value)
                     emit('closeModal')
@@ -101,8 +124,12 @@
             }
             //
             const saveChanges = () => {
-                if(deliveryAddress.value.street === '') {
+                if (deliveryAddress.value.city === '') {
+                    alert('AddDeliveryAddressMenu: Укажите город доставки')
+                } else if(deliveryAddress.value.street === '') {
                     alert('AddDeliveryAddressMenu: Улица должна быть заполнена')
+                } else if (deliveryAddress.value.building === '') {
+                    alert('AddDeliveryAddressMenu: У здания должен быть номер')
                 } else {
                     props.addressesArray[props.currentAddressIndex] = deliveryAddress.value
                     emit('closeModal')
@@ -134,8 +161,30 @@
                         comments: addressesArrayValue.value[currentAddressIndexValue.value].comments
                     }
                 }
-                console.log(currentAddressIndexValue.value)
+                // console.log(currentAddressIndexValue.value)
             })
+
+            //
+            const translateDealStatus = (dealStatusValue) => {
+                if(dealStatusValue === 'deal-in-delivery') {
+                    return "В ДОСТАВКЕ"
+                } else if (dealStatusValue === 'deal-complete') {
+                    return 'ЗАВЕРШЕН'
+                }
+            }
+
+            //
+            const closeMenuModal = () => {
+                emit('closeModal')
+                deliveryAddress.value = {
+                    city: addressesArrayValue.value[currentAddressIndexValue.value].city,
+                    street: addressesArrayValue.value[currentAddressIndexValue.value].street,
+                    building: addressesArrayValue.value[currentAddressIndexValue.value].building,
+                    flat: addressesArrayValue.value[currentAddressIndexValue.value].flat,
+                    comments: addressesArrayValue.value[currentAddressIndexValue.value].comments
+                }
+            }
+
             //
             watchEffect(() => {
                 addressesArrayValue.value = props.addressesArray
@@ -144,12 +193,23 @@
             
 
             return {
-                addDeliveryAddress, deliveryAddress, addressesArrayValue, currentAddressIndexValue, saveChanges
+                addDeliveryAddress, deliveryAddress, addressesArrayValue, currentAddressIndexValue, saveChanges, translateDealStatus, closeMenuModal
             }   
         }
     })
 </script>
 
 <style scoped>
-
+    .notification-element {
+        background-color: black; 
+        padding: 1rem;
+        color: white; 
+        border-radius: 5px;
+    }
+    .address-item {
+        border: 1px solid var(--ion-color-light); 
+        border-radius: 5px; 
+        padding: 1rem; 
+        margin: 16px 16px 0 16px;
+    }
 </style>

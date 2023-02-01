@@ -83,16 +83,20 @@
 
             // 
             const goToItem = (itemID) => {
-                // console.log(itemID)
                 const currentItem = userWarehouseItems.value.filter(item => item.id === +itemID)
-                emit('closeModal')
-                emit('closeLedger')
-                router.push({
-                    name: 'View-warehouse-item', params: {
-                        itemId: +itemID,
-                        item: JSON.stringify(currentItem[0])
-                    }
-                })
+                // console.log(currentItem)
+                if(currentItem.length === 0) {
+                    alert('TransactionWarehouseDetails: это неизветный предмет и его нет на вашем складе')
+                } else {
+                    emit('closeModal')
+                    emit('closeLedger')
+                    router.push({
+                        name: 'View-warehouse-item', params: {
+                            itemId: +itemID,
+                            item: JSON.stringify(currentItem[0])
+                        }
+                    })
+                }
             }
 
             // функция форматирования даты для сравнения даты дела и даты дня

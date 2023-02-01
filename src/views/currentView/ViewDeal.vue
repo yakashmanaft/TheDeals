@@ -330,7 +330,7 @@
                                     <ion-text 
                                         color="primary" 
                                     >
-                                        {{ address.city }}, 1231124134523534636298736908 3707698024860913547638946758736875687369875 63776658986
+                                        г. {{ address.city }}, {{ address.street }}, д. {{ address.building }} <span v-if="address.flat">- {{ address.flat }}</span>
                                     </ion-text>
                                 </div>
                             </div>

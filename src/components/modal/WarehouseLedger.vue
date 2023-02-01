@@ -136,7 +136,7 @@
 
             // функция форматирования даты для сравнения даты дела и даты дня
             const formattedDate = (day) => {
-                const formattedString = format(parseISO(day), 'd.M.Y');
+                const formattedString = format(parseISO(day), 'dd.MM.Y');
                 // const formattedString = format(parseISO(day), 'd MMMM Y', { locale: ru });
                 return formattedString;
             }
@@ -197,11 +197,15 @@
                 // }
             }
 
-            //
+            // Подумать, как можно доработать, быть может используя temp значения
             const translateItemID = (itemID) => {
-                // const item = userWarehouseItems.value.filter(item => item.id === +itemID)
-                // return `${item[0].name}`
-                return currentTransaction
+                const item = userWarehouseItems.value.filter(item => item.id === +itemID)
+                // console.log(item)
+                if(item.length !== 0) {
+                    return `${item[0].name}`
+                } else {
+                    return 'Неизвестный предмет'
+                }
             }
 
             return {
