@@ -698,6 +698,11 @@
                     id: uid(),
                     type: '',
                     address: ''
+                    // city: 'Пермь',
+                    // street: '',
+                    // building: '',
+                    // flat: '',
+                    // comments: ''
                 })
             }
             // В режиме редактирования, добавляем social к контакту

@@ -199,8 +199,9 @@
 
             //
             const translateItemID = (itemID) => {
-                const item = userWarehouseItems.value.filter(item => item.id === +itemID)
-                return `${item[0].name}`
+                // const item = userWarehouseItems.value.filter(item => item.id === +itemID)
+                // return `${item[0].name}`
+                return currentTransaction
             }
 
             return {

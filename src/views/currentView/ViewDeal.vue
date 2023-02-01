@@ -46,6 +46,7 @@
             :isOpen="isAddDeliveryAddressMenuOpened"
             :addressesArray="currentDeal.shipping.shippingAddress"
             :currentAddressIndex="currentDeliveryAddressIndex"
+            :dealStatus="currentDeal.dealStatus"
             @closeModal="isAddDeliveryAddressMenuOpened = false"
         />
 
@@ -315,16 +316,27 @@
                             <ion-textarea v-if="editShippingAddress === true" class="ion-margin-bottom" autocapitalize="on" v-model="shippingAddress" placeholder="Укажите адрес"></ion-textarea>
                         </ion-row> -->
                         <ion-row v-if="currentDeal.shipping.shippingAddress && currentDeal.shipping.shippingAddress.length > 0">
-                            <div v-for="(address, index) in currentDeal.shipping.shippingAddress" :key="index">
-                                <ion-text @click.prevent.stop="deleteCurrentDeliveryAddress(index)">Удалить</ion-text>
+                            <div 
+                                v-for="(address, index) in currentDeal.shipping.shippingAddress" 
+                                :key="index" 
+                                class="ion-margin-bottom"
+                                style="width: 100%; white-space: nowrap; overflow: hidden; position: relative">
 
-                                <ion-text @click.prevent.stop="showCurrentDeliveryAddressInfo(index)">
-                                    {{ address }}
-                                </ion-text>
+                                <!-- Кнопка удалить адрес -->
+                                <ion-icon :icon="closeCircleOutline" style="font-size: 1.4rem; position: absolute; top: -0.1rem; left: -0.1rem; z-index: 999999" @click.prevent.stop="deleteCurrentDeliveryAddress(index)" color="danger"></ion-icon>
+
+                                <!-- Адрес -->
+                                <div style="background-color: var(--ion-color-light); border-radius: 2rem;" class="ion-padding" @click.prevent.stop="showCurrentDeliveryAddressInfo(index)">
+                                    <ion-text 
+                                        color="primary" 
+                                    >
+                                        {{ address.city }}, 1231124134523534636298736908 3707698024860913547638946758736875687369875 63776658986
+                                    </ion-text>
+                                </div>
                             </div>
                         </ion-row>
                         <!-- Кнопка добавить адрес -->
-                        <ion-chip class="ion-no-margin ion-margin-bottom" color="primary" @click="addDeliveryAddressMenu">Добавить адрес</ion-chip>
+                        <ion-chip v-if="currentDeal.dealStatus !== 'deal-complete' && currentDeal.dealStatus !== 'deal-in-delivery'" class="ion-no-margin ion-margin-bottom" color="primary" @click="addDeliveryAddressMenu">Добавить адрес</ion-chip>
                     </ion-grid>
                 </ion-item-group> 
                 
@@ -1716,7 +1728,7 @@
             //     console.log(shippingType.value)
             // })
             //
-            const editShippingAddress = ref(false);
+            // const editShippingAddress = ref(false);
             //
             const shippingAddress = ref('');
             // watch(shippingAddress, () => {
@@ -1724,19 +1736,19 @@
             //     currentDeal.value.shipping.shippingAddress = shippingAddress.value
             // })
             //
-            const toggleEditShippingAddress = () => {
-                if(editShippingAddress.value === false) {
-                    if(currentDeal.value.dealStatus === 'deal-complete' || currentDeal.value.dealStatus === 'deal-in-delivery') {
-                        alert('ViewDeal: вы не можете изменить адрес доставки, если статус "ЗАВЕРШЕН" или "В ДОСТАВКЕ"')
-                    } else {
-                        editShippingAddress.value = true
-                    }
-                } else {
-                    editShippingAddress.value = false
-                    currentDeal.value.shipping.shippingAddress = shippingAddress.value
-                    update()
-                }
-            }
+            // const toggleEditShippingAddress = () => {
+            //     if(editShippingAddress.value === false) {
+            //         if(currentDeal.value.dealStatus === 'deal-complete' || currentDeal.value.dealStatus === 'deal-in-delivery') {
+            //             alert('ViewDeal: вы не можете изменить адрес доставки, если статус "ЗАВЕРШЕН" или "В ДОСТАВКЕ"')
+            //         } else {
+            //             editShippingAddress.value = true
+            //         }
+            //     } else {
+            //         editShippingAddress.value = false
+            //         currentDeal.value.shipping.shippingAddress = shippingAddress.value
+            //         update()
+            //     }
+            // }
             //
             // const setShippingAddresPlaceholder = (note) => {
             //     if (note.length === 0) {
@@ -1970,10 +1982,14 @@
             } 
             const deleteCurrentDeliveryAddress = (index) => {
                 if(index > -1) {
-                    if(currentDeal.value.shipping.shippingAddress.length === 1) {
-                        alert('ViewDeal: для доставки должен быть указан хотя бы один адрес')  
+                    if(currentDeal.value.dealStatus === 'deal-complete' || currentDeal.value.dealStatus === 'deal-in-delivery') {
+                        alert('ViewDeal: вы не можете удалить адрес доставки, если статус "ЗАВЕРШЕН" или "В ДОСТАВКЕ"')
                     } else {
-                        currentDeal.value.shipping.shippingAddress.splice(index, 1)
+                        if(currentDeal.value.shipping.shippingAddress.length === 1) {
+                            alert('ViewDeal: для доставки должен быть указан хотя бы один адрес')  
+                        } else {
+                            currentDeal.value.shipping.shippingAddress.splice(index, 1)
+                        }
                     }
                 } 
             }
@@ -1985,7 +2001,7 @@
             }
 
             return {
-                currency, spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, setPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setNewPersonQty, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, shippingTypeList, dealShippingType, shippingPrice, shippingAddress, editShippingAddress, toggleEditShippingAddress, sumAllTotalSubjectPriceFunc, translateShippingType, translateSelectedProduct, culcSubjectWeight, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, culcBuySubjectWeight, debt, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, refreshDebtValue, finishDeal, setMarkerAttrColor, shapes, checkmarkDone, availableBalance, currentPriceSubject, personPortionGram, dealImportance, setRatingValue, addToLedger, dealComments, substructFromWarehouseToast, addToWarehouseFunc, showSelectedRecipe, userRecipeArray, openSearchContactMenu, calcTotalDealPrice, goToContact, tempContactName, isAddDeliveryAddressMenuOpened, addDeliveryAddressMenu, deleteCurrentDeliveryAddress, showCurrentDeliveryAddressInfo, currentDeliveryAddressIndex
+                currency, spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, setPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setNewPersonQty, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, shippingTypeList, dealShippingType, shippingPrice, shippingAddress, sumAllTotalSubjectPriceFunc, translateShippingType, translateSelectedProduct, culcSubjectWeight, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, culcBuySubjectWeight, debt, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, refreshDebtValue, finishDeal, setMarkerAttrColor, shapes, checkmarkDone, availableBalance, currentPriceSubject, personPortionGram, dealImportance, setRatingValue, addToLedger, dealComments, substructFromWarehouseToast, addToWarehouseFunc, showSelectedRecipe, userRecipeArray, openSearchContactMenu, calcTotalDealPrice, goToContact, tempContactName, isAddDeliveryAddressMenuOpened, addDeliveryAddressMenu, deleteCurrentDeliveryAddress, showCurrentDeliveryAddressInfo, currentDeliveryAddressIndex
             }
         }
     })
