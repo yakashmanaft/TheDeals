@@ -29,6 +29,15 @@
                 Вы не можете изменять адрес доставки. Заказ уже {{ translateDealStatus(dealStatus) }}
             </div>
 
+            <!-- Выбрать из адресов контакта -->
+            <div v-if="currentAddressIndexValue === -1" class="ion-text-center ion-margin-top">
+
+                <ion-text color="primary" @click="contactAddressessMenuOpened = true">
+                    Выберите адрес контакта
+                </ion-text>
+                
+                <div class="ion-margin-vertical">или</div>
+            </div>
 
             <!-- Город -->
             <div class="address-item">
@@ -64,17 +73,44 @@
             <br>
             <br>
 
-            <div>
+            <!-- <div>
                 {{ dealStatus }}
                 {{ addressesArrayValue[currentAddressIndexValue] }}
                 {{ currentAddressIndexValue }}
-            </div>
+            </div> -->
 
             <!-- Кнопка Добавить -->
             <div style="position:fixed; bottom: 0; left: 0; width: 100%; background-color: #fff; z-index: 999999" class="ion-padding">
                 <ion-button v-if="currentAddressIndexValue === -1" expand="block" @click.stop="addDeliveryAddress(deliveryAddress)">Добавить</ion-button>
                 <ion-button v-else expand="block" @click="saveChanges(deliveryAddress)">Сохранить</ion-button>
             </div>
+
+            <!-- Модалка выбора адреса у контакта -->
+            <ion-modal :isOpen="contactAddressessMenuOpened">
+
+                <!--  -->
+                <ion-header>
+                    <ion-toolbar>
+                        <ion-buttons slot="start">
+                            <ion-button @click="contactAddressessMenuOpened = false">Отменить</ion-button>
+                        </ion-buttons>
+                    </ion-toolbar>
+                </ion-header>
+
+                <!--  -->
+                <ion-content
+                    :scroll-events="true"
+                    class="ion-page ion-margin-top" 
+                    id="main"
+                    type="push"
+                    forceOverscroll="false"
+                >
+                    <br>
+                    <br>
+                    <br>
+                    123
+                </ion-content>
+            </ion-modal>
         </ion-content>
     </ion-modal>
 </template>
@@ -176,14 +212,21 @@
             //
             const closeMenuModal = () => {
                 emit('closeModal')
-                deliveryAddress.value = {
-                    city: addressesArrayValue.value[currentAddressIndexValue.value].city,
-                    street: addressesArrayValue.value[currentAddressIndexValue.value].street,
-                    building: addressesArrayValue.value[currentAddressIndexValue.value].building,
-                    flat: addressesArrayValue.value[currentAddressIndexValue.value].flat,
-                    comments: addressesArrayValue.value[currentAddressIndexValue.value].comments
+                if(currentAddressIndexValue.value === -1) {
+                    // ну хуй знает...
+                } else {
+                    deliveryAddress.value = {
+                        city: addressesArrayValue.value[currentAddressIndexValue.value].city,
+                        street: addressesArrayValue.value[currentAddressIndexValue.value].street,
+                        building: addressesArrayValue.value[currentAddressIndexValue.value].building,
+                        flat: addressesArrayValue.value[currentAddressIndexValue.value].flat,
+                        comments: addressesArrayValue.value[currentAddressIndexValue.value].comments
+                    }
                 }
             }
+
+            // 
+            const contactAddressessMenuOpened = ref(false)
 
             //
             watchEffect(() => {
@@ -193,7 +236,7 @@
             
 
             return {
-                addDeliveryAddress, deliveryAddress, addressesArrayValue, currentAddressIndexValue, saveChanges, translateDealStatus, closeMenuModal
+                addDeliveryAddress, deliveryAddress, addressesArrayValue, currentAddressIndexValue, saveChanges, translateDealStatus, closeMenuModal, contactAddressessMenuOpened
             }   
         }
     })

@@ -319,26 +319,33 @@
                             <div 
                                 v-for="(address, index) in currentDeal.shipping.shippingAddress" 
                                 :key="index" 
-                                class="ion-margin-bottom"
-                                style="width: 100%; white-space: nowrap; overflow: hidden; position: relative">
-
-                                <!-- Кнопка удалить адрес -->
-                                <ion-icon :icon="closeCircleOutline" style="font-size: 1.4rem; position: absolute; top: -0.1rem; left: -0.1rem; z-index: 999999" @click.prevent.stop="deleteCurrentDeliveryAddress(index)" color="danger"></ion-icon>
+                                class="ion-margin-bottom delivery-address-block"
+                                @click.prevent.stop="showCurrentDeliveryAddressInfo(index)"
+                                >
 
                                 <!-- Адрес -->
-                                <div style="background-color: var(--ion-color-light); border-radius: 2rem;" class="ion-padding" @click.prevent.stop="showCurrentDeliveryAddressInfo(index)">
-                                    <ion-text 
-                                        color="primary" 
-                                    >
-                                        г. {{ address.city }}, {{ address.street }}, д. {{ address.building }} <span v-if="address.flat">- {{ address.flat }}</span>
-                                    </ion-text>
+                                <ion-text color="primary">г. {{ address.city }}, {{ address.street }}, д. {{ address.building }} <span v-if="address.flat">- {{ address.flat }}</span></ion-text>
+
+                                <!-- Кнопка -->
+                                <div class="delivery-address-block_btn">
+                                    <ion-icon style="font-size: 1.4rem;" color="danger" :icon="closeCircleOutline" @click.prevent.stop="openDeleteDeliveryAddressModal(index)"></ion-icon>
                                 </div>
                             </div>
                         </ion-row>
+
                         <!-- Кнопка добавить адрес -->
                         <ion-chip v-if="currentDeal.dealStatus !== 'deal-complete' && currentDeal.dealStatus !== 'deal-in-delivery'" class="ion-no-margin ion-margin-bottom" color="primary" @click="addDeliveryAddressMenu">Добавить адрес</ion-chip>
                     </ion-grid>
                 </ion-item-group> 
+
+                <!-- Всплывашка подтверждение удаления предмета заказа -->
+                <ion-action-sheet
+                    :is-open="deleteDeliveryAddressOpened"
+                    header="Вы хотите удалить адрес доставки?"
+                    :buttons="deleteDeliveryAddressButtons"
+                    @didDismiss="deleteDeliveryAddressOpened = false"
+                >
+                </ion-action-sheet>
                 
                 <!-- BUY -->
                 <ion-item-group class="ion-text-left ion-padding-horizontal" v-if="currentDeal.dealType === 'buy'">
@@ -1197,6 +1204,8 @@
             const openDeleteSubjectModal = (id) => {
                 if(currentDeal.value.dealStatus === 'deal-complete') {
                     alert('ViewDeal: вы не можете удалить предмет дела, если статус "ЗАВЕРШЕН"')
+                } else if (currentDeal.value.dealStatus === 'deal-in-delivery') {
+                    alert('ViewDeal: вы не можете удалить предмет дела, если статус "В ДОСТАВКЕ"')
                 } else {
                     deleteSubject.value = true;
                     subjectToDelete.value = id;
@@ -1980,18 +1989,51 @@
                 currentDeliveryAddressIndex.value = -1
                 isAddDeliveryAddressMenuOpened.value = true
             } 
-            const deleteCurrentDeliveryAddress = (index) => {
-                if(index > -1) {
-                    if(currentDeal.value.dealStatus === 'deal-complete' || currentDeal.value.dealStatus === 'deal-in-delivery') {
-                        alert('ViewDeal: вы не можете удалить адрес доставки, если статус "ЗАВЕРШЕН" или "В ДОСТАВКЕ"')
+
+            //
+            // Вызываем action sheet увдомление в качестве подтверждения
+            const deleteDeliveryAddressOpened = ref(false)
+            // Храним айди адреса доставки
+            const deliveryAddressToDelete = ref()
+            // открывает модалку по удалению конкретного адреса доставки и вполнять некоторые условия
+            const openDeleteDeliveryAddressModal = (id) => {
+                if(id > -1) {
+                    if(currentDeal.value.dealStatus === 'deal-complete') {
+                        alert('ViewDeal: вы не можете удалить адрес доставки, если статус "ЗАВЕРШЕН"')
+                    } else if (currentDeal.value.dealStatus === 'deal-in-delivery') {
+                        alert('ViewDeal: вы не можете удалить адрес доставки, если статус "В ДОСТАВКЕ"')
+                    } else if (currentDeal.value.shipping.shippingAddress.length === 1) {
+                        alert('ViewDeal: для доставки должен быть указан хотя бы один адрес')  
                     } else {
-                        if(currentDeal.value.shipping.shippingAddress.length === 1) {
-                            alert('ViewDeal: для доставки должен быть указан хотя бы один адрес')  
-                        } else {
-                            currentDeal.value.shipping.shippingAddress.splice(index, 1)
-                        }
+                        deleteDeliveryAddressOpened.value = true
+                        deliveryAddressToDelete.value = id
                     }
-                } 
+                }
+            }
+            // кнопки action sheet меню удаления выбранного адреса доставки
+            const deleteDeliveryAddressButtons = [
+                {
+                    text: 'Удалить',
+                    role: 'destructive',
+                    data: {
+                        type: 'delete'
+                    },
+                    handler: () => {
+                        console.log('Delete clicked')
+                        deleteCurrentDeliveryAddress(deliveryAddressToDelete.value)
+                    },
+                },
+                {
+                    text: 'Отменить',
+                    role: 'cancel',
+                    handler: () => {
+                        console.log('Cancel clicked')
+                    },
+                }
+            ]
+            // Удаляем конкретный адрес доставки
+            const deleteCurrentDeliveryAddress = (index) => {
+                currentDeal.value.shipping.shippingAddress.splice(index, 1)
             }
             const currentDeliveryAddressIndex = ref();
             const showCurrentDeliveryAddressInfo = (index) => {
@@ -2001,7 +2043,7 @@
             }
 
             return {
-                currency, spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, setPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setNewPersonQty, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, shippingTypeList, dealShippingType, shippingPrice, shippingAddress, sumAllTotalSubjectPriceFunc, translateShippingType, translateSelectedProduct, culcSubjectWeight, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, culcBuySubjectWeight, debt, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, refreshDebtValue, finishDeal, setMarkerAttrColor, shapes, checkmarkDone, availableBalance, currentPriceSubject, personPortionGram, dealImportance, setRatingValue, addToLedger, dealComments, substructFromWarehouseToast, addToWarehouseFunc, showSelectedRecipe, userRecipeArray, openSearchContactMenu, calcTotalDealPrice, goToContact, tempContactName, isAddDeliveryAddressMenuOpened, addDeliveryAddressMenu, deleteCurrentDeliveryAddress, showCurrentDeliveryAddressInfo, currentDeliveryAddressIndex
+                currency, spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, setPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setNewPersonQty, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, shippingTypeList, dealShippingType, shippingPrice, shippingAddress, sumAllTotalSubjectPriceFunc, translateShippingType, translateSelectedProduct, culcSubjectWeight, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, culcBuySubjectWeight, debt, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, refreshDebtValue, finishDeal, setMarkerAttrColor, shapes, checkmarkDone, availableBalance, currentPriceSubject, personPortionGram, dealImportance, setRatingValue, addToLedger, dealComments, substructFromWarehouseToast, addToWarehouseFunc, showSelectedRecipe, userRecipeArray, openSearchContactMenu, calcTotalDealPrice, goToContact, tempContactName, isAddDeliveryAddressMenuOpened, addDeliveryAddressMenu, deleteCurrentDeliveryAddress, showCurrentDeliveryAddressInfo, currentDeliveryAddressIndex, deleteDeliveryAddressOpened, deliveryAddressToDelete, openDeleteDeliveryAddressModal, deleteDeliveryAddressButtons
             }
         }
     })
@@ -2077,4 +2119,23 @@
     /* ion-toast.custom-toast::part(message) {
         --color: #5353d3!important;
     } */
+    .delivery-address-block {
+        background-color: var(--ion-color-light); 
+        border-radius: 2rem; 
+        width: 100%; 
+        white-space: nowrap; 
+        overflow: hidden; 
+        padding: 1rem; 
+        position: relative;
+    }
+    .delivery-address-block_btn {
+        position: absolute; 
+        padding: 1rem; 
+        top: -0.1rem; 
+        right: 0; 
+        background-color: var(--ion-color-light); 
+        display: flex; 
+        justify-content: center; 
+        align-items: center;
+    }
 </style>
