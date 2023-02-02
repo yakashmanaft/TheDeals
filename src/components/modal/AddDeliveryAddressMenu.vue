@@ -30,10 +30,10 @@
             </div>
 
             <!-- Выбрать из адресов контакта -->
-            <div v-if="currentAddressIndexValue === -1" class="ion-text-center ion-margin-top">
+            <div v-if="currentAddressIndexValue === -1 && contactAdresses.length !== 0" class="ion-text-center ion-margin-top">
 
                 <ion-text color="primary" @click="contactAddressessMenuOpened = true">
-                    Выберите адрес контакта
+                    Выберите адрес у контакта
                 </ion-text>
                 
                 <div class="ion-margin-vertical">или</div>
@@ -62,17 +62,17 @@
                 <ion-text color="medium">Квартира / Офис</ion-text>
                 <ion-input color="primary" v-model="deliveryAddress.flat" placeholder="Квартира / Офис" inputmode="text" autocapitalize="on" :disabled="dealStatus === 'deal-in-delivery' || dealStatus === 'deal-complete' ? true : false"></ion-input>
             </div>
-
+            
             <!-- Комментарии к адресу -->
             <div class="address-item">
                 <ion-text color="medium">Комментарии</ion-text>
                 <ion-textarea v-model="deliveryAddress.comments" placeholder="Укажите комментарии к адресу" autoGrow="true" inputmode="text" autocapitalize="on" :disabled="dealStatus === 'deal-in-delivery' || dealStatus === 'deal-complete' ? true : false"></ion-textarea>
             </div>
-
+            
             <br>
             <br>
             <br>
-
+            
             <!-- <div>
                 {{ dealStatus }}
                 {{ addressesArrayValue[currentAddressIndexValue] }}
@@ -108,7 +108,10 @@
                     <br>
                     <br>
                     <br>
-                    123
+                    <!--  -->
+                    <div v-for="(address, index) in contactAdresses" :key="index">
+                        {{ address }}
+                    </div>
                 </ion-content>
             </ion-modal>
         </ion-content>
@@ -128,6 +131,7 @@
             addressesArray: Array,
             currentAddressIndex: Number,
             dealStatus: String,
+            contactAdresses: Object
         },
         components: {
             IonModal, IonHeader, IonContent, IonToolbar, IonButtons, IonButton, IonTitle, IonInput, IonText, IonTextarea, IonLabel
@@ -211,9 +215,16 @@
 
             //
             const closeMenuModal = () => {
+                console.log(currentAddressIndexValue.value)
                 emit('closeModal')
                 if(currentAddressIndexValue.value === -1) {
-                    // ну хуй знает...
+                    deliveryAddress.value = {
+                        city: 'Пермь',
+                        street: '',
+                        building: '',
+                        flat: '',
+                        comments: ''
+                    }
                 } else {
                     deliveryAddress.value = {
                         city: addressesArrayValue.value[currentAddressIndexValue.value].city,

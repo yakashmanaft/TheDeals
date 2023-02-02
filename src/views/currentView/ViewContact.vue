@@ -268,8 +268,31 @@
                             </ion-grid>
 
                             <!-- Адрес -->
+                            {{ address }}
+
+                            <!-- Город -->
                             <ion-item>
-                                <ion-input inputmode="text" placeholder="Укажите адрес" v-model="address.address"></ion-input>
+                                <ion-input autocapitalize="on" color="primary" inputmode="text" placeholder="Укажите город" v-model="address.address.city"></ion-input>
+                            </ion-item>
+
+                            <!-- Улица -->
+                            <ion-item>
+                                <ion-input autocapitalize="on" color="primary" inputmode="text" placeholder="Укажите улицу" v-model="address.address.street"></ion-input>
+                            </ion-item>
+
+                            <!-- Строение -->
+                            <ion-item>
+                                <ion-input autocapitalize="on" color="primary" inputmode="text" placeholder="Укажите дом" v-model="address.address.building"></ion-input>
+                            </ion-item>
+
+                            <!-- Квартира / офис -->
+                            <ion-item>
+                                <ion-input autocapitalize="on" color="primary" inputmode="text" placeholder="Укажите квартиру / офис" v-model="address.address.flat"></ion-input>
+                            </ion-item>
+
+                            <!-- Комментарии -->
+                            <ion-item>
+                                <ion-textarea autocapitalize="on" autoGrow="true" color="primary" inputmode="text" placeholder="Комментарий к адресу" v-model="address.address.comments"></ion-textarea>
                             </ion-item>
 
                             <!-- Тип адрес -->
@@ -287,6 +310,7 @@
                         <ion-item v-else lines="none" class="ion-no-padding ion-margin-vertical">
                             <ion-grid class="ion-no-padding ion-margin-start">
                                 <ion-row class="ion-align-items-center">
+                                    {{ address }}
                                     <ion-icon class="ion-margin-end" color="primary" :icon="homeOutline"></ion-icon>
                                     <div class="flex flex-col" >
                                         <ion-text color="medium">{{ address.type }}</ion-text>
@@ -624,12 +648,18 @@
                 // =========================== СБОР ДАННЫХ ДЛЯ ВАЛИДАЦИИ ====================
                 // Для валидации адресов
                 let hasEmptyAddressType = [];
-                let hasEmptyAddressValue = [];
+                let hasEmptyAddressCity = [];
+                let hasEmptyAddressStreet = [];
+                let hasEmptyAddressBuilding = [];
                 currentContact.value.addresses.forEach(address => {
                     if(address.type === '') {
                         hasEmptyAddressType.push(true)
-                    } else if (address.address === '') {
-                        hasEmptyAddressValue.push(true)
+                    } else if (address.address.city === '') {
+                        hasEmptyAddressCity.push(true)
+                    } else if (address.address.street === '') {
+                        hasEmptyAddressStreet.push(true)
+                    } else if (address.address.building === '') {
+                        hasEmptyAddressBuilding.push(true)
                     }
                 })
 
@@ -637,8 +667,12 @@
                 // Валидация адресов
                 if(hasEmptyAddressType.includes(true)) {
                     alert('ViewContact: Вы не указали тип адреса')
-                } else if (hasEmptyAddressValue.includes(true)) {
-                    alert('ViewContact: Вы не указали сам адрес')
+                } else if (hasEmptyAddressCity.includes(true)) {
+                    alert('ViewContact: Вы не указали город')
+                } else if (hasEmptyAddressStreet.includes(true)) {
+                    alert('ViewContact: Вы не указали улицу')
+                } else if (hasEmptyAddressBuilding.includes(true)) {
+                    alert('ViewContact: У здания должен быть номер')
                 }
                 // СОХРАНЕНИЕ В БД
                 else {
@@ -697,12 +731,13 @@
                 currentContact.value.addresses.push({
                     id: uid(),
                     type: '',
-                    address: ''
-                    // city: 'Пермь',
-                    // street: '',
-                    // building: '',
-                    // flat: '',
-                    // comments: ''
+                    address: {
+                        city: 'Пермь',
+                        street: '',
+                        building: '',
+                        flat: '',
+                        comments: ''
+                    }
                 })
             }
             // В режиме редактирования, добавляем social к контакту
