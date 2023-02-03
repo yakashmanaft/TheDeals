@@ -397,11 +397,11 @@
                 } else if(dealData.value.dealType === '') {
                     alert('Calendar: Вы не указали тип дела')
                 // } else if (!dealData.value.shipping.typeOfShipping && dealData.value.dealType === 'sale') {
+                } else if (dealData.value.dealsList.length === 0) {
+                    alert('Calendar: Вы не добавили предмет дела')
                 } else if (!dealData.value.shipping.typeOfShipping) {
                     // Если не понадобится - убрать
                     alert('Calendar: Вы не указали способ доставки')
-                } else if (dealData.value.dealType === 'buy' && dealData.value.dealsList.length === 0) {
-                    alert('Calendar: Вы не добавили предмет дела')
                 } else {
                     try{
                         // Добавляем в БД инфу по новому контакту

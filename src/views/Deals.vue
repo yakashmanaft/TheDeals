@@ -467,12 +467,12 @@
                 } else if(dealData.value.dealType === '') {
                     alert('Deals: Вы не указали тип дела')
                 // } else if (!dealData.value.shipping.typeOfShipping && dealData.value.dealType === 'sale') {
+                } else if (dealData.value.dealsList.length === 0) {
+                    alert('Deals: Вы не добавили предмет дела')
                 } else if (!dealData.value.shipping.typeOfShipping) {
                 // } else if (!dealData.value.shipping.typeOfShipping) {
                     // Если не понадобится - убрать
                     alert('Deals: Вы не указали способ доставки')
-                } else if (dealData.value.dealType === 'buy' && dealData.value.dealsList.length === 0) {
-                    alert('Deals: Вы не добавили предмет дела')
                 } else {
                     try{
                         // Добавляем в БД инфу по новому делу
