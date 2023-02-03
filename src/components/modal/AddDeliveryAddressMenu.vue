@@ -273,7 +273,7 @@
 
             //
             const goToContact = (contact) => {
-                console.log(contact)
+                // console.log(contact)
                 router.replace({ 
                     name: 'View-Contact', 
                     params: {
