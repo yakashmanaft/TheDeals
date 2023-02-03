@@ -334,7 +334,7 @@
                                 <!-- Адрес -->
                                 <ion-text color="primary">г. {{ address.city }}, {{ address.street }}, д. {{ address.building }} <span v-if="address.flat">- {{ address.flat }}</span></ion-text>
 
-                                <!-- Кнопка -->
+                                <!-- Кнопка удалить-->
                                 <div class="delivery-address-block_btn">
                                     <ion-icon style="font-size: 1.4rem;" color="danger" :icon="closeCircleOutline" @click.prevent.stop="openDeleteDeliveryAddressModal(index)"></ion-icon>
                                 </div>

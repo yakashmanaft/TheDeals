@@ -268,7 +268,7 @@
                             </ion-grid>
 
                             <!-- Адрес -->
-                            {{ address }}
+                            <!-- {{ address }} -->
 
                             <!-- Город -->
                             <ion-item>
@@ -309,12 +309,18 @@
                         <!-- Показываем в режиме просмотра -->
                         <ion-item v-else lines="none" class="ion-no-padding ion-margin-vertical">
                             <ion-grid class="ion-no-padding ion-margin-start">
-                                <ion-row class="ion-align-items-center">
-                                    {{ address }}
-                                    <ion-icon class="ion-margin-end" color="primary" :icon="homeOutline"></ion-icon>
-                                    <div class="flex flex-col" >
+                                <ion-row class="ion-align-items-center nowrap">
+                                    <!-- {{ address }} -->
+                                    <div style="width: 25px; height: 25px;" class="ion-margin-end">
+                                        <ion-icon class="ion-margin-end" color="primary" :icon="homeOutline"></ion-icon>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <!--  -->
                                         <ion-text color="medium">{{ address.type }}</ion-text>
-                                        <ion-text>{{ address.address }}</ion-text>
+                                        <!--  -->
+                                        <ion-text>г. {{ address.address.city }}, {{ address.address.street }}, {{ address.address.building }} <span v-if="address.address.flat !== ''">- {{ address.address.flat }}</span></ion-text>
+                                        <!--  -->
+                                        <ion-text v-if="address.address.comments !== ''" style="font-size: 0.8rem;" color="medium">{{ address.address.comments }}</ion-text>
                                     </div>
                                 </ion-row>
                             </ion-grid>
@@ -951,6 +957,10 @@
 
     .flex-col {
         flex-direction: column;
+    }
+
+    .nowrap {
+        flex-wrap: nowrap!important
     }
 
     .margin-horizontal-16 {

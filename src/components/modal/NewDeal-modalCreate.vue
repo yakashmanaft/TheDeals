@@ -4,7 +4,7 @@
         <ion-header translucent="true">
             <ion-toolbar>
                 <ion-buttons slot="start">
-                    <ion-button @click="$emit('closeModal', dealContact = 'Неизвестный')">Отменить</ion-button>
+                    <ion-button @click="$emit('closeModal', dealContact = 'Неизвестный', dealShippingType = '')">Отменить</ion-button>
                 </ion-buttons>
                 <ion-title class="ion-text-center">Создать дело</ion-title>
                 <ion-buttons slot="end">
@@ -251,6 +251,7 @@
     
                         </ion-row>
                     </ion-grid>
+
                     <!-- Адрес доставки -->
                     <ion-grid v-if="dealData.shipping.typeOfShipping === 'shipping-delivery'" class="ion-no-padding border-bottom">
                         <!-- Header -->
@@ -261,11 +262,41 @@
                             </ion-button>
                         </ion-row>
                         <!-- Content -->
-                        <ion-row class="ion-margin-bottom">
+                        <!-- <ion-row class="ion-margin-bottom">
                             <ion-textarea  autoGrow="true" placeholder="Впишите адрес" class="ion-margin-bottom" autocapitalize="on" v-model="shippingAddress"></ion-textarea>
+                        </ion-row> -->
+
+                        <!--  -->
+                        <ion-row v-if="dealData.shipping.shippingAddress && dealData.shipping.shippingAddress.length > 0">
+                            <div
+                                v-for="(address, index) in dealData.shipping.shippingAddress" 
+                                :key="index"
+                                class="ion-margin-bottom delivery-address-block"   
+                                @click.prevent.stop="showCurrentDeliveryAddressInfo(index)"
+                            >
+                                <!-- Адрес -->
+                                <ion-text color="primary">г. {{ address.city }}, {{ address.street }}, д. {{ address.building }} <span v-if="address.flat">- {{ address.flat }}</span></ion-text>
+
+                                <!-- Кнопка удалить -->
+                                <div class="delivery-address-block_btn">
+                                    <ion-icon style="font-size: 1.4rem;" color="danger" :icon="closeCircleOutline" @click.prevent.stop="openDeleteDeliveryAddressModal(index)"></ion-icon>
+                                </div>
+                            </div>
                         </ion-row>
+
+                        <!-- Кнопка добавить адрес-->
+                        <ion-chip @click="addDeliveryAddressMenu" class="ion-no-margin ion-margin-bottom" color="primary">Добавить адрес</ion-chip>
                     </ion-grid>
                 </ion-item-group>
+
+                <!-- Всплывашка подтверждение удаления предмета заказа -->
+                <ion-action-sheet
+                    :isOpen="deleteDeliveryAddressOpened"
+                    header="Вы хотите удалить адрес доставки?"
+                    :buttons="deleteDeliveryAddressButtons"
+                    @didDismiss="deleteDeliveryAddressOpened = false"
+                ></ion-action-sheet>
+
                 <!-- BUY -->
                 <ion-item-group class="ion-text-left ion-padding-horizontal" v-if="dealData.dealType === 'buy'">
                     <!-- Заголовок -->
@@ -507,12 +538,23 @@
                         :balance="availableBalance"
                         :isDealPaidMenuOpenedValue="isDealPaidMenuOpened"
                     />
+
+                    <!-- Модалка добавления нового адреса в доставку -->
+                    <AddDeliveryAddressMenu
+                        :isOpen="isAddDeliveryAddressMenuOpened"
+                        :addressesArray="dealData.shipping.shippingAddress"
+                        :currentAddressIndex="currentDeliveryAddressIndex"
+                        :dealStatus="dealData.dealStatus"
+                        :contactAdresses="contactAdressesArray"
+                        @closeModal="isAddDeliveryAddressMenuOpened = false"
+                    />
                 </ion-item-group>
             </div>
 
 
             <br>
             {{dealData}}
+            <!-- {{ dealShippingType }} -->
             <br>
             <br>
             <br>
@@ -543,7 +585,8 @@
     import CreateDealSubject from '../modal/ViewDeal-modalCreateSubject.vue';
     import ViewDealSubject from '../modal/ViewDeal-modalViewSubject.vue';
     import DealPaidMenu from '../DealPaidMenu.vue';
-    import StarRaiting from '../StarRaiting.vue'
+    import StarRaiting from '../StarRaiting.vue';
+    import AddDeliveryAddressMenu from '../../components/modal/AddDeliveryAddressMenu.vue';
     //
     import { format, parseISO } from 'date-fns';
     import { ru } from 'date-fns/locale'
@@ -563,7 +606,9 @@
             userRecipeArray: Array
         },
         components: {
-            IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonInput, ModalCalendar, IonSearchbar, IonItem, Select, IonChip, IonIcon, IonCard, CreateDealSubject, ViewDealSubject, IonActionSheet, IonThumbnail, IonImg, IonLabel, IonTextarea, IonList, DealPaidMenu, StarRaiting
+            IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonInput, ModalCalendar, IonSearchbar, IonItem, Select, IonChip, IonIcon, IonCard, IonActionSheet, IonThumbnail, IonImg, IonLabel, IonTextarea, IonList,
+            //
+            CreateDealSubject, ViewDealSubject,  DealPaidMenu, StarRaiting, AddDeliveryAddressMenu
         },
         setup(props, { emit }) {
             //
@@ -577,9 +622,11 @@
             // ================= choose contact for deal ==========================
             const dealContact = ref('Неизвестный');
             const dealContactID = ref('000');
+            const contactAdressesArray = ref([])
             // выдергиваем из массива нужный контакт
             const searchContactMenu = ref(false)
             const choose = (contact) => {
+                contactAdressesArray.value = contact.addresses
                 dealContact.value = `${contact.contactInfo.name} ${contact.contactInfo.surname}`
                 dealData.value.tempContactName = `${contact.contactInfo.name} ${contact.contactInfo.surname}`
                 dealContactID.value = contact.id
@@ -1373,8 +1420,64 @@
                 router.replace({ path: '/contacts' })
             }
 
+            //
+            const isAddDeliveryAddressMenuOpened = ref()
+            const addDeliveryAddressMenu =() => {
+                currentDeliveryAddressIndex.value = -1
+                isAddDeliveryAddressMenuOpened.value = true
+            }
+
+            //
+            // Вызываем action sheet увдомление в качестве подтверждения
+            const deleteDeliveryAddressOpened = ref(false)
+            // Храним айди адреса доставки
+            const deliveryAddressToDelete = ref()
+            // открывает модалку по удалению конкретного адреса доставки и вполнять некоторые условия
+            const openDeleteDeliveryAddressModal = (id) => {
+                if(id > -1) {
+                    if(dealData.value.shipping.shippingAddress.length === 1) {
+                        alert('ViewDeal: для доставки должен быть указан хотя бы один адрес')  
+                    } else {
+                        console.log(id)
+                        deleteDeliveryAddressOpened.value = true
+                        deliveryAddressToDelete.value = id
+                    }
+                }
+            }
+            // кнопки action sheet меню удаления выбранного адреса доставки
+            const deleteDeliveryAddressButtons = [
+                {
+                    text: 'Удалить',
+                    role: 'destructive',
+                    data: {
+                        type: 'delete'
+                    },
+                    handler: () => {
+                        console.log('Delete clicked')
+                        deleteCurrentDeliveryAddress(deliveryAddressToDelete.value)
+                    },
+                },
+                {
+                    text: 'Отменить',
+                    role: 'cancel',
+                    handler: () => {
+                        console.log('Cancel clicked')
+                    },
+                }
+            ]
+            // Удаляем конкретный адрес доставки
+            const deleteCurrentDeliveryAddress = (index) => {
+                dealData.value.shipping.shippingAddress.splice(index, 1)
+            }
+            const currentDeliveryAddressIndex = ref();
+            const showCurrentDeliveryAddressInfo = (index) => {
+                currentDeliveryAddressIndex.value = index
+                // console.log(index)
+                isAddDeliveryAddressMenuOpened.value = true
+            }
+
             return {
-                currency, dealContact, dealContactID , searchContactMenu, choose, isCalendarOpened, closeModalCalendar, updateExecutionDate, datepicker, myContactsArray, searchDealContact, searchedContacts, dealTypes, addCircleOutline, closeCircleOutline, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, openDeleteSubjectModal, subjectToDelete, deleteDealSubjectButtons, addNewSubject, deleteSubject, dealData, currentDealSubject, isViewDealSubjectOpened, openCurrentDealSubject, checkRentAttr, setColorByDealType, setIconByDealType, currentDealType, isAttributesMenuOpened, setNewSubjectPrice, calcNewSubjectTotalPrice, sumAttributesPriceValue, setSumAttributesPriceValue, setSubjectPrice, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, calcSubjectTotalPrice, setNewSubjectQty, setPersonQty, setNewPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, setChipColor, shippingTypeList, dealShippingType, shippingPrice, shippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, calcTotalDealPrice, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, translateSelectedProduct, culcSubjectWeight, culcBuySubjectWeight, culcDealDebt, setAmountValue, debt, refreshDebtValue, dealPaidAmountValue, setAddButtonColor, currentPriceSubject, personPortionGram, availableBalance, myDeals, setRatingValue, dealImportance, dealComments, showSelectedRecipe, recipeArray, closeModalRouterReplace, goToMyContacts, router
+                currency, dealContact, dealContactID , searchContactMenu, choose, isCalendarOpened, closeModalCalendar, updateExecutionDate, datepicker, myContactsArray, searchDealContact, searchedContacts, dealTypes, addCircleOutline, closeCircleOutline, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, openDeleteSubjectModal, subjectToDelete, deleteDealSubjectButtons, addNewSubject, deleteSubject, dealData, currentDealSubject, isViewDealSubjectOpened, openCurrentDealSubject, checkRentAttr, setColorByDealType, setIconByDealType, currentDealType, isAttributesMenuOpened, setNewSubjectPrice, calcNewSubjectTotalPrice, sumAttributesPriceValue, setSumAttributesPriceValue, setSubjectPrice, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, calcSubjectTotalPrice, setNewSubjectQty, setPersonQty, setNewPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, setChipColor, shippingTypeList, dealShippingType, shippingPrice, shippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, calcTotalDealPrice, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, translateSelectedProduct, culcSubjectWeight, culcBuySubjectWeight, culcDealDebt, setAmountValue, debt, refreshDebtValue, dealPaidAmountValue, setAddButtonColor, currentPriceSubject, personPortionGram, availableBalance, myDeals, setRatingValue, dealImportance, dealComments, showSelectedRecipe, recipeArray, closeModalRouterReplace, goToMyContacts, router, isAddDeliveryAddressMenuOpened, addDeliveryAddressMenu, deleteDeliveryAddressOpened, deliveryAddressToDelete, openDeleteDeliveryAddressModal, deleteDeliveryAddressButtons, deleteCurrentDeliveryAddress, currentDeliveryAddressIndex, contactAdressesArray, showCurrentDeliveryAddressInfo
             }
         }
     })
@@ -1436,5 +1539,24 @@
     }
     .border-top {
         border-top: 1px solid var(--ion-color-light);
+    }
+    .delivery-address-block {
+        background-color: var(--ion-color-light); 
+        border-radius: 2rem; 
+        width: 100%; 
+        white-space: nowrap; 
+        overflow: hidden; 
+        padding: 1rem; 
+        position: relative;
+    }
+    .delivery-address-block_btn {
+        position: absolute; 
+        padding: 1rem; 
+        top: -0.1rem; 
+        right: 0; 
+        background-color: var(--ion-color-light); 
+        display: flex; 
+        justify-content: center; 
+        align-items: center;
     }
 </style>
