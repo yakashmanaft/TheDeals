@@ -546,6 +546,7 @@
                         :currentAddressIndex="currentDeliveryAddressIndex"
                         :dealStatus="dealData.dealStatus"
                         :contactAdresses="contactAdressesArray"
+                        :contact="contactObject"
                         @closeModal="isAddDeliveryAddressMenuOpened = false"
                     />
                 </ion-item-group>
@@ -623,9 +624,11 @@
             const dealContact = ref('Неизвестный');
             const dealContactID = ref('000');
             const contactAdressesArray = ref([])
+            const contactObject = ref()
             // выдергиваем из массива нужный контакт
             const searchContactMenu = ref(false)
             const choose = (contact) => {
+                contactObject.value = contact
                 contactAdressesArray.value = contact.addresses
                 dealContact.value = `${contact.contactInfo.name} ${contact.contactInfo.surname}`
                 dealData.value.tempContactName = `${contact.contactInfo.name} ${contact.contactInfo.surname}`
@@ -1477,7 +1480,7 @@
             }
 
             return {
-                currency, dealContact, dealContactID , searchContactMenu, choose, isCalendarOpened, closeModalCalendar, updateExecutionDate, datepicker, myContactsArray, searchDealContact, searchedContacts, dealTypes, addCircleOutline, closeCircleOutline, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, openDeleteSubjectModal, subjectToDelete, deleteDealSubjectButtons, addNewSubject, deleteSubject, dealData, currentDealSubject, isViewDealSubjectOpened, openCurrentDealSubject, checkRentAttr, setColorByDealType, setIconByDealType, currentDealType, isAttributesMenuOpened, setNewSubjectPrice, calcNewSubjectTotalPrice, sumAttributesPriceValue, setSumAttributesPriceValue, setSubjectPrice, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, calcSubjectTotalPrice, setNewSubjectQty, setPersonQty, setNewPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, setChipColor, shippingTypeList, dealShippingType, shippingPrice, shippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, calcTotalDealPrice, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, translateSelectedProduct, culcSubjectWeight, culcBuySubjectWeight, culcDealDebt, setAmountValue, debt, refreshDebtValue, dealPaidAmountValue, setAddButtonColor, currentPriceSubject, personPortionGram, availableBalance, myDeals, setRatingValue, dealImportance, dealComments, showSelectedRecipe, recipeArray, closeModalRouterReplace, goToMyContacts, router, isAddDeliveryAddressMenuOpened, addDeliveryAddressMenu, deleteDeliveryAddressOpened, deliveryAddressToDelete, openDeleteDeliveryAddressModal, deleteDeliveryAddressButtons, deleteCurrentDeliveryAddress, currentDeliveryAddressIndex, contactAdressesArray, showCurrentDeliveryAddressInfo
+                currency, dealContact, dealContactID , searchContactMenu, choose, isCalendarOpened, closeModalCalendar, updateExecutionDate, datepicker, myContactsArray, searchDealContact, searchedContacts, dealTypes, addCircleOutline, closeCircleOutline, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, openDeleteSubjectModal, subjectToDelete, deleteDealSubjectButtons, addNewSubject, deleteSubject, dealData, currentDealSubject, isViewDealSubjectOpened, openCurrentDealSubject, checkRentAttr, setColorByDealType, setIconByDealType, currentDealType, isAttributesMenuOpened, setNewSubjectPrice, calcNewSubjectTotalPrice, sumAttributesPriceValue, setSumAttributesPriceValue, setSubjectPrice, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, calcSubjectTotalPrice, setNewSubjectQty, setPersonQty, setNewPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, setChipColor, shippingTypeList, dealShippingType, shippingPrice, shippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, calcTotalDealPrice, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, translateSelectedProduct, culcSubjectWeight, culcBuySubjectWeight, culcDealDebt, setAmountValue, debt, refreshDebtValue, dealPaidAmountValue, setAddButtonColor, currentPriceSubject, personPortionGram, availableBalance, myDeals, setRatingValue, dealImportance, dealComments, showSelectedRecipe, recipeArray, closeModalRouterReplace, goToMyContacts, router, isAddDeliveryAddressMenuOpened, addDeliveryAddressMenu, deleteDeliveryAddressOpened, deliveryAddressToDelete, openDeleteDeliveryAddressModal, deleteDeliveryAddressButtons, deleteCurrentDeliveryAddress, currentDeliveryAddressIndex, contactAdressesArray, showCurrentDeliveryAddressInfo, contactObject
             }
         }
     })

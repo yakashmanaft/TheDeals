@@ -85,6 +85,9 @@
                 <ion-button v-else expand="block" @click="saveChanges(deliveryAddress)">Сохранить</ion-button>
             </div>
 
+
+
+            <!-- ============================== ВЫБОР АДРЕСА У КОНТАКТА =================================== -->
             <!-- Модалка выбора адреса у контакта -->
             <ion-modal :isOpen="contactAddressessMenuOpened">
 
@@ -93,6 +96,10 @@
                     <ion-toolbar>
                         <ion-buttons slot="start">
                             <ion-button @click="contactAddressessMenuOpened = false">Отменить</ion-button>
+                        </ion-buttons>
+                        <!--  -->
+                        <ion-buttons slot="end">
+                            <ion-button @click="goToContact(contact)">К контакту</ion-button>
                         </ion-buttons>
                     </ion-toolbar>
                 </ion-header>
@@ -109,8 +116,16 @@
                     <br>
                     <br>
                     <!--  -->
-                    <div v-for="(address, index) in contactAdresses" :key="index">
-                        {{ address }}
+                    <div v-for="(address, index) in contactAdresses" :key="index" @click="chooseAddress(address.address)">
+                        <!-- {{ address.address }} -->
+                        <ion-card class="ion-padding">
+                            <ion-grid class="ion-no-padding">
+                                <ion-row>
+                                    <ion-text>{{ address.address.city }}</ion-text>
+                                </ion-row>
+                                <ion-row>{{ address.address.street }}, {{ address.address.building }}  &#160;<span v-if="address.address.flat !== ''"> - {{ address.address.flat }}</span></ion-row>
+                            </ion-grid>
+                        </ion-card>
                     </div>
                 </ion-content>
             </ion-modal>
@@ -121,8 +136,9 @@
 <script>
     import { defineComponent, ref, onMounted, watchEffect, watch } from 'vue';
     // import { uid } from 'uid';
+    import { useRouter } from 'vue-router';
     //
-    import { IonModal, IonHeader, IonContent, IonToolbar, IonButtons, IonButton, IonTitle, IonInput, IonText, IonTextarea, IonLabel } from '@ionic/vue';
+    import { IonModal, IonHeader, IonContent, IonToolbar, IonButtons, IonButton, IonTitle, IonInput, IonText, IonTextarea, IonLabel, IonCard, IonGrid, IonRow } from '@ionic/vue';
 
     export default defineComponent({
         name: 'AddDeliveryAddressMenu',
@@ -131,13 +147,17 @@
             addressesArray: Array,
             currentAddressIndex: Number,
             dealStatus: String,
-            contactAdresses: Object
+            contactAdresses: Object,
+            contact: Object
         },
         components: {
-            IonModal, IonHeader, IonContent, IonToolbar, IonButtons, IonButton, IonTitle, IonInput, IonText, IonTextarea, IonLabel
+            IonModal, IonHeader, IonContent, IonToolbar, IonButtons, IonButton, IonTitle, IonInput, IonText, IonTextarea, IonLabel, IonCard, IonGrid, IonRow
             //
         },
         setup(props, { emit }) {
+            //
+            const router = useRouter();
+            //
             const addressesArrayValue = ref()
             const currentAddressIndexValue = ref()
             //
@@ -238,6 +258,33 @@
 
             // 
             const contactAddressessMenuOpened = ref(false)
+            const chooseAddress = (choosenAddress) => {
+                // console.log(choosenAddress)
+                deliveryAddress.value = {
+                    city: choosenAddress.city,
+                    street: choosenAddress.street,
+                    building: choosenAddress.building,
+                    flat: choosenAddress.flat,
+                    comments: choosenAddress.comments
+                }
+                contactAddressessMenuOpened.value = false
+                addDeliveryAddress()
+            }
+
+            //
+            const goToContact = (contact) => {
+                console.log(contact)
+                router.replace({ 
+                    name: 'View-Contact', 
+                    params: {
+                        contactId: contact.id,
+                        contactUid: contact.uid,
+                        contact: JSON.stringify(contact)
+                    }
+                })
+                contactAddressessMenuOpened.value = false
+                emit('closeModal')
+            }
 
             //
             watchEffect(() => {
@@ -247,7 +294,7 @@
             
 
             return {
-                addDeliveryAddress, deliveryAddress, addressesArrayValue, currentAddressIndexValue, saveChanges, translateDealStatus, closeMenuModal, contactAddressessMenuOpened
+                addDeliveryAddress, deliveryAddress, addressesArrayValue, currentAddressIndexValue, saveChanges, translateDealStatus, closeMenuModal, contactAddressessMenuOpened, chooseAddress, goToContact, router
             }   
         }
     })
