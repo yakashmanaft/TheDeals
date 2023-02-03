@@ -82,9 +82,16 @@
                                 </ion-grid>
                             </ion-item>
                             <!-- Если поиском в списке контактов ничего не найдено -->
-                            <ion-item lines="none" v-if="searchedContacts.length <= 0">
-                                <ion-text color="medium">Ничего не найдено</ion-text>
-                            </ion-item>
+                            <div v-if="searchedContacts.length <= 0">
+                                <ion-item lines="none">
+                                    <ion-text color="medium">Ничего не найдено</ion-text>
+                                </ion-item>
+                                <!--  -->
+                                <div class="ion-padding-horizontal" style="display: flex; flex-direction: column; position: absolute; top: 40%; width: 100%;">
+                                    <ion-text class="ion-text-center" color="medium">Вы можете создать новый в Моих контактах</ion-text>
+                                    <ion-button color="dark" class="ion-margin-top" @click="goToMyContacts()">Перейти</ion-button>
+                                </div>
+                            </div>
                         </ion-content>
                     </ion-modal>
                 </ion-item-group>
@@ -523,6 +530,7 @@
 
 <script>
     import { defineComponent, ref, onMounted, computed, watch, watchEffect } from 'vue';
+    import { useRoute, useRouter } from 'vue-router';
     import store from '../../store/index'; 
     import { uid } from 'uid';
     import { supabase } from '../../supabase/init';
@@ -558,6 +566,8 @@
             IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonItemGroup, IonText, IonGrid, IonRow, IonInput, ModalCalendar, IonSearchbar, IonItem, Select, IonChip, IonIcon, IonCard, CreateDealSubject, ViewDealSubject, IonActionSheet, IonThumbnail, IonImg, IonLabel, IonTextarea, IonList, DealPaidMenu, StarRaiting
         },
         setup(props, { emit }) {
+            //
+            const router = useRouter();
             // Currency
             const currency = ref(store.state.systemCurrency.name);
             // Типы дел для создания нового дела
@@ -1355,8 +1365,16 @@
                 // return recipeID
             }
 
+            //
+            const goToMyContacts = () => {
+                searchContactMenu.value = false
+                // emit('closeModal')
+                emit('closeSelf')
+                router.replace({ path: '/contacts' })
+            }
+
             return {
-                currency, dealContact, dealContactID , searchContactMenu, choose, isCalendarOpened, closeModalCalendar, updateExecutionDate, datepicker, myContactsArray, searchDealContact, searchedContacts, dealTypes, addCircleOutline, closeCircleOutline, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, openDeleteSubjectModal, subjectToDelete, deleteDealSubjectButtons, addNewSubject, deleteSubject, dealData, currentDealSubject, isViewDealSubjectOpened, openCurrentDealSubject, checkRentAttr, setColorByDealType, setIconByDealType, currentDealType, isAttributesMenuOpened, setNewSubjectPrice, calcNewSubjectTotalPrice, sumAttributesPriceValue, setSumAttributesPriceValue, setSubjectPrice, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, calcSubjectTotalPrice, setNewSubjectQty, setPersonQty, setNewPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, setChipColor, shippingTypeList, dealShippingType, shippingPrice, shippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, calcTotalDealPrice, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, translateSelectedProduct, culcSubjectWeight, culcBuySubjectWeight, culcDealDebt, setAmountValue, debt, refreshDebtValue, dealPaidAmountValue, setAddButtonColor, currentPriceSubject, personPortionGram, availableBalance, myDeals, setRatingValue, dealImportance, dealComments, showSelectedRecipe, recipeArray, closeModalRouterReplace
+                currency, dealContact, dealContactID , searchContactMenu, choose, isCalendarOpened, closeModalCalendar, updateExecutionDate, datepicker, myContactsArray, searchDealContact, searchedContacts, dealTypes, addCircleOutline, closeCircleOutline, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, openDeleteSubjectModal, subjectToDelete, deleteDealSubjectButtons, addNewSubject, deleteSubject, dealData, currentDealSubject, isViewDealSubjectOpened, openCurrentDealSubject, checkRentAttr, setColorByDealType, setIconByDealType, currentDealType, isAttributesMenuOpened, setNewSubjectPrice, calcNewSubjectTotalPrice, sumAttributesPriceValue, setSumAttributesPriceValue, setSubjectPrice, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, calcSubjectTotalPrice, setNewSubjectQty, setPersonQty, setNewPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, setChipColor, shippingTypeList, dealShippingType, shippingPrice, shippingAddress, sumAllTotalSubjectPrice, sumAllTotalSubjectPriceFunc, calcTotalDealPrice, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, translateSelectedProduct, culcSubjectWeight, culcBuySubjectWeight, culcDealDebt, setAmountValue, debt, refreshDebtValue, dealPaidAmountValue, setAddButtonColor, currentPriceSubject, personPortionGram, availableBalance, myDeals, setRatingValue, dealImportance, dealComments, showSelectedRecipe, recipeArray, closeModalRouterReplace, goToMyContacts, router
             }
         }
     })

@@ -59,17 +59,13 @@
                         <!-- Если ничего подхлдящего нет, создать свое надо -->
                         <div v-if="searchedSubject.length <= 0">
                             <ion-item lines="none">
-                                <ion-grid class="ion-no-padding">
-                                    <ion-row class="ion-justify-content-between ion-align-items-center">
-                                        <ion-text color="medium">
-                                            Ничего не найдено
-                                        </ion-text>
-                                        <ion-text color="primary" @click="addNewSubjectToPrice">
-                                                Добавить
-                                        </ion-text>
-                                    </ion-row>
-                                </ion-grid>
+                                <ion-text color="medium">Ничего не найдено</ion-text>
                             </ion-item>
+                            <!--  -->
+                            <div class="ion-padding-horizontal" style="display: flex; flex-direction: column; position: absolute; top: 40%; width: 100%;">
+                                <ion-text color="medium" class="ion-text-center">Добавляйте новые предметы и атрибуты в свой прайс-лист</ion-text>
+                                <ion-button color="dark" class="ion-margin-top" @click="goToMyPrice()">Перейти</ion-button>
+                            </div>
                         </div>
                     </ion-content>
                 </ion-modal>
@@ -1113,8 +1109,16 @@
                 // }
             }
 
+            //
+            const goToMyPrice = () => {
+                searchSubjectMenu.value = false
+                emit('closeModal')
+                emit('closeModalRouterReplace')
+                router.replace({ path: '/price-list' })
+            }
+
             return {
-                dealSaleSubjectArray, dealBuySubjectArray, helpOutline, addOutline, showSelectedProduct, searchSubjectMenu, searchSelectedProduct, currentDealType, translateValue, searchedSubject, choose, searchRecipeMenu, searchRecipe, userRecipeArray, chooseRecipe, showSelectedRecipe, searchedRecipe, noRecipe, searchAttributeMenu, searchAdditionalAttributes, dealAdditionalAttributesArray, searchedAdditionalAttributes, chooseAttribute, closeCircleOutline, isAttributesMenuOpened, toggleAttributesMenu, openDeleteAttributeModal, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, systemCurrency, currentSubjectAttribute, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, isItemAlreadyHave, setAttributeRentType, sumAttributesPriceFunc, newAttribute, setProductQty, calcTotalSubjectPrice, setProductPrice, subjectPrice, subjectQty, removeCircleOutline, addCircleOutline, countQtyButtonColor, changeQty, changePersonQty, countPersonQtyButtonColor, gramPerPerson, setDiscountRange, subjectDiscount, addNewAttrToPrice, addNewSubjectToPrice, setAddButtonColor, goToRecipesStore, isModalCreateNewRecipeOpened, recipeData, setOpen, userEmail,createNew, spinner, router, searchedRecipeFunc, setCostEstimation, goToMyRecipes
+                dealSaleSubjectArray, dealBuySubjectArray, helpOutline, addOutline, showSelectedProduct, searchSubjectMenu, searchSelectedProduct, currentDealType, translateValue, searchedSubject, choose, searchRecipeMenu, searchRecipe, userRecipeArray, chooseRecipe, showSelectedRecipe, searchedRecipe, noRecipe, searchAttributeMenu, searchAdditionalAttributes, dealAdditionalAttributesArray, searchedAdditionalAttributes, chooseAttribute, closeCircleOutline, isAttributesMenuOpened, toggleAttributesMenu, openDeleteAttributeModal, deleteAttribute, attributeToDelete, deleteSubjectAttributeButtons, systemCurrency, currentSubjectAttribute, isViewSubjectAttributeOpened, openCurrentSubjectAttribute, isItemAlreadyHave, setAttributeRentType, sumAttributesPriceFunc, newAttribute, setProductQty, calcTotalSubjectPrice, setProductPrice, subjectPrice, subjectQty, removeCircleOutline, addCircleOutline, countQtyButtonColor, changeQty, changePersonQty, countPersonQtyButtonColor, gramPerPerson, setDiscountRange, subjectDiscount, addNewAttrToPrice, addNewSubjectToPrice, setAddButtonColor, goToRecipesStore, isModalCreateNewRecipeOpened, recipeData, setOpen, userEmail,createNew, spinner, router, searchedRecipeFunc, setCostEstimation, goToMyRecipes, goToMyPrice
             }
         }
     })

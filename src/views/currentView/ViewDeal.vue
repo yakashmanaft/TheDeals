@@ -147,9 +147,16 @@
                                 </ion-grid>
                             </ion-item>
                             <!-- Если поиском в списке контактов ничего не найдено -->
-                            <ion-item lines="none" v-if="searchedContacts.length <= 0">
-                                <ion-text color="medium">Ничего не найдено</ion-text>
-                            </ion-item>
+                            <div v-if="searchedContacts.length <= 0">
+                                <ion-item lines="none" >
+                                    <ion-text color="medium">Ничего не найдено</ion-text>
+                                </ion-item>
+                                <!--  -->
+                                <div class="ion-padding-horizontal" style="display: flex; flex-direction: column; position: absolute; top: 40%; width: 100%;">
+                                    <ion-text class="ion-text-center" color="medium">Вы можете создать новый в Моих контактах</ion-text>
+                                    <ion-button color="dark" class="ion-margin-top" @click="goToMyContacts()">Перейти</ion-button>
+                                </div>
+                            </div>
                         </ion-content>
                     </ion-modal>
 
@@ -2045,8 +2052,15 @@
                 isAddDeliveryAddressMenuOpened.value = true
             }
 
+            //
+            const goToMyContacts = () => {
+                // Закрываем модалку выбора контакта
+                searchContactMenu.value = false
+                router.replace({ path: '/contacts' })
+            }
+
             return {
-                currency, spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, setPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setNewPersonQty, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, shippingTypeList, dealShippingType, shippingPrice, shippingAddress, sumAllTotalSubjectPriceFunc, translateShippingType, translateSelectedProduct, culcSubjectWeight, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, culcBuySubjectWeight, debt, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, refreshDebtValue, finishDeal, setMarkerAttrColor, shapes, checkmarkDone, availableBalance, currentPriceSubject, personPortionGram, dealImportance, setRatingValue, addToLedger, dealComments, substructFromWarehouseToast, addToWarehouseFunc, showSelectedRecipe, userRecipeArray, openSearchContactMenu, calcTotalDealPrice, goToContact, tempContactName, isAddDeliveryAddressMenuOpened, addDeliveryAddressMenu, deleteCurrentDeliveryAddress, showCurrentDeliveryAddressInfo, currentDeliveryAddressIndex, deleteDeliveryAddressOpened, deliveryAddressToDelete, openDeleteDeliveryAddressModal, deleteDeliveryAddressButtons, contactAdressesArray
+                currency, spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, setPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setNewPersonQty, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, shippingTypeList, dealShippingType, shippingPrice, shippingAddress, sumAllTotalSubjectPriceFunc, translateShippingType, translateSelectedProduct, culcSubjectWeight, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, culcBuySubjectWeight, debt, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, refreshDebtValue, finishDeal, setMarkerAttrColor, shapes, checkmarkDone, availableBalance, currentPriceSubject, personPortionGram, dealImportance, setRatingValue, addToLedger, dealComments, substructFromWarehouseToast, addToWarehouseFunc, showSelectedRecipe, userRecipeArray, openSearchContactMenu, calcTotalDealPrice, goToContact, tempContactName, isAddDeliveryAddressMenuOpened, addDeliveryAddressMenu, deleteCurrentDeliveryAddress, showCurrentDeliveryAddressInfo, currentDeliveryAddressIndex, deleteDeliveryAddressOpened, deliveryAddressToDelete, openDeleteDeliveryAddressModal, deleteDeliveryAddressButtons, contactAdressesArray, goToMyContacts
             }
         }
     })
