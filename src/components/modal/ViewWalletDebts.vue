@@ -50,7 +50,7 @@
                             Задолженность: 
                         </ion-text> -->
                         <ion-text style="font-size: 1rem; font-weight: bold; padding: 0 12px 0 12px">
-                            {{deal.totalDealPrice - deal.dealPaid}} {{currency}}
+                            Текущая задолженность: {{deal.totalDealPrice - deal.dealPaid}} {{currency}}
                         </ion-text>
                     </ion-row>
                 </ion-grid>

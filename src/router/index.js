@@ -2,6 +2,10 @@
 import { createRouter, createWebHistory } from '@ionic/vue-router';
 import { supabase } from '../supabase/init';
 
+//
+import store from '../store/index';
+import { useRouter } from 'vue-router';
+
 // Экраны логина и регистрации
 import Login from '../views/auth/Login.vue';
 import Register from '../views/auth/Register.vue';
@@ -205,6 +209,23 @@ const routes = [
       title: 'View Store Recipe',
       auth: true,
       type: 'CurrentView'
+    }
+  },
+  {
+    path: '/admin',
+    name: 'AdminDashboard',
+    component: () => import('../views/adminPanel/AdminDashboard.vue'),
+    meta: {
+      title: 'Admin panel',
+      auth: true,
+      type: 'View'
+    },
+    // Проверяем админский ли email у пользователя
+    beforeEnter: (to, from) => {
+      if (store.state.user.email === store.state.adminEmail) {
+      } else {
+        router.replace('/');
+      }
     }
   },
 ];

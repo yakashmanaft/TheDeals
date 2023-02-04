@@ -203,13 +203,13 @@
             } else if (allAccountEmails.includes(email.value)) {
                 alert('Register: Аккаунт с указанным имейлом уже существует')
             } else if (password.value === confirmPassword.value) {
+                spinner.value = true;
                 try {
                 const { error } = await supabase.auth.signUp({
                     email: email.value,
                     password: password.value
                 });
                 if (error) throw error;
-                spinner.value = true;
                 setTimeout(() => {
                     confirmRequire.value = true
                     // router.push({ name: 'Login' })

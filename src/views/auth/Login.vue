@@ -100,13 +100,13 @@
 
             // Login function
             const login = async () => {
+                spinner.value = true
                 try {
                     const { error } = await supabase.auth.signIn({
                         email: email.value,
                         password: password.value
                     });
                     if (error) throw error;
-                    spinner.value = true
                     setTimeout(() => {
                         router.push({ name: 'Calendar' })
                     }, 3000)

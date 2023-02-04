@@ -627,7 +627,9 @@ const state = reactive({
   recipesCategoriesArray: ['Без категории', 'Свадебные', 'Торты', 'Бисквитные', 'Муссовые', 'Цифра', 'Капкейки', 'Кейк-попсы', 'Зефир', 'Леденцы', 'Макаронс', 'Меренге (безе)', 'Брауни', 'Павлова', 'Эскимошки', 'Трайфлы', 'Детские'],
   storeRecipesArray: [],
   // Все пользватели сервиса
-  usersArray: []
+  usersArray: [],
+  //
+  adminEmail: 'palmers@yandex.ru',
 });
 
 const methods = {
