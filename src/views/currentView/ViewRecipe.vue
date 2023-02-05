@@ -264,7 +264,7 @@
                                             <div style="display: flex; flex-direction: column;" class="ion-padding-start">
                                                 <ion-text>{{ingredient.name}}</ion-text>
                                                 <ion-text color="medium" style="margin-top: 0.5rem">
-                                                    <span style="font-size: 1.3rem; font-weight: bold">{{ingredient.value}} </span> / {{ userWarehouseIngredientsQty(ingredient) }} {{setMeasure(ingredient.costEstimation)}}
+                                                    <span>{{ingredient.value}} </span> / {{ userWarehouseIngredientsQty(ingredient) }} {{setMeasure(ingredient.costEstimation)}}
                                                 </ion-text>
                                             </div>
                                             <ion-thumbnail class="thumbnail_deal-subject" style="background-color: var(--ion-color-light); border: 1px solid var(--ion-color-danger)">
@@ -1809,9 +1809,13 @@
                 if(userWarehouseItemsArray.value) {
                     currentItem = userWarehouseItemsArray.value.filter(item => item.name === ingredient.name)
                 }
-                if(currentItem.length !== 0 && currentItem.subjectQty === ingredient.Qty) {
+                if(currentItem.length !== 0) {
                     console.log(`на складе: ${currentItem[0].estimationType}`, `ингредиент: ${ingredient.costEstimation}`)
-                    qty = currentItem[0].subjectQty
+                    if(currentItem[0].estimationType !== ingredient.costEstimation) {
+                        return 'думай'
+                    } else {
+                        qty = currentItem[0].subjectQty
+                    }
                 }
                 return qty
             }
