@@ -388,7 +388,6 @@
             const createNew = async (newDealData) => {
                 // принимаем инфу по контакту из modal
                 dealData.value = newDealData
-                spinner.value = true;
                 // console.log(dealData.value)
                 // Если строки Имя Фамилия пустые или не пустые 
                 // использовать валидацию 
@@ -403,6 +402,7 @@
                     // Если не понадобится - убрать
                     alert('Calendar: Вы не указали способ доставки')
                 } else {
+                    spinner.value = true;
                     try{
                         // Добавляем в БД инфу по новому контакту
                         // Скорей всего надо будет вынести в store или нет

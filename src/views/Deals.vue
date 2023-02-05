@@ -459,21 +459,21 @@
             const createNew = async (newDealData) => {
                 // принимаем инфу по делу из modal
                 dealData.value = newDealData
-                spinner.value = true;
                 // Если строки Имя Фамилия пустые или не пустые 
                 // использовать валидацию 
                 if(dealData.value.executionDate === ''){
                     alert('Deals: Вы не выбрали дату исполнения')
                 } else if(dealData.value.dealType === '') {
                     alert('Deals: Вы не указали тип дела')
-                // } else if (!dealData.value.shipping.typeOfShipping && dealData.value.dealType === 'sale') {
+                    // } else if (!dealData.value.shipping.typeOfShipping && dealData.value.dealType === 'sale') {
                 } else if (dealData.value.dealsList.length === 0) {
                     alert('Deals: Вы не добавили предмет дела')
                 } else if (!dealData.value.shipping.typeOfShipping) {
-                // } else if (!dealData.value.shipping.typeOfShipping) {
+                    // } else if (!dealData.value.shipping.typeOfShipping) {
                     // Если не понадобится - убрать
                     alert('Deals: Вы не указали способ доставки')
                 } else {
+                    spinner.value = true;
                     try{
                         // Добавляем в БД инфу по новому делу
                         const { error } = await supabase.from('deals').insert([dealData.value])
