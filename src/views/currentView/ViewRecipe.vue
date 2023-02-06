@@ -1837,11 +1837,21 @@
                     currentItem = userWarehouseItemsArray.value.filter(item => item.name === ingredient.name)
                 }
                 if(nameWarehouseItems.value.length !== 0 && !nameWarehouseItems.value.includes(ingredient.name)) {
-                    itemsOutOfStock.value.push({
-                        name: ingredient.name,
-                        costEstimation: ingredient.costEstimation,
-                        value: ingredient.value, 
-                    })
+                    const compareName = itemsOutOfStock.value.some(el => el.name === ingredient.name);
+                    const compareCostEstimation = itemsOutOfStock.value.some(el => el.costEstimation === ingredient.costEstimation);
+                    if(!compareName) {
+                        itemsOutOfStock.value.push({
+                            name: ingredient.name,
+                            costEstimation: ingredient.costEstimation,
+                            value: ingredient.value, 
+                        })
+                    } else if (!compareCostEstimation) {
+                        itemsOutOfStock.value.push({
+                            name: ingredient.name,
+                            costEstimation: ingredient.costEstimation,
+                            value: ingredient.value, 
+                        })
+                    }
                 } else {
                     // console.log(nameWarehouseItems)
                 }
