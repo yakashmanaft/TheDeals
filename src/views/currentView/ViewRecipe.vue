@@ -188,6 +188,7 @@
 
                     <br>
                     <ion-text>Это указано на складе, но не хватает</ion-text>
+                    {{ itemsWhereIsNotEnoughIngredients.length }}
                     <div v-for="(item, index) in itemsWhereIsNotEnoughIngredients" :key="index">
                         П/п: {{ index + 1 }} <br>
                         Ингредиент: {{ item.name }} <br>
@@ -198,6 +199,7 @@
 
                     <br>
                     <ion-text>Этого не указано на складе</ion-text>
+                    {{ itemsOutOfStock.length }}
                     <div v-for="(item, index) in itemsOutOfStock" :key="index">
                         П/п: {{ index + 1 }} <br>
                         Ингредиент: {{ item.name }} <br>
@@ -1870,15 +1872,7 @@
                             if(ingredient.name === 'Банан') {
                                 // Количество грамм на складе делим на ср.вес банана с кожурой 200 грамм
                                 qty = (currentItem[0].subjectQty / 200).toFixed(2)
-                                // ср.вес банана без кожуры 120 грамм
-                                if(qty < ingredient.value) {
-                                    itemsWhereIsNotEnoughIngredients.value.push({
-                                        name: ingredient.name,
-                                        estimationType: ingredient.costEstimation,
-                                        needQty: ingredient.value, 
-                                        warehouseQty: qty,
-                                    })
-                                }
+                                addToNotEnoughUbgredients(currentItem, ingredient, qty)
                             }
                         } 
 
@@ -1886,41 +1880,20 @@
                         // Чайная ложка – 5 мл это примерно 5 грамм
                         else if (ingredient.costEstimation === 'teaSpoon' && currentItem[0].estimationType === 'perKilogram') {
                             qty = (currentItem[0].subjectQty / 5).toFixed(2)
-                            if(qty < ingredient.value) {
-                                itemsWhereIsNotEnoughIngredients.value.push({
-                                    name: ingredient.name,
-                                    estimationType: ingredient.costEstimation,
-                                    needQty: ingredient.value, 
-                                    warehouseQty: qty,
-                                })
-                            }
+                            addToNotEnoughUbgredients(currentItem, ingredient, qty)
                         }
 
                         // РЕЦЕПТ В ЩЕПОТКАХ (pinch), НА СКЛАДЕ В ГРАММАХ (ПО ВЕСУ)
                         // Щепотка – 2-4 грамма (pinch)
                         else if (ingredient.costEstimation === 'pinch' && currentItem[0].estimationType === 'perKilogram') {
                             qty = (currentItem[0].subjectQty / 4).toFixed(2)
-                            if(qty < ingredient.value) {
-                                itemsWhereIsNotEnoughIngredients.value.push({
-                                    name: ingredient.name,
-                                    estimationType: ingredient.costEstimation,
-                                    needQty: ingredient.value, 
-                                    warehouseQty: qty,
-                                })
-                            }
+                            addToNotEnoughUbgredients(currentItem, ingredient, qty)
                         }
                         
                         // РЕЦЕПТ В ПАЛОЧКАХ (stick), НА СКЛАДЕ В ШТУКАХ(perUnit)
                         else if (ingredient.costEstimation === 'stick' && currentItem[0].estimationType === 'perUnit') {
                             qty = (currentItem[0].subjectQty).toFixed(2)
-                            if(qty < ingredient.value) {
-                                itemsWhereIsNotEnoughIngredients.value.push({
-                                    name: ingredient.name,
-                                    estimationType: ingredient.costEstimation,
-                                    needQty: ingredient.value, 
-                                    warehouseQty: qty,
-                                })
-                            }
+                            addToNotEnoughUbgredients(currentItem,ingredient, qty)
                         }
                         else {
                             qty = 'нет данных'
@@ -1946,8 +1919,23 @@
             // ср.вес банана без кожурой 120 грамм
             // ср.вес самой кожуры бана 80 грамм
 
+            // 
+            const addToNotEnoughUbgredients = (item, ingredient, qty) => {
+                // В рецептах - штуки. На складе - граммы (вес)
+                
+                if(qty < ingredient.value) {
+                    console.log(ingredient)
+                    itemsWhereIsNotEnoughIngredients.value.push({
+                        name: ingredient.name,
+                        estimationType: ingredient.costEstimation,
+                        needQty: ingredient.value, 
+                        warehouseQty: qty,
+                    })
+                }
+            }
+
             return {
-                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList, checkmark, alertOutline, setImgSrc, searchRecipesCategoriesMenu, searchRecipesCategories, userRecipesCategories, searchedRecipesCategories, isCategoryAlreadyAdded, choosenCategory, setMeasure, slides, setStyleProperties, steps, addProcessStep, addAssemblingElement, handleReorder, deleteAssemblingItem, assemblingItemToDeleteIndex, openDeleteAssemblingItemMenu, deleteAssemblingItemButtons, deleteAssemblingItemFunc, reorderIsDisabled, toggleReorder, editRecipeProcess, editRecipeProcessFunc, handleReorderProcess, deleteProcessStep, processStepToDeleteIndex, openDeleteStepsMenu, deleteProcessStepButtons, deleteProcessStepFunc, addCompositionItem, editComposition, editCompositionFunc, openDeleteCompositionItemMenu, deleteCompositionItem, compositionItemToDeleteIndex, deleteCopmositionItemButtons, deleteCompositionItemFunc, addCompositionItemIngredient, trash, updateComposition, addAssemblingElementModalOpened, addToAssembling, updateProcess, addCompositionItemModalOpened, newCompositionItem, addNewCompositionItem, addButtonIsDisabled, closeCompositionItemModal, addIngredientToCompositionItem, ingredientForNewCompositionModalOpened, addIngredientToCompositionItemFunc, setIngredientImg, isIngredientAlreadyAdded, deleteNewCompositionItemIngredient, deleteNewCompositionItemIngredientIndex, deleteNewCompositionItemIngredientMenu, deleteNewCompositionItemIngredientFunc, deleteNewCompositionItemIngredientButtons, openActionSheetCostEstimationMenu, actionSheetIngredientCostEstimation, ingredientWhereChangeEstimation, ingredientChangeCostEstimationButtons, setIngredientEstimation, deleteCompisitionItemIngredientMenu, deleteCompisitionItemIngredient, compositionItemIngredientIndex, compositionItemIndex, compositionItemIngredientButtons, deleteCompisitionItemIngredientFunc, setIngredientValue, setCurrentIngredientValue, actionSheetCurrentIngredientCostEstimation, currentIngredientWhereChangeEstimation, openActionSheetCurrentCostEstimationMenu, currentIngredientChangeCostEstimationButtons, addIngredientToCurrentCompositionItemModalOpened, currentCompositionItem, currentCompositionItemNewIngredient, addNewIngredientButtonIsDisabled, addCompositionItemIngredientFunc, newIngredientCurrentCompositionModalOpened, addIngredientToCurrentCompositionItem, actionSheetCurrentCompositionItemNewIngredient, actionSheetCurrentCompositionItemNewIngredientButtons, setNewIngredientValue, closeAddIngredientToCurrentCompositionItemModal, toggleRecipeToStore, fromAssemblingToComposition, cameraOutline, addImageToSlide, deleteCurrentImg, modules: [Virtual, Pagination], checkEmptyStrings, editRecipeDescription, toggleEditRecipeDescription, editRecipeName, toggleEditRecipeName, amIAnAuthorFunc, userEmail, showPaucityIngredients, userWarehouseItemsArray, userWarehouseIngredientsQty, itemsWhereIsNotEnoughIngredients, itemsOutOfStock, nameWarehouseItems
+                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList, checkmark, alertOutline, setImgSrc, searchRecipesCategoriesMenu, searchRecipesCategories, userRecipesCategories, searchedRecipesCategories, isCategoryAlreadyAdded, choosenCategory, setMeasure, slides, setStyleProperties, steps, addProcessStep, addAssemblingElement, handleReorder, deleteAssemblingItem, assemblingItemToDeleteIndex, openDeleteAssemblingItemMenu, deleteAssemblingItemButtons, deleteAssemblingItemFunc, reorderIsDisabled, toggleReorder, editRecipeProcess, editRecipeProcessFunc, handleReorderProcess, deleteProcessStep, processStepToDeleteIndex, openDeleteStepsMenu, deleteProcessStepButtons, deleteProcessStepFunc, addCompositionItem, editComposition, editCompositionFunc, openDeleteCompositionItemMenu, deleteCompositionItem, compositionItemToDeleteIndex, deleteCopmositionItemButtons, deleteCompositionItemFunc, addCompositionItemIngredient, trash, updateComposition, addAssemblingElementModalOpened, addToAssembling, updateProcess, addCompositionItemModalOpened, newCompositionItem, addNewCompositionItem, addButtonIsDisabled, closeCompositionItemModal, addIngredientToCompositionItem, ingredientForNewCompositionModalOpened, addIngredientToCompositionItemFunc, setIngredientImg, isIngredientAlreadyAdded, deleteNewCompositionItemIngredient, deleteNewCompositionItemIngredientIndex, deleteNewCompositionItemIngredientMenu, deleteNewCompositionItemIngredientFunc, deleteNewCompositionItemIngredientButtons, openActionSheetCostEstimationMenu, actionSheetIngredientCostEstimation, ingredientWhereChangeEstimation, ingredientChangeCostEstimationButtons, setIngredientEstimation, deleteCompisitionItemIngredientMenu, deleteCompisitionItemIngredient, compositionItemIngredientIndex, compositionItemIndex, compositionItemIngredientButtons, deleteCompisitionItemIngredientFunc, setIngredientValue, setCurrentIngredientValue, actionSheetCurrentIngredientCostEstimation, currentIngredientWhereChangeEstimation, openActionSheetCurrentCostEstimationMenu, currentIngredientChangeCostEstimationButtons, addIngredientToCurrentCompositionItemModalOpened, currentCompositionItem, currentCompositionItemNewIngredient, addNewIngredientButtonIsDisabled, addCompositionItemIngredientFunc, newIngredientCurrentCompositionModalOpened, addIngredientToCurrentCompositionItem, actionSheetCurrentCompositionItemNewIngredient, actionSheetCurrentCompositionItemNewIngredientButtons, setNewIngredientValue, closeAddIngredientToCurrentCompositionItemModal, toggleRecipeToStore, fromAssemblingToComposition, cameraOutline, addImageToSlide, deleteCurrentImg, modules: [Virtual, Pagination], checkEmptyStrings, editRecipeDescription, toggleEditRecipeDescription, editRecipeName, toggleEditRecipeName, amIAnAuthorFunc, userEmail, showPaucityIngredients, userWarehouseItemsArray, userWarehouseIngredientsQty, itemsWhereIsNotEnoughIngredients, itemsOutOfStock, nameWarehouseItems, addToNotEnoughUbgredients
             }
         }
     })
