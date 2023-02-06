@@ -185,6 +185,27 @@
                         </ion-label>
                         <ion-icon :icon="alertOutline"></ion-icon>
                     </ion-chip>
+
+                    <br>
+                    <ion-text>Это указано на складе, но не хватает</ion-text>
+                    <div v-for="(item, index) in itemsWhereIsNotEnoughIngredients" :key="index">
+                        П/п: {{ index + 1 }} <br>
+                        Ингредиент: {{ item.name }} <br>
+                        Мера: {{ item.estimationType }} <br>
+                        Требуемое количество: {{  item.needQty  }} <br>
+                        Количество на складе: {{ item.warehouseQty }} <br>
+                    </div>
+
+                    <br>
+                    <ion-text>Этого не указано на складе</ion-text>
+                    <div v-for="(item, index) in itemsOutOfStock" :key="index">
+                        П/п: {{ index + 1 }} <br>
+                        Ингредиент: {{ item.name }} <br>
+                        Мера: {{ item.costEstimation }} <br>
+                        Требуемое количество: {{ item.value }} <br>
+                        Количество на складе: 0
+                    </div>
+
                 </ion-item-group>
                 
                 <!-- СОСТАВ -->
@@ -264,7 +285,7 @@
                                             <div style="display: flex; flex-direction: column;" class="ion-padding-start">
                                                 <ion-text>{{ingredient.name}}</ion-text>
                                                 <ion-text color="medium" style="margin-top: 0.5rem">
-                                                    <span>{{ingredient.value}} </span> / {{ userWarehouseIngredientsQty(ingredient) }} {{setMeasure(ingredient.costEstimation)}}
+                                                    <span>{{ingredient.value}} </span> / ~{{ userWarehouseIngredientsQty(ingredient) }} {{setMeasure(ingredient.costEstimation)}}
                                                 </ion-text>
                                             </div>
                                             <ion-thumbnail class="thumbnail_deal-subject" style="background-color: var(--ion-color-light); border: 1px solid var(--ion-color-danger)">
@@ -782,6 +803,7 @@
                 userRecipesCategories.value = store.state.recipesCategoriesArray
                 await store.methods.getUserWarehouseItemsFromDB()
                 userWarehouseItemsArray.value = store.state.userWarehouseArray
+                userWarehouseItemsArray.value.forEach(item => nameWarehouseItems.value.push(item.name))
             })
             //
             const openDeleteMenu = () => {
@@ -1802,33 +1824,120 @@
                 alert('ViewRecipe: в процессе разработки...')
             }
 
-            // ==================================== Работа с количеством ингредиентов на складе =========================================
+            // ==================================== Работа с количеством доступных для рецепта ингредиентов на складе =========================================
+            const itemsWhereIsNotEnoughIngredients = ref([])
+
+            const nameWarehouseItems = ref([])
+            const itemsOutOfStock = ref([])
             const userWarehouseIngredientsQty = (ingredient) => {
                 let qty = 0;
                 let currentItem = [];
+
                 if(userWarehouseItemsArray.value) {
                     currentItem = userWarehouseItemsArray.value.filter(item => item.name === ingredient.name)
                 }
-                if(currentItem.length !== 0) {
-                    console.log(`на складе: ${currentItem[0].estimationType}`, `ингредиент: ${ingredient.costEstimation}`)
-                    if(currentItem[0].estimationType !== ingredient.costEstimation) {
-                        return 'думай'
-                    } else {
-                        qty = currentItem[0].subjectQty
-                    }
+                if(nameWarehouseItems.value.length !== 0 && !nameWarehouseItems.value.includes(ingredient.name)) {
+                    itemsOutOfStock.value.push({
+                        name: ingredient.name,
+                        costEstimation: ingredient.costEstimation,
+                        value: ingredient.value, 
+                    })
+                } else {
+                    // console.log(nameWarehouseItems)
                 }
+                
+                
+                if(currentItem.length !== 0) {
+                    // console.log(`на складе: ${currentItem[0].estimationType}`, `ингредиент: ${ingredient.costEstimation}`)
+                    if(currentItem[0].estimationType !== ingredient.costEstimation) {
+                        // Склад: currentItem[0].estimationType
+                        // Рецепт: ingredient.costEstimation
+
+                        // РЕЦЕПТ В ШТУКАХ, НА СКЛАДЕ В ГРАММАХ (ПО ВЕСУ)
+                        if(ingredient.costEstimation === 'perUnit' && currentItem[0].estimationType === 'perKilogram'){
+
+                            // ДЛЯ БАНАНОВ
+                            if(ingredient.name === 'Банан') {
+                                // Количество грамм на складе делим на ср.вес банана с кожурой 200 грамм
+                                qty = (currentItem[0].subjectQty / 200).toFixed(2)
+                                // ср.вес банана без кожуры 120 грамм
+                                if(qty < ingredient.value) {
+                                    itemsWhereIsNotEnoughIngredients.value.push({
+                                        name: ingredient.name,
+                                        estimationType: ingredient.costEstimation,
+                                        needQty: ingredient.value, 
+                                        warehouseQty: qty,
+                                    })
+                                }
+                            }
+                        } 
+
+                        // РЕЦЕПТ В ЧАЙНЫХ ЛОЖКАХ (teaSpoon), НА СКЛАДЕ В ГРАММАХ (ПО ВЕСУ) 
+                        // Чайная ложка – 5 мл это примерно 5 грамм
+                        else if (ingredient.costEstimation === 'teaSpoon' && currentItem[0].estimationType === 'perKilogram') {
+                            qty = (currentItem[0].subjectQty / 5).toFixed(2)
+                            if(qty < ingredient.value) {
+                                itemsWhereIsNotEnoughIngredients.value.push({
+                                    name: ingredient.name,
+                                    estimationType: ingredient.costEstimation,
+                                    needQty: ingredient.value, 
+                                    warehouseQty: qty,
+                                })
+                            }
+                        }
+
+                        // РЕЦЕПТ В ЩЕПОТКАХ (pinch), НА СКЛАДЕ В ГРАММАХ (ПО ВЕСУ)
+                        // Щепотка – 2-4 грамма (pinch)
+                        else if (ingredient.costEstimation === 'pinch' && currentItem[0].estimationType === 'perKilogram') {
+                            qty = (currentItem[0].subjectQty / 4).toFixed(2)
+                            if(qty < ingredient.value) {
+                                itemsWhereIsNotEnoughIngredients.value.push({
+                                    name: ingredient.name,
+                                    estimationType: ingredient.costEstimation,
+                                    needQty: ingredient.value, 
+                                    warehouseQty: qty,
+                                })
+                            }
+                        }
+                        
+                        // РЕЦЕПТ В ПАЛОЧКАХ (stick), НА СКЛАДЕ В ШТУКАХ(perUnit)
+                        else if (ingredient.costEstimation === 'stick' && currentItem[0].estimationType === 'perUnit') {
+                            qty = (currentItem[0].subjectQty).toFixed(2)
+                            if(qty < ingredient.value) {
+                                itemsWhereIsNotEnoughIngredients.value.push({
+                                    name: ingredient.name,
+                                    estimationType: ingredient.costEstimation,
+                                    needQty: ingredient.value, 
+                                    warehouseQty: qty,
+                                })
+                            }
+                        }
+                        else {
+                            qty = 'нет данных'
+                        }
+                    } else {
+                        qty = (currentItem[0].subjectQty).toFixed(2)
+                    }
+                } else if (currentItem.length === 0) {
+                    // Чета здесь ничего и не надо походу...
+                }
+                else {
+                    qty = 0
+                }
+
+                // console.log(itemsWhereIsNotEnoughIngredients.value)
                 return qty
             }
             // Чайная ложка – 5 мл это примерно 5 грамм
             // Десертная ложка — 10 мл жидкости — 10 грамм
             // Столовая ложка — 15 мл жидкости — 15 грамм
-            // Щепотка – 2-4 грамма
+            // Щепотка – 2-4 грамма (pinch)
             // ср.вес банана с кожурой 200 грамм
             // ср.вес банана без кожурой 120 грамм
             // ср.вес самой кожуры бана 80 грамм
 
             return {
-                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList, checkmark, alertOutline, setImgSrc, searchRecipesCategoriesMenu, searchRecipesCategories, userRecipesCategories, searchedRecipesCategories, isCategoryAlreadyAdded, choosenCategory, setMeasure, slides, setStyleProperties, steps, addProcessStep, addAssemblingElement, handleReorder, deleteAssemblingItem, assemblingItemToDeleteIndex, openDeleteAssemblingItemMenu, deleteAssemblingItemButtons, deleteAssemblingItemFunc, reorderIsDisabled, toggleReorder, editRecipeProcess, editRecipeProcessFunc, handleReorderProcess, deleteProcessStep, processStepToDeleteIndex, openDeleteStepsMenu, deleteProcessStepButtons, deleteProcessStepFunc, addCompositionItem, editComposition, editCompositionFunc, openDeleteCompositionItemMenu, deleteCompositionItem, compositionItemToDeleteIndex, deleteCopmositionItemButtons, deleteCompositionItemFunc, addCompositionItemIngredient, trash, updateComposition, addAssemblingElementModalOpened, addToAssembling, updateProcess, addCompositionItemModalOpened, newCompositionItem, addNewCompositionItem, addButtonIsDisabled, closeCompositionItemModal, addIngredientToCompositionItem, ingredientForNewCompositionModalOpened, addIngredientToCompositionItemFunc, setIngredientImg, isIngredientAlreadyAdded, deleteNewCompositionItemIngredient, deleteNewCompositionItemIngredientIndex, deleteNewCompositionItemIngredientMenu, deleteNewCompositionItemIngredientFunc, deleteNewCompositionItemIngredientButtons, openActionSheetCostEstimationMenu, actionSheetIngredientCostEstimation, ingredientWhereChangeEstimation, ingredientChangeCostEstimationButtons, setIngredientEstimation, deleteCompisitionItemIngredientMenu, deleteCompisitionItemIngredient, compositionItemIngredientIndex, compositionItemIndex, compositionItemIngredientButtons, deleteCompisitionItemIngredientFunc, setIngredientValue, setCurrentIngredientValue, actionSheetCurrentIngredientCostEstimation, currentIngredientWhereChangeEstimation, openActionSheetCurrentCostEstimationMenu, currentIngredientChangeCostEstimationButtons, addIngredientToCurrentCompositionItemModalOpened, currentCompositionItem, currentCompositionItemNewIngredient, addNewIngredientButtonIsDisabled, addCompositionItemIngredientFunc, newIngredientCurrentCompositionModalOpened, addIngredientToCurrentCompositionItem, actionSheetCurrentCompositionItemNewIngredient, actionSheetCurrentCompositionItemNewIngredientButtons, setNewIngredientValue, closeAddIngredientToCurrentCompositionItemModal, toggleRecipeToStore, fromAssemblingToComposition, cameraOutline, addImageToSlide, deleteCurrentImg, modules: [Virtual, Pagination], checkEmptyStrings, editRecipeDescription, toggleEditRecipeDescription, editRecipeName, toggleEditRecipeName, amIAnAuthorFunc, userEmail, showPaucityIngredients, userWarehouseItemsArray, userWarehouseIngredientsQty
+                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList, checkmark, alertOutline, setImgSrc, searchRecipesCategoriesMenu, searchRecipesCategories, userRecipesCategories, searchedRecipesCategories, isCategoryAlreadyAdded, choosenCategory, setMeasure, slides, setStyleProperties, steps, addProcessStep, addAssemblingElement, handleReorder, deleteAssemblingItem, assemblingItemToDeleteIndex, openDeleteAssemblingItemMenu, deleteAssemblingItemButtons, deleteAssemblingItemFunc, reorderIsDisabled, toggleReorder, editRecipeProcess, editRecipeProcessFunc, handleReorderProcess, deleteProcessStep, processStepToDeleteIndex, openDeleteStepsMenu, deleteProcessStepButtons, deleteProcessStepFunc, addCompositionItem, editComposition, editCompositionFunc, openDeleteCompositionItemMenu, deleteCompositionItem, compositionItemToDeleteIndex, deleteCopmositionItemButtons, deleteCompositionItemFunc, addCompositionItemIngredient, trash, updateComposition, addAssemblingElementModalOpened, addToAssembling, updateProcess, addCompositionItemModalOpened, newCompositionItem, addNewCompositionItem, addButtonIsDisabled, closeCompositionItemModal, addIngredientToCompositionItem, ingredientForNewCompositionModalOpened, addIngredientToCompositionItemFunc, setIngredientImg, isIngredientAlreadyAdded, deleteNewCompositionItemIngredient, deleteNewCompositionItemIngredientIndex, deleteNewCompositionItemIngredientMenu, deleteNewCompositionItemIngredientFunc, deleteNewCompositionItemIngredientButtons, openActionSheetCostEstimationMenu, actionSheetIngredientCostEstimation, ingredientWhereChangeEstimation, ingredientChangeCostEstimationButtons, setIngredientEstimation, deleteCompisitionItemIngredientMenu, deleteCompisitionItemIngredient, compositionItemIngredientIndex, compositionItemIndex, compositionItemIngredientButtons, deleteCompisitionItemIngredientFunc, setIngredientValue, setCurrentIngredientValue, actionSheetCurrentIngredientCostEstimation, currentIngredientWhereChangeEstimation, openActionSheetCurrentCostEstimationMenu, currentIngredientChangeCostEstimationButtons, addIngredientToCurrentCompositionItemModalOpened, currentCompositionItem, currentCompositionItemNewIngredient, addNewIngredientButtonIsDisabled, addCompositionItemIngredientFunc, newIngredientCurrentCompositionModalOpened, addIngredientToCurrentCompositionItem, actionSheetCurrentCompositionItemNewIngredient, actionSheetCurrentCompositionItemNewIngredientButtons, setNewIngredientValue, closeAddIngredientToCurrentCompositionItemModal, toggleRecipeToStore, fromAssemblingToComposition, cameraOutline, addImageToSlide, deleteCurrentImg, modules: [Virtual, Pagination], checkEmptyStrings, editRecipeDescription, toggleEditRecipeDescription, editRecipeName, toggleEditRecipeName, amIAnAuthorFunc, userEmail, showPaucityIngredients, userWarehouseItemsArray, userWarehouseIngredientsQty, itemsWhereIsNotEnoughIngredients, itemsOutOfStock, nameWarehouseItems
             }
         }
     })
@@ -1858,5 +1967,8 @@
     .border-bottom {
         border-bottom: 1px solid var(--ion-color-light);
         padding-bottom: 1rem;
+    }
+    .isNotEnoughIbgredients {
+        background-color: black;
     }
 </style>
