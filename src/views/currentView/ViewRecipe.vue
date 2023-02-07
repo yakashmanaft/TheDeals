@@ -179,34 +179,75 @@
                     </ion-chip> -->
 
                     <!-- НЕДОСТАТОЧНО ингредиентов -->
-                    <ion-chip color="danger" class="ion-no-margin" @click="showPaucityIngredients">
-                        <ion-label>
-                            Недостаточно ингредиентов
-                        </ion-label>
-                        <ion-icon :icon="alertOutline"></ion-icon>
-                    </ion-chip>
+                    <ion-grid>
+                        <ion-row class="ion-justify-content-center">
+                            <ion-chip v-if="notEnough" color="danger" class="ion-no-margin" @click="showPaucityIngredients">
+                                <ion-label>
+                                    Недостаточно ингредиентов
+                                </ion-label>
+                                <ion-icon :icon="alertOutline"></ion-icon>
+                            </ion-chip>
+                        </ion-row>
+                    </ion-grid>
 
-                    <br>
-                    <ion-text>Это указано на складе, но не хватает</ion-text>
-                    {{ itemsWhereIsNotEnoughIngredients.length }}
-                    <div v-for="(item, index) in itemsWhereIsNotEnoughIngredients" :key="index">
-                        П/п: {{ index + 1 }} <br>
-                        Ингредиент: {{ item.name }} <br>
-                        Мера: {{ item.estimationType }} <br>
-                        Требуемое количество: {{  item.needQty  }} <br>
-                        Количество на складе: {{ item.warehouseQty }} <br>
-                    </div>
+                    <!-- Модалка просмотра недостающих ингредиентов -->
+                    <ion-modal :isOpen="isNotEnoughModalOpened">
+                        <!--  -->
+                        <ion-header translucent="true">
+                            <ion-toolbar>
+                                <ion-buttons slot="start">
+                                    <ion-button @click="isNotEnoughModalOpened = false, itemsOutOfStock = [], itemsWhereIsNotEnoughIngredients = []">Закрыть</ion-button>
+                                </ion-buttons>
+                            </ion-toolbar>
+                        </ion-header>
 
-                    <br>
-                    <ion-text>Этого не указано на складе</ion-text>
-                    {{ itemsOutOfStock.length }}
-                    <div v-for="(item, index) in itemsOutOfStock" :key="index">
-                        П/п: {{ index + 1 }} <br>
-                        Ингредиент: {{ item.name }} <br>
-                        Мера: {{ item.costEstimation }} <br>
-                        Требуемое количество: {{ item.value }} <br>
-                        Количество на складе: 0
-                    </div>
+                        <!--  -->
+                        <ion-content forceOverscroll="false" class="ion-margin-top ion-padding-bottom">
+
+                            <div v-if="itemsWhereIsNotEnoughIngredients.length !== 0" class="ion-margin-vertical">
+
+                                <!--  -->
+                                <ion-item-group class="ion-padding-horizontal">
+                                    <ion-text>
+                                        <h4>Не хватает следующих ингредиентов:</h4>
+                                    </ion-text>
+                                </ion-item-group>
+    
+                                <!--  -->
+                                <ion-item-group class="ion-padding-horizontal">
+                                    <ion-text>Это есть на складе, но недостаточно</ion-text>
+                                    (кол-во: {{ itemsWhereIsNotEnoughIngredients.length }})
+                                    <div v-for="(item, index) in itemsWhereIsNotEnoughIngredients" :key="index">
+                                        П/п: {{ index + 1 }} <br>
+                                        Ингредиент: {{ item.name }} <br>
+                                        Мера: {{ item.estimationType }} <br>
+                                        Требуемое количество: {{  item.needQty  }} <br>
+                                        Количество на складе: {{ item.warehouseQty }} <br>
+                                    </div>
+                                </ion-item-group>
+                            </div>
+
+                            <div v-if="itemsOutOfStock.length !== 0" class="ion-margin-vertical">
+
+                                <!--  -->
+                                <ion-item-group class="ion-padding-horizontal">
+                                    <ion-text>Этого нет на складе</ion-text>
+                                    (кол-во: {{ itemsOutOfStock.length }})
+                                    <div v-for="(item, index) in itemsOutOfStock" :key="index">
+                                        П/п: {{ index + 1 }} <br>
+                                        Ингредиент: {{ item.name }} <br>
+                                        Мера: {{ item.estimationType }} <br>
+                                        Требуемое количество: {{ item.needQty }} <br>
+                                        Количество на складе: {{ item.warehouseQty }}
+                                    </div>
+                                </ion-item-group>
+                            </div>
+
+                            <br>
+                            <br>
+                            <br>
+                        </ion-content>
+                    </ion-modal>
 
                 </ion-item-group>
                 
@@ -1822,120 +1863,142 @@
                 alert(`ViewRecipe: (${index}) Удаление в разработке...`)
             }
             //
+            const isNotEnoughModalOpened = ref()
             const showPaucityIngredients = () => {
-                alert('ViewRecipe: в процессе разработки...')
+                isNotEnoughModalOpened.value = true
+                // alert('ViewRecipe: в процессе разработки...')
+                itemsWhereIsNotEnoughIngredients.value = []
+                itemsOutOfStock.value = []
             }
 
             // ==================================== Работа с количеством доступных для рецепта ингредиентов на складе =========================================
-            const itemsWhereIsNotEnoughIngredients = ref([])
+            const nameWarehouseItems = ref([]) // массив названий предметов на складе
+            const itemsWhereIsNotEnoughIngredients = ref([]) // Массив предметов на складе, которые требуются для рецкепта, но не хватает количества
+            const itemsOutOfStock = ref([]) // Массив предметов, которых нет на складе, но требуется для рецепта
 
-            const nameWarehouseItems = ref([])
-            const itemsOutOfStock = ref([])
+            // Функция переводчик мер измерения
+            const calcQtyPerEstimationType = (currentItem, ingredient) => {
+                    // Чайная ложка – 5 мл это примерно 5 грамм
+                    // Десертная ложка — 10 мл жидкости — 10 грамм
+                    // Столовая ложка — 15 мл жидкости — 15 грамм
+                    // Щепотка – 2-4 грамма (pinch)
+                    // ср.вес банана с кожурой 200 грамм
+                    // ср.вес банана без кожуры 120 грамм
+                    // ср.вес кожуры банана 80 грамм
+                // НА СКЛАДЕ ГРАММЫ
+                if(currentItem.estimationType === 'perKilogram') {
+
+                    // ДЛЯ БАНАНОВ
+                    if(ingredient.name === 'Банан') {
+                        // Количество грамм на складе делим на ср.вес банана с кожурой 200 грамм
+                        return (currentItem.subjectQty / 200).toFixed(2)
+                    }
+                    // РЕЦЕПТ В ЧАЙНЫХ ЛОЖКАХ // Чайная ложка – 5 мл это примерно 5 грамм
+                    else if (ingredient.costEstimation === 'teaSpoon') {
+                        return (currentItem.subjectQty / 5).toFixed(2)
+                    }
+                    // РЕЦЕПТ В ЩЕПОТКАХ (pinch) // Щепотка – 2-4 грамма (pinch)
+                    else if (ingredient.costEstimation === 'pinch') {
+                        return (currentItem.subjectQty / 4).toFixed(2)
+                    }
+                    // ДЛЯ ВСЕГО ОСТАЛЬНОГО 
+                    else {
+                        return (currentItem.subjectQty).toFixed(2)
+                    }
+
+                }
+                // НА СКЛАДЕ ШТУКИ
+                else if (currentItem.estimationType === 'perUnit') {
+                    // РЕЦЕПТ В ПАЛОЧКАХ (stick)
+                    if(ingredient.costEstimation === 'stick') {
+                        return (currentItem.subjectQty).toFixed(2)
+                    } 
+                    // ДЛЯ ВСЕГО ОСТАЛЬНОГО 
+                    else {
+                        return (currentItem.subjectQty).toFixed(2)
+                    }
+                }
+                // 
+                else {
+                    return (currentItem.subjectQty).toFixed(2)
+                }
+            }
+
+            // Счиитаем количество на складе
             const userWarehouseIngredientsQty = (ingredient) => {
                 let qty = 0;
-                let currentItem = [];
+                let currentItems = [];
 
+                // Фильтруем массив со всеми предметами на складе, выдаем только те, которые требуются для рецепта
                 if(userWarehouseItemsArray.value) {
-                    currentItem = userWarehouseItemsArray.value.filter(item => item.name === ingredient.name)
-                }
-                if(nameWarehouseItems.value.length !== 0 && !nameWarehouseItems.value.includes(ingredient.name)) {
-                    const compareName = itemsOutOfStock.value.some(el => el.name === ingredient.name);
-                    const compareCostEstimation = itemsOutOfStock.value.some(el => el.costEstimation === ingredient.costEstimation);
-                    if(!compareName) {
-                        itemsOutOfStock.value.push({
-                            name: ingredient.name,
-                            costEstimation: ingredient.costEstimation,
-                            value: ingredient.value, 
-                        })
-                    } else if (!compareCostEstimation) {
-                        itemsOutOfStock.value.push({
-                            name: ingredient.name,
-                            costEstimation: ingredient.costEstimation,
-                            value: ingredient.value, 
-                        })
-                    }
-                } else {
-                    // console.log(nameWarehouseItems)
+                    currentItems = userWarehouseItemsArray.value.filter(item => item.name === ingredient.name)
                 }
                 
-                
-                if(currentItem.length !== 0) {
-                    // console.log(`на складе: ${currentItem[0].estimationType}`, `ингредиент: ${ingredient.costEstimation}`)
-                    if(currentItem[0].estimationType !== ingredient.costEstimation) {
-                        // Склад: currentItem[0].estimationType
-                        // Рецепт: ingredient.costEstimation
-
-                        // РЕЦЕПТ В ШТУКАХ, НА СКЛАДЕ В ГРАММАХ (ПО ВЕСУ)
-                        if(ingredient.costEstimation === 'perUnit' && currentItem[0].estimationType === 'perKilogram'){
-
-                            // ДЛЯ БАНАНОВ
-                            if(ingredient.name === 'Банан') {
-                                // Количество грамм на складе делим на ср.вес банана с кожурой 200 грамм
-                                qty = (currentItem[0].subjectQty / 200).toFixed(2)
-                                addToNotEnoughUbgredients(currentItem, ingredient, qty)
-                            }
-                        } 
-
-                        // РЕЦЕПТ В ЧАЙНЫХ ЛОЖКАХ (teaSpoon), НА СКЛАДЕ В ГРАММАХ (ПО ВЕСУ) 
-                        // Чайная ложка – 5 мл это примерно 5 грамм
-                        else if (ingredient.costEstimation === 'teaSpoon' && currentItem[0].estimationType === 'perKilogram') {
-                            qty = (currentItem[0].subjectQty / 5).toFixed(2)
-                            addToNotEnoughUbgredients(currentItem, ingredient, qty)
-                        }
-
-                        // РЕЦЕПТ В ЩЕПОТКАХ (pinch), НА СКЛАДЕ В ГРАММАХ (ПО ВЕСУ)
-                        // Щепотка – 2-4 грамма (pinch)
-                        else if (ingredient.costEstimation === 'pinch' && currentItem[0].estimationType === 'perKilogram') {
-                            qty = (currentItem[0].subjectQty / 4).toFixed(2)
-                            addToNotEnoughUbgredients(currentItem, ingredient, qty)
-                        }
-                        
-                        // РЕЦЕПТ В ПАЛОЧКАХ (stick), НА СКЛАДЕ В ШТУКАХ(perUnit)
-                        else if (ingredient.costEstimation === 'stick' && currentItem[0].estimationType === 'perUnit') {
-                            qty = (currentItem[0].subjectQty).toFixed(2)
-                            addToNotEnoughUbgredients(currentItem,ingredient, qty)
-                        }
-                        else {
-                            qty = 'нет данных'
-                        }
-                    } else {
-                        qty = (currentItem[0].subjectQty).toFixed(2)
+                // Если на складе ЕСТЬ
+                if (currentItems.length !== 0) {
+                    qty = calcQtyPerEstimationType(currentItems[0], ingredient)
+                    // если НЕ хватает на складе
+                    if(qty < ingredient.value) {
+                        notEnough.value = true
+                        // console.log(`${ingredient.name}: на складе ${qty} ${currentItems[0].estimationType}. Надо: ${ingredient.value} ${ingredient.costEstimation}. Не хватает: ${(ingredient.value - qty).toFixed(2)}`)
+                        // addToNotEnoughList(itemsWhereIsNotEnoughIngredients.value, qty, 'notEnough', ingredient)
+                        addToNotEnoughList('notEnough', qty, ingredient)
+                    } 
+                    // если хватает на складе
+                    else {
+                        // console.log(`${ingredient.name}: на складе ${qty} ${currentItems[0].estimationType}. Надо: ${ingredient.value} ${ingredient.costEstimation}`)
                     }
-                } else if (currentItem.length === 0) {
-                    // Чета здесь ничего и не надо походу...
-                }
-                else {
-                    qty = 0
-                }
 
-                // console.log(itemsWhereIsNotEnoughIngredients.value)
+                }
+                // Если не нашли среди складского остатка нужную позицию по ингредиенту
+                else if(currentItems.length === 0 && nameWarehouseItems.value.some(el => el !== ingredient.name)) {
+                    notEnough.value = true
+                    addToNotEnoughList('outOfStock', 0, ingredient)
+                    // console.log(`${ingredient.name}: на складе НЕТ. Надо: ${ingredient.value} ${ingredient.costEstimation}`)
+                    // addToNotEnoughList(itemsOutOfStock.value, qty, 'outOfStock', ingredient)
+                } 
                 return qty
             }
-            // Чайная ложка – 5 мл это примерно 5 грамм
-            // Десертная ложка — 10 мл жидкости — 10 грамм
-            // Столовая ложка — 15 мл жидкости — 15 грамм
-            // Щепотка – 2-4 грамма (pinch)
-            // ср.вес банана с кожурой 200 грамм
-            // ср.вес банана без кожурой 120 грамм
-            // ср.вес самой кожуры бана 80 грамм
 
             // 
-            const addToNotEnoughUbgredients = (item, ingredient, qty) => {
-                // В рецептах - штуки. На складе - граммы (вес)
-                
-                if(qty < ingredient.value) {
-                    console.log(ingredient)
+            const notEnough = ref(false)
+            // 
+            const addToNotEnoughList = (type, qty, ingredient) => {
+                if(type === 'outOfStock') {
+                    itemsOutOfStock.value.push({
+                        name: ingredient.name,
+                        estimationType: ingredient.costEstimation,
+                        needQty: +ingredient.value,
+                        warehouseQty: +qty
+                    })
+
+                } else if (type === 'notEnough') {
                     itemsWhereIsNotEnoughIngredients.value.push({
                         name: ingredient.name,
                         estimationType: ingredient.costEstimation,
-                        needQty: ingredient.value, 
-                        warehouseQty: qty,
+                        needQty: +ingredient.value,
+                        warehouseQty: +qty
                     })
                 }
+
+
+                //     itemsWhereIsNotEnoughIngredients.value.push({
+                //         name: ingredient.name,
+                //         estimationType: ingredient.costEstimation,
+                //         needQty: +ingredient.value, 
+                //         warehouseQty: +qty,
+                //     })
+
+                //     itemsOutOfStock.value.push({
+                //         name: ingredient.name,
+                //         estimationType: ingredient.costEstimation,
+                //         needQty: +ingredient.value, 
+                //         warehouseQty: 0,
+                //     })
             }
 
             return {
-                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList, checkmark, alertOutline, setImgSrc, searchRecipesCategoriesMenu, searchRecipesCategories, userRecipesCategories, searchedRecipesCategories, isCategoryAlreadyAdded, choosenCategory, setMeasure, slides, setStyleProperties, steps, addProcessStep, addAssemblingElement, handleReorder, deleteAssemblingItem, assemblingItemToDeleteIndex, openDeleteAssemblingItemMenu, deleteAssemblingItemButtons, deleteAssemblingItemFunc, reorderIsDisabled, toggleReorder, editRecipeProcess, editRecipeProcessFunc, handleReorderProcess, deleteProcessStep, processStepToDeleteIndex, openDeleteStepsMenu, deleteProcessStepButtons, deleteProcessStepFunc, addCompositionItem, editComposition, editCompositionFunc, openDeleteCompositionItemMenu, deleteCompositionItem, compositionItemToDeleteIndex, deleteCopmositionItemButtons, deleteCompositionItemFunc, addCompositionItemIngredient, trash, updateComposition, addAssemblingElementModalOpened, addToAssembling, updateProcess, addCompositionItemModalOpened, newCompositionItem, addNewCompositionItem, addButtonIsDisabled, closeCompositionItemModal, addIngredientToCompositionItem, ingredientForNewCompositionModalOpened, addIngredientToCompositionItemFunc, setIngredientImg, isIngredientAlreadyAdded, deleteNewCompositionItemIngredient, deleteNewCompositionItemIngredientIndex, deleteNewCompositionItemIngredientMenu, deleteNewCompositionItemIngredientFunc, deleteNewCompositionItemIngredientButtons, openActionSheetCostEstimationMenu, actionSheetIngredientCostEstimation, ingredientWhereChangeEstimation, ingredientChangeCostEstimationButtons, setIngredientEstimation, deleteCompisitionItemIngredientMenu, deleteCompisitionItemIngredient, compositionItemIngredientIndex, compositionItemIndex, compositionItemIngredientButtons, deleteCompisitionItemIngredientFunc, setIngredientValue, setCurrentIngredientValue, actionSheetCurrentIngredientCostEstimation, currentIngredientWhereChangeEstimation, openActionSheetCurrentCostEstimationMenu, currentIngredientChangeCostEstimationButtons, addIngredientToCurrentCompositionItemModalOpened, currentCompositionItem, currentCompositionItemNewIngredient, addNewIngredientButtonIsDisabled, addCompositionItemIngredientFunc, newIngredientCurrentCompositionModalOpened, addIngredientToCurrentCompositionItem, actionSheetCurrentCompositionItemNewIngredient, actionSheetCurrentCompositionItemNewIngredientButtons, setNewIngredientValue, closeAddIngredientToCurrentCompositionItemModal, toggleRecipeToStore, fromAssemblingToComposition, cameraOutline, addImageToSlide, deleteCurrentImg, modules: [Virtual, Pagination], checkEmptyStrings, editRecipeDescription, toggleEditRecipeDescription, editRecipeName, toggleEditRecipeName, amIAnAuthorFunc, userEmail, showPaucityIngredients, userWarehouseItemsArray, userWarehouseIngredientsQty, itemsWhereIsNotEnoughIngredients, itemsOutOfStock, nameWarehouseItems, addToNotEnoughUbgredients
+                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList, checkmark, alertOutline, setImgSrc, searchRecipesCategoriesMenu, searchRecipesCategories, userRecipesCategories, searchedRecipesCategories, isCategoryAlreadyAdded, choosenCategory, setMeasure, slides, setStyleProperties, steps, addProcessStep, addAssemblingElement, handleReorder, deleteAssemblingItem, assemblingItemToDeleteIndex, openDeleteAssemblingItemMenu, deleteAssemblingItemButtons, deleteAssemblingItemFunc, reorderIsDisabled, toggleReorder, editRecipeProcess, editRecipeProcessFunc, handleReorderProcess, deleteProcessStep, processStepToDeleteIndex, openDeleteStepsMenu, deleteProcessStepButtons, deleteProcessStepFunc, addCompositionItem, editComposition, editCompositionFunc, openDeleteCompositionItemMenu, deleteCompositionItem, compositionItemToDeleteIndex, deleteCopmositionItemButtons, deleteCompositionItemFunc, addCompositionItemIngredient, trash, updateComposition, addAssemblingElementModalOpened, addToAssembling, updateProcess, addCompositionItemModalOpened, newCompositionItem, addNewCompositionItem, addButtonIsDisabled, closeCompositionItemModal, addIngredientToCompositionItem, ingredientForNewCompositionModalOpened, addIngredientToCompositionItemFunc, setIngredientImg, isIngredientAlreadyAdded, deleteNewCompositionItemIngredient, deleteNewCompositionItemIngredientIndex, deleteNewCompositionItemIngredientMenu, deleteNewCompositionItemIngredientFunc, deleteNewCompositionItemIngredientButtons, openActionSheetCostEstimationMenu, actionSheetIngredientCostEstimation, ingredientWhereChangeEstimation, ingredientChangeCostEstimationButtons, setIngredientEstimation, deleteCompisitionItemIngredientMenu, deleteCompisitionItemIngredient, compositionItemIngredientIndex, compositionItemIndex, compositionItemIngredientButtons, deleteCompisitionItemIngredientFunc, setIngredientValue, setCurrentIngredientValue, actionSheetCurrentIngredientCostEstimation, currentIngredientWhereChangeEstimation, openActionSheetCurrentCostEstimationMenu, currentIngredientChangeCostEstimationButtons, addIngredientToCurrentCompositionItemModalOpened, currentCompositionItem, currentCompositionItemNewIngredient, addNewIngredientButtonIsDisabled, addCompositionItemIngredientFunc, newIngredientCurrentCompositionModalOpened, addIngredientToCurrentCompositionItem, actionSheetCurrentCompositionItemNewIngredient, actionSheetCurrentCompositionItemNewIngredientButtons, setNewIngredientValue, closeAddIngredientToCurrentCompositionItemModal, toggleRecipeToStore, fromAssemblingToComposition, cameraOutline, addImageToSlide, deleteCurrentImg, modules: [Virtual, Pagination], checkEmptyStrings, editRecipeDescription, toggleEditRecipeDescription, editRecipeName, toggleEditRecipeName, amIAnAuthorFunc, userEmail, showPaucityIngredients, userWarehouseItemsArray, userWarehouseIngredientsQty, itemsWhereIsNotEnoughIngredients, itemsOutOfStock, nameWarehouseItems, addToNotEnoughList, calcQtyPerEstimationType, notEnough, isNotEnoughModalOpened
             }
         }
     })
