@@ -1967,6 +1967,9 @@
                 // Фильтруем массив со всеми предметами на складе, выдаем только те, которые требуются для рецепта
                 if(userWarehouseItemsArray.value) {
                     currentItems = userWarehouseItemsArray.value.filter(item => item.name === ingredient.name)
+                } else {
+                    // notEnough.value = true
+                    // addToNotEnoughList('outOfStock', 0, ingredient)
                 }
                 
                 // Если на складе ЕСТЬ
@@ -1991,7 +1994,10 @@
                     addToNotEnoughList('outOfStock', 0, ingredient)
                     // console.log(`${ingredient.name}: на складе НЕТ. Надо: ${ingredient.value} ${ingredient.costEstimation}`)
                     // addToNotEnoughList(itemsOutOfStock.value, qty, 'outOfStock', ingredient)
-                } 
+                } else {
+                    notEnough.value = true
+                    addToNotEnoughList('outOfStock', 0, ingredient)
+                }
                 return qty
             }
             // Не придумал ничего лучше пока что...
