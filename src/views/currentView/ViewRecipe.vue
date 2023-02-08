@@ -2055,6 +2055,14 @@
                         // Меры расчета у ингредиентов РАЗЛЧАЮТСЯ
                         else if(acc[item.name].estimationType !== item.estimationType){
                             // console.log(item.estimationType)
+                            // Банан
+                            if(acc[item.name].name === 'Банан') {
+                                if(acc[item.name].estimationType === 'perKilogram' && item.estimationType === 'perUnit') {
+                                    acc[item.name].needQty = `${+acc[item.name].needQty + +((item.needQty * 200))}`;
+                                } else if (acc[item.name].estimationType === 'perUnit' && item.estimationType === 'perKilogram') {
+                                    acc[item.name].needQty = `${+acc[item.name].needQty + +(item.needQty / 200)}`;
+                                }
+                            }
                             // teaSpoon
                             if (acc[item.name].estimationType === 'teaSpoon' && item.estimationType === 'pinch') {
                                 acc[item.name].needQty = `${+acc[item.name].needQty + +((item.needQty * 4) / 5)}`;
