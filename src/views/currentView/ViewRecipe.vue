@@ -178,7 +178,8 @@
                         <ion-icon :icon="checkmark"></ion-icon>
                     </ion-chip> -->
 
-                    <!-- НЕДОСТАТОЧНО ингредиентов -->
+                    <!-- =============================== НЕДОСТАТОЧНО ингредиентов ============================= -->
+                    <!-- Кнопка просмотра -->
                     <ion-grid>
                         <ion-row class="ion-justify-content-center">
                             <ion-chip v-if="notEnough" color="danger" class="ion-no-margin" @click="showPaucityIngredients">
@@ -310,7 +311,7 @@
 
                                                     </div>
                                                     <!--  -->
-                                                    <ion-thumbnail class="thumbnail_deal-subject" style="background-color: var(--ion-color-light); border: 1px solid var(--ion-color-danger)">
+                                                    <ion-thumbnail class="thumbnail_deal-subject" style="background-color: var(--ion-color-light);">
                                                         <ion-img :src="setImgSrc(ingredient.name)"></ion-img>
                                                     </ion-thumbnail>
                                                 </ion-row>
@@ -324,14 +325,14 @@
                                     </ion-item-sliding>
                                     <!-- без режима редактирования -->
                                     <ion-grid v-else class="ion-no-padding">
-                                        <ion-row class="ion-justify-content-between ion-align-items-center" style="flex-wrap: nowrap;">
+                                        <ion-row class="ion-justify-content-between ion-align-items-center" style="flex-wrap: nowrap;" :class="{isNotEnoughIbgredients: ingredient.value > userWarehouseIngredientsQty(ingredient)}">
                                             <div style="display: flex; flex-direction: column;" class="ion-padding-start">
                                                 <ion-text>{{ingredient.name}}</ion-text>
-                                                <ion-text color="medium" style="margin-top: 0.5rem">
+                                                <ion-text class="warehouse-item_qty" style="margin-top: 0.5rem">
                                                     <span>{{ingredient.value}} </span> / ~{{ userWarehouseIngredientsQty(ingredient) }} {{setMeasure(ingredient.costEstimation)}}
                                                 </ion-text>
                                             </div>
-                                            <ion-thumbnail class="thumbnail_deal-subject" style="background-color: var(--ion-color-light); border: 1px solid var(--ion-color-danger)">
+                                            <ion-thumbnail class="thumbnail_deal-subject">
                                                 <ion-img :src="setImgSrc(ingredient.name)"></ion-img>
                                             </ion-thumbnail>
                                         </ion-row>
@@ -1997,6 +1998,7 @@
                 //     })
             }
 
+
             return {
                 route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList, checkmark, alertOutline, setImgSrc, searchRecipesCategoriesMenu, searchRecipesCategories, userRecipesCategories, searchedRecipesCategories, isCategoryAlreadyAdded, choosenCategory, setMeasure, slides, setStyleProperties, steps, addProcessStep, addAssemblingElement, handleReorder, deleteAssemblingItem, assemblingItemToDeleteIndex, openDeleteAssemblingItemMenu, deleteAssemblingItemButtons, deleteAssemblingItemFunc, reorderIsDisabled, toggleReorder, editRecipeProcess, editRecipeProcessFunc, handleReorderProcess, deleteProcessStep, processStepToDeleteIndex, openDeleteStepsMenu, deleteProcessStepButtons, deleteProcessStepFunc, addCompositionItem, editComposition, editCompositionFunc, openDeleteCompositionItemMenu, deleteCompositionItem, compositionItemToDeleteIndex, deleteCopmositionItemButtons, deleteCompositionItemFunc, addCompositionItemIngredient, trash, updateComposition, addAssemblingElementModalOpened, addToAssembling, updateProcess, addCompositionItemModalOpened, newCompositionItem, addNewCompositionItem, addButtonIsDisabled, closeCompositionItemModal, addIngredientToCompositionItem, ingredientForNewCompositionModalOpened, addIngredientToCompositionItemFunc, setIngredientImg, isIngredientAlreadyAdded, deleteNewCompositionItemIngredient, deleteNewCompositionItemIngredientIndex, deleteNewCompositionItemIngredientMenu, deleteNewCompositionItemIngredientFunc, deleteNewCompositionItemIngredientButtons, openActionSheetCostEstimationMenu, actionSheetIngredientCostEstimation, ingredientWhereChangeEstimation, ingredientChangeCostEstimationButtons, setIngredientEstimation, deleteCompisitionItemIngredientMenu, deleteCompisitionItemIngredient, compositionItemIngredientIndex, compositionItemIndex, compositionItemIngredientButtons, deleteCompisitionItemIngredientFunc, setIngredientValue, setCurrentIngredientValue, actionSheetCurrentIngredientCostEstimation, currentIngredientWhereChangeEstimation, openActionSheetCurrentCostEstimationMenu, currentIngredientChangeCostEstimationButtons, addIngredientToCurrentCompositionItemModalOpened, currentCompositionItem, currentCompositionItemNewIngredient, addNewIngredientButtonIsDisabled, addCompositionItemIngredientFunc, newIngredientCurrentCompositionModalOpened, addIngredientToCurrentCompositionItem, actionSheetCurrentCompositionItemNewIngredient, actionSheetCurrentCompositionItemNewIngredientButtons, setNewIngredientValue, closeAddIngredientToCurrentCompositionItemModal, toggleRecipeToStore, fromAssemblingToComposition, cameraOutline, addImageToSlide, deleteCurrentImg, modules: [Virtual, Pagination], checkEmptyStrings, editRecipeDescription, toggleEditRecipeDescription, editRecipeName, toggleEditRecipeName, amIAnAuthorFunc, userEmail, showPaucityIngredients, userWarehouseItemsArray, userWarehouseIngredientsQty, itemsWhereIsNotEnoughIngredients, itemsOutOfStock, nameWarehouseItems, addToNotEnoughList, calcQtyPerEstimationType, notEnough, isNotEnoughModalOpened
             }
@@ -2013,6 +2015,7 @@
         align-items: center;
         border-radius: 50%;
         padding: 0.5rem;
+        background-color: var(--ion-color-light);
     }
     .button-add-ingredient {
         border-bottom: 1px dashed var(--ion-color-primary);
@@ -2030,6 +2033,17 @@
         padding-bottom: 1rem;
     }
     .isNotEnoughIbgredients {
-        background-color: black;
+        border: 1px solid var(--ion-color-danger);
+        border-radius: 1rem;
+    }
+
+    .isNotEnoughIbgredients .thumbnail_deal-subject {
+        background-color: transparent;
+    }
+    .warehouse-item_qty {
+        color: var(--ion-color-success)
+    }
+    .isNotEnoughIbgredients .warehouse-item_qty {
+        color: var(--ion-color-danger);
     }
 </style>
