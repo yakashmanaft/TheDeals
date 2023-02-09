@@ -43,10 +43,17 @@
                     <ion-icon color="primary" :icon="settingsOutline"></ion-icon>
                 </ion-button>
 
-                <!-- Filter -->
+                <!-- FILTER -->
                 <ion-button v-if="router.currentRoute._value.meta.title === 'Deals'" @click="$emit('setFilter')" class="relative">
                     <ion-icon color="primary" :icon="funnelOutline"></ion-icon>
-                    <div v-if="filterBy !== 'all'" class="absolute filterIndicator"></div>
+                    <div v-if="filterBy !== 'all'" class="absolute filterIndicator">
+                        <ion-text style="font-size: 14px;">{{ countByDealType }}</ion-text>
+                    </div>
+                </ion-button>
+
+                <!-- SHARE PRICE LIST -->
+                <ion-button v-if="router.currentRoute._value.meta.title === 'MyPrice'" @click="$emit('sharePrice')">
+                    <ion-icon color="primary" :icon="shareOutline"></ion-icon>
                 </ion-button>
 
             </ion-buttons>
@@ -59,14 +66,14 @@
     import { computed } from 'vue';
     import { useRouter } from 'vue-router';
     import { IonHeader, IonMenuToggle, IonToolbar, IonIcon, IonGrid, IonRow, IonText, IonButtons, IonButton, IonBackButton, IonTitle } from '@ionic/vue';
-    import { menu, walletOutline, settingsOutline, qrCodeOutline, storefrontOutline, bagOutline, funnelOutline } from 'ionicons/icons';
+    import { menu, walletOutline, settingsOutline, qrCodeOutline, storefrontOutline, bagOutline, funnelOutline, shareOutline } from 'ionicons/icons';
 
     export default {
         name: 'Header',
         components: {
             IonHeader, IonMenuToggle, IonToolbar, IonIcon, IonGrid, IonRow, IonText, IonButtons, IonButton, IonBackButton, IonTitle
         },
-        props: ['title', 'filterBy'],
+        props: ['title', 'filterBy', 'countByDealType'],
         setup(props, { emit }) {
             const user = computed(() => store.state.user);
             const router = useRouter();
@@ -93,7 +100,7 @@
             // }
 
             return {
-                user, router, menu, walletOutline, settingsOutline, qrCodeOutline, settingsOutline, storefrontOutline, bagOutline, funnelOutline
+                user, router, menu, walletOutline, settingsOutline, qrCodeOutline, settingsOutline, storefrontOutline, bagOutline, funnelOutline, shareOutline
             }
         }
     }
@@ -144,5 +151,8 @@
         border-radius: 100%;
         right: 0rem;
         bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 </style>

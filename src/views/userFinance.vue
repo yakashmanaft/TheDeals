@@ -54,9 +54,9 @@
     
                                         <!-- Иконка, Контакт  -->
                                         <ion-grid class="ion-no-padding">
-                                            <ion-row class="ion-align-items-center">
+                                            <ion-row class="ion-align-items-center" style="flex-wrap: nowrap;">
                                                 
-                                                <div class="transaction_icon ion-margin-end" :class="[transaction.dealType === 'sale' ? 'transaction_icon-income': 'transaction_icon-outcome']">
+                                                <div class="transaction_icon ion-margin-end" :class="[transaction.dealType === 'sale' ? 'transaction_icon-income': 'transaction_icon-outcome']" style="width: 32px; height: 32px;">
                                                     <ion-icon v-if="transaction.dealType === 'buy'" :icon="arrowUpOutline" color="light"></ion-icon>
                                                     <ion-icon v-if="transaction.dealType === 'sale'" :icon="arrowDownOutline" color="light"></ion-icon>
                                                 </div>
@@ -65,7 +65,7 @@
                                                 <!-- <ion-text v-if="transaction.contactID === '000'" color="medium">
                                                     Неизвестный
                                                 </ion-text> -->
-                                                <ion-text color="medium">
+                                                <ion-text color="medium" style="width: 80%;">
                                                     {{translateContactName(transaction.contactID, transaction.tempContactName)}}
                                                 </ion-text>
                                             </ion-row>

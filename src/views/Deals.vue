@@ -13,6 +13,7 @@
             @setFilter="setFilterFunc"
             :title="pageTitle"
             :filterBy="dealByType"
+            :countByDealType="foundDealsByStatus.value.length"
             style="background-color: white"
         />
 
@@ -107,7 +108,7 @@
                                     <!-- Header of the card -->
                                     <ion-card-header class="ion-no-padding">
                                         <ion-grid class="ion-no-padding">
-                                            <ion-row class="ion-justify-content-between ion-align-items-center">
+                                            <ion-row class="ion-justify-content-between ion-align-items-center" style="flex-wrap: nowrap;">
                                                 <div style="display: flex;" class="relative">
                                                     <ion-thumbnail class="icon-thumbnail absolute" :class="{'icon-thumbnail_sale': deal.dealType === 'sale', 'icon-thumbnail_buy': deal.dealType === 'buy'}">
                                                         <ion-icon class="icon-thumbnail_icon" :icon="setIconByDealType(deal.dealType)"></ion-icon>
@@ -120,7 +121,7 @@
                                                     </div>
                                                 </div>
                                                 <!-- Контакт по делу -->
-                                                <ion-text @click.prevent.stop="goToContact(deal.contactID)">
+                                                <ion-text @click.prevent.stop="goToContact(deal.contactID)" style="width: 70%" class="ion-text-right">
                                                     {{showNameByID(deal.contactID, myContacts, deal.tempContactName)}}
                                                 </ion-text>
                                             </ion-row>
@@ -644,8 +645,9 @@
             // Уведомляем о выделении предметов со склада для реализации дела по указанному рецепту
             const substructFromWarehouseToast = async () => {
                 const toast = await toastController.create({
+                    // Ингредиенты, необходимые для выполнения заказа, будут взяты со склада.
                     message: `
-                        Ингредиенты, необходимые для выполнения заказа, будут взяты со склада.
+                        В разработке... Перемещение со склада в работу...
                     `,
                     // duration: 3000,
                     // cssClass: 'custom-toast', 
@@ -665,8 +667,9 @@
             }
             const addToWarehouseToast = async () => {
                 const toast = await toastController.create({
+                    // Предметы дела будут добавлены на склад
                     message: `
-                        Предметы дела будут добавлены на склад
+                        В разработке... Перемещение на склад 
                     `,
                     // duration: 3000,
                     // cssClass: 'custom-toast', 
@@ -855,7 +858,7 @@
             //
             const setDealTypeMenu = ref(false)
             const setFilterFunc = () => {
-                console.log('set filter')
+                // console.log('set filter')
                 setDealTypeMenu.value = true
             }
             const setDealTypeMenuButtons = [

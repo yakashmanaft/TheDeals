@@ -94,7 +94,7 @@
                                 </ion-action-sheet>
                             </ion-chip>
                             <!-- Тип дела -->
-                            <ion-chip :color="setColorByDealType(currentDeal.dealType)" outline="true">
+                            <ion-chip :color="setColorByDealType(currentDeal.dealType)" outline="true" style="border:none">
                                 <ion-icon :icon="setIconByDealType(currentDeal.dealType)"></ion-icon>
                                 <ion-label>
                                     {{setDealType(currentDeal.dealType)}}
@@ -880,7 +880,10 @@
 
             // Уведомляем о выделении предметов со склада для реализации дела по указанному рецепту
             const substructFromWarehouseToast = async () => {
-                let message1 = 'Ингредиенты, необходимые для выполнения заказа, будут взяты со склада.';
+                // Ингредиенты, необходимые для выполнения заказа, будут взяты со склада.
+                let message1 = `
+                    В разработке... Перемещение со склада в работу...
+                `;
                 let message2 = 'Не хватает ингредиентов, необходимых для выполнения заказа.';
                 const toast = await toastController.create({
                     message: `
@@ -904,8 +907,9 @@
             }
             const addToWarehouseToast = async () => {
                 const toast = await toastController.create({
+                    // Предметы дела будут добавлены на склад
                     message: `
-                        Предметы дела будут добавлены на склад
+                        В разработке... Перемещение на склад 
                     `,
                     // duration: 3000,
                     // cssClass: 'custom-toast', 

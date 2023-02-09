@@ -47,7 +47,8 @@
                     <ion-icon :icon="`${item.icon}`" :color="item.title === currentRoute ? 'primary' : 'medium'" :alt="`${item.icon}`" class="ion-margin-end"/>
                     <router-link :to="{ name: `${item.name}` }" :class="{ 'current-route': item.title === currentRoute }"> {{ item.title }}</router-link>
                 </ion-item> 
-                <!-- Ссылкана магазин рецептов -->
+                
+                <!-- Ссылкана на панель админа -->
                 <!-- <ion-item v-if="userProfile === 'Тортодилер'" lines="none">
                     <ion-icon :icon="storefrontOutline" color="primary" class="ion-margin-end"></ion-icon>
                     <router-link :to="{ name: 'RecipesStore' }" :class="{ 'current-route': currentRoute === 'Магазин рецептов' }">
@@ -59,6 +60,12 @@
         <!-- menu footer -->
         <div>
             <ion-list lines="none">
+                <!-- В Админскую панель -->
+                <ion-item v-if="userEmail === adminEmail">
+                    <ion-icon :icon="accessibilityOutline" :color="currentRoute === 'Панель администратора' ? 'primary' : 'medium'" class="ion-margin-end"></ion-icon>
+                    <router-link :to="{ name: 'AdminDashboard' }" :class="{ 'current-route': currentRoute === 'Панель администратора' }">Панель администратора</router-link>
+                </ion-item>
+                <!-- В помощь по сервису -->
                 <ion-item>
                     <ion-icon :icon="helpCircleOutline" :color="currentRoute === 'Помощь' ? 'primary' : 'medium'" class="ion-margin-end"></ion-icon>
                     <router-link :to="{ name: 'FAQ' }" :class="{ 'current-route': currentRoute === 'Помощь' }">Помощь</router-link>
@@ -92,7 +99,7 @@
         IonCol
     } from '@ionic/vue';
     import PWAPrompt from '../components/PWAPrompt.vue';
-    import { exitOutline, helpCircleOutline, person, storefrontOutline } from 'ionicons/icons';
+    import { exitOutline, helpCircleOutline, person, storefrontOutline, accessibilityOutline } from 'ionicons/icons';
 
     export default defineComponent({
         name: 'NavigationMenu',
@@ -114,6 +121,7 @@
             const router = useRouter();
             //Get user email
             const userEmail = user.value.email
+            const adminEmail = store.state.adminEmail
             //
             const userProfile = ref('')
             // menu items array
@@ -177,7 +185,7 @@
             })
 
             return {
-                user, router, userEmail, logout, menuList, exitOutline, helpCircleOutline, menuType, currentRoute, person, getCurrentMenuList, userProfile, currentMenuList, storefrontOutline, avatarFileName, downloadImage, avatarUrl, fileName
+                user, router, userEmail, adminEmail, logout, menuList, exitOutline, helpCircleOutline, menuType, currentRoute, person, getCurrentMenuList, userProfile, currentMenuList, storefrontOutline, avatarFileName, downloadImage, avatarUrl, fileName, accessibilityOutline
             }
         }
     })

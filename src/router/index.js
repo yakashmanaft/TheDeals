@@ -218,6 +218,7 @@ const routes = [
     meta: {
       title: 'Admin panel',
       auth: true,
+      translation: 'Панель администратора',
       type: 'View'
     },
     // Проверяем админский ли email у пользователя

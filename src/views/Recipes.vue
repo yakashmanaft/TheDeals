@@ -67,8 +67,10 @@
                                 <ion-text color="primary">
                                     {{recipe.name}}
                                 </ion-text>
-                                <ion-text>
-                                    <!-- Не понятно что тут помещать )) -->
+                                <ion-text style="display: flex; align-items: center">
+                                    <ion-icon v-if="userEmail !== recipe.recipeAuthorEmail" color="success"  :icon="bagCheckOutline" @click.stop.prevent="showNotification(recipe)"></ion-icon>
+                                    <!--  -->
+                                    <ion-icon v-if="recipe.forSale" color="warning" :icon="ribbonOutline" class="ion-margin-start" @click.stop.prevent="showNotification(recipe)"></ion-icon>
                                 </ion-text>
                             </ion-row>
                         </ion-grid>

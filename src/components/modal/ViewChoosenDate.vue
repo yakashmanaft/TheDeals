@@ -31,7 +31,12 @@
             </div>
             <!--  -->
             <ion-card v-if="checkStatusAndLength(deals)" class="ion-padding-horizontal ion-padding-vertical">
-                Нет запланированных дел
+                <ion-grid class="ion-no-padding">
+                    <ion-row class="ion-justify-content-between ion-align-items-center">
+                        <ion-text>Нет запланированных дел</ion-text>
+                        <ion-text @click.stop.prevent="$emit('createNewDeal', date)" color="primary">Создать</ion-text>
+                    </ion-row>
+                </ion-grid>
             </ion-card>
             <!-- Карточки дел -->
             <!-- =================================== Если в реализации ===================================== -->

@@ -3,13 +3,13 @@
         <!-- Header of the card -->
         <ion-card-header class="ion-no-padding">
             <ion-grid class="ion-no-padding">
-                <ion-row class="ion-justify-content-between ion-align-items-center">
-                    <div style="display: flex" class="relative">
+                <ion-row class="ion-justify-content-between ion-align-items-center" style="flex-wrap: nowrap">
+                    <div style="display: flex;" class="relative">
                         <ion-thumbnail class="icon-thumbnail absolute" :class="{'icon-thumbnail_sale': deal.dealType === 'sale', 'icon-thumbnail_buy': deal.dealType === 'buy'}">
                             <ion-icon class="icon-thumbnail_icon" :icon="setIconByDealType(deal.dealType)"></ion-icon>
                         </ion-thumbnail>
                         <!--  -->
-                        <div @click.prevent.stop="openActionSheetDealStatusMenu(deal, deal.dealStatus)" style="margin-left: 0.4rem">
+                        <div @click.prevent.stop="openActionSheetDealStatusMenu(deal, deal.dealStatus)" style="margin-left: 0.4rem;">
                             <ion-text color="primary">
                                 {{translateValue(deal.dealStatus, dealStatusList)}}
                             </ion-text>
@@ -22,7 +22,7 @@
                             {{contactName}}
                         </ion-text>
                     </div> -->
-                    <ion-text @click.prevent.stop="$emit('getContact', deal.contactID)">{{contactName}}</ion-text>
+                    <ion-text @click.prevent.stop="$emit('getContact', deal.contactID)" style="width: 70%;" class="ion-text-right">{{contactName}}</ion-text>
                 </ion-row>
             </ion-grid>
         </ion-card-header>
@@ -213,8 +213,9 @@
             // Уведомляем о выделении предметов со склада для реализации дела по указанному рецепту
             const substructFromWarehouseToast = async () => {
                 const toast = await toastController.create({
+                    // Ингредиенты, необходимые для выполнения заказа, будут взяты со склада.
                     message: `
-                        Ингредиенты, необходимые для выполнения заказа, будут взяты со склада.
+                        В разработке... Перемещение со склада в работу...
                     `,
                     // duration: 3000,
                     // cssClass: 'custom-toast', 
@@ -234,8 +235,9 @@
             }
             const addToWarehouseToast = async () => {
                 const toast = await toastController.create({
+                    // Предметы дела будут добавлены на склад
                     message: `
-                        Предметы дела будут добавлены на склад
+                        В разработке... Перемещение на склад 
                     `,
                     // duration: 3000,
                     // cssClass: 'custom-toast', 

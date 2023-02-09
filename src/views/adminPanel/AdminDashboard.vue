@@ -1,5 +1,18 @@
 <template>
   <div>
+    <!-- Спиннер как имитация загрузки -->
+    <Spinner v-if="spinner"/>
+
+    <!-- Navigation Menu -->
+    <navigation-menu
+        :title="pageTitle"
+    />
+
+    <!-- page header -->
+    <Header
+      :title="pageTitle"
+      style="background-color: white"
+    />
 
     <!-- Контент -->
     <ion-content
@@ -9,6 +22,10 @@
       type="push"
       forceOverscroll="false"
     >
+      <br>
+      <br>
+      <br>
+      <!-- page content -->
 
       <!-- ================================== about users ================================== -->
       <!-- Пользваотели -->
@@ -37,11 +54,20 @@
       </ion-card>
 
     </ion-content>
+
+    <!-- page footer -->
+    <Footer/>
   </div>
 </template>
 
 <script>
 import { defineComponent, ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+//
+import Spinner from '@/components/Spinner.vue'
+import Header from '../../components/headers/Header.vue'
+import NavigationMenu from '@/components/NavigationMenu.vue';
+import Footer from '@/components/Footer.vue';
 //
 import { IonContent, IonGrid, IonRow, IonCard, IonCardHeader, IonCardContent, IonCardTitle, IonText } from '@ionic/vue';
 //
@@ -54,14 +80,26 @@ import { ru } from 'date-fns/locale';
   export default defineComponent({
     name: 'AdminDashboard',
     components: {
+      Spinner, Header, NavigationMenu, Footer,
+      //
       IonContent, IonGrid, IonRow, IonCard, IonCardHeader, IonCardContent, IonCardTitle, IonText
     },
     setup(props, { emit }) {
       // Общая инфа о пользователях
       const usersArray = ref()
+      //
+      const spinner = ref(null);
+      spinner.value = true;
+      // Setup ref to router
+      const router = useRouter();
+      // Get page title
+      const pageTitle = router.currentRoute._value.meta.translation;
+
       onMounted(async () => {
         await store.methods.getUsers();
         usersArray.value = store.state.usersArray.reverse()
+        //
+        spinner.value = false
       })
       //
       const formattedDate = (day) => {
@@ -73,7 +111,7 @@ import { ru } from 'date-fns/locale';
       }
 
       return {
-        usersArray, formattedDate
+        usersArray, spinner, formattedDate, router, pageTitle
       }
     }
   })

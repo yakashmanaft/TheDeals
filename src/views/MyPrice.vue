@@ -9,7 +9,10 @@
         />
 
         <!-- page header -->
-        <Header :title="pageTitle" />
+        <Header 
+            :title="pageTitle" 
+            @sharePrice="sharePriceFunc"    
+        />
 
         <!-- Кнопка перехода к созданию нового дела -->
         <create-button @click="toggleNewPriceProductModal"/>
@@ -666,9 +669,13 @@
                     }
                 }
             }
+            //
+            const sharePriceFunc = () => {
+                alert('MyPrice: делиться прайсом в разработке...')
+            }
 
             return {
-                priceChipList, blockToShow, menu, user, userEmail, router, pageTitle, userSettings, spinner, dataLoaded, trashOutline, deleteProductAction, openDeleteProductModal, openDeleteAttributeModal, deleteProductButtons, deleteAttributeButtons, productToDelete, attributeToDelete, deleteProduct, openProductInfo, updateUserPriceListDB, isViewCurrentProductOpened, currentProduct, isModalNewPriceItemOpened, addNewPriceProduct, toggleNewPriceProductModal, newPriceProductData, closeCircleOutline, currency, priceCalcType, costEstimation, setCostEstimation, setProductPrice, setProductQty, newPriceAdditionalAttributeData, deleteAdditionalAttribute, setBlockToShow, countItemChip, setChipOutline, setRentType, deleteAttributeAction, isItemAlreadyHave, changeBlockToShow, closeModalCreatePriceProduct, setAttributeRentType, setNewProductQty, setNewProductPrice, setNewProductAttributeRentType, closeProductInfo, currentProductPrice
+                priceChipList, blockToShow, menu, user, userEmail, router, pageTitle, userSettings, spinner, dataLoaded, trashOutline, deleteProductAction, openDeleteProductModal, openDeleteAttributeModal, deleteProductButtons, deleteAttributeButtons, productToDelete, attributeToDelete, deleteProduct, openProductInfo, updateUserPriceListDB, isViewCurrentProductOpened, currentProduct, isModalNewPriceItemOpened, addNewPriceProduct, toggleNewPriceProductModal, newPriceProductData, closeCircleOutline, currency, priceCalcType, costEstimation, setCostEstimation, setProductPrice, setProductQty, newPriceAdditionalAttributeData, deleteAdditionalAttribute, setBlockToShow, countItemChip, setChipOutline, setRentType, deleteAttributeAction, isItemAlreadyHave, changeBlockToShow, closeModalCreatePriceProduct, setAttributeRentType, setNewProductQty, setNewProductPrice, setNewProductAttributeRentType, closeProductInfo, currentProductPrice, sharePriceFunc
             }
         }
     })
