@@ -13,7 +13,7 @@
             @setFilter="setFilterFunc"
             :title="pageTitle"
             :filterBy="dealByType"
-            :countByDealType="foundDealsByStatus.value.length"
+            :countByDealType="foundDealsByStatus.length"
             style="background-color: white"
         />
 

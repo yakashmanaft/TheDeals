@@ -220,9 +220,10 @@
                 }, 3000)
                 } catch (error) {
                 // errorMsg.value = error.message;
-                setTimeout(() => {
-                    errorMsg.value = null;
-                }, 5000)
+                    spinner.value = false
+                    setTimeout(() => {
+                        errorMsg.value = null;
+                    }, 5000)
                 }
                 return;
             }

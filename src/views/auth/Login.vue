@@ -113,6 +113,7 @@
                     
                 } catch (error) {
                     errorMsg.value = `Error: ${error.message}`;
+                    spinner.value = false
                     setTimeout(() => {
                         errorMsg.value = null
                     }, 5000)

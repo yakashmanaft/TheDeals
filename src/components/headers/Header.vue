@@ -47,7 +47,7 @@
                 <ion-button v-if="router.currentRoute._value.meta.title === 'Deals'" @click="$emit('setFilter')" class="relative">
                     <ion-icon color="primary" :icon="funnelOutline"></ion-icon>
                     <div v-if="filterBy !== 'all'" class="absolute filterIndicator">
-                        <ion-text style="font-size: 14px;">{{ countByDealType }}</ion-text>
+                        <ion-text v-if="countByDealType" style="font-size: 14px;">{{ countByDealType }}</ion-text>
                     </div>
                 </ion-button>
 
