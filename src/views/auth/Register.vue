@@ -346,7 +346,7 @@
             }
 
             // ====================================== РАБОТА С МОДАЛКОЙ ВЫБОРА ПРОФИЛЯ =================================
-            const isChooseProfileModalOpened = ref(true)
+            const isChooseProfileModalOpened = ref(false)
             const goToChooseProfile = () => {
                 if(!email.value || email.value === '') {
                     alert('Register: укажите имейл')
