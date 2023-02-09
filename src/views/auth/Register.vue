@@ -20,9 +20,6 @@
             :buttons="['ВОЙТИ']"
             @didDismiss="confirmRequireFunc()"
         ></ion-alert>
-        
-        <!-- Spinner -->
-        <Spinner v-if="spinner"/>
 
         <!-- Content -->
         <div class="wrapper">
@@ -81,39 +78,76 @@
                     <ion-note slot="error">Не совпадает</ion-note>
                 </ion-item>
 
-                <ion-chip class="ion-margin-top">
-                    <ion-select interface="action-sheet" placeholder="Выберите профиль" cancelText="Отменить" v-model="userWorkProfile" @ionChange="setProfile($event)">
-                        <ion-select-option
-                            v-for="(item, index) in userWorkProfileArray"
-                            :key="index"
-                            :value="item"
-                        >
-                            {{item}}
-                        </ion-select-option>
-                    </ion-select>
-
-                </ion-chip>
-                <!-- {{userAccountSetting}} -->
-
                 <br>
                 <br>
     
-                <!-- Button -->
-                <ion-button 
-                    class="ion-margin-vertical"
-                    type="submit" 
-                    color="warning" 
-                    expand="block"
-                >
-                    <ion-text color="light" >
-                        Зарегистрироваться
+                <div style="display: flex; flex-direction: column">
+                    <!-- Открывает модалку выбора профиля -->
+                    <ion-button @click="goToChooseProfile" color="dark">
+                        Далее
+                    </ion-button>
+    
+                    <!-- Ссылка на экран логина -->
+                    <ion-text color="primary" class="ion-margin-top">
+                        <router-link :to="{ name: 'Login' }">Войти</router-link>
                     </ion-text>
-                    
-                </ion-button>
-                <!-- Ссылка на экран логина -->
-                <ion-text color="primary">
-                    <router-link :to="{ name: 'Login' }">Уже есть аккаунт?</router-link>
-                </ion-text>
+                </div>
+
+                <ion-modal 
+                    :isOpen="isChooseProfileModalOpened"
+                >
+                    <ion-header translucent="true" >
+                        <ion-toolbar>
+                            <ion-buttons slot="start">
+                                <!-- <ion-button @click="closeProfileMenu">Назад</ion-button> -->
+                                <ion-back-button  default-href="/register" text="Назад" @click="closeProfileMenu"></ion-back-button>
+                            </ion-buttons>
+                        </ion-toolbar>
+                    </ion-header>
+                    <!--  -->
+                    <ion-content class="ion-padding" forceOverscroll="false">
+                        
+                        <!--  -->
+                        <ion-item-group>
+                            <ion-text>
+                                <h3>Выберите профиль</h3>
+                            </ion-text>
+                        </ion-item-group>
+
+                        <ion-chip class="ion-margin-top">
+                            <ion-select interface="action-sheet" placeholder="Выберите профиль" cancelText="Отменить" v-model="userWorkProfile" @ionChange="setProfile($event)">
+                                <ion-select-option
+                                    v-for="(item, index) in userWorkProfileArray"
+                                    :key="index"
+                                    :value="item"
+                                >
+                                    {{item}}
+                                </ion-select-option>
+                            </ion-select>
+                        </ion-chip>
+                        {{userAccountSetting}}
+                        <br>
+                        {{ userWorkProfile }}
+
+                        <!-- Кнопка регистрации -->
+                        <div style="position: fixed; bottom: 0; left: 0; width: 100%; background-color: #fff; z-index: 999999">
+                            <ion-button 
+                                class="ion-margin"
+                                type="submit" 
+                                color="success" 
+                                expand="block"
+                                @click="register()"
+                            >
+                                <ion-text color="light" >
+                                    Зарегистрироваться
+                                </ion-text>
+                            </ion-button>
+                        </div>
+
+                        <!-- Spinner -->
+                        <Spinner v-if="spinner"/>
+                    </ion-content>
+                </ion-modal>
             </form>
 
         </div>
@@ -125,7 +159,7 @@
     import { ref, defineComponent, onMounted } from 'vue';
     import { supabase } from '../../supabase/init';
     import { useRouter } from 'vue-router';
-    import { IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert, IonNote, IonList, IonSelect, IonSelectOption, IonChip } from '@ionic/vue';
+    import { IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert, IonNote, IonList, IonSelect, IonSelectOption, IonChip, IonHeader, IonModal, IonToolbar, IonButtons, IonItemGroup, IonBackButton } from '@ionic/vue';
     //
     import Spinner from '../../components/Spinner.vue';
     //
@@ -135,7 +169,7 @@
 
     export default defineComponent ({
         name: 'register',
-        components: { IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert, Spinner, IonNote, IonList, IonSelect, IonSelectOption, IonChip },
+        components: { IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert, Spinner, IonNote, IonList, IonSelect, IonSelectOption, IonChip, IonHeader, IonModal, IonToolbar, IonButtons, IonItemGroup, IonBackButton },
         setup() {
             // Create data / vars
             const router = useRouter();
@@ -163,7 +197,7 @@
             // Шаблон для создания строки под настройки пользваотеля в БД accountSettings
             const userAccountSetting = ref({
                 uid: uid(),
-                // Здесь еще нет имейла
+                // Здесь еще нет имейла 
                 email: email.value,
                 userPriceList: [],
                 userAdditionalAttributes: [],
@@ -187,49 +221,45 @@
             })
 
             // Register function
+            const called = ref(false)
             const register = async () => {
-                await store.methods.getAllSettingsFromDB()
-                // console.log(email.value)         
-                let allSettings = store.state.allSettings
-                let allAccountEmails = []
-                allSettings.forEach(account => {
-                    allAccountEmails.push(account.email)
-                })
 
-            if (userWorkProfile.value === '') {
-                alert('Register: Выберите профиль')
-            } else if (password.value !== confirmPassword.value) {
-                alert('Register: Пароль не совпадает')
-            } else if (allAccountEmails.includes(email.value)) {
-                alert('Register: Аккаунт с указанным имейлом уже существует')
-            } else if (password.value === confirmPassword.value) {
-                spinner.value = true;
-                try {
-                const { error } = await supabase.auth.signUp({
-                    email: email.value,
-                    password: password.value
-                });
-                if (error) throw error;
-                setTimeout(() => {
+                if (userWorkProfile.value === '') {
+                    alert('Register: Выберите профиль')
+                } else if (password.value !== confirmPassword.value) {
+                    alert('Register: Пароль не совпадает')
+                } else if (allAccountEmails.value.includes(email.value)) {
+                    alert('Register: Аккаунт с указанным имейлом уже существует')
+                } else if (password.value === confirmPassword.value) {
+                    spinner.value = true;
+                    called.value = true;
+                    try {
+                    const { error } = await supabase.auth.signUp({
+                        email: email.value,
+                        password: password.value
+                    });
+                    if (error) throw error;
                     confirmRequire.value = true
                     // router.push({ name: 'Login' })
                     console.log(email.value)
                     // Здесь имейл уже подтянулся
                     userAccountSetting.value.email = email.value
                     createAccountSettings()
-                }, 3000)
-                } catch (error) {
-                // errorMsg.value = error.message;
+                    closeProfileMenu()
+                    // setTimeout(() => {
+                    // }, 3000)
+                    } catch (error) {
+                    // errorMsg.value = error.message;
+                    setTimeout(() => {
+                        errorMsg.value = null;
+                    }, 5000)
+                    }
+                    return;
+                }
+                // errorMsg.value = 'Error: Passwords do not match'
                 setTimeout(() => {
                     errorMsg.value = null;
                 }, 5000)
-                }
-                return;
-            }
-            // errorMsg.value = 'Error: Passwords do not match'
-            setTimeout(() => {
-                errorMsg.value = null;
-            }, 5000)
             };
 
             // confirm alert
@@ -295,15 +325,54 @@
                 item.classList.add('ion-touched');
             }
 
+            const isChooseProfileModalOpened = ref(false)
+            const allSettings = ref()
+            const allAccountEmails = ref([])
+            const goToChooseProfile = async () => {
+                if(!email.value || email.value === '') {
+                    alert('Register: укажите имейл')
+                } else if (!password.value || password.value === '') {
+                    alert('Register: укажите пароль')
+                } else if (!confirmPassword.value || confirmPassword.value !== password.value) {
+                    alert('Register: пароль не совпадает')
+                } else {
+                    isChooseProfileModalOpened.value = true
+                    userWorkProfile.value = ''
+                    userAccountSetting.value.userWorkProfile = null
+                    // 
+                    await store.methods.getAllSettingsFromDB()
+                    // console.log(email.value)         
+                    allSettings.value = store.state.allSettings
+                    allSettings.value.forEach(account => {
+                        allAccountEmails.value.push(account.email)
+                    })
+                }
+
+            // const password = ref(null);
+            // const confirmPassword = ref(null);
+            }
+            const closeProfileMenu = () => {
+                // userWorkProfile.value = ''
+                isChooseProfileModalOpened.value = false
+                // userAccountSetting.value.userWorkProfile = null
+            }
+
+            const click = () => {
+                console.log('clicked')
+            }
 
             return {
-                email, password, confirmPassword, spinner, confirmRequire, confirmRequireFunc, errorMsg, register, isOpenRef, isOpenRef, setOpen, userAccountSetting, createAccountSettings, validateEmail, validate, markTouched, validateConfirmPassword, confirmPasswordValidate, userWorkProfile, userWorkProfileArray, setProfile
+                email, password, confirmPassword, spinner, confirmRequire, confirmRequireFunc, errorMsg, register, isOpenRef, isOpenRef, setOpen, userAccountSetting, createAccountSettings, validateEmail, validate, markTouched, validateConfirmPassword, confirmPasswordValidate, userWorkProfile, userWorkProfileArray, setProfile, isChooseProfileModalOpened, closeProfileMenu, goToChooseProfile, click, called, allSettings, allSettings
             }
         }
     })
 </script>
 
 <style scoped>
+    ion-toolbar {
+        --border-style: none;
+        --background: white;
+    }
     .wrapper {
         height: 100vh;
         display: flex;
@@ -329,5 +398,9 @@
     ion-list {
         border-radius: 20px;
         background-color: transparent
+    }
+
+    .width-100 {
+        --width: 100%;
     }
 </style>

@@ -70,7 +70,7 @@
                 </ion-button>
                 <!-- Ссылка на экран регистрации -->
                 <ion-text color="primary">
-                    <router-link :to="{ name: 'Register' }">Еще нет аккаунта?</router-link>
+                    <router-link :to="{ name: 'Register' }">Создать аккаунт</router-link>
                 </ion-text>
             </form>
 
