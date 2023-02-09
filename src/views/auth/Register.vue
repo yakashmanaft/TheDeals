@@ -219,7 +219,7 @@
                     createAccountSettings()
                 }, 3000)
                 } catch (error) {
-                // errorMsg.value = error.message;
+                    errorMsg.value = error.message;
                     spinner.value = false
                     setTimeout(() => {
                         errorMsg.value = null;
