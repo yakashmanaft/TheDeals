@@ -149,8 +149,17 @@
             const userWorkProfile = ref('');
             const userWorkProfileArray = ref([])
 
-            onMounted(() => {
+            const allSettings = ref()
+            const allAccountEmails = ref([])
+
+            onMounted(async () => {
                 userWorkProfileArray.value = store.state.userWorkProfileArray
+                await store.methods.getAllSettingsFromDB()
+                // console.log(email.value)         
+                allSettings.value = store.state.allSettings
+                allSettings.value.forEach(account => {
+                    allAccountEmails.value.push(account.email)
+                })
             })
 
             //
@@ -188,19 +197,19 @@
 
             // Register function
             const register = async () => {
-                await store.methods.getAllSettingsFromDB()
-                // console.log(email.value)         
-                let allSettings = store.state.allSettings
-                let allAccountEmails = []
-                allSettings.forEach(account => {
-                    allAccountEmails.push(account.email)
-                })
+                // await store.methods.getAllSettingsFromDB()
+                // // console.log(email.value)         
+                // let allSettings = store.state.allSettings
+                // let allAccountEmails = []
+                // allSettings.forEach(account => {
+                //     allAccountEmails.push(account.email)
+                // })
 
             if (userWorkProfile.value === '') {
                 alert('Register: Выберите профиль')
             } else if (password.value !== confirmPassword.value) {
                 alert('Register: Пароль не совпадает')
-            } else if (allAccountEmails.includes(email.value)) {
+            } else if (allAccountEmails.value.includes(email.value)) {
                 alert('Register: Аккаунт с указанным имейлом уже существует')
             } else if (password.value === confirmPassword.value) {
                 spinner.value = true;
