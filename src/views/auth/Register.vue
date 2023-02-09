@@ -37,7 +37,7 @@
             </div>
             
             <!-- Форма ввода логина и пароля -->
-            <form @submit.prevent='register()'>
+            <form @submit.prevent='register()' style="height: 60%;">
                 <!-- Email -->
                 <!-- <ion-input 
                     placeholder="Enter Email / Введите имейл"
@@ -81,25 +81,60 @@
                     <ion-note slot="error">Не совпадает</ion-note>
                 </ion-item>
 
-                <ion-chip class="ion-margin-top">
-                    <ion-select interface="action-sheet" placeholder="Выберите профиль" cancelText="Отменить" v-model="userWorkProfile" @ionChange="setProfile($event)">
-                        <ion-select-option
-                            v-for="(item, index) in userWorkProfileArray"
-                            :key="index"
-                            :value="item"
-                        >
-                            {{item}}
-                        </ion-select-option>
-                    </ion-select>
+                <!-- Перети в ЛОГИН или ДАЛЕЕ -->
+                <div class="buttons-group" :class="{'z-index-none' : spinner}">
 
-                </ion-chip>
-                <!-- {{userAccountSetting}} -->
+                    <!-- Делаем Сабмит -->
+                    <ion-button v-if="isChooseProfileModalOpened" @click="register()" class="ion-margin">Создать аккаунт</ion-button>
+                    
+                    <!-- Открывает модалку выбора профиля -->
+                    <ion-button v-else @click="goToChooseProfile" color="dark" class="ion-margin">Далее</ion-button>
+
+                    <!-- Ссылка на экран логина -->
+                    <ion-button color="primary" fill="clear" class="ion-margin" @click="goToLogin()">
+                        Назад
+                        <!-- <router-link :to="{ name: 'Login' }" style="color: white">Войти</router-link> -->
+                    </ion-button>
+                </div>
+
+                <!-- Модалка выбора профиля -->
+                <ion-modal :isOpen="isChooseProfileModalOpened">
+
+                    <!--  -->
+                    <ion-header>
+
+                    </ion-header>
+
+                    <!--  -->
+                    <ion-content>
+                        <!-- ПРОФИЛИ Варианты -->
+                        <ion-chip class="ion-margin-top" :class="{'display-none' : spinner}">
+                            <ion-select interface="action-sheet" placeholder="Выберите профиль" cancelText="Отменить" v-model="userWorkProfile" @ionChange="setProfile($event)">
+                                <ion-select-option
+                                    v-for="(item, index) in userWorkProfileArray"
+                                    :key="index"
+                                    :value="item"
+                                >
+                                    {{item}}
+                                </ion-select-option>
+                            </ion-select>
+        
+                        </ion-chip>
+                        <!-- {{userAccountSetting}} -->
+
+                    </ion-content>
+
+
+                    <!-- Spinner -->
+                    <Spinner v-if="spinner"/>
+                </ion-modal>
+
 
                 <br>
                 <br>
     
                 <!-- Button -->
-                <ion-button 
+                <!-- <ion-button 
                     class="ion-margin-vertical"
                     type="submit" 
                     color="warning" 
@@ -109,11 +144,7 @@
                         Зарегистрироваться
                     </ion-text>
                     
-                </ion-button>
-                <!-- Ссылка на экран логина -->
-                <ion-text color="primary">
-                    <router-link :to="{ name: 'Login' }">Войти</router-link>
-                </ion-text>
+                </ion-button> -->
             </form>
 
         </div>
@@ -125,7 +156,7 @@
     import { ref, defineComponent, onMounted } from 'vue';
     import { supabase } from '../../supabase/init';
     import { useRouter } from 'vue-router';
-    import { IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert, IonNote, IonList, IonSelect, IonSelectOption, IonChip } from '@ionic/vue';
+    import { IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert, IonNote, IonList, IonSelect, IonSelectOption, IonChip, IonModal, IonHeader, IOnContent } from '@ionic/vue';
     //
     import Spinner from '../../components/Spinner.vue';
     //
@@ -135,7 +166,7 @@
 
     export default defineComponent ({
         name: 'register',
-        components: { IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert, Spinner, IonNote, IonList, IonSelect, IonSelectOption, IonChip },
+        components: { IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert, Spinner, IonNote, IonList, IonSelect, IonSelectOption, IonChip, IonModal, IonHeader, IonContent },
         setup() {
             // Create data / vars
             const router = useRouter();
@@ -167,6 +198,12 @@
                 // console.log(event.target.value)
                 userAccountSetting.value.userWorkProfile = event.target.value
                 console.log(userWorkProfile.value)
+            }
+
+            //
+            const goToLogin = () => {
+                isChooseProfileModalOpened.value = false
+                router.push({ name: 'Login' })
             }
 
             // Шаблон для создания строки под настройки пользваотеля в БД accountSettings
@@ -226,6 +263,7 @@
                     // Здесь имейл уже подтянулся
                     userAccountSetting.value.email = email.value
                     createAccountSettings()
+                    isChooseProfileModalOpened.value = true
                 }, 3000)
                 } catch (error) {
                     errorMsg.value = error.message;
@@ -246,6 +284,8 @@
             const confirmRequireFunc = () => {
                 isOpenRef.value = !isOpenRef.value;
                 router.push({ name: 'Login' });
+                isChooseProfileModalOpened.value = false
+                
             }
 
             // show alert of errorMsg
@@ -305,9 +345,24 @@
                 item.classList.add('ion-touched');
             }
 
+            // ====================================== РАБОТА С МОДАЛКОЙ ВЫБОРА ПРОФИЛЯ =================================
+            const isChooseProfileModalOpened = ref(true)
+            const goToChooseProfile = () => {
+                if(!email.value || email.value === '') {
+                    alert('Register: укажите имейл')
+                } else if (!password.value || password.value === '') {
+                    alert('Register: укажите пароль')
+                } else if (!confirmPassword.value || confirmPassword.value !== password.value) {
+                    alert('Register: пароль не совпадает')
+                } else {
+                    isChooseProfileModalOpened.value = true
+                    userWorkProfile.value = ''
+                    userAccountSetting.value.userWorkProfile = null
+                }
+            }
 
             return {
-                email, password, confirmPassword, spinner, confirmRequire, confirmRequireFunc, errorMsg, register, isOpenRef, isOpenRef, setOpen, userAccountSetting, createAccountSettings, validateEmail, validate, markTouched, validateConfirmPassword, confirmPasswordValidate, userWorkProfile, userWorkProfileArray, setProfile
+                email, password, confirmPassword, spinner, confirmRequire, confirmRequireFunc, errorMsg, register, isOpenRef, isOpenRef, setOpen, userAccountSetting, createAccountSettings, validateEmail, validate, markTouched, validateConfirmPassword, confirmPasswordValidate, userWorkProfile, userWorkProfileArray, setProfile, goToChooseProfile, isChooseProfileModalOpened, goToLogin
             }
         }
     })
@@ -340,4 +395,23 @@
         border-radius: 20px;
         background-color: transparent
     }
+    .buttons-group {
+        display: flex; 
+        flex-direction: column; 
+        position: fixed; 
+        bottom: 0; 
+        left: 0; 
+        width: 100%; 
+        background-color: #fff; 
+        z-index: 99999;
+    }
+
+    .z-index-none {
+        z-index: 0;
+    }
+
+    .display-none {
+        display: none!important;
+    }
+
 </style>

@@ -26,7 +26,7 @@
             </div>
             
             <!-- Форма ввода логина и пароля -->
-            <form @submit.prevent='login()'>
+            <form @submit.prevent='login()' style="height: 60%;">
                 <!-- Email -->
                 <!-- <ion-input 
                     placeholder="Enter Email / Введите имейл"
@@ -56,22 +56,28 @@
                 </ion-item>
                 <br>
                 <br>
-                <!-- Button -->
-                <ion-button 
-                    class="ion-margin-vertical"
-                    type="submit" 
-                    color="success" 
-                    expand="block"
-                >
-                    <ion-text color="light" >
-                        Войти
-                    </ion-text>
-                    
-                </ion-button>
-                <!-- Ссылка на экран регистрации -->
-                <ion-text color="primary">
-                    <router-link :to="{ name: 'Register' }">Создать аккаунт</router-link>
-                </ion-text>
+
+                <div style="display: flex; flex-direction: column; position: fixed; bottom: 0; left: 0; width: 100%; background-color: #fff; z-index: 999999">
+
+                    <!-- Button -->
+                    <ion-button 
+                        class="ion-margin-vertical ion-margin"
+                        type="submit" 
+                        color="success" 
+                        expand="block"
+                    >
+                        <ion-text color="light" >
+                            Войти
+                        </ion-text>
+                        
+                    </ion-button>
+                    <!-- Ссылка на экран регистрации -->
+                    <ion-button color="primary" fill="clear" @click="goToRegister()" class="ion-margin">
+                        Создать аккаунт
+                        <!-- <router-link :to="{ name: 'Register' }">Создать аккаунт</router-link> -->
+                    </ion-button>
+
+                </div>
             </form>
 
         </div>
@@ -120,6 +126,12 @@
                 }
             }
 
+            // 
+            const goToRegister = () => {
+                // :to="{ name: 'Register' }"
+                router.push({ name: 'Register' })
+            }
+
             // show alert of errorMsg
             const setOpen = () => isOpenRef.value = !isOpenRef.value; 
 
@@ -148,7 +160,7 @@
             }
 
             return {
-                email, password, errorMsg, login, spinner, isOpenRef, setOpen, validateEmail, validate, markTouched
+                email, password, errorMsg, login, spinner, isOpenRef, setOpen, validateEmail, validate, markTouched, goToRegister
             }
         }
     })
