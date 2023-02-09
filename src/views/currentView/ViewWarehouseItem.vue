@@ -50,7 +50,7 @@
                 <!-- {{ currentItem }} -->
 
                 <!-- Название предмета или сам предмет  -->
-                <ion-item-group class="ion-padding-bottom ion-padding-horizontal ion-text-left">
+                <ion-item-group class="ion-padding-horizontal ion-text-left">
                     <!-- Заголовок -->
                     <ion-text>
                         <h4>Предмет</h4>
@@ -79,7 +79,7 @@
                 </ion-item-group>
 
                 <!-- Кол-во -->
-                <ion-item-group class="ion-padding-bottom ion-padding-horizontal ion-text-left">
+                <ion-item-group class="ion-padding-horizontal ion-text-left">
                     <!-- Заголовок -->
                     <ion-text>
                         <h4>Количество</h4>
@@ -102,6 +102,28 @@
                     </ion-grid>
                 </ion-item-group>
 
+                <!-- Категория -->
+                <ion-item-group class="ion-padding-horizontal ion-text-left">
+                    <!-- Заголовок -->
+                    <ion-text>
+                        <h4>Категории</h4>
+                    </ion-text>
+
+                    <!--  -->
+                    <ion-grid class="ion-no-padding">
+
+                        <!-- Категории -->
+                        <ion-chip v-for="(category, index) in currentItem.categories" :key="index" class="ion-no-margin ion-margin-vertical ion-margin-end" color="primary" style="position: relative; overflow: visible">
+                            {{ category }}
+                            <!-- Кнопка удаления выбранной категории у предмета -->
+                            <ion-icon :icon="closeCircleOutline" style="position: absolute; right: -0.2rem; top: 0;" color="medium" @click.stop="openDeleteCategoryModal(category)"></ion-icon>
+                        </ion-chip>
+
+                        <!-- Кнопка добавления категории -->
+                        <ion-chip v-if="currentItem.categories.length < 3" class="ion-no-margin ion-margin-vertical ion-margin-end" color="primary" outline="true" @click.stop="searchWarehouseCategoriesMenu = true">Добавить</ion-chip>
+                    </ion-grid>
+                </ion-item-group>
+
                 <!-- Всплывашка подтверждение удаления предмета-->
                 <ion-action-sheet
                     :is-open="isOpenRef"
@@ -109,6 +131,52 @@
                     @didDismiss="isOpenRef = false"
                     :buttons="deleteWarehouseItemButtons"
                 ></ion-action-sheet>
+
+                <!-- Всплывашка подтверждения удаления категории у предмета -->
+                <ion-action-sheet
+                    :isOpen="deleteCategory"
+                    header="Удалить категорию"
+                    :buttons="deleteCategoryButtons"
+                    @didDismiss="deleteCategory = false"
+                ></ion-action-sheet>
+
+                <!-- Модалка по выбору / поиску категорий -->
+                <ion-modal :isOpen="searchWarehouseCategoriesMenu">
+                    <ion-searchbar
+                        class="ion-text-left"
+                        placeholder="Поиск..."
+                        v-model="searchWarehouseCategories"
+                        show-cancel-button="always"
+                        cancelButtonText="Отменить"
+                        @ionCancel="searchWarehouseCategoriesMenu = false" 
+                    ></ion-searchbar>
+                    <!--  -->
+                    <ion-content style="height: 90vh">
+                        
+                        <!-- Если есть данные -->
+                        <ion-item v-for="(category) in searchedhWarehouseCategories" :key="category.id" @click="choosenCategory(category)">
+                            <ion-grid class="ion-no-padding">
+                                <ion-row class="ion-justify-content-between ion-align-items-center">
+                                    <ion-text>{{ category }}</ion-text>
+                                </ion-row>
+                            </ion-grid>
+                        </ion-item>
+
+                        <!-- Если ничего подходящего нет или нет данных -->
+                        <div v-if="searchedhWarehouseCategories.length <= 0" class="ion-margin-top ion-margin-horizontal">
+                            <ion-grid class="ion-no-padding">
+                                <ion-row class="ion-justify-content-between ion-align-items-center">
+                                    <ion-text color="medium">
+                                        Ничего не найдено
+                                    </ion-text>
+                                    <!-- <ion-text color="primary" @click="addNewCategory">
+                                        Добавить
+                                    </ion-text> -->
+                                </ion-row>
+                            </ion-grid>
+                        </div>
+                    </ion-content>
+                </ion-modal>
             </div>
 
         </ion-content>
@@ -124,24 +192,28 @@
 </template>
 
 <script>
-    import { defineComponent, ref } from 'vue';
+    import { defineComponent, ref, computed, onMounted } from 'vue';
     import { useRoute, useRouter } from 'vue-router';
     import { supabase } from '../../supabase/init';
     import store from '../../store/index';
     //
-    import { IonContent, IonItemGroup, IonButton, IonActionSheet, IonText, IonItem, IonThumbnail, IonImg, IonGrid, IonRow } from '@ionic/vue';
+    import { IonContent, IonItemGroup, IonButton, IonActionSheet, IonText, IonItem, IonThumbnail, IonImg, IonGrid, IonRow, IonChip, IonModal,  IonSearchbar, IonIcon } from '@ionic/vue';
+    import { closeCircleOutline } from 'ionicons/icons'
     //
     import Spinner from '../../components/Spinner.vue';
     import ViewHeader from '../../components/headers/HeaderViewCurrent.vue';
     import CreateActionButton from '../../components/CreateActionButton.vue';
     import WarehouseAddSubstructItemQty from '../../components/modal/WarehouseAddSubstructItemQty.vue';
+    //
+    import { searchWarehouseCategoryFilter } from '../../helpers/filterWarehouseCategories';
+    import { sortAlphabeticallyWarhouseItem } from '../../helpers/sortDealSubject';
 
     export default defineComponent({
         name: 'View-warehouse-item',
         components: {
             ViewHeader, Spinner, CreateActionButton, WarehouseAddSubstructItemQty,
             //
-            IonContent, IonItemGroup, IonButton, IonActionSheet, IonText, IonItem, IonThumbnail, IonImg, IonGrid, IonRow
+            IonContent, IonItemGroup, IonButton, IonActionSheet, IonText, IonItem, IonThumbnail, IonImg, IonGrid, IonRow, IonChip, IonModal, IonSearchbar, IonIcon
         },
         setup () {
             //
@@ -150,14 +222,25 @@
             // Get current info of route
             const currentId = route.params.itemId;
             const info = route.params;
+
             const currentItem = ref(JSON.parse(info.item))
             //
             const userEmail = ref(store.state.userEmail)
+            const userSettings = ref(store.state.userSettings)
             // console.log(userEmail.value)
             const currentRoute = router.currentRoute._value.name
             //
             const spinner = ref(null);
             //
+            // Массив пользователя с вариантам категорий для предметов на складе
+            const userWarehouseCategories = ref();
+
+            onMounted(async () => {
+                await store.methods.getUserSettingsfromDB()
+                userSettings.value = store.state.userSettings;
+                //
+                userWarehouseCategories.value = userSettings.value[0].userWarehouseCategories
+            })
             
             // Подгружаем картинку в название предмета
             const setImgSrc = (itemName) => {
@@ -258,8 +341,95 @@
             // =================== РАБОТА С ДОБАВЛЕНИЕМ ВЫЧИТАНИЕМ КОЛИЧЕСТВА В ITEM ====================
             const isAddSubstructModalOpened = ref(false)
 
+            // =================== РАБОТА С КАТЕГОРИЯМИ ПРЕДМЕТА ========================================
+            const searchWarehouseCategoriesMenu = ref(false)
+            const searchWarehouseCategories = ref('')
+            // Пользовательские категории
+            const searchedhWarehouseCategories = computed(() => {
+                const sortedWarehouseCategoriesArray = sortAlphabeticallyWarhouseItem(userWarehouseCategories.value)
+                return searchWarehouseCategoryFilter(sortedWarehouseCategoriesArray, searchWarehouseCategories.value)
+            })
+            // Проверяем добавлена уже категория или нет
+            const isCategoryAlreadyAdded = ref();
+            // Переменная для категории к добавлению
+            const newCategory = ref()
+            const choosenCategory = async (category) => {
+                isCategoryAlreadyAdded.value = currentItem.value.categories.find(item => item === category)
+                if(isCategoryAlreadyAdded.value !== undefined) {
+                    alert('ViewWarehouseItem: категория уже добавлена к предмету')
+                } else {
+                    searchWarehouseCategories.value = ''
+                    searchWarehouseCategoriesMenu.value = false
+                    newCategory.value = category
+                    // console.log(newCategory.value)
+                    currentItem.value.categories.push(newCategory.value)
+                }
+                //
+                spinner.value = true;
+                try {
+                    const { error } = await supabase.from('userWarehouse').update({
+                        categories: currentItem.value.categories
+                    }).eq('id', info.itemId);
+                    if(error) throw error;
+                    spinner.value = false;
+                    // Предмет успешно обновлен
+                } catch(error) {
+                    // alert(`Error: ${error.message}`)
+                }
+            }
+
+            // ========================================= Удаление категорий у предмета =========================================
+            // Вызываем action sheet уведомление в качестве подтверждения
+            const deleteCategory = ref(false);
+            // Храним категорию предмета к удалению
+            const categoryToDelete = ref();
+            // удаляем current category в предмете (обнолвений в БД здесь не производится)
+            const openDeleteCategoryModal = (category) => {
+                if(currentItem.value.categories.length === 1) {
+                    alert('ViewWarehouseItem: должна быть указана хотя бы одна категория')
+                } else {
+                    categoryToDelete.value = category;
+                    deleteCategory.value = true
+                }
+            }
+            const deleteCategoruFunc = async (category) => {
+                currentItem.value.categories = currentItem.value.categories.filter(item => item !== category)
+                //
+                spinner.value = true;
+                try {
+                    const { error } = await supabase.from('userWarehouse').update({
+                        categories: currentItem.value.categories
+                    }).eq('id', info.itemId)
+                    if(error) throw error;
+                    spinner.value = false;
+                    // Предмет успешно обновлен
+                } catch (error) {
+                    // alert(`Error: ${error.message}`)
+                }
+            }
+            //
+            const deleteCategoryButtons = [
+                {
+                    text: 'Удалить',
+                    role: 'destructive',
+                    data: {
+                        type: 'delete'
+                    },
+                    handler: () => {
+                        deleteCategoruFunc(categoryToDelete.value)
+                    }
+                },
+                {
+                    text: 'Отменить',
+                    role: 'cancel',
+                    handler: () => {
+                        console.log('Cancel clicked')
+                    }
+                }
+            ]
+
             return {
-                route, router, spinner, currentId, info, currentItem, openDeleteMenu, isOpenRef, deleteWarehouseItemButtons, setImgSrc, isActionMenuOpened, actionMenuButtons, isAddSubstructModalOpened, typeOfAction, userEmail, currentRoute, makeSubstructRecordInLedgerWarehouse
+                route, router, spinner, currentId, info, currentItem, openDeleteMenu, isOpenRef, deleteWarehouseItemButtons, setImgSrc, isActionMenuOpened, actionMenuButtons, isAddSubstructModalOpened, typeOfAction, userEmail, currentRoute, makeSubstructRecordInLedgerWarehouse, searchWarehouseCategoriesMenu, searchWarehouseCategories, searchedhWarehouseCategories, isCategoryAlreadyAdded, newCategory, choosenCategory, userWarehouseCategories, userSettings, deleteCategory, categoryToDelete, openDeleteCategoryModal, deleteCategoruFunc, deleteCategoryButtons, closeCircleOutline
             }
         }
     })

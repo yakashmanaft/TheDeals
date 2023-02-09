@@ -1026,7 +1026,7 @@
             const deleteCategory = ref(false);
             // Храним категорию предмета к удалению
             const categoryToDelete = ref();
-            //удаляем current category в предмете (обнолвений в БД здесь не производится)
+            // удаляем current category в предмете (обнолвений в БД здесь не производится)
             const openDeleteCategoryModal = (category) => {
                 if(currentRecipe.value.categories.length === 1) {
                     alert('ViewRecipe: должна быть указана хотя бы одна категория')

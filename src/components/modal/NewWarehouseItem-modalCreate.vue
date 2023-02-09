@@ -135,7 +135,7 @@
                     </ion-chip>
 
                     <!-- Кнопка добавить категорию -->
-                    <ion-chip class="ion-no-margin ion-margin-top ion-margin-end" color="primary" outline="true" @click.stop="searchWarehouseCategoriesMenu = true">Добавить</ion-chip>
+                    <ion-chip v-if="itemData.categories.length < 3" class="ion-no-margin ion-margin-top ion-margin-end" color="primary" outline="true" @click.stop="searchWarehouseCategoriesMenu = true">Добавить</ion-chip>
 
                 </ion-grid>
 
@@ -168,6 +168,7 @@
                             </ion-row>
                         </ion-grid>
                     </ion-item>
+                    <!-- Добавление категорий делаем своими руками в store -->
                     <!-- <ion-item lines="none" @click="addNewCategory" v-if="searchedhWarehouseCategories.length > 0">
                         <ion-text color="primary">
                             Добавить категорию
@@ -289,9 +290,9 @@ import store from '../../store/index';
                 return searchWarehouseCategoryFilter(sortedWarehouseCategoriesArray, searchWarehouseCategories.value)
             })
             //
-            const addNewCategory = () => {
-                alert('NewWarehouseItem-modalCreate: функционал в разработке (addNewCategory)')
-            }
+            // const addNewCategory = () => {
+            //     alert('NewWarehouseItem-modalCreate: функционал в разработке (addNewCategory)')
+            // }
             // Проверяем добавлена уже категория к предмету или нет
             const isCategoryAlreadyAdded = ref();
             // Переменная для категории к добавлению
@@ -372,7 +373,7 @@ import store from '../../store/index';
             }) 
 
             return {
-                itemData, itemName, catalogNumber, closeThisModal, removeCircleOutline, addCircleOutline, changeSubjectQty, closeCircleOutline, searchWarehouseCategoriesMenu, searchWarehouseCategories, addNewCategory, searchedhWarehouseCategories, userWarehouseCategories, userSettings, choosenCategory, newCategory, isCategoryAlreadyAdded, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, deleteCategoruFunc, priceEstimationType, userWorkProfile, setPerKilogramValue, itemEstimationType, searchWarehouseItemMenu,  addItemToCurrentElement, setImgSrc
+                itemData, itemName, catalogNumber, closeThisModal, removeCircleOutline, addCircleOutline, changeSubjectQty, closeCircleOutline, searchWarehouseCategoriesMenu, searchWarehouseCategories, searchedhWarehouseCategories, userWarehouseCategories, userSettings, choosenCategory, newCategory, isCategoryAlreadyAdded, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, deleteCategoruFunc, priceEstimationType, userWorkProfile, setPerKilogramValue, itemEstimationType, searchWarehouseItemMenu,  addItemToCurrentElement, setImgSrc
             }
         }
     })
