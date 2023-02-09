@@ -456,6 +456,7 @@
                 }
             }
             // Создаем новую дело
+            const called = ref(false)
             const createNew = async (newDealData) => {
                 // принимаем инфу по делу из modal
                 dealData.value = newDealData
@@ -472,8 +473,9 @@
                     // } else if (!dealData.value.shipping.typeOfShipping) {
                     // Если не понадобится - убрать
                     alert('Deals: Вы не указали способ доставки')
-                } else {
+                } else if(!called.value){
                     spinner.value = true;
+                    called.value = true;
                     try{
                         // Добавляем в БД инфу по новому делу
                         const { error } = await supabase.from('deals').insert([dealData.value])
@@ -901,7 +903,7 @@
             }
 
             return {
-                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isViewDealModalOpened, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translateValue, refreshData, myContacts, showNameByID, checkRentAttr, dealTypesList, dealByType, showDealByType, helpOutline, addSubject, deleteSubject, setIconByDealType, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, dealStatus, dealWhereChangeStatus, prevDealStatus, debt, culcDealDebt, openDealPaidMenu, isDealPaidMenuOpened, refreshDebtValue, closeDealPaidMenu, dealPaidAmountValue, setAmountValue, isAllAttrReturnedFunc, currency, isAllAttrReturned, update, setMarkerAttrColor, shapes, addToLedger, setFilterFunc, setDealTypeMenu, setDealTypeMenuButtons, addToWarehouseToast, substructFromWarehouseToast, userRecipes, goToContact
+                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isViewDealModalOpened, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translateValue, refreshData, myContacts, showNameByID, checkRentAttr, dealTypesList, dealByType, showDealByType, helpOutline, addSubject, deleteSubject, setIconByDealType, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, dealStatus, dealWhereChangeStatus, prevDealStatus, debt, culcDealDebt, openDealPaidMenu, isDealPaidMenuOpened, refreshDebtValue, closeDealPaidMenu, dealPaidAmountValue, setAmountValue, isAllAttrReturnedFunc, currency, isAllAttrReturned, update, setMarkerAttrColor, shapes, addToLedger, setFilterFunc, setDealTypeMenu, setDealTypeMenuButtons, addToWarehouseToast, substructFromWarehouseToast, userRecipes, goToContact, called
             }
         }
     })

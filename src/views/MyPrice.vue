@@ -61,7 +61,7 @@
 
                 <!-- Убирать если ни предметов ни атрибутов нет -->
                 <div v-if="dataLoaded && (item.userPriceList.length !== 0 || item.userAdditionalAttributes.length !== 0)">
-                    <ion-item-group class="ion-margin-top ion-text-left horizontal-scroll">
+                    <ion-item-group class="ion-margin-top horizontal-scroll">
                         <ion-chip v-for="(chip, index) in priceChipList" :key="index" @click="setBlockToShow(chip.value)" color="primary" :outline="setChipOutline(chip.value, blockToShow)">
                             <ion-label>{{ chip.name }} <span>{{countItemChip(chip.value)}}</span></ion-label>
                         </ion-chip>
@@ -628,7 +628,17 @@
                 } else if (block === 'attributes') {
                     // console.log(block)
                     blockToShow.value = 'attributes'
-                    newPriceProductData.value = newPriceAdditionalAttributeData.value
+                    // newPriceProductData.value = newPriceAdditionalAttributeData.value
+                    newPriceProductData.value = {
+                        uid: '',
+                        value: '',
+                        name: '',
+                        price: 0,
+                        totalPrice: 0,
+                        qty: 1,
+                        rentType: '',
+                        isReturned: '' 
+                    }
                 }
             }
 

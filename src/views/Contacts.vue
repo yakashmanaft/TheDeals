@@ -334,6 +334,7 @@
                 return;
             }
             // Создаем новый контакт
+            const called = ref(false);
             const createNew = async (newContactData) => {
                 // принимаем инфу по контакту из modal
                 contactData.value = newContactData;
@@ -365,7 +366,8 @@
                     alert('ViewContact: Вы не указали сам адрес')
                 }
                 // СОХРАНЕНИЕ в БД
-                else {
+                else if (!called.value){
+                    called.value = true;
                     try { 
                         // Добавляем в БД инфу по новому контакту
                         // Скорей всего надо будет вынести в store или нет
@@ -389,7 +391,7 @@
 
 
             return {
-                user, router, pageTitle, userEmail, myContacts, spinner, dataLoaded, search, searchedContacts, isOpen, setOpen, createNew, contactData, addPhoneNumber, addEmail, deletePhoneNumber, deleteEmail, addSocial, deleteSocial, addContactEvent, deleteContactEvent, addAddress, deleteAddress
+                user, router, pageTitle, userEmail, myContacts, spinner, dataLoaded, search, searchedContacts, isOpen, setOpen, createNew, contactData, addPhoneNumber, addEmail, deletePhoneNumber, deleteEmail, addSocial, deleteSocial, addContactEvent, deleteContactEvent, addAddress, deleteAddress, called
             }
         }
     })

@@ -35,10 +35,14 @@
                         <ion-row class="ion-justify-content-between ion-align-items-center">
                             <!--  -->
                             <h4>Название</h4>
-                            <!-- -->
-                            <ion-text v-if="!editRecipeName" color="primary" @click.stop="toggleEditRecipeName()">Изменить</ion-text>
+
                             <!--  -->
-                            <ion-text v-else color="primary" @click.stop="toggleEditRecipeName()">Готово</ion-text>
+                            <div v-if="userEmail === recipeAuthorEmail">
+                                <!-- -->
+                                <ion-text v-if="!editRecipeName" color="primary" @click.stop="toggleEditRecipeName()">Изменить</ion-text>
+                                <!--  -->
+                                <ion-text v-else color="primary" @click.stop="toggleEditRecipeName()">Готово</ion-text>
+                            </div>
                         </ion-row>
                     </ion-grid>
                     <!--  -->
@@ -49,7 +53,7 @@
                 </ion-item-group>
 
                 <!-- Автор рецепта -->
-                <ion-item-group class="ion-padding-horizontal" v-if="amIAnAuthorFunc(userEmail, currentRecipe.recipeAuthorEmail) === false">
+                <ion-item-group class="ion-padding-horizontal" v-if="userEmail !== recipeAuthorEmail">
                     <!-- Заголовок -->
                     <h4>Автор рецепта</h4>
                     <!--  -->
@@ -65,7 +69,7 @@
                         <h4>Категории</h4>
                     </ion-text>
                     <!--  -->
-                    <ion-grid class="ion-no-padding">
+                    <ion-grid class="ion-no-padding" v-if="userEmail === recipeAuthorEmail">
                         <!-- Категория -->
                         <ion-chip v-for="(category, index) in currentRecipe.categories" :key="index" class="ion-no-margin ion-margin-vertical ion-margin-end" color="primary" style="position: relative; overflow: visible">
                             {{ category }}
@@ -76,6 +80,14 @@
                         <!-- Кнопка добавления категории -->
                         <ion-chip v-if="currentRecipe.categories.length < 3" class="ion-no-margin ion-margin-vertical ion-margin-end" color="primary" outline="true" @click.stop="searchRecipesCategoriesMenu = true">
                             Добавить
+                        </ion-chip>
+                    </ion-grid>
+
+                    <!--  -->
+                    <ion-grid class="ion-no-padding" v-else>
+                        <!-- Категория -->
+                        <ion-chip v-for="(category, index) in currentRecipe.categories" :key="index" class="ion-no-margin ion-margin-vertical ion-margin-end" color="primary" style="position: relative; overflow: visible">
+                            {{ category }}
                         </ion-chip>
                     </ion-grid>
 
@@ -106,7 +118,7 @@
                         style="position: relative"
                     >
                         {{slideContent}}
-                        <div class="ion-margin-end ion-margin-top" style="position: absolute; top: 0; right: 0; background-color: rgba(255, 255, 255, 0.8); padding: 10px; display: flex; justify-content: center; align-items: center; border-radius: 100%;" @click.stop="deleteCurrentImg(index)">
+                        <div class="ion-margin-end ion-margin-top" style="position: absolute; top: 0; right: 0; background-color: rgba(255, 255, 255, 0.8); padding: 10px; display: flex; justify-content: center; align-items: center; border-radius: 100%;" @click.stop="deleteCurrentImg(index)" v-if="userEmail === recipeAuthorEmail">
                             <ion-icon 
                                 slot="icon-only" 
                                 :icon="trash"
@@ -115,7 +127,7 @@
                         </div>
                     </swiper-slide>
                     <!-- Добавить фото -->
-                    <swiper-slide v-if="slides.length < 3">
+                    <swiper-slide v-if="slides.length < 3 && userEmail === recipeAuthorEmail">
                         <div 
                             class="ion-no-padding ion-padding-horizontal"
                             style="height: 300px; width: 100%; background-color: var(--ion-color-system); color: white; display: flex; align-items: center; flex-direction: column; justify-content: center;"
@@ -128,13 +140,19 @@
                 </swiper>
                 <!-- Если НЕТ фото -->
                 <div 
-                    v-else
+                    v-if="!slides.length || slides.length === 0"
                     class="ion-no-padding ion-padding-horizontal"
                     style="height: 300px; width: 100%; background-color: var(--ion-color-system); color: white; display: flex; align-items: center; flex-direction: column; justify-content: center;"
                     @click.stop="addImageToSlide()"
                 >   
-                    <ion-icon style="font-size: 36px;" :icon="cameraOutline"></ion-icon>
-                    <ion-text class="ion-margin-top">Добавить фото</ion-text>
+                    <!--  -->
+                    <ion-icon v-if="userEmail === recipeAuthorEmail" style="font-size: 36px;" :icon="cameraOutline"></ion-icon>
+                    <ion-text v-if="userEmail === recipeAuthorEmail" class="ion-margin-top">Добавить фото</ion-text>
+                    
+                    <!--  -->
+                    <ion-icon v-if="userEmail !== recipeAuthorEmail" style="font-size: 36px;" :icon="imageOutline"></ion-icon>
+                    <ion-text v-if="userEmail !== recipeAuthorEmail" class="ion-margin-top">Нет фото</ion-text>
+                    
                 </div>
 
                 <!-- Описание рецепта -->
@@ -143,10 +161,13 @@
                     <ion-grid class="ion-no-padding">
                         <ion-row class="ion-justify-content-between ion-align-items-center">
                             <h4 class="ion-no-margin">Описание</h4>
-                            <!--  -->
-                            <ion-text v-if="!editRecipeDescription" color="primary" @click.stop="toggleEditRecipeDescription()">Изменить</ion-text>
-                            <!--  -->
-                            <ion-text v-else color="primary" @click.stop="toggleEditRecipeDescription()">Готово</ion-text>
+
+                            <div v-if="userEmail === recipeAuthorEmail">
+                                <!--  -->
+                                <ion-text v-if="!editRecipeDescription" color="primary" @click.stop="toggleEditRecipeDescription()">Изменить</ion-text>
+                                <!--  -->
+                                <ion-text v-else color="primary" @click.stop="toggleEditRecipeDescription()">Готово</ion-text>
+                            </div>
                         </ion-row>
                     </ion-grid>
 
@@ -293,10 +314,13 @@
                         <ion-row class="ion-justify-content-between ion-align-items-center ion-margin-vertical">
                             <!--  -->
                             <h4 class="ion-no-margin">Состав</h4>
-                            <!--  -->
-                            <ion-text v-if="!editComposition" @click.stop="editComposition = true" color="primary">Изменить</ion-text>
-                            <!--  -->
-                            <ion-text v-else @click.stop="editCompositionFunc()" color="primary">Готово</ion-text>
+
+                            <div v-if="userEmail === recipeAuthorEmail">
+                                <!--  -->
+                                <ion-text v-if="!editComposition" @click.stop="editComposition = true" color="primary">Изменить</ion-text>
+                                <!--  -->
+                                <ion-text v-else @click.stop="editCompositionFunc()" color="primary">Готово</ion-text>
+                            </div>
                         </ion-row>
                     </ion-grid> 
 
@@ -412,10 +436,13 @@
                     <ion-grid class="ion-no-padding ion-margin-horizontal">
                         <ion-row class="ion-justify-content-between ion-align-items-center ion-margin-vertical">
                             <h4 class="ion-no-margin">Процесс приготовления</h4>
-                            <!--  -->
-                            <ion-text v-if="!editRecipeProcess" color="primary" @click.stop="editRecipeProcess = true">Изменить</ion-text>
-                            <!--  -->
-                            <ion-text v-else @click.stop="editRecipeProcessFunc()" color="primary">Готово</ion-text>
+
+                            <div v-if="userEmail === recipeAuthorEmail">
+                                <!--  -->
+                                <ion-text v-if="!editRecipeProcess" color="primary" @click.stop="editRecipeProcess = true">Изменить</ion-text>
+                                <!--  -->
+                                <ion-text v-else @click.stop="editRecipeProcessFunc()" color="primary">Готово</ion-text>
+                            </div>
                         </ion-row>
                     </ion-grid>
 
@@ -460,10 +487,13 @@
                                 <h4 class="ion-no-margin">Сборка</h4>
                                 <ion-text color="medium">Осуществляем по порядку</ion-text>
                             </div>
-                            <!--  -->
-                            <ion-text v-if="reorderIsDisabled" @click.stop="toggleReorder()" color="primary">Изменить</ion-text>
-                            <!--  -->
-                            <ion-text v-else @click.stop="toggleReorder()" color="primary">Готово</ion-text>
+
+                            <div v-if="userEmail === recipeAuthorEmail">
+                                <!--  -->
+                                <ion-text v-if="reorderIsDisabled" @click.stop="toggleReorder()" color="primary">Изменить</ion-text>
+                                <!--  -->
+                                <ion-text v-else @click.stop="toggleReorder()" color="primary">Готово</ion-text>
+                            </div>
                         </ion-row>
                     </ion-grid>
                     
@@ -726,7 +756,8 @@
                 </ion-modal>
 
                 <!-- Вкл / Выкл на продажу в магазин рецептов -->
-                <ion-item-group class="ion-padding-vertical ion-padding-horizontal">
+                <!-- Если только user является автором рецепта -->
+                <ion-item-group class="ion-padding-vertical ion-padding-horizontal" v-if="userEmail === recipeAuthorEmail">
                     <!-- Заголовок -->
                     <ion-text>
                         <h4>Продажа рецепта</h4>
@@ -832,7 +863,7 @@
     import store from '../../store/index';
     //
     import { IonContent, IonItemGroup, IonButton, IonActionSheet, IonGrid, IonRow, IonToggle, IonInput, IonText, IonItem, IonChip, IonIcon, IonTextarea, IonLabel, IonThumbnail, IonImg, IonModal, IonSearchbar, IonList, IonReorderGroup, IonReorder, IonItemSliding, IonItemOptions, IonItemOption, IonHeader, IonToolbar, IonButtons, IonTitle } from '@ionic/vue';
-    import { closeCircleOutline, checkmark, alertOutline, trash, cameraOutline } from 'ionicons/icons'
+    import { closeCircleOutline, checkmark, alertOutline, trash, cameraOutline, imageOutline } from 'ionicons/icons'
     //
     import { Swiper, SwiperSlide } from 'swiper/vue';
     import { Virtual, Pagination } from 'swiper';
@@ -921,13 +952,8 @@
             }
             // Проверка является ли пользватель автором рецепта
             const userEmail = ref(store.state.userEmail)
-            const amIAnAuthorFunc = (userEmail, recipeAuthorEmail) => {
-                if(userEmail === recipeAuthorEmail) {
-                    return true
-                } else {
-                    return false
-                }
-            }
+            const recipeAuthorEmail = ref(currentRecipe.value.recipeAuthorEmail);
+            // console.log(recipeAuthorEmail.value)
             //
             const recipeName = ref(currentRecipe.value.name)
             const editRecipeName = ref(false)
@@ -1133,7 +1159,7 @@
 
             // Должны браться из БД
             //'slide 1', 'slide 2', 'slide 3'
-            const slides = ref(['slide', 'slide', 'slide'])
+            const slides = ref([])
             // Стили для слайдера
             const setStyleProperties = (index) => {
                 return `height: 300px; background-color: #${index}${index}${index}; color: white`
@@ -2083,7 +2109,7 @@
 
 
             return {
-                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList, checkmark, alertOutline, setImgSrc, searchRecipesCategoriesMenu, searchRecipesCategories, userRecipesCategories, searchedRecipesCategories, isCategoryAlreadyAdded, choosenCategory, setMeasure, slides, setStyleProperties, steps, addProcessStep, addAssemblingElement, handleReorder, deleteAssemblingItem, assemblingItemToDeleteIndex, openDeleteAssemblingItemMenu, deleteAssemblingItemButtons, deleteAssemblingItemFunc, reorderIsDisabled, toggleReorder, editRecipeProcess, editRecipeProcessFunc, handleReorderProcess, deleteProcessStep, processStepToDeleteIndex, openDeleteStepsMenu, deleteProcessStepButtons, deleteProcessStepFunc, addCompositionItem, editComposition, editCompositionFunc, openDeleteCompositionItemMenu, deleteCompositionItem, compositionItemToDeleteIndex, deleteCopmositionItemButtons, deleteCompositionItemFunc, addCompositionItemIngredient, trash, updateComposition, addAssemblingElementModalOpened, addToAssembling, updateProcess, addCompositionItemModalOpened, newCompositionItem, addNewCompositionItem, addButtonIsDisabled, closeCompositionItemModal, addIngredientToCompositionItem, ingredientForNewCompositionModalOpened, addIngredientToCompositionItemFunc, setIngredientImg, isIngredientAlreadyAdded, deleteNewCompositionItemIngredient, deleteNewCompositionItemIngredientIndex, deleteNewCompositionItemIngredientMenu, deleteNewCompositionItemIngredientFunc, deleteNewCompositionItemIngredientButtons, openActionSheetCostEstimationMenu, actionSheetIngredientCostEstimation, ingredientWhereChangeEstimation, ingredientChangeCostEstimationButtons, setIngredientEstimation, deleteCompisitionItemIngredientMenu, deleteCompisitionItemIngredient, compositionItemIngredientIndex, compositionItemIndex, compositionItemIngredientButtons, deleteCompisitionItemIngredientFunc, setIngredientValue, setCurrentIngredientValue, actionSheetCurrentIngredientCostEstimation, currentIngredientWhereChangeEstimation, openActionSheetCurrentCostEstimationMenu, currentIngredientChangeCostEstimationButtons, addIngredientToCurrentCompositionItemModalOpened, currentCompositionItem, currentCompositionItemNewIngredient, addNewIngredientButtonIsDisabled, addCompositionItemIngredientFunc, newIngredientCurrentCompositionModalOpened, addIngredientToCurrentCompositionItem, actionSheetCurrentCompositionItemNewIngredient, actionSheetCurrentCompositionItemNewIngredientButtons, setNewIngredientValue, closeAddIngredientToCurrentCompositionItemModal, toggleRecipeToStore, fromAssemblingToComposition, cameraOutline, addImageToSlide, deleteCurrentImg, modules: [Virtual, Pagination], checkEmptyStrings, editRecipeDescription, toggleEditRecipeDescription, editRecipeName, toggleEditRecipeName, amIAnAuthorFunc, userEmail, showPaucityIngredients, userWarehouseItemsArray, userWarehouseIngredientsQty, itemsWhereIsNotEnoughIngredients, itemsOutOfStock, nameWarehouseItems, addToNotEnoughList, calcQtyPerEstimationType, notEnough, isNotEnoughModalOpened, helpcalc, filterNotEnoughRecipeItems
+                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList, checkmark, alertOutline, setImgSrc, searchRecipesCategoriesMenu, searchRecipesCategories, userRecipesCategories, searchedRecipesCategories, isCategoryAlreadyAdded, choosenCategory, setMeasure, slides, setStyleProperties, steps, addProcessStep, addAssemblingElement, handleReorder, deleteAssemblingItem, assemblingItemToDeleteIndex, openDeleteAssemblingItemMenu, deleteAssemblingItemButtons, deleteAssemblingItemFunc, reorderIsDisabled, toggleReorder, editRecipeProcess, editRecipeProcessFunc, handleReorderProcess, deleteProcessStep, processStepToDeleteIndex, openDeleteStepsMenu, deleteProcessStepButtons, deleteProcessStepFunc, addCompositionItem, editComposition, editCompositionFunc, openDeleteCompositionItemMenu, deleteCompositionItem, compositionItemToDeleteIndex, deleteCopmositionItemButtons, deleteCompositionItemFunc, addCompositionItemIngredient, trash, updateComposition, addAssemblingElementModalOpened, addToAssembling, updateProcess, addCompositionItemModalOpened, newCompositionItem, addNewCompositionItem, addButtonIsDisabled, closeCompositionItemModal, addIngredientToCompositionItem, ingredientForNewCompositionModalOpened, addIngredientToCompositionItemFunc, setIngredientImg, isIngredientAlreadyAdded, deleteNewCompositionItemIngredient, deleteNewCompositionItemIngredientIndex, deleteNewCompositionItemIngredientMenu, deleteNewCompositionItemIngredientFunc, deleteNewCompositionItemIngredientButtons, openActionSheetCostEstimationMenu, actionSheetIngredientCostEstimation, ingredientWhereChangeEstimation, ingredientChangeCostEstimationButtons, setIngredientEstimation, deleteCompisitionItemIngredientMenu, deleteCompisitionItemIngredient, compositionItemIngredientIndex, compositionItemIndex, compositionItemIngredientButtons, deleteCompisitionItemIngredientFunc, setIngredientValue, setCurrentIngredientValue, actionSheetCurrentIngredientCostEstimation, currentIngredientWhereChangeEstimation, openActionSheetCurrentCostEstimationMenu, currentIngredientChangeCostEstimationButtons, addIngredientToCurrentCompositionItemModalOpened, currentCompositionItem, currentCompositionItemNewIngredient, addNewIngredientButtonIsDisabled, addCompositionItemIngredientFunc, newIngredientCurrentCompositionModalOpened, addIngredientToCurrentCompositionItem, actionSheetCurrentCompositionItemNewIngredient, actionSheetCurrentCompositionItemNewIngredientButtons, setNewIngredientValue, closeAddIngredientToCurrentCompositionItemModal, toggleRecipeToStore, fromAssemblingToComposition, cameraOutline, addImageToSlide, deleteCurrentImg, modules: [Virtual, Pagination], checkEmptyStrings, editRecipeDescription, toggleEditRecipeDescription, editRecipeName, toggleEditRecipeName, recipeAuthorEmail, userEmail, showPaucityIngredients, userWarehouseItemsArray, userWarehouseIngredientsQty, itemsWhereIsNotEnoughIngredients, itemsOutOfStock, nameWarehouseItems, addToNotEnoughList, calcQtyPerEstimationType, notEnough, isNotEnoughModalOpened, helpcalc, filterNotEnoughRecipeItems, imageOutline
             }
         }
     })

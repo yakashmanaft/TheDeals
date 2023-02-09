@@ -3,7 +3,7 @@
         <ion-header translucent="true">
             <ion-toolbar>
                 <ion-buttons slot="start">
-                    <ion-button @click="$emit('closeModal', showBlockName)">Отменить</ion-button>
+                    <ion-button @click="closeModalFunc">Отменить</ion-button>
                 </ion-buttons>
                 <ion-title class="ion-text-center">Новый</ion-title>
                 <ion-buttons slot="end">
@@ -234,14 +234,10 @@
                 searchProductMenu.value = false;
             }
             //
-            watchEffect(() => {
-                newProductData.value = props.newProductData
-                showBlockName.value = props.blockToShow
-            })
-            //
             watch(showBlockName, () => {
                 // console.log(showBlockName.value)
-                
+                // newProductData.value.price = 0 
+                newProductPrice.value = 0;
                 emit('blockToShowIsChanged', showBlockName.value)
             })
             //
@@ -266,7 +262,7 @@
                 // console.log(action)
             }
             //
-            const newProductQty = ref();
+            const newProductQty = ref(props.newProductData.qty);
             watch(newProductQty, (qty) => {
                 emit('getNewProductQty', +qty)
                 // раскрашиваем кнопки counter
@@ -281,11 +277,11 @@
                 return newProductQty.value
             }
             //
-            const newProductPrice = ref()
+            const newProductPrice = ref(props.newProductData.price)
             // console.log(newProductData.value.price)
             watch(newProductPrice, (price) => {
                 // console.log(price)
-                newProductPrice.value = price
+                newProductPrice.value = +price
                 emit('getNewProductPrice', +price)
             })
             //
@@ -294,9 +290,19 @@
                 //console.log(type)
                 emit('getRentType', type)
             })
+            //
+            const closeModalFunc = () => {
+                newProductPrice.value = 0;
+                emit('closeModal', showBlockName.value)
+            }
+            //
+            watchEffect(() => {
+                newProductData.value = props.newProductData
+                showBlockName.value = props.blockToShow
+            })
 
             return {
-                helpOutline, dealSaleSubjectArray, subjectAttributeArray, showSelectedProduct, searchSelectedProduct, searchProductMenu, translateValue, searchedProduct, sortAlphabetically, searchDealSubjectFilter, chooseProduct, priceEstimationType, priceAttributeType, currency, showBlockName, priceChipList, setIconByBlockToShow, setNameByBlockToShow, changeQty, countQtyButtonColor, removeCircleOutline, addCircleOutline, setProductQty, newProductPrice, rentType
+                helpOutline, dealSaleSubjectArray, subjectAttributeArray, showSelectedProduct, searchSelectedProduct, searchProductMenu, translateValue, searchedProduct, sortAlphabetically, searchDealSubjectFilter, chooseProduct, priceEstimationType, priceAttributeType, currency, showBlockName, priceChipList, setIconByBlockToShow, setNameByBlockToShow, changeQty, countQtyButtonColor, removeCircleOutline, addCircleOutline, setProductQty, newProductPrice, rentType, closeModalFunc
             }
         }
     })

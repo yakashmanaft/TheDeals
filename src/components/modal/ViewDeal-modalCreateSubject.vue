@@ -113,7 +113,7 @@
                                 </ion-item>
                                 <!--  -->
                                 <div class="ion-padding-horizontal" style="display: flex; flex-direction: column; position: absolute; top: 40%; width: 100%;">
-                                    <ion-text class="ion-text-center">Купить или создать в <ion-text color="primary" @click="goToMyRecipes()">Моих рецептах</ion-text></ion-text>
+                                    <ion-text class="ion-text-center">Создать в <ion-text color="primary" @click="goToMyRecipes()">Моих рецептах</ion-text></ion-text>
                                     <ion-button color="dark" class="ion-margin-top" @click="goToRecipesStore()">Купить в магазине</ion-button>
                                 </div>
                             </div>

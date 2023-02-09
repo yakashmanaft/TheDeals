@@ -293,6 +293,7 @@
             }
 
             // Создаем новый рецепт
+            const called = ref(false)
             const createNew = async (newRecipeData) => {
                 // принимаем инфу по рецепту из modal
                 recipeData.value = newRecipeData
@@ -343,7 +344,8 @@
                     }
                     
                     // Функция создания записи в БД
-                    if(!boolsArray.includes('true') && !emptyStrings.includes('')) {
+                    if(!boolsArray.includes('true') && !emptyStrings.includes('') && !called.value) {
+                        called.value = true
                         try {
                             // Добавляем в БД инфу по новому контакту
                             const { error } = await supabase.from('userRecipes').insert([recipeData.value])
@@ -402,7 +404,7 @@
             }
 
             return {
-                user, userEmail, router, pageTitle, spinner, dataLoaded, myRecipes, search, isOpen, recipeData, setOpen, createNew, goToRecipesStore, searchedRecipe, recipesCategoriesArray, searchedCategory, expendList, filteredMyRecipesFunc, bagCheckOutline, showNotification, ribbonOutline
+                user, userEmail, router, pageTitle, spinner, dataLoaded, myRecipes, search, isOpen, recipeData, setOpen, createNew, goToRecipesStore, searchedRecipe, recipesCategoriesArray, searchedCategory, expendList, filteredMyRecipesFunc, bagCheckOutline, showNotification, ribbonOutline, called
             }
         }  
     })

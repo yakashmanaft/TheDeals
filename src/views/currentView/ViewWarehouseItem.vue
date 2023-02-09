@@ -97,7 +97,7 @@
                             </ion-button>
 
                             <!--  -->
-                            <ion-text color="primary" style="font-size: 1.3rem; font-weight: bold">{{ currentItem.subjectQty }}</ion-text>
+                            <ion-text style="font-size: 1.3rem; font-weight: bold">{{ currentItem.subjectQty }}</ion-text>
                         </ion-row>
                     </ion-grid>
                 </ion-item-group>

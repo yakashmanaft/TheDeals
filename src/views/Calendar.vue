@@ -385,6 +385,7 @@
                 dealData.value.executionDate = dateCreate.value
             }
             // Создаем новую сделку
+            const called = ref(false)
             const createNew = async (newDealData) => {
                 // принимаем инфу по контакту из modal
                 dealData.value = newDealData
@@ -401,8 +402,9 @@
                 } else if (!dealData.value.shipping.typeOfShipping) {
                     // Если не понадобится - убрать
                     alert('Calendar: Вы не указали способ доставки')
-                } else {
+                } else if(!called.value){
                     spinner.value = true;
+                    called.value = true
                     try{
                         // Добавляем в БД инфу по новому контакту
                         // Скорей всего надо будет вынести в store или нет
@@ -704,7 +706,7 @@
             }
 
             return {
-                menu, user, router, pageTitle, choosenDate, spinner, dataLoaded, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle, observer, availableBalance, addToLedger, toggleSettingsModal, isSettingsModalOpened, updateDaySaturation, userRecipes
+                menu, user, router, pageTitle, choosenDate, spinner, dataLoaded, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle, observer, availableBalance, addToLedger, toggleSettingsModal, isSettingsModalOpened, updateDaySaturation, userRecipes, called
             }
         }
     })

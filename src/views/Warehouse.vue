@@ -353,6 +353,7 @@
             // }
             // Создаем новый предмет
             const isItemAlreadyAdded = ref()
+            const called = ref(false)
             const createItem = async (newItemData) => {
                 // Принимаем инфу по предмету из модалки
                 itemData.value = newItemData
@@ -372,20 +373,21 @@
                     alert('Warehouse: Укажите категорию')
                 } else if(newItemData.subjectQty === 0) {
                     alert('Warehouse: Количество должно быть > 0')
-                } else {
+                } else if(!called.value){
+                    called.value = true;
                     try {
                         // Добавляем в БД инфу по новому предмету
                         const { error } = await supabase.from('userWarehouse').insert([itemData.value])
 
                         // Добавляем запись в леджер
-                        // await supabase.from('ledgerWarehouse').insert([{
-                        //     // itemID: itemData.value.id,
-                        //     uid: itemData.value.uid,
-                        //     estimationType: newItemData.estimationType,
-                        //     actionType: 'add',
-                        //     qty: itemData.value,
-                        //     userEmail: userEmail.value
-                        // }])
+                        await supabase.from('ledgerWarehouse').insert([{
+                            // itemID: itemData.value.id,
+                            uid: itemData.value.uid,
+                            estimationType: newItemData.estimationType,
+                            actionType: 'add',
+                            qty: itemData.value,
+                            userEmail: userEmail.value
+                        }])
                         if(error) throw error;
                         //
                         await store.methods.getUserWarehouseItemsFromDB();
@@ -553,7 +555,7 @@
 
 
             return {
-                route, itemData, dataLoaded, spinner, setOpenCreateNewModal, currency, user, pageTitle, myItems, isOpen, createItem, search, warehouseCategoriesArray, filteredMyItemsFunc, searchedItem, searchedCategory, expendList, closeSettingsModal, isSettingsModalOpened, update, userSettings, userWorkProfile, userWarehouseCategoriesArray, setMeasure, isItemAlreadyAdded, warehouseMenuOpened, warehouseMenuButtons, isWarehouseLedgerOpened, isActionMenuOpened, typeOfAction, actionMenuButtons, isAddSubstructModalOpened, currentRoute, userEmail, currentItem, makeAddRecordInLedgerWarehouse
+                route, itemData, dataLoaded, spinner, setOpenCreateNewModal, currency, user, pageTitle, myItems, isOpen, createItem, search, warehouseCategoriesArray, filteredMyItemsFunc, searchedItem, searchedCategory, expendList, closeSettingsModal, isSettingsModalOpened, update, userSettings, userWorkProfile, userWarehouseCategoriesArray, setMeasure, isItemAlreadyAdded, warehouseMenuOpened, warehouseMenuButtons, isWarehouseLedgerOpened, isActionMenuOpened, typeOfAction, actionMenuButtons, isAddSubstructModalOpened, currentRoute, userEmail, currentItem, makeAddRecordInLedgerWarehouse, called
             }
         }
     }) 
