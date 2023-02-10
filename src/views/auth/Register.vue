@@ -16,7 +16,7 @@
             v-if="confirmRequire"
             :is-open="confirmRequire ? isOpenRef = true : isOpenRef = false"
             header="Потдвердите почту"
-            sub-header="На указанный адрес был отправлен запрос подтверждение"
+            :sub-header="`На адрес ${userAccountSetting.email} был отправлен запрос-подтверждение`"
             :buttons="['ВОЙТИ']"
             @didDismiss="confirmRequireFunc()"
         ></ion-alert>
