@@ -90,9 +90,16 @@
                     <!-- Открывает модалку выбора профиля -->
                     <ion-button v-else @click="goToChooseProfile" color="dark" class="ion-margin">Далее</ion-button>
 
+                    <!-- Просто закрыть модалку выбора профиля -->
+
                     <!-- Ссылка на экран логина -->
-                    <ion-button color="primary" fill="clear" class="ion-margin" @click="goToLogin()">
+                    <ion-button v-if="isChooseProfileModalOpened" color="primary" fill="clear" class="ion-margin" @click="isChooseProfileModalOpened = false">
                         Назад
+                    </ion-button>
+
+                    <!-- Ссылка на экран логина -->
+                    <ion-button v-else color="primary" fill="clear" class="ion-margin" @click="goToLogin()">
+                        Уже есть аккаунт
                         <!-- <router-link :to="{ name: 'Login' }" style="color: white">Войти</router-link> -->
                     </ion-button>
                 </div>
@@ -108,7 +115,7 @@
                     <!--  -->
                     <ion-content>
                         <!-- ПРОФИЛИ Варианты -->
-                        <ion-chip class="ion-margin-top" :class="{'display-none' : spinner}">
+                        <!-- <ion-chip class="ion-margin-top" :class="{'display-none' : spinner}">
                             <ion-select interface="action-sheet" placeholder="Выберите профиль" cancelText="Отменить" v-model="userWorkProfile" @ionChange="setProfile($event)">
                                 <ion-select-option
                                     v-for="(item, index) in userWorkProfileArray"
@@ -119,8 +126,39 @@
                                 </ion-select-option>
                             </ion-select>
         
-                        </ion-chip>
-                        <!-- {{userAccountSetting}} -->
+                        </ion-chip> -->
+
+
+                        <ion-item-group>
+                            <ion-text>
+                                <h4>Выбранный профиль:</h4>
+                            </ion-text>
+                        </ion-item-group>
+                        <br>
+                        Профиль: {{userAccountSetting.userWorkProfile}}
+                        <br>
+                        <!-- Слайдер профилей -->
+                        <swiper
+                            v-if="userWorkProfileArray.length !== 0"
+                            :modules="modules"
+                            :pagination="true" 
+                            :slides-per-view="1" 
+                            :space-between="0"
+                            :loop="false"
+                            @slideChange="onSlideChange"
+                            ref="profileSwiper"
+                        >
+                            <swiper-slide
+                                v-for="(slideContent, index) in userWorkProfileArray"
+                                :key="index"
+                                :virtualIndex="index"
+                            >
+                                <div style="width: 100%; height: 100%; background-color: black; color: white; padding: 1rem;">
+                                Картинка <br>
+                                {{slideContent}}
+                                </div>
+                            </swiper-slide>
+                        </swiper>
 
                     </ion-content>
 
@@ -155,18 +193,29 @@
 <script>
     import { ref, defineComponent, onMounted } from 'vue';
     import { supabase } from '../../supabase/init';
+    import store from '../../store/index';
     import { useRouter } from 'vue-router';
-    import { IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert, IonNote, IonList, IonSelect, IonSelectOption, IonChip, IonModal, IonHeader, IOnContent } from '@ionic/vue';
+    import { IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert, IonNote, IonList, IonSelect, IonSelectOption, IonChip, IonModal, IonHeader, IonItemGroup } from '@ionic/vue';
     //
     import Spinner from '../../components/Spinner.vue';
     //
     import { uid } from 'uid';
     //
-    import store from '../../store/index';
+    import { Swiper, SwiperSlide } from 'swiper/vue';
+    import { Virtual, Pagination } from 'swiper';
+    import 'swiper/css';
+    import 'swiper/css/pagination';
+    import '@ionic/vue/css/ionic-swiper.css';
 
     export default defineComponent ({
         name: 'register',
-        components: { IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert, Spinner, IonNote, IonList, IonSelect, IonSelectOption, IonChip, IonModal, IonHeader, IonContent },
+        components: { 
+            Spinner,
+            //
+            IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert, IonNote, IonList, IonSelect, IonSelectOption, IonChip, IonModal, IonHeader, IonContent, IonItemGroup,
+            //
+            Swiper, SwiperSlide
+        },
         setup() {
             // Create data / vars
             const router = useRouter();
@@ -194,11 +243,11 @@
             })
 
             //
-            const setProfile = (event) => {
-                // console.log(event.target.value)
-                userAccountSetting.value.userWorkProfile = event.target.value
-                console.log(userWorkProfile.value)
-            }
+            // const setProfile = (event) => {
+            //     // console.log(event.target.value)
+            //     userAccountSetting.value.userWorkProfile = event.target.value
+            //     console.log(userWorkProfile.value)
+            // }
 
             //
             const goToLogin = () => {
@@ -346,7 +395,7 @@
             }
 
             // ====================================== РАБОТА С МОДАЛКОЙ ВЫБОРА ПРОФИЛЯ =================================
-            const isChooseProfileModalOpened = ref(false)
+            const isChooseProfileModalOpened = ref(true)
             const goToChooseProfile = () => {
                 if(!email.value || email.value === '') {
                     alert('Register: укажите имейл')
@@ -357,12 +406,17 @@
                 } else {
                     isChooseProfileModalOpened.value = true
                     userWorkProfile.value = ''
-                    userAccountSetting.value.userWorkProfile = null
+                    // userAccountSetting.value.userWorkProfile = null
+                    userAccountSetting.value.userWorkProfile = userWorkProfileArray.value[0]
                 }
+            }
+            const onSlideChange = (swiper) => {
+                // console.log(swiper)
+                userAccountSetting.value.userWorkProfile = userWorkProfileArray.value[swiper.activeIndex]
             }
 
             return {
-                email, password, confirmPassword, spinner, confirmRequire, confirmRequireFunc, errorMsg, register, isOpenRef, isOpenRef, setOpen, userAccountSetting, createAccountSettings, validateEmail, validate, markTouched, validateConfirmPassword, confirmPasswordValidate, userWorkProfile, userWorkProfileArray, setProfile, goToChooseProfile, isChooseProfileModalOpened, goToLogin
+                email, password, confirmPassword, spinner, confirmRequire, confirmRequireFunc, errorMsg, register, isOpenRef, isOpenRef, setOpen, userAccountSetting, createAccountSettings, validateEmail, validate, markTouched, validateConfirmPassword, confirmPasswordValidate, userWorkProfile, userWorkProfileArray, goToChooseProfile, isChooseProfileModalOpened, goToLogin, modules: [Virtual, Pagination], onSlideChange
             }
         }
     })
