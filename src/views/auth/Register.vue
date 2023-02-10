@@ -151,7 +151,7 @@
                                 >
                                     <div style="padding: 1rem; margin-bottom: 2rem;">
                                         <div style="display: flex; justify-content: center; align-items:center; border-radius: 50%; width: 100%; height: 100%; overflow: hidden; border: 1px solid var(--ion-color-light)" class="swiper-lazy-preloader-white" >
-                                            <ion-img loading="lazy" style="width: 100%; height: 100%; object-fit: fill!important;" :src="`../img/profiles/${translateUserProfileToImg(userAccountSetting.userWorkProfile)}.webp`"></ion-img>
+                                            <ion-img loading="lazy" style="width: 100%; height: 100%; object-fit: contain!important;" :src="`../img/profiles/${translateUserProfileToImg(userAccountSetting.userWorkProfile)}.webp`"></ion-img>
                                         </div>
                                     </div>
                                 </swiper-slide>
