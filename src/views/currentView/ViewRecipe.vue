@@ -1341,8 +1341,8 @@
                 if(emptyString.includes('')) {
                     alert('View Recipe: Шаг процесса не может быть пустым')
                 } else {
-                    editRecipeProcess.value = !editRecipeProcess.value
                     updateProcess()
+                    // editRecipeProcess.value = !editRecipeProcess.value
                 }
             }
             //
@@ -1878,6 +1878,7 @@
                     }).eq('id', info.recipeId);
                     if(error) throw error;
                     spinner.value = false;
+                    editRecipeProcess.value = !editRecipeProcess.value
                     // Рецепт успешно обновлено
                 } catch (error) {
                     // alert(`Error: ${error.message}`)
@@ -2024,6 +2025,13 @@
                     notEnough.value = true
                     addToNotEnoughList('outOfStock', 0, ingredient)
                 }
+
+                // Убираем желтки из счетчика
+                if(ingredient.name === 'Желтки') {
+                    // qty = ingredient.value
+                    qty = 'берем из яиц'
+                }
+
                 return qty
             }
             // Не придумал ничего лучше пока что...
@@ -2031,13 +2039,19 @@
                 let qty = 0;
                 let currentItems = [];
 
+                
                 // Фильтруем массив со всеми предметами на складе, выдаем только те, которые требуются для рецепта
                 if(userWarehouseItemsArray.value) {
                     currentItems = userWarehouseItemsArray.value.filter(item => item.name === ingredient.name)
                 }
-
+                
                 if (currentItems.length !== 0) {
                     qty = calcQtyPerEstimationType(currentItems[0], ingredient)
+                }
+                
+                // Убираем желтки из счетчика стилей
+                if(ingredient.name === 'Желтки') {
+                    qty = ingredient.value
                 }
 
                 return qty

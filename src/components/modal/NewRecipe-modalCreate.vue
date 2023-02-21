@@ -453,6 +453,14 @@
             <div style="position: fixed; bottom: 0; left: 0; width: 100%; background-color: #fff; z-index: 999999;" class="ion-padding">
                 <ion-button @click.stop="addNewCompositionItem(newCompositionItem)" :color="addButtonIsDisabled() ? 'light' : 'primary'" expand="block">Добавить к составу</ion-button>
             </div>
+            <!--  -->
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
             </ion-content>
         </ion-modal>
 
