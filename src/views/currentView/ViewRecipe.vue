@@ -1150,6 +1150,8 @@
                     return 'шт.'
                 } else if(costEstimation === 'teaSpoon') {
                     return 'ч.л.'
+                } else if (costEstimation === 'tablespoon') {
+                    return 'ст.л.'
                 } else if (costEstimation === 'pinch') {
                     return 'щепотки'
                 } else if (costEstimation === 'stick') {
@@ -1690,6 +1692,12 @@
                     }
                 },
                 {
+                    text: 'Столовые ложки',
+                    handler: () => {
+                        ingredientWhereChangeEstimation.value.costEstimation = 'tablespoon'
+                    }
+                },
+                {
                     text: 'Щепотки',
                     handler: () => {
                         ingredientWhereChangeEstimation.value.costEstimation = 'pinch'
@@ -1740,6 +1748,13 @@
                     }
                 },
                 {
+                    text: 'Столовые ложки',
+                    handler: () => {
+                        currentIngredientWhereChangeEstimation.value.costEstimation = 'tablespoon';
+                        updateComposition();
+                    }
+                },
+                {
                     text: 'Щепотки',
                     handler: () => {
                         currentIngredientWhereChangeEstimation.value.costEstimation = 'pinch';
@@ -1771,6 +1786,8 @@
                         return '(шт.)'
                     } else if (ingredientCostEstimation === 'teaSpoon') {
                         return '(ч.л.)'
+                    } else if (ingredientCostEstimation === 'tablespoon') {
+                        return '(ст.л.)'
                     } else if (ingredientCostEstimation === 'pinch') { 
                         return '(щепотки)'
                     } else if (ingredientCostEstimation === 'stick') {
@@ -1824,6 +1841,12 @@
                     text: 'Чайные ложки',
                     handler: () => {
                         currentCompositionItemNewIngredient.value.costEstimation = 'teaSpoon';
+                    }
+                },
+                {
+                    text: 'Столовые ложки',
+                    handler: () => {
+                        currentCompositionItemNewIngredient.value.costEstimation = 'tablespoon';
                     }
                 },
                 {
@@ -1958,6 +1981,10 @@
                     // РЕЦЕПТ В ЧАЙНЫХ ЛОЖКАХ // Чайная ложка – 5 мл это примерно 5 грамм
                     else if (ingredient.costEstimation === 'teaSpoon') {
                         return (currentItem.subjectQty / 5).toFixed(2)
+                    }
+                    // РЕЦЕПТ В СТОЛОВЫХ ЛОЖКАХ // Столовая ложка – 10 мл это примерно 10 грамм
+                    else if (ingredient.costEstimation === 'tablespoon') {
+                        return (currentItem.subjectQty / 10).toFixed(2)
                     }
                     // РЕЦЕПТ В ЩЕПОТКАХ (pinch) // Щепотка – 2-4 грамма (pinch)
                     else if (ingredient.costEstimation === 'pinch') {

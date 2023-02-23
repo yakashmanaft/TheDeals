@@ -905,6 +905,12 @@ export default defineComponent({
           }
       },
       {
+        text: 'Столовые ложки',
+        handler: () => {
+            ingredientWhereChangeEstimation.value.costEstimation = 'tablespoon'
+        }
+      },
+      {
           text: 'Щепотки',
           handler: () => {
               ingredientWhereChangeEstimation.value.costEstimation = 'pinch'
@@ -952,6 +958,12 @@ export default defineComponent({
             }
         },
         {
+            text: 'Столовые ложки',
+            handler: () => {
+                currentIngredientWhereChangeEstimation.value.costEstimation = 'tablespoon';
+            }
+        },
+        {
             text: 'Щепотки',
             handler: () => {
                 currentIngredientWhereChangeEstimation.value.costEstimation = 'pinch';
@@ -980,6 +992,8 @@ export default defineComponent({
               return '(шт.)'
           } else if (ingredientCostEstimation === 'teaSpoon') {
               return '(ч.л.)'
+          } else if (ingredientCostEstimation === 'tablespoon') {
+            return '(ст.л.)'
           } else if (ingredientCostEstimation === 'pinch') { 
               return '(щепотки)'
           } else if (ingredientCostEstimation === 'stick') {
@@ -1036,6 +1050,12 @@ export default defineComponent({
             }
         },
         {
+            text: 'Столовые ложки',
+            handler: () => {
+                currentCompositionItemNewIngredient.value.costEstimation = 'tablespoon';
+            }
+        },
+        {
             text: 'Щепотки',
             handler: () => {
                 currentCompositionItemNewIngredient.value.costEstimation = 'pinch';
@@ -1072,6 +1092,8 @@ export default defineComponent({
             return 'шт.'
         } else if(costEstimation === 'teaSpoon') {
             return 'ч.л.'
+        } else if (costEstimation === 'tablespoon') {
+            return 'ст.л.'
         } else if (costEstimation === 'pinch') {
             return 'щепотки'
         } else if (costEstimation === 'stick') {

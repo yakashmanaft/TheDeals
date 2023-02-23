@@ -18,7 +18,7 @@
         :key="idx"
         class="ion-no-padding"
         style="margin-top: 1rem; padding: 0 1rem;"
-        @click.stop="$emit('addItem', item)"
+        @click.stop="$emit('addItem', item, searchItem = '')"
       >
         <ion-grid class="ion-no-padding ion-margin-bottom">
           <ion-row class="ion-justify-content-between ion-align-items-center" style="flex-wrap: nowrap;">
