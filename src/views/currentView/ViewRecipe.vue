@@ -1188,6 +1188,7 @@
                 addAssemblingElementModalOpened.value = true;
             }
             const addToAssembling = async (itemName) => {
+                addAssemblingElementModalOpened.value = false;
                 if(currentRecipe.value.assembling === null) {
                     currentRecipe.value.assembling = []
                     currentRecipe.value.assembling.push(itemName)
@@ -1200,7 +1201,7 @@
                         assembling: currentRecipe.value.assembling
                     }).eq('id', info.recipeId);
                     if(error) throw error;
-                    spinner.value = false;
+                    spinner.value = false
                     // Рецепт успешно обновлено
                 } catch (error) {
                     // alert(`Error: ${error.message}`)
@@ -2056,7 +2057,7 @@
                 // Убираем желтки из счетчика
                 if(ingredient.name === 'Желтки') {
                     // qty = ingredient.value
-                    qty = 'берем из яиц'
+                    qty = 'берем сверх указаного яйца'
                 }
 
                 return qty
