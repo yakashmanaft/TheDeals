@@ -533,7 +533,7 @@
                 </ion-item-group>
 
                 <!-- Модалка добавления item + ingredients к составу -->
-                <ion-modal :isOpen="addCompositionItemModalOpened">
+                <ion-modal :isOpen="addCompositionItemModalOpened" @didDismiss="addCompositionItemModalOpened = false">
                     <!--  -->
                     <ion-header translucent="true">
                         <ion-toolbar>
@@ -614,7 +614,7 @@
                 </ion-modal>
 
                 <!-- Модалка добавления ингредиентов к current compistion item -->
-                <ion-modal :isOpen="addIngredientToCurrentCompositionItemModalOpened">
+                <ion-modal :isOpen="addIngredientToCurrentCompositionItemModalOpened" @didDismiss="addIngredientToCurrentCompositionItemModalOpened = false">
                     <!--  -->
                     <ion-header translucent="true">
                         <ion-toolbar>
