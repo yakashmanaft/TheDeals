@@ -333,7 +333,7 @@
                             Щепотка – 2-4 грамма
                         -->
                         <!-- Элементы состава -->
-                        <div v-for="(element, n) in currentRecipe.composition" :key="n" >
+                        <div v-for="(element, n) in currentRecipe.composition" :key="n">
     
                             <!-- Названия элемента состава -->
                             <ion-item class="ion-no-padding">
@@ -344,7 +344,7 @@
                             </ion-item>
     
                             <!-- Ингредиенты элемента -->
-                            <div :id="`ri + ${n}`" style="display: none">
+                            <div :id="`ri + ${n}`" style="display: none;" class="border-bottom">
                                 <!-- перебор массива ингредиентов -->
                                 <div v-for="(ingredient, idx) in element.ingredients" :key="idx" class="ion-no-padding" style="margin-top: 1rem;">
                                     <!-- в режиме редактирования -->
@@ -407,8 +407,8 @@
 
                         <!-- Кнопка ДОБАВИТЬ Элемент к составу -->
                         <ion-grid class="ion-no-padding" v-if="editComposition">
-                            <ion-row>
-                                <ion-chip class="ion-no-margin ion-margin-top" color="primary" outline="true" @click.stop="addCompositionItem()">Добавить</ion-chip>
+                            <ion-row class="ion-justify-content-center">
+                                <ion-chip class="ion-no-margin ion-margin-top" color="primary" outline="true" @click.stop="addCompositionItem()">Добавить элемент в составу</ion-chip>
                             </ion-row>
                         </ion-grid>
                     </div>
@@ -2204,5 +2204,9 @@
 
     .isNotEnoughIngredients_border-bottom:last-child {
         border-bottom: none;
+    }
+
+    .border-bottom:last-child {
+        border-bottom: 1px solid var(--ion-color-light);
     }
 </style>
