@@ -546,7 +546,11 @@
                     </ion-header>
                     <!--  -->
                     <ion-content forceOverscroll="false" class="ion-margin-top ion-padding-bottom">
-                        {{newCompositionItem}}
+
+                        <!--  -->
+                        <!-- {{newCompositionItem}} -->
+                        <!--  -->
+
                         <ion-item-group class="ion-padding-horizontal">
                             <!--  -->
                             <ion-text>
@@ -558,7 +562,7 @@
                         <!--  -->
                         <ion-item-group>
                             <!--  -->
-                            <ion-text>
+                            <ion-text v-if="newCompositionItem.ingredients.length !== 0">
                                 <h4 class="ion-margin-horizontal">Ингредиенты</h4>
                             </ion-text>
                             <!--  -->
@@ -568,20 +572,60 @@
                                     <ion-item lines="none">
                                         <ion-grid class="ion-no-padding border-bottom">
                                             <ion-row class="ion-justify-content-between ion-align-items-center" style="flex-wrap: nowrap;">
-                                                <div style="display: flex; flex-direction: column;">
-                                                    <ion-text>{{ingredient.name}} <span @click.prevent.stop="openActionSheetCostEstimationMenu(ingredient)" style="border-bottom: 1px dashed var(--ion-color-primary); color: var(--ion-color-primary); white-space: nowrap">{{setIngredientEstimation(ingredient.costEstimation)}}</span></ion-text>
-                                                    <!--  -->
-                                                    <div style="display: flex; align-items: center; margin-top: 0.7rem;">
-                                                        <ion-text color="medium" class="ion-margin-end" style="font-size: 1rem;">Укажите кол-во:</ion-text>
-                                                        <ion-input v-model="ingredient.value" type="number" style="font-size: 1.3rem; font-weight: bold;" class="ion-no-padding" color="primary" inputmode="decimal" @ionChange="setIngredientValue(ingredient.value, index)"></ion-input>
-                                                    </div>
-                                                </div>
+
+                                                <!-- name -->
+                                                <ion-text @click.stop="changeIngredientForNewCompositionModalOpened = true; changedIngredient = index" color="primary">{{ingredient.name}} 
+                                                </ion-text>
+                                                <!--  -->
                                                 <ion-thumbnail class="thumbnail_deal-subject" style="background-color: var(--ion-color-light);">
                                                     <ion-img :src="setIngredientImg(ingredient.name)"></ion-img>
                                                 </ion-thumbnail>
                                             </ion-row>
+                                            
+                                            <!--  -->
+                                            <ion-row class="ion-margin-top">
+                                                <ion-item v-if="ingredient.costEstimation === ''" lines="none">
+                                                    <ion-text
+                                                        color="primary"
+                                                        style="border-bottom: 1px dashed var(--ion-color-primary)" 
+                                                        @click.prevent.stop="openActionSheetCostEstimationMenu(ingredient)"
+                                                    >
+                                                        Укажите меру измерения
+                                                    </ion-text>
+                                                </ion-item>
+
+                                                <!--  -->
+                                                <div v-else>
+                                                    <ion-item lines="none">
+                                                        <ion-grid class="ion-no-padding">
+                                                            <ion-row class="ion-justify-content-between ion-align-items-center">
+                                                                <ion-text
+                                                                    color="primary"
+                                                                    @click.prevent.stop="openActionSheetCostEstimationMenu(ingredient)" 
+                                                                >
+                                                                    Мера измерения
+                                                                </ion-text>
+                                                                <ion-text>
+                                                                    {{ setMeasure(ingredient.costEstimation) }}
+                                                                </ion-text>
+                                                            </ion-row>
+                                                        </ion-grid>
+                                                    </ion-item>
+                                                    
+                                                    <!--  -->
+                                                    <ion-item lines="none">
+                                                        <ion-grid class="ion-no-padding">
+                                                            <ion-row class="ion-justify-content-between ion-align-items-center" style="flex-wrap: nowrap;">
+                                                                <ion-text color="medium">Количество</ion-text>
+                                                                <ion-input v-model="ingredient.value" type="number" style="font-size: 1.3rem; font-weight: bold; text-align: end" class="ion-no-padding" color="primary" inputmode="decimal" @ionChange="setIngredientValue(ingredient.value, index)"></ion-input>
+                                                            </ion-row>
+                                                        </ion-grid>
+                                                    </ion-item>
+                                                </div>
+                                            </ion-row>
                                         </ion-grid>
                                     </ion-item>
+
                                     <!-- Кнопка удалить -->
                                     <ion-item-options side="end">
                                         <ion-item-option class="ion-margin-start" color="danger" @click.stop="deleteNewCompositionItemIngredientMenu(index)">
@@ -590,14 +634,15 @@
                                     </ion-item-options>
                                 </ion-item-sliding>
                             </div>
-                            <!-- <div v-else class="ion-padding-horizontal">
-                                <ion-text color="medium">Нет ингредиентов</ion-text>
-                            </div> -->
+
                             <!--  -->
-                            <div class="ion-margin-top ion-padding-horizontal" @click.stop="addIngredientToCompositionItem()">
-                                <ion-text color="primary" class="button-add-ingredient">Добавить ингредиент</ion-text>
-                            </div>
+                            <ion-grid class="ion-no-padding">
+                                <ion-row class="ion-justify-content-center">
+                                    <ion-chip class="ion-no-margin ion-margin-top" color="primary" outline="true" @click.stop="addIngredientToCompositionItem()">Добавить ингредиент</ion-chip>
+                                </ion-row>
+                            </ion-grid>
                         </ion-item-group>
+
                         <!--  -->
                         <div style="position: fixed; bottom: 0; left: 0; width: 100%; background-color: #fff; z-index: 999999" class="ion-padding">
                             <ion-button @click.stop="addNewCompositionItem(newCompositionItem)" :color="addButtonIsDisabled() ? 'light' : 'primary'" expand="block">Добавить к составу</ion-button>
@@ -727,6 +772,14 @@
                     @closeModal="ingredientForNewCompositionModalOpened = false"
                     :properties="'isIngredient'"
                     @addItem="addIngredientToCompositionItemFunc"
+                />
+
+                <!-- Модалка изменения выбранного ингредиента при создании composition item-->
+                <SearchDealBuySubject
+                    :isOpen="changeIngredientForNewCompositionModalOpened"
+                    @closeModal="changeIngredientForNewCompositionModalOpened = false"
+                    :properties="'isIngredient'"
+                    @addItem="changeIngredientToCompositionItemFunc"
                 />
 
                 <!-- Модалка добавления item к сборке -->
@@ -1429,6 +1482,20 @@
                         costEstimation: '',
                         value: 0
                     })
+                }
+            }
+            const changedIngredient = ref()
+            const changeIngredientToCompositionItemFunc = (ingredientData) => {
+                isIngredientAlreadyAdded.value = newCompositionItem.value.ingredients.find(item => item.name ===  ingredientData.name)
+                if(isIngredientAlreadyAdded.value !== undefined) {
+                    alert('ViewRecipe: ингредиент уже добавлен')
+                } else {
+                    changeIngredientForNewCompositionModalOpened.value = false
+                    newCompositionItem.value.ingredients[changedIngredient.value] = {
+                        name: ingredientData.name,
+                        costEstimation: '',
+                        value: 0
+                    }
                 }
             }
             //
@@ -2149,9 +2216,10 @@
                 // itemsOutOfStock
             } 
 
+            const changeIngredientForNewCompositionModalOpened = ref(false)
 
             return {
-                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList, checkmark, alertOutline, setImgSrc, searchRecipesCategoriesMenu, searchRecipesCategories, userRecipesCategories, searchedRecipesCategories, isCategoryAlreadyAdded, choosenCategory, setMeasure, slides, setStyleProperties, steps, addProcessStep, addAssemblingElement, handleReorder, deleteAssemblingItem, assemblingItemToDeleteIndex, openDeleteAssemblingItemMenu, deleteAssemblingItemButtons, deleteAssemblingItemFunc, reorderIsDisabled, toggleReorder, editRecipeProcess, editRecipeProcessFunc, handleReorderProcess, deleteProcessStep, processStepToDeleteIndex, openDeleteStepsMenu, deleteProcessStepButtons, deleteProcessStepFunc, addCompositionItem, editComposition, editCompositionFunc, openDeleteCompositionItemMenu, deleteCompositionItem, compositionItemToDeleteIndex, deleteCopmositionItemButtons, deleteCompositionItemFunc, addCompositionItemIngredient, trash, updateComposition, addAssemblingElementModalOpened, addToAssembling, updateProcess, addCompositionItemModalOpened, newCompositionItem, addNewCompositionItem, addButtonIsDisabled, closeCompositionItemModal, addIngredientToCompositionItem, ingredientForNewCompositionModalOpened, addIngredientToCompositionItemFunc, setIngredientImg, isIngredientAlreadyAdded, deleteNewCompositionItemIngredient, deleteNewCompositionItemIngredientIndex, deleteNewCompositionItemIngredientMenu, deleteNewCompositionItemIngredientFunc, deleteNewCompositionItemIngredientButtons, openActionSheetCostEstimationMenu, actionSheetIngredientCostEstimation, ingredientWhereChangeEstimation, ingredientChangeCostEstimationButtons, setIngredientEstimation, deleteCompisitionItemIngredientMenu, deleteCompisitionItemIngredient, compositionItemIngredientIndex, compositionItemIndex, compositionItemIngredientButtons, deleteCompisitionItemIngredientFunc, setIngredientValue, setCurrentIngredientValue, actionSheetCurrentIngredientCostEstimation, currentIngredientWhereChangeEstimation, openActionSheetCurrentCostEstimationMenu, currentIngredientChangeCostEstimationButtons, addIngredientToCurrentCompositionItemModalOpened, currentCompositionItem, currentCompositionItemNewIngredient, addNewIngredientButtonIsDisabled, addCompositionItemIngredientFunc, newIngredientCurrentCompositionModalOpened, addIngredientToCurrentCompositionItem, actionSheetCurrentCompositionItemNewIngredient, actionSheetCurrentCompositionItemNewIngredientButtons, setNewIngredientValue, closeAddIngredientToCurrentCompositionItemModal, toggleRecipeToStore, fromAssemblingToComposition, cameraOutline, addImageToSlide, deleteCurrentImg, modules: [Virtual, Pagination], checkEmptyStrings, editRecipeDescription, toggleEditRecipeDescription, editRecipeName, toggleEditRecipeName, recipeAuthorEmail, userEmail, showPaucityIngredients, userWarehouseItemsArray, userWarehouseIngredientsQty, itemsWhereIsNotEnoughIngredients, itemsOutOfStock, nameWarehouseItems, addToNotEnoughList, calcQtyPerEstimationType, notEnough, isNotEnoughModalOpened, helpcalc, filterNotEnoughRecipeItems, imageOutline
+                route, router, spinner, currentRecipe, currentId, info, openDeleteMenu, isOpenRef, deleteCurrentRecipeButtons, deleteCurrentRecipe, recipeName, closeCircleOutline, openDeleteCategoryModal, deleteCategory, categoryToDelete, deleteCategoryButtons, recipeDescription, expendList, checkmark, alertOutline, setImgSrc, searchRecipesCategoriesMenu, searchRecipesCategories, userRecipesCategories, searchedRecipesCategories, isCategoryAlreadyAdded, choosenCategory, setMeasure, slides, setStyleProperties, steps, addProcessStep, addAssemblingElement, handleReorder, deleteAssemblingItem, assemblingItemToDeleteIndex, openDeleteAssemblingItemMenu, deleteAssemblingItemButtons, deleteAssemblingItemFunc, reorderIsDisabled, toggleReorder, editRecipeProcess, editRecipeProcessFunc, handleReorderProcess, deleteProcessStep, processStepToDeleteIndex, openDeleteStepsMenu, deleteProcessStepButtons, deleteProcessStepFunc, addCompositionItem, editComposition, editCompositionFunc, openDeleteCompositionItemMenu, deleteCompositionItem, compositionItemToDeleteIndex, deleteCopmositionItemButtons, deleteCompositionItemFunc, addCompositionItemIngredient, trash, updateComposition, addAssemblingElementModalOpened, addToAssembling, updateProcess, addCompositionItemModalOpened, newCompositionItem, addNewCompositionItem, addButtonIsDisabled, closeCompositionItemModal, addIngredientToCompositionItem, ingredientForNewCompositionModalOpened, addIngredientToCompositionItemFunc, setIngredientImg, isIngredientAlreadyAdded, deleteNewCompositionItemIngredient, deleteNewCompositionItemIngredientIndex, deleteNewCompositionItemIngredientMenu, deleteNewCompositionItemIngredientFunc, deleteNewCompositionItemIngredientButtons, openActionSheetCostEstimationMenu, actionSheetIngredientCostEstimation, ingredientWhereChangeEstimation, ingredientChangeCostEstimationButtons, setIngredientEstimation, deleteCompisitionItemIngredientMenu, deleteCompisitionItemIngredient, compositionItemIngredientIndex, compositionItemIndex, compositionItemIngredientButtons, deleteCompisitionItemIngredientFunc, setIngredientValue, setCurrentIngredientValue, actionSheetCurrentIngredientCostEstimation, currentIngredientWhereChangeEstimation, openActionSheetCurrentCostEstimationMenu, currentIngredientChangeCostEstimationButtons, addIngredientToCurrentCompositionItemModalOpened, currentCompositionItem, currentCompositionItemNewIngredient, addNewIngredientButtonIsDisabled, addCompositionItemIngredientFunc, newIngredientCurrentCompositionModalOpened, addIngredientToCurrentCompositionItem, actionSheetCurrentCompositionItemNewIngredient, actionSheetCurrentCompositionItemNewIngredientButtons, setNewIngredientValue, closeAddIngredientToCurrentCompositionItemModal, toggleRecipeToStore, fromAssemblingToComposition, cameraOutline, addImageToSlide, deleteCurrentImg, modules: [Virtual, Pagination], checkEmptyStrings, editRecipeDescription, toggleEditRecipeDescription, editRecipeName, toggleEditRecipeName, recipeAuthorEmail, userEmail, showPaucityIngredients, userWarehouseItemsArray, userWarehouseIngredientsQty, itemsWhereIsNotEnoughIngredients, itemsOutOfStock, nameWarehouseItems, addToNotEnoughList, calcQtyPerEstimationType, notEnough, isNotEnoughModalOpened, helpcalc, filterNotEnoughRecipeItems, imageOutline, changeIngredientForNewCompositionModalOpened, changeIngredientToCompositionItemFunc, changedIngredient
             }
         }
     })
