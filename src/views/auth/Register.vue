@@ -300,7 +300,7 @@
                     // router.push({ name: 'Login' })
                     console.log(email.value)
                     // Здесь имейл уже подтянулся
-                    userAccountSetting.value.email = email.value
+                    userAccountSetting.value.email = email.value.toLowerCase()
                     // isChooseProfileModalOpened.value = false
                     createAccountSettings()
                 }, 3000)

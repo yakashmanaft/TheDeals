@@ -199,6 +199,7 @@
             onMounted(async () => {
                 spinner.value = true
                 await store.methods.getUserSettingsfromDB()
+                console.log(store.state.userSettings[0])
                 userSettings.value = store.state.userSettings[0]
                 weekendDays.value = userSettings.value.weekendDays
                 // daySaturation.value = userSettings.value.daySaturation
