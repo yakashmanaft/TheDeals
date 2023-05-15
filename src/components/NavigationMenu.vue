@@ -43,9 +43,9 @@
         <!-- menu content -->
         <ion-content class="ion-padding-vertical" forceOverscroll="false">
             <ion-list>
-                <ion-item v-for="(item, index) in currentMenuList" :key="index" lines="none">
-                    <ion-icon :icon="`${item.icon}`" :color="item.title === currentRoute ? 'primary' : 'medium'" :alt="`${item.icon}`" class="ion-margin-end"/>
-                    <router-link :to="{ name: `${item.name}` }" :class="{ 'current-route': item.title === currentRoute }"> {{ item.title }}</router-link>
+                <ion-item v-for="(el, i) in currentMenuList" :key="i" lines="none">
+                    <ion-icon :icon="`${el.icon}`" :color="el.title === currentRoute ? 'primary' : 'medium'" :alt="`${el.icon}`" class="ion-margin-end"/>
+                    <router-link :to="{ name: `${el.name}` }" :class="{ 'current-route': el.title === currentRoute }"> {{ el.title }}</router-link>
                 </ion-item> 
                 
                 <!-- Ссылкана на панель админа -->
@@ -65,6 +65,7 @@
                     <ion-icon :icon="accessibilityOutline" :color="currentRoute === 'Панель администратора' ? 'primary' : 'medium'" class="ion-margin-end"></ion-icon>
                     <router-link :to="{ name: 'AdminDashboard' }" :class="{ 'current-route': currentRoute === 'Панель администратора' }">Панель администратора</router-link>
                 </ion-item>
+
                 <!-- В помощь по сервису -->
                 <ion-item>
                     <ion-icon :icon="helpCircleOutline" :color="currentRoute === 'Помощь' ? 'primary' : 'medium'" class="ion-margin-end"></ion-icon>

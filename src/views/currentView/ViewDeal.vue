@@ -1,4 +1,4 @@
-<template :key="componentKey">
+<template>
     <div>
         <!-- Спиннер как имитация загрузки -->
         <Spinner v-if="spinner"/>
@@ -71,8 +71,6 @@
 
             <!-- Data -->
             <div>
-                <!-- currentSubject: {{currentSubject}}
-                currentDealSubject: {{currentDealSubject}} -->
                 <!-- Тип дела -->
                 <!-- ============================== Статус и тип дела ========================================== -->
                 <ion-item-group>
@@ -205,25 +203,25 @@
                     <ion-grid class="ion-no-padding">
                         <ion-row class="ion-nowrap horizontal-scroll">
                             <!-- Карточки предметов заказа -->
-                            <ion-card @click.stop="openCurrentDealSubject(index, item)" class="ion-padding ion-text-center card-center relative" v-for="(item, index) in currentDeal.dealsList" :key="item.id">
+                            <ion-card @click.stop="openCurrentDealSubject(index, deal)" class="ion-padding ion-text-center card-center relative" v-for="(deal, index) in currentDeal.dealsList" :key="deal.id">
                                 <!-- Кнопка удалить конкретный предмет дела -->
-                                <ion-icon @click.stop="openDeleteSubjectModal(item.id)" class="icon_size icon_del absolute" :icon="closeCircleOutline"></ion-icon>
+                                <ion-icon @click.stop="openDeleteSubjectModal(deal.id)" class="icon_size icon_del absolute" :icon="closeCircleOutline"></ion-icon>
                                 <!-- item -->
-                                <ion-thumbnail v-if="item.selectedProduct !== ''" style="height: 64px; width: 64px; margin: 0 auto">
+                                <ion-thumbnail v-if="deal.selectedProduct !== ''" style="height: 64px; width: 64px; margin: 0 auto">
                                     <!-- Если тип дела Продажа -->
                                     <div v-if="currentDeal.dealType === 'sale'">
-                                        <ion-img  style="height: 100%" :src="`../img/subjects/sale/${item.selectedProduct}.webp`"></ion-img>
+                                        <ion-img  style="height: 100%" :src="`../img/subjects/sale/${deal.selectedProduct}.webp`"></ion-img>
                                     </div>
                                     <!-- Если тип дела Закупка -->
                                     <div v-if="currentDeal.dealType === 'buy'">
-                                        <ion-img  style="height: 100%" :src="`../img/subjects/buy/${item.selectedProduct}.webp`"></ion-img>
+                                        <ion-img  style="height: 100%" :src="`../img/subjects/buy/${deal.selectedProduct}.webp`"></ion-img>
                                     </div>
                                     <!-- mark where subject has attribute -->
                                     <div 
-                                        v-if="checkRentAttr(item, currentDeal.dealType)" 
+                                        v-if="checkRentAttr(deal, currentDeal.dealType)" 
                                         class="absolute mark-atribute"
                                     >
-                                        <ion-icon size="large" :color="setMarkerAttrColor(item) ? 'success' : 'warning'" :icon="shapes"></ion-icon>
+                                        <ion-icon size="large" :color="setMarkerAttrColor(deal) ? 'success' : 'warning'" :icon="shapes"></ion-icon>
                                     </div>
                                 </ion-thumbnail>
                                 <!--  -->
@@ -231,10 +229,11 @@
                                     <ion-icon class="empty-deal-list_icon" :icon="helpOutline"></ion-icon>
                                 </ion-thumbnail> -->
                                 <ion-label style="font-size: 12px">
-                                    x{{item.productQuantity}}
+                                    x{{deal.productQuantity}}
                                 </ion-label>
-                                <ion-text v-if="currentDeal.dealType === 'sale'" style="white-space: normal">{{ showSelectedRecipe(item.recipe, item.tempRecipeName) }}</ion-text>
+                                <ion-text v-if="currentDeal.dealType === 'sale'" style="white-space: normal">{{ showSelectedRecipe(deal.recipe, deal.tempRecipeName) }}</ion-text>
                             </ion-card>
+
                             <!-- Добавить еще предмет к заказу -->
                             <ion-card class="ion-padding card-center card-add" @click="openCreateSubjectModal()">
                                 <ion-icon :icon="addCircleOutline" color="primary" class="icon_size"></ion-icon>
@@ -882,7 +881,8 @@
             const substructFromWarehouseToast = async () => {
                 // Ингредиенты, необходимые для выполнения заказа, будут взяты со склада.
                 let message1 = `
-                    В разработке... Перемещение со склада в работу...
+                    <h3>Перемещаем со склада в работу</h3>
+                    <p>В разработке</p>
                 `;
                 let message2 = 'Не хватает ингредиентов, необходимых для выполнения заказа.';
                 const toast = await toastController.create({
@@ -890,14 +890,15 @@
                         ${message1}
                     `,
                     // duration: 3000,
-                    // cssClass: 'custom-toast', 
+                    cssClass: 'custom_toast', 
                     position: 'top',
                     buttons: [
                         {
                             text: 'ОК',
-                            role: 'cnacel',
+                            role: 'cancel',
                             handler: () => {
                                 console.log('toast clicked dismiss')
+                                // ЕДИНОЖДЫ ВЫЧИТАЕТСЯ СО СКЛАДА
                             }
                         }
                     ]
@@ -909,23 +910,25 @@
                 const toast = await toastController.create({
                     // Предметы дела будут добавлены на склад
                     message: `
-                        В разработке... Перемещение на склад 
+                        <h3>Перемещаем на склад</h3>
+                        <p>В разработке</p>
                     `,
                     // duration: 3000,
-                    // cssClass: 'custom-toast', 
+                    cssClass: 'custom_toast', 
                     position: 'top',
                     buttons: [
                         {
                             text: 'ОК',
-                            role: 'cnacel',
+                            role: 'cancel',
                             handler: () => {
+                                // ЕДИНОЖДЫЙ ДОБАВЛЯЕТСЯ НА СКЛАД
                                 console.log('toast clicked dismiss')
                             }
                         }
                     ]
                 });
                 await toast.present();
-                // const { role } = await toast.onDidDismiss();    
+                
             }
 
             // функция для добавления покупки на  склад
@@ -1147,6 +1150,8 @@
                             // currentDeal.value.dealsList.forEach(item => {
                             //     console.log(item)
                             // })
+                        } else if (dealStatusList.value[i - 1].value == 'deal-complete' && currentDeal.value.dealType === 'sale') {
+                            isAllAttrReturnedFunc()
                         }
                     }
                 })
@@ -1847,7 +1852,7 @@
                 } else if(debt.value === 0) {
                     // SALE
                     if(currentDeal.value.dealType === 'sale') {
-                        dealStatus.value = 'deal-complete'
+                        // dealStatus.value = 'deal-complete'
                         // console.log(`Текущий статус: ${dealStatus.value}`)
                         alert(`ViewDeal: внесено ${amount} ${currency.value}`)
                         isAllAttrReturnedFunc()
@@ -1855,7 +1860,7 @@
                     } 
                     // BUY
                     else if (currentDeal.value.dealType === 'buy') {
-                        console.log(availableBalance.value)
+                        // console.log(availableBalance.value)
                         // уведомляем о количестве внесенных средств
                         // if(amount > availableBalance.value) {
                         //     alert('ViewDeal: недостаточно средств на балансе')
@@ -1865,18 +1870,22 @@
                         // Уведомляем о смене статуса
                         // alert('ViewDeal: статус дела изменен на Завершено')
                         // Меняем статус дела на ЗАВЕРШЕН
-                        dealStatus.value = 'deal-complete'
-                        currentDeal.value.dealStatus = 'deal-complete'
+                        // dealStatus.value = 'deal-complete'
+                        // currentDeal.value.dealStatus = 'deal-complete'
                         // закрываем dealPaid Menu
                         closeDealPaidMenu()
                         // зачисляем на склад только при условию что НЕТ долгов по оплате поставки
-                        addToWarehouseToast()
+                        // addToWarehouseToast()
                         addToWarehouseFunc(currentDeal.value)
                         // console.log(`Можно помещать предметы на склад по делу №${currentDeal.value.uid}`)
                         // currentDeal.value.dealsList.forEach(item => {
                         //     console.log(item)
                         // })
                     }
+                    console.log(currentDeal.value.dealStatus)
+                    console.log(dealStatus.value)
+                    // dealStatus.value = 'deal-complete'
+                    // currentDeal.value.dealStatus = 'deal-complete'
                 } else if(debt.value > 0){
                     closeDealPaidMenu()
                 }
@@ -1892,6 +1901,8 @@
                 if(isReturnData.length === 0) {
                     // Значит массив атрибутов пустой
                     // При создании он всеравно есть, но изначально пустой
+                    // dealStatus.value = 'deal-complete'
+                    // currentDeal.value.dealStatus = 'deal-complete'
                     alert('ViewDeal: статус дела изменен на ЗАВЕРШЕН')
                  } else if (isReturnData.length !== 0) {
                     // Если массив содержит невозвращенные атрибуты какого-либо предмета дела
@@ -1908,9 +1919,9 @@
                         // Если содержит все true (то есть всё уже вернули)
                         isAllAttrReturned.value = true
                         // alert(`ViewDeal: внесено ${amount} ${currency.value}`)
-                        alert('ViewDeal: статус дела изменен на ЗАВЕРШЕН')
+                        // alert('ViewDeal: статус дела изменен на ЗАВЕРШЕН')
                         // dealStatus.value = 'deal-complete'
-                        currentDeal.value.dealStatus = 'deal-complete'
+                        // currentDeal.value.dealStatus = 'deal-complete'
                     }
                 }
             }
@@ -1918,6 +1929,7 @@
             const finishDeal = () => {
                 // Ставим делу статус ЗАВЕРШЕНJ
                 dealStatus.value = 'deal-complete'
+                // currentDeal.value.dealStatus = 'deal-complete'
                 // Проверяем на предмет возврата атрибутов
                 if(currentDeal.value.dealType === 'sale') {
                     isAllAttrReturnedFunc()
@@ -2140,9 +2152,19 @@
         margin: 50px auto; 
         border: 1px solid var(--ion-color-success);
     }
-    /* ion-toast.custom-toast::part(message) {
-        --color: #5353d3!important;
+    /* ion-toast.custom_toast::part(message) {
+        --color: white!important;
     } */
+    ion-toast.custom_toast {
+        --color:#ffffff!important;
+        --border-color:#000000;
+        --border-radius:3px;
+        --border-style:solid;
+        --border-width:3px;    
+        --background:#1833FF;
+        --button-color:#ffffff;
+        --white-space: pre-wrap
+    }
     .delivery-address-block {
         background-color: var(--ion-color-light); 
         border-radius: 2rem; 

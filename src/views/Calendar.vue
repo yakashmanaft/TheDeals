@@ -119,7 +119,8 @@
         IonItemGroup,
         IonDatetime,
         IonActionSheet,
-        IonFooter
+        IonFooter,
+        toastController
     } from '@ionic/vue';
     //
     import { menu } from 'ionicons/icons';
@@ -495,7 +496,8 @@
                         setCalendarStyle()
                         // Обновляем запись в БД
                         updateWeekendDays()
-                        alert('День без дел отменен')
+                        // alert('День без дел отменен')
+                        toastWeekend(formattedDate(choosenDate.value), { title: 'Выходной отменен', text: 'больше не выходной' })
                     }
                 },  
                 {
@@ -515,13 +517,14 @@
                 // обнолвяем запись в БД
                 updateWeekendDays()
                 // закрывает
+                toastWeekend(formattedDate(date), { title: 'Выходной выбран', text: 'отмечен как выходной день' })
                 isViewChoosenDateOpened.value = false
                 //обнуляет
                 choosenDate.value = null
                 //
                 // console.log('Отметили как День без дел')
                 setCalendarStyle()
-                alert('Отмечено как День без дел')
+                // alert('Отмечено как День без дел')
             }
             // проверяем есть ли выбранная дата в массиве дней без дел
             const checkWeekendDays = (choosenDate) => {
@@ -706,8 +709,33 @@
                 isSettingsModalOpened.value = boolean
             }
 
+            // TOAST
+            const toastWeekend = async (date, content) => {
+                const toast = await toastController.create({
+                    // Предметы дела будут добавлены на склад
+                    message: `
+                        <h3>${ content.title }</h3>
+                        <p>${ date } ${ content.text }</p>
+                    `,
+                    // duration: 3000,
+                    cssClass: 'custom_toast', 
+                    position: 'top',
+                    buttons: [
+                        {
+                            text: 'ОК',
+                            role: 'cnacel',
+                            handler: () => {
+                                console.log('toast clicked dismiss')
+                            }
+                        }
+                    ]
+                });
+                await toast.present();
+                
+            }
+
             return {
-                menu, user, router, pageTitle, choosenDate, spinner, dataLoaded, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle, observer, availableBalance, addToLedger, toggleSettingsModal, isSettingsModalOpened, updateDaySaturation, userRecipes, called
+                menu, user, router, pageTitle, choosenDate, spinner, dataLoaded, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle, observer, availableBalance, addToLedger, toggleSettingsModal, isSettingsModalOpened, updateDaySaturation, userRecipes, called, toastWeekend
             }
         }
     })

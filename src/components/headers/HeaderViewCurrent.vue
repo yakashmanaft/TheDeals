@@ -4,7 +4,8 @@
         <ion-toolbar color="white">
             <ion-buttons class="color-primary" slot="start">
                 <ion-button fill="clear" v-if="edit" @click="cancelEdit">Отмена</ion-button>
-                <ion-back-button  default-href="/" v-else text="Назад"></ion-back-button>
+                <ion-back-button default-href="/" v-else text="Назад"></ion-back-button>
+                <!-- <ion-button v-else @click="router.go(-1)">Назад</ion-button>  -->
             </ion-buttons>
             <!-- Если текущий роут НЕ View-Deal && НЕ Profile && НЕ View-Recipe-->
             <ion-buttons class="color-primary" slot="end" v-if="(route.name !== 'View-Deal' && route.name !== 'Profile' && route.name !== 'View-Recipe' && isHasSubstring() === false)">

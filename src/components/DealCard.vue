@@ -22,7 +22,7 @@
                             {{contactName}}
                         </ion-text>
                     </div> -->
-                    <ion-text @click.prevent.stop="$emit('getContact', deal.contactID)" style="width: 70%;" class="ion-text-right">{{contactName}}</ion-text>
+                    <ion-text @click.prevent.stop="$emit('getContact', deal.contactID)" class="ion-text-right">{{contactName}}</ion-text>
                 </ion-row>
             </ion-grid>
         </ion-card-header>
