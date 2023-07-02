@@ -4,6 +4,8 @@
   </div>
 </template>
 
+<!-- Проверка -->
+
 <script>
 import { ref } from 'vue';
 import { supabase } from './supabase/init';
