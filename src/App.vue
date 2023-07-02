@@ -1,6 +1,6 @@
 <template>
-  <div v-if="appReady" class="min-h-full font-Poppins box-border">
-    <router-view/> 
+  <div v-if="appReady">
+    <router-view/>
   </div>
 </template>
 
@@ -9,38 +9,70 @@ import { ref } from 'vue';
 import { supabase } from './supabase/init';
 import store  from './store/index';
 
-export default {
-  
-  components: {
-    // Login, 
-  },
-  setup() {
-    // Create data / vars
-    const appReady = ref(null);
 
-    // Check to see if user is already logged in
-    const user = supabase.auth.user();
+import { defineComponent } from 'vue';
 
-    // If user does not exist, need to make app ready
-    if (!user) {
-      appReady.value = true;
+
+export default defineComponent ({
+    setup() {
+      // Create data / vars
+      const appReady = ref(null);
+
+      // Check to see if user is already logged in
+      const user = supabase.auth.user();
+
+      // If user does not exist, need to make app ready
+      if (!user) {
+        appReady.value = true;
+      }
+
+      // Runs when there is a auth state change
+      // if user is logged in, this will fire
+      supabase.auth.onAuthStateChange((_, session) => {
+        console.log('hello')
+        store.methods.setUser(session);
+        appReady.value = true;
+      })
+
+      return {
+        appReady, user
+      }
     }
-
-    // Runs when there is a auth state change
-    // if user is logged in, this will fire
-    supabase.auth.onAuthStateChange((_, session) => {
-      console.log('hello')
-      store.methods.setUser(session);
-      appReady.value = true;
-    })
-
-    return {
-      appReady, user
-    };
-  },
-};
+})
 </script>
 
-<style lang="scss">
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700&display=swap");
+<style>
+/* На случай кастомных цветов */
+@import './theme/variables.scss';
+
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: var(--ion-color-system);
+}
+
+nav {
+  padding: 30px;
+}
+
+nav a {
+  font-weight: bold;
+  color: var(--ion-color-system);
+}
+
+nav a.router-link-exact-active {
+  color: #42b983;
+}
+
+a {
+  text-decoration: none;
+}
+
+ion-modal {
+  /* opacity: 0.95; */
+  backdrop-filter: blur(2px);
+} 
+
 </style>

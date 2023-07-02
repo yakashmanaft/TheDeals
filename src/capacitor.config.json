@@ -1,0 +1,6 @@
+{
+	"appId": "io.ionic.starter",
+	"appName": "Deals",
+	"webDir": "dist",
+	"bundledWebRuntime": false
+}

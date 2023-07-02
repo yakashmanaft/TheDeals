@@ -1,110 +1,232 @@
-import { createRouter, createWebHistory } from "vue-router";
+// import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory } from '@ionic/vue-router';
 import { supabase } from '../supabase/init';
-import Dashboard from '../views/Dashboard.vue';
-import Login from '../views/Login.vue';
-import Register from '../views/Register.vue';
-import Create from '../views/Create.vue';
-import Menu from '../views/Menu.vue';
-import ViewWorkout from '../views/ViewWorkout.vue';
-import Orders from '../views/Orders.vue';
-import EventCalendar from '../views/EventCalendar.vue';
-import Wallet from '../views/Wallet.vue';
-import Warehouse from '../views/Warehouse.vue';
+
+//
+import store from '../store/index';
+import { useRouter } from 'vue-router';
+
+// Экраны логина и регистрации
+import Login from '../views/auth/Login.vue';
+import Register from '../views/auth/Register.vue';
 
 const routes = [
   {
-    path: "/",
-    name: "Dashboard",
-    component: Dashboard,
+    path: '/',
+    name: 'Calendar',
+    component: () => import('../views/Calendar.vue'),
     meta: {
-      title: 'Dashboard',
+      title: 'Calendar',
       auth: true,
-      translation: 'Доска'
-    }
+      translation: 'Календарь',
+      type: 'View'
+    },
   },
   {
-    path: "/orders",
-    name: "Orders",
-    component: Orders,
-    meta: {
-      title: 'Orders',
-      auth: true,
-      translation: 'Все дела'
-    }
-  },
-  {
-    path: "/login",
-    name: "Login",
-    component: Login,
-    meta: {
-      title: 'Login',
-      auth: false,
-    }
-  },
-  {
-    path: "/register",
-    name: "Register",
-    component: Register,
-    meta: {
-      title: 'Register',
-      auth: false,
-    }
-  },
-  {
-    path: "/create",
-    name: "Create",
-    component: Create,
-    meta: {
-      title: 'Create',
-      auth: true,
-    }
-  },
-  {
-    path: "/",
-    name: "Menu",
-    component: Menu,
-    meta: {
-      title: 'Menu',
-      auth: true,
-    }
-  },
-  {
-    path: "/calendar",
-    name: "Calendar",
-    component: EventCalendar,
-    meta: {
-      title: 'Event Calendar',
-      auth: true,
-      translation: 'Календарь событий'
-    }
-  },
-  {
-    path: "/wallet",
+    path: '/wallet',
     name: "Wallet",
-    component: Wallet,
+    component: () => import('../views/Wallet.vue'),
     meta: {
       title: 'Wallet',
       auth: true,
-      translation: 'Кошелек'
+      translation: 'Кошелек',
+      type: 'View'
     }
   },
   {
-    path: "/warehouse",
-    name: "Warehouse",
-    component: Warehouse,
+    path: '/finance',
+    name: 'userFinance',
+    component: () => import('../views/userFinance.vue'),
+    meta: {
+      title: 'My finance',
+      auth: true,
+      translation: 'Аналитика',
+      type: 'View'
+    }
+  },
+  {
+    path: '/deals',
+    name: 'Deals',
+    component: () => import('../views/Deals.vue'),
+    meta: {
+      title: 'Deals',
+      auth: true,
+      translation: 'Все дела',
+      type: 'View'
+    }
+  },
+  {
+    path: '/view-deal/:dealId',
+    name: 'View-Deal',
+    component: () => import('../views/currentView/ViewDeal.vue'),
+    meta: {
+      title: 'View Deal',
+      auth: true,
+      type: 'CurrentView'
+    }
+  },
+  {
+    path: '/contacts',
+    name: 'Contacts',
+    component: () => import('../views/Contacts.vue'),
+    meta: {
+      title: 'Contacts',
+      auth: true,
+      translation: 'Мои контакты',
+      type: 'View'
+    } 
+  },
+  {
+    path: '/view-contact/:contactId',
+    name: 'View-Contact',
+    component: () => import('../views/currentView/ViewContact.vue'),
+    meta: {
+      title: 'View Contact',
+      auth: true,
+      type: 'CurrentView'
+    }
+  },
+  {
+    path: '/recipes',
+    name: 'Recipes',
+    component: () => import('../views/Recipes.vue'),
+    meta: {
+      title: 'Recipes',
+      auth: true,
+      translation: 'Мои рецепты',
+      type: 'View'
+    }
+  },
+  {
+    path: '/view-recipe/:recipeId',
+    name: 'View-Recipe',
+    component: () => import('../views/currentView/ViewRecipe.vue'),
+    meta: {
+      title: 'View Recipe',
+      auth: true,
+      type: 'CurrentView'
+    }
+  },
+  {
+    path: '/price-list',
+    name: 'MyPrice',
+    component: () => import('../views/MyPrice.vue'),
+    meta: {
+      title: 'MyPrice',
+      auth: true,
+      translation: 'Мой прайс-лист',
+      type: 'View'
+    }
+  },
+  {
+    path: '/warehouse',
+    name: 'Warehouse',
+    component: () => import('../views/Warehouse.vue'),
     meta: {
       title: 'Warehouse',
       auth: true,
-      translation: 'Склад'
+      translation: 'Мой склад',
+      type: 'View'
     }
   },
   {
-    path: "/view-workout/:workoutId",
-    name: "View-Workout",
-    component: ViewWorkout,
+    path: '/view-warehouse/:itemId',
+    name: 'View-warehouse-item',
+    component: () => import('../views/currentView/ViewWarehouseItem.vue'),
     meta: {
-      title: 'ViewWorkout',
+      title: 'View Warehouse Item',
       auth: true,
+      type: 'CurrentView'
+    }
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: Login,
+    meta: {
+      title: 'Login',
+      auth: false
+    }
+  },
+  {
+    path: '/register',
+    name: 'Register',
+    component: Register,
+    meta: {
+      title: 'Register',
+      auth: false
+    }
+  },
+  {
+    path: '/profile',
+    name: 'Profile',
+    component: () => import('../views/Profile.vue'),
+    meta: {
+      title: 'Profile',
+      auth: true,
+      translation: 'Профиль',
+      type: 'View'
+    }
+  },
+  {
+    path: '/faq',
+    name: 'FAQ',
+    component: () => import('../views/FAQ.vue'),
+    meta: {
+      title: 'FAQ',
+      auth: true,
+      translation: 'Помощь',
+      type: 'View'
+    }
+  },
+  {
+    path: '/chat',
+    name: 'Chat',
+    component: () => import('../views/Chat.vue'),
+    meta: {
+      title: 'Chat',
+      auth: true,
+      translation: 'Чат',
+      type: 'View'
+    }
+  },
+  {
+    path: '/recipes-store',
+    name: 'RecipesStore',
+    component: () => import('../views/RecipesStore.vue'),
+    meta: {
+      title: 'Recipes Store',
+      auth: true,
+      translation: 'Магазин рецептов',
+      type: 'View'
+    }
+  },
+  {
+    path: '/view-store-recipe/:itemId',
+    name: 'View-store-recipe',
+    component: () => import('../views/currentView/ViewStoreRecipe.vue'),
+    meta: {
+      title: 'View Store Recipe',
+      auth: true,
+      type: 'CurrentView'
+    }
+  },
+  {
+    path: '/admin',
+    name: 'AdminDashboard',
+    component: () => import('../views/adminPanel/AdminDashboard.vue'),
+    meta: {
+      title: 'Admin panel',
+      auth: true,
+      translation: 'Панель администратора',
+      type: 'View'
+    },
+    // Проверяем админский ли email у пользователя
+    beforeEnter: (to, from) => {
+      if (store.state.user.email === store.state.adminEmail) {
+      } else {
+        router.replace('/');
+      }
     }
   },
 ];
@@ -116,9 +238,9 @@ const router = createRouter({
 
 // Change document titles
 router.beforeEach((to, from, next) => {
-  document.title = `${to.meta.title} | My Now`;
+  document.title = `${to.meta.title} | TheDeals`;
   next();
-})
+});
 
 // Route guard for auth routes
 router.beforeEach((to, from, next) => {

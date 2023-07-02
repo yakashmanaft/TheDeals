@@ -1,4 +1,4 @@
-# my-now
+# deals
 
 ## Project setup
 ```
@@ -15,9 +15,9 @@ npm run serve
 npm run build
 ```
 
-### Lints and fixes files
+### Build and https-server dist
 ```
-npm run lint
+npm run go
 ```
 
 ### Customize configuration
