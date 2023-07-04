@@ -133,10 +133,10 @@
                 userProfile.value = store.state.userSettings[0].userWorkProfile
                 avatarFileName.value = store.state.userSettings[0].avatar_url
                 await getCurrentMenuList()
-                // console.log(avatarFileName.value)
-                // ИСКЛЮЧИТЬ ОШИБКУ УСЛОВИЕМ 
+
+                // ИСПРАВИТЬ: ИСКЛЮЧИТЬ ОШИБКУ УСЛОВИЕМ 
                 await downloadImage()
-                // console.log(avatarUrl.value)
+
             })
             //
             const avatarUrl = ref()
@@ -161,8 +161,7 @@
             //
             const currentMenuList = ref([])
             const getCurrentMenuList = async () => {
-                // console.log(userProfile.value)
-                // console.log(menuList.value.filter(item => item.name !== 'Recipes'))
+
                 if(userProfile.value === 'Автозапчасти') {
                     currentMenuList.value = menuList.value.filter(item => item.name !== 'Recipes')
                 } else if(userProfile.value === 'Тортодилер') {
@@ -177,6 +176,8 @@
                 currentRoute.value = props.title;
                 fileName.value = props.avatar
             })
+
+            // Выводим в консоль текующую страницу
             console.log(currentRoute.value)
             watch(fileName, () => {
                 avatarFileName.value = fileName.value

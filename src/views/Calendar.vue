@@ -24,20 +24,18 @@
             <br>
             <br>
             <br>
+            
             <!-- page content -->
 
             <div>
-                <ion-datetime
-                    presentation="date"
-                    size="cover"
+                <ion-datetime 
+                    size="cover" 
+                    calendar-weeks="true"
                     v-model="choosenDate"
-                    :first-day-of-week="1"
-                    
-                    ></ion-datetime>
-                    <!-- @ionChange="setChoosenDateStyle" -->
-                <!-- :is-date-enabled="isWeekday" -->
-                <!-- dayValues="5,10,15,20,25,30" -->
+                    presentation="date"
+                ></ion-datetime>
             </div>
+            
             <!-- Модалка дел по выбранной дате -->
             <ViewChoosenDate
                 :is-open="isViewChoosenDateOpened"
@@ -153,7 +151,6 @@
             IonItemGroup,
             NavigationMenu,
             IonDatetime,
-            
             ViewChoosenDate,
             CreateNewDeal,
             IonActionSheet,
@@ -176,7 +173,6 @@
             const userSettings = ref(store.state.userSettings[0])
             //
             const spinner = ref(null);
-            const dataLoaded = ref(null);
             const myDeals = ref([]);
             // массив дел под конкретную дату
             const dealsByChoosenDate = ref([])
@@ -186,7 +182,7 @@
             const dateCreate = ref();
             // Храним данные контакта
             const myContacts = ref([]);
-            //
+            // рецепты пользователя
             const userRecipes = ref();
             // массив с датами типа День без дел
             const weekendDays = ref([]);
@@ -199,30 +195,23 @@
             // 
             onMounted(async () => {
                 spinner.value = true
+                // Подтягиваем настройки аккаунта пользователя
                 await store.methods.getUserSettingsfromDB()
-                console.log(store.state.userSettings[0])
+
+                // Дергаем из store выходные дни
                 userSettings.value = store.state.userSettings[0]
                 weekendDays.value = userSettings.value.weekendDays
-                // daySaturation.value = userSettings.value.daySaturation
                 // console.log(weekendDays.value)
-                // avatarFileName.value = userSettings.value.avatar_url
-                // console.log(userSettings.value.avatar_url)
-                //
-                await store.methods.getUserRecipesFromBD();
-                userRecipes.value = store.state.userRecipeArray;
-                //
-                await store.methods.getMyContactsFromDB()
-                myContacts.value = store.state.myContactsArray
+
                 //
                 await store.methods.getMyDealsFromBD()
                 myDeals.value = store.state.myDealsArray
                 // запускаем функцию расчета баланса кошелька из store
                 store.methods.calculateBalance(myDeals.value)
                 availableBalance.value = store.state.availableBalance
-                //
-                if(dataLoaded.value = true) {
-                    spinner.value = false
-                } 
+
+                // Данные загружены, убираем spinner
+                spinner.value = false
                 
                 // refreshData()
                 if(choosenDate.value) {
@@ -236,7 +225,7 @@
                         window.dispatchEvent(new CustomEvent('datetimeMonthDidChange', { detail: mutationRecords }));
                     }
                 });
-                // запускаем наблюдателя
+                // // запускаем наблюдателя
                 observer.observe(
                     document
                         .querySelector('ion-datetime')
@@ -267,9 +256,9 @@
             // Массив дел по выбранной дате
             const dealsArray = ref([])
             // Когда выбираем дату (choosenDate.value уже имеет значение)
-            watch(choosenDate, () => {
+            watch(choosenDate, async () => {
                 // setChoosenDateStyle()
-                // setCalendarStyle()
+                setCalendarStyle()
                 // console.log(choosenDate.value)
                 // если выбранная дата === одной из дат в массие дат, указанной как ДЕНЬ БЕЗ ДЕЛ
                 // if(formattedDate('2022-10-30T12:04:00+05:00') === formattedDate(choosenDate.value)) {
@@ -283,6 +272,8 @@
                 } else {
                     if(choosenDate.value) {
                         isViewChoosenDateOpened.value = true
+                        await store.methods.getMyContactsFromDB()
+                        myContacts.value = store.state.myContactsArray
                     }
                 }
                 dealsByChoosenDate.value = myDeals.value.filter(deal => {
@@ -291,7 +282,6 @@
                         return deal
                     }
                 })
-                // console.log(dealsArray.value)
             })
             // Управление модалкой просмотра даты
             const isViewChoosenDateOpened = ref(false)
@@ -351,9 +341,11 @@
                 tempContactName: 'Неизвестный'
             })
             // При закрытии или открытии modal очищаем шаблон дела
-            const setOpen = () => {
+            const setOpen = async () => {
                 isViewDealModalOpened.value = !isViewDealModalOpened.value;
                 isViewChoosenDateOpened.value = true
+                // await store.methods.getUserRecipesFromBD();
+                // userRecipes.value = store.state.userRecipeArray;
                 // choosenDate.value = null
                 dealData.value = {
                     uid: uid(),
@@ -411,16 +403,16 @@
                         // Добавляем в БД инфу по новому контакту
                         // Скорей всего надо будет вынести в store или нет
                         const { error } = await supabase.from('deals').insert([dealData.value])
-                        if(error) throw error;
+                        if(error) throw error
                         // обновляем массив в store
-                        await store.methods.getMyDealsFromBD();
+                        await store.methods.getMyDealsFromBD()
                         myDeals.value = store.state.myDealsArray
                         // ищем созданное новое дело в массиве всех дел в store (по uid)
                         const newDeal = myDeals.value.find(el => el.uid === dealData.value.uid)
                         // закрываем modal
-                        isViewDealModalOpened.value = false;
+                        isViewDealModalOpened.value = false
                         // на свякий - тормозим спинер
-                        spinner.value = false;
+                        spinner.value = false
                         //
                         if(dealData.value.dealPaid > 0) {
                             addToLedger(dealData.value.dealPaid, newDeal.id)
@@ -735,7 +727,7 @@
             }
 
             return {
-                menu, user, router, pageTitle, choosenDate, spinner, dataLoaded, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle, observer, availableBalance, addToLedger, toggleSettingsModal, isSettingsModalOpened, updateDaySaturation, userRecipes, called, toastWeekend
+                menu, user, router, pageTitle, choosenDate, spinner, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle, observer, availableBalance, addToLedger, toggleSettingsModal, isSettingsModalOpened, updateDaySaturation, userRecipes, called, toastWeekend
             }
         }
     })

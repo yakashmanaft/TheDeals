@@ -258,20 +258,17 @@
       const user = computed(() => store.state.user);
       // Setup ref to router
       const router = useRouter();
+
       // Page title
       const pageTitle = router.currentRoute._value.meta.translation;
-      console.log(pageTitle)
-      console.log(router.currentRoute._value.meta.title)
+      // console.log(router.currentRoute._value.meta.title)
       //
       const userSettings = ref(store.state.userSettings[0])
       // Get user email
       store.methods.setUserEmail()
       const userEmail = ref(store.state.userEmail)
-      // console.log(userEmail.value)
       //
       const avatar_url = ref(userSettings.value.avatar_url)
-      //
-      // const myDeals = ref([]);
       //
       const spinner = ref(null);
       const dataLoaded = ref(null);
@@ -280,12 +277,10 @@
       spinner.value = true;
       //
       onMounted( async () => {
-        // await store.methods.getMyDealsFromBD();
-        // myDeals.value = store.state.myDealsArray;
+  
         spinner.value = false;
         dataLoaded.value = true;
         // 
-        // calculateBalance()
         isQrAvailable.value = false
       })
       // открываем модкалку с QR-визиткой
@@ -303,50 +298,6 @@
         alert('Profile: Вы пытаетесь редактировать QR-визитку. Функционал в разработке...')
       }
       //
-      // const availableBalance = ref(0);
-      // const myDebt = ref(0);
-      // const debtToMe = ref(0);
-      //
-      // const calculateBalance = () => {
-      //   // console.log('calculate...')
-      //   // Массив сумм, которые мне уже вносили по делам продаж
-      //   let payMeArray = []
-      //   let payMe = 0
-      //   // Массив сумм, которые я уже вносил по делам закупок
-      //   let iPayArray = []
-      //   let iPay = 0
-      //   // Массив моих задолженностей
-      //   let myDebtsArray = []
-      //   let myDebts = 0
-      //   // Массив покупательских задолженностей
-      //   let debtsToMeArray = []
-      //   let debtsToMe = 0
-      //   //
-      //   // myDeals.value.forEach(item => {
-      //   //   if(item.dealType === 'sale') {
-      //   //     payMeArray.push(item.dealPaid)
-      //   //     debtsToMeArray.push(item.totalDealPrice - item.dealPaid)
-      //   //   } else if (item.dealType === 'buy') {
-      //   //     iPayArray.push(item.dealPaid)
-      //   //     myDebtsArray.push(item.totalDealPrice - item.dealPaid)
-      //   //   }
-      //   // })
-      //   // суммируем значения в массивах, считаем текущий баланс
-      //   // payMe = payMeArray.reduce((a, b) => a + b, 0)
-      //   // iPay = iPayArray.reduce((a, b) => a + b, 0)
-      //   // availableBalance.value = payMe - iPay
-      //   // 
-      //   // myDebts = myDebtsArray.reduce((a, b) => a + b, 0)
-      //   // myDebt.value = myDebts
-      //   //
-      //   // debtsToMe = debtsToMeArray.reduce((a, b) => a + b, 0)
-      //   // debtToMe.value = debtsToMe 
-      // }
-      // Функционал по смене автарки
-      // const changeAvatar = () => {
-      //   alert('Profile: Вы хотите сменить аватарку? Функционал в разработке...')
-      // }
-      //
       const formattedDate = (day) => {
         const formattedString = format(parseISO(day), 'd MMMM Y', { locale: ru });
         return formattedString;
@@ -357,18 +308,11 @@
       }
       // ============================== Работа с аватаркой ============================
       const updateProfile = (boolean) => {
-        console.log(boolean)
+        // console.log(boolean)
         avatar_url.value = userSettings.value.avatar_url
-        // console.log(`Updated: ${avatar_url.value}`)
       }
-      // avatar_url.value = userSettings.value.avatar_url
-      // watch(avatar_url, () => {
-      //   console.log(avatar_url.value)
-      //   avatar_url.value = userSettings.value.avatar_url
-      // })
       const deletedAvatar = (fileName) => {
         avatar_url.value = fileName
-        // console.log(`avatar is deleted: ${avatar_url.value}`)
       }
 
       // isMainOrganizationMenuOpened

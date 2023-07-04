@@ -77,27 +77,6 @@
         setup(props, { emit }) {
             const user = computed(() => store.state.user);
             const router = useRouter();
-            // console.log(router.options.history.state.back)
-            // const isHasSubstring = () => {
-            //     let historyBack = router.options.history.state.back
-            //     let substring1 = '/view-deal/'
-            //     if(historyBack === null || historyBack.indexOf(substring1) === -1) {
-            //         return false
-            //     } else {
-            //         return true
-            //     }
-            // }
-            // console.log(router.options.history.state)
-            // Используем когда удаляем конкретный контакт
-            // const isBackExists = () => {
-            //     let historyBack = router.options.history.state.back
-            //     let substring = '/view-contact/'
-            //     if(historyBack === null || historyBack.indexOf(substring) === -1) {
-            //         return false
-            //     } else {
-            //         return true
-            //     }
-            // }
 
             return {
                 user, router, menu, walletOutline, settingsOutline, qrCodeOutline, settingsOutline, storefrontOutline, bagOutline, funnelOutline, shareOutline
