@@ -9,6 +9,12 @@
                 <!-- КНОПКА НАЗАД -->
                 <ion-back-button class="color-primary" v-if="router.currentRoute._value.meta.title !== 'Calendar' || router.currentRoute._value.meta.title === 'My finance'" default-href="/" text="Назад"></ion-back-button>
 
+                <!-- КНОПКА ИЗМЕНИТЬ РЕЖИМ ДЕМОНСТРАЦИИ (По месяцам... По неделям) -->
+                <div class="color-primary" v-if="router.currentRoute._value.meta.title === 'Calendar'">
+                    <ion-button v-if="isMonth" @click="$emit('calendarMode', false)">Месяцы</ion-button>
+                    <ion-button v-else @click="$emit('calendarMode', true)">Дни</ion-button>
+                </div>
+
                 <!-- КНОПКА НА ГЛАВНУЮ -->
                 <!-- <ion-button class="color-primary" v-if="isHasSubstring() === true" @click.stop="router.push({ path: '/' })">
                     Главная
@@ -20,6 +26,7 @@
 
             <!-- КНОПКИ СПРАВА -->
             <ion-buttons slot="end">
+
                 <!-- RECIPE STORE BUSKET -->
                 <ion-button class="relative" v-if="router.currentRoute._value.meta.title === 'Recipes Store'" @click="$emit('goToBusket')">
                     <ion-icon :icon="bagOutline"></ion-icon>
@@ -73,7 +80,7 @@
         components: {
             IonHeader, IonMenuToggle, IonToolbar, IonIcon, IonGrid, IonRow, IonText, IonButtons, IonButton, IonBackButton, IonTitle
         },
-        props: ['title', 'filterBy', 'countByDealType'],
+        props: ['title', 'filterBy', 'countByDealType', 'isMonth'],
         setup(props, { emit }) {
             const user = computed(() => store.state.user);
             const router = useRouter();

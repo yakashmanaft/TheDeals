@@ -11,7 +11,9 @@
         <!-- page header -->
         <Header 
             @goToSettings="toggleSettingsModal"
+            @calendarMode="calendarModeFunc"
             :title="pageTitle"
+            :isMonth="isMonthMode"
         />
 
         <ion-content 
@@ -27,13 +29,19 @@
             
             <!-- page content -->
 
-            <div>
+            <!-- MODE MONTH -->
+            <div v-if="isMonthMode === true">
                 <ion-datetime 
                     size="cover" 
                     calendar-weeks="true"
                     v-model="choosenDate"
                     presentation="date"
                 ></ion-datetime>
+            </div>
+
+            <!-- MODE DAILYPLANNER -->
+            <div v-else>
+                DAILYPLANNER
             </div>
             
             <!-- Модалка дел по выбранной дате -->
@@ -193,23 +201,44 @@
             // const avatarFileName = ref('')
             // const daySaturation = ref(userSettings.value.daySaturation)
             // 
+
+            //  ================================================ CALENDAR MODE ================================================
+            // TOGGLE CALENDAR MODE
+            const isMonthMode = ref(true)
+            const calendarModeFunc = (boolean) => {
+                if(boolean === true) {
+                    isMonthMode.value = true
+                    loadInMonthMode()
+                } else {
+                    isMonthMode.value = false
+                }
+            }
+            watch(isMonthMode, () => {
+                console.log('mode changed')
+            })
+
             onMounted(async () => {
+
+            })
+
+            // ФУНКЦИЯ ЗАГРУЗКИ КАЛЕНДАРЯ В РЕЖИМЕ MONTH
+            const loadInMonthMode = async () => {
                 spinner.value = true
                 // Подтягиваем настройки аккаунта пользователя
                 await store.methods.getUserSettingsfromDB()
-
+    
                 // Дергаем из store выходные дни
                 userSettings.value = store.state.userSettings[0]
                 weekendDays.value = userSettings.value.weekendDays
                 // console.log(weekendDays.value)
-
+    
                 //
                 await store.methods.getMyDealsFromBD()
                 myDeals.value = store.state.myDealsArray
                 // запускаем функцию расчета баланса кошелька из store
                 store.methods.calculateBalance(myDeals.value)
                 availableBalance.value = store.state.availableBalance
-
+    
                 // Данные загружены, убираем spinner
                 spinner.value = false
                 
@@ -243,8 +272,21 @@
                 })
                 //при монтаже запускаем функцию стилей для дат
                 setCalendarStyle()
-            })
-            // фильтруем дела по выбранную дату
+
+            }
+
+            // ФУНКЦИЯ ЗАГРУЗКИ КАЛЕНДАРЯ В РЕЖИМЕ DAILYPLANNER 
+            // 
+
+            // УСЛОВИЯ ЗАПУСКАЯ ФУНКЦИЙ ЗАГРУЗКИ РЕЖИМА КАЛЕНДАРЯ
+            if(isMonthMode.value === true) {
+                loadInMonthMode()
+            } else {
+
+            }
+
+            // ============================================ фильтруем дела по выбранную дату ====================================
+
             // функция форматирования даты для сравнения даты дела и выбранной даты
             const formattedDate = (day) => {
                 if(day) {
@@ -694,7 +736,6 @@
                 }
                 // spinner.value = false;
             }
-
             //
             const isSettingsModalOpened = ref(false)
             const toggleSettingsModal = (boolean) => {
@@ -727,7 +768,7 @@
             }
 
             return {
-                menu, user, router, pageTitle, choosenDate, spinner, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle, observer, availableBalance, addToLedger, toggleSettingsModal, isSettingsModalOpened, updateDaySaturation, userRecipes, called, toastWeekend
+                menu, user, router, pageTitle, choosenDate, spinner, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle, observer, availableBalance, addToLedger, toggleSettingsModal, isSettingsModalOpened, updateDaySaturation, userRecipes, called, toastWeekend, calendarModeFunc, isMonthMode, loadInMonthMode
             }
         }
     })
