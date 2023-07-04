@@ -16,6 +16,13 @@
             :isMonth="isMonthMode"
         />
 
+        <!--  -->
+        <ViewWeekDeal 
+            :isOpen="isWeekDealOpend"
+            :event="choosenWeekEvent"
+            @closeModal="isWeekDealOpend = false"
+        />
+
         <ion-content 
             :scroll-events="true"
             class="ion-page" 
@@ -41,8 +48,10 @@
 
             <!-- MODE WEEK PLANNER -->
             <div v-else>
-                WEEK PLANNER
-                <WeekPlanner/>
+                <WeekPlanner 
+                    @isViewWeekDealOpend="isWeekDealOpendFunc"
+                    @event="getEvent"    
+                />
             </div>
             
             <!-- Модалка дел по выбранной дате -->
@@ -111,6 +120,7 @@
     import CreateNewDeal from '../components/modal/NewDeal-modalCreate.vue';
     import CalendarSettings from '../components/modal/CalendarSettings.vue';
     import WeekPlanner from '../components/WeekPlanner.vue';
+    import ViewWeekDeal from '../components/modal/ViewWeekDeal.vue'
     //
     import { 
         IonContent, 
@@ -145,6 +155,7 @@
             Footer,
             Spinner,
             WeekPlanner,
+            ViewWeekDeal,
             //
             IonContent, 
             IonHeader, 
@@ -768,8 +779,18 @@
                 
             }
 
+            const isWeekDealOpend = ref(false)
+            const isWeekDealOpendFunc = (boolean) => {
+                isWeekDealOpend.value = boolean
+            }
+
+            const choosenWeekEvent = ref({})
+            const getEvent = (event) => {
+                choosenWeekEvent.value = event
+            }
+
             return {
-                menu, user, router, pageTitle, choosenDate, spinner, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle, observer, availableBalance, addToLedger, toggleSettingsModal, isSettingsModalOpened, updateDaySaturation, userRecipes, called, toastWeekend, calendarModeFunc, isMonthMode, loadInMonthMode
+                menu, user, router, pageTitle, choosenDate, spinner, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle, observer, availableBalance, addToLedger, toggleSettingsModal, isSettingsModalOpened, updateDaySaturation, userRecipes, called, toastWeekend, calendarModeFunc, isMonthMode, loadInMonthMode, isWeekDealOpend, isWeekDealOpendFunc, getEvent, choosenWeekEvent
             }
         }
     })

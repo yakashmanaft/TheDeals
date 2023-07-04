@@ -1,20 +1,28 @@
 <template>
+
+
+
     <!-- https://antoniandre.github.io/vue-cal/ -->
     <vue-cal 
+        ref="vuecal"
         locale="ru"
         today-button
+        small
         :special-hours="dailyHours"
         hide-weekends 
-        :disable-views="['years', 'month', 'year', 'day']"  
+        :disable-views="['years', 'month', 'weeks', 'year', 'day']"  
         :events="events"
         :cell-click-hold="false"
         :drag-to-create-event="false"
         editable-events
+ 
         @cell-dblclick="$refs.vuecal.createEvent(
             $event,
             120,
             { title: 'New Event', class: 'blue-event' }
         )"
+        delete: true
+        :on-event-click="onEventClick"
     >
     </vue-cal>
 
@@ -31,9 +39,17 @@ export default defineComponent({
     components: {
         VueCal
     },
-    setup() {
+    setup(props, {emit}) {
 
-        const dailyHours = { from: 9 * 60, to: 18 * 60, class: 'business-hours' }
+        // const isViewWeekDealOpend = ref(false)
+
+        const dailyHours = { from: 7 * 60, to: 18 * 60, class: 'business-hours' }
+
+        const onEventClick = (event) => {
+            // console.log(event)
+            emit('isViewWeekDealOpend', true)
+            emit('event', event)
+        }
 
         const events = [
             {
@@ -47,8 +63,15 @@ export default defineComponent({
                 class: 'health'
             },
             {
-                start: '2023-07-04 12:00:00',
-                end: '2023-07-04 13:00:00',
+                start: '2023-07-04 15:00:00',
+                end: '2023-07-04 17:00:00',
+                title: 'LUNCH',
+                class: 'lunch',
+                background: true
+            },
+            {
+                start: '2023-07-06 15:00:00',
+                end: '2023-07-06 17:00:00',
                 title: 'LUNCH',
                 class: 'lunch',
                 background: true
@@ -56,14 +79,19 @@ export default defineComponent({
         ]
 
         return {
-            dailyHours, events
+            dailyHours, events, onEventClick
         }
     }
 })
 </script>
 
 <style scoped>
-    .lunch {
-        background-color: black!important;
+    .vuecal__event.lunch {
+    background: repeating-linear-gradient(45deg, transparent, transparent 10px, #f2f2f2 10px, #f2f2f2 20px);/* IE 10+ */
+    color: #999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     }
+    .vuecal__event.lunch .vuecal__event-time {display: none;align-items: center;}
 </style>
