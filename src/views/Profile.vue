@@ -42,7 +42,10 @@
               v-model:path="userSettings.avatar_url" 
               @upload="updateProfile"
               @avatarIsDeleted="deletedAvatar"
-            ></avatar>
+              style="position: relative;"
+            >
+              <div style="position: absolute; top: 0; right: 0;">xefrgdfghdfhg</div>
+            </avatar>
 
           </ion-row>
           <!--  -->
@@ -261,23 +264,28 @@
 
       // Page title
       const pageTitle = router.currentRoute._value.meta.translation;
-      // console.log(router.currentRoute._value.meta.title)
-      //
-      const userSettings = ref(store.state.userSettings[0])
+      // const userSettings = ref(store.methods.userSettings[0])
+      const userSettings = ref()
       // Get user email
       store.methods.setUserEmail()
-      const userEmail = ref(store.state.userEmail)
-      //
-      const avatar_url = ref(userSettings.value.avatar_url)
+      const userEmail = ref()
+      const avatar_url = ref()
+      const userInfo = ref({})
+      //userSettings.value.avatar_url
       //
       const spinner = ref(null);
       const dataLoaded = ref(null);
       const isQrAvailable = ref();
-      // Подтягиваем список дел из store
+      // Крутим спинер пока не загрузятся данные
       spinner.value = true;
       //
       onMounted( async () => {
-  
+        // Подтягиваем настройки аккаунта из БД
+        await store.methods.getUserSettingsfromDB()
+        userSettings.value = store.state.userSettings[0]
+        store.methods.setUserEmail()
+        userEmail.value = store.state.userEmail
+
         spinner.value = false;
         dataLoaded.value = true;
         // 
@@ -443,10 +451,6 @@
         ]
 
         const edit = ref(false)
-        const userInfo = ref({
-          name: userSettings.value.userInfo.name,
-          surname: userSettings.value.userInfo.surname
-        })
         const updateUserInfo = async () => {
           if (!userInfo.value.name || userInfo.value.name === '') {
             alert('Profile: Укажите имя')

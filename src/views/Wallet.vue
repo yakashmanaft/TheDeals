@@ -179,11 +179,11 @@
                 spinner.value = false;
                 dataLoaded.value = true;
                 //
-                // calculateBalance()
                 store.methods.calculateBalance(myDeals.value)
                 availableBalance.value = store.state.availableBalance
                 myDebt.value = store.state.myDebt
                 debtToMe.value = store.state.debtToMe
+                console.log(store.state.availableBalance)
                 //
 
             })
@@ -195,7 +195,6 @@
             const makeAPay = () => {
                 alert('Хотите оплатить? В разработке...')
             }
-            console.log(store.state.availableBalance)
             //
             const goTo = () => {
                 alert('Wallet: в разработке...')

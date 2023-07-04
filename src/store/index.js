@@ -976,7 +976,6 @@ const methods = {
     payMe = payMeArray.reduce((a, b) => a + b, 0);
     iPay = iPayArray.reduce((a, b) => a + b, 0);
     state.availableBalance = payMe - iPay;
-    // store.methods.setAvailableBalanceValue(payMe, iPay)
     // 
     myDebts = myDebtsArray.reduce((a, b) => a + b, 0);
     state.myDebt = myDebts;

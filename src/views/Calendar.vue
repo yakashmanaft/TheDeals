@@ -39,9 +39,10 @@
                 ></ion-datetime>
             </div>
 
-            <!-- MODE DAILYPLANNER -->
+            <!-- MODE WEEK PLANNER -->
             <div v-else>
-                DAILYPLANNER
+                WEEK PLANNER
+                <WeekPlanner/>
             </div>
             
             <!-- Модалка дел по выбранной дате -->
@@ -109,6 +110,7 @@
     import ViewChoosenDate from '../components/modal/ViewChoosenDate.vue';
     import CreateNewDeal from '../components/modal/NewDeal-modalCreate.vue';
     import CalendarSettings from '../components/modal/CalendarSettings.vue';
+    import WeekPlanner from '../components/WeekPlanner.vue';
     //
     import { 
         IonContent, 
@@ -136,14 +138,13 @@
     import { useRouter } from 'vue-router';
     import { uid } from 'uid';
 
-
-
     export default defineComponent({
         name: 'calendar',
         components: {
             Header,
             Footer,
             Spinner,
+            WeekPlanner,
             //
             IonContent, 
             IonHeader, 
@@ -275,7 +276,7 @@
 
             }
 
-            // ФУНКЦИЯ ЗАГРУЗКИ КАЛЕНДАРЯ В РЕЖИМЕ DAILYPLANNER 
+            // ФУНКЦИЯ ЗАГРУЗКИ КАЛЕНДАРЯ В РЕЖИМЕ WEEK PLANNER 
             // 
 
             // УСЛОВИЯ ЗАПУСКАЯ ФУНКЦИЙ ЗАГРУЗКИ РЕЖИМА КАЛЕНДАРЯ

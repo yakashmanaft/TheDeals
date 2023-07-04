@@ -12,7 +12,7 @@
                 <!-- КНОПКА ИЗМЕНИТЬ РЕЖИМ ДЕМОНСТРАЦИИ (По месяцам... По неделям) -->
                 <div class="color-primary" v-if="router.currentRoute._value.meta.title === 'Calendar'">
                     <ion-button v-if="isMonth" @click="$emit('calendarMode', false)">Месяцы</ion-button>
-                    <ion-button v-else @click="$emit('calendarMode', true)">Дни</ion-button>
+                    <ion-button v-else @click="$emit('calendarMode', true)">Недели</ion-button>
                 </div>
 
                 <!-- КНОПКА НА ГЛАВНУЮ -->
