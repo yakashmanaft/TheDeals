@@ -115,7 +115,7 @@
                     if (error) throw error;
                     setTimeout(() => {
                         router.push({ name: 'Calendar' })
-                    }, 3000)
+                    }, 2000)
                     
                 } catch (error) {
                     errorMsg.value = `Error: ${error.message}`;
