@@ -39,6 +39,7 @@
             <!-- MODE MONTH -->
             <div v-if="isMonthMode === true">
                 <ion-datetime 
+                    :first-day-of-week="1"
                     size="cover" 
                     calendar-weeks="true"
                     v-model="choosenDate"
@@ -68,9 +69,9 @@
             />
 
             <!-- Модалка по созданию нового дела -->
+            <!-- :userRecipeArray="userRecipes" -->
             <CreateNewDeal
                 :isOpen="isViewDealModalOpened"
-                :userRecipeArray="userRecipes"
                 :dealData="dealData"
                 :myContacts="myContacts"
                 @closeModal="setOpen"

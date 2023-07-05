@@ -788,7 +788,7 @@
             }
             // Задаем из выбранного списка значение для recipe
             const chooseRecipe = (recipe) => {
-                console.log(recipe)
+                // console.log(recipe)
                 if(recipe.uid === undefined) {
                     subjectData.value.recipe = '111';
                     subjectData.value.tempRecipeName = 'Без рецепта' //Тип без рецепта id
@@ -923,13 +923,13 @@
             // следим за изменениями price
             const subjectPrice = ref();
             watch(subjectPrice, (price) => {
-                console.log(price)
+                // console.log(price)
                 emit('getSubjectPrice', +price);
             })
             // следим за изменениями веса порций
             const gramPerPerson = ref();
             watch(gramPerPerson, (gram) => {
-                console.log(gram)
+                // console.log(gram)
                 emit('getGramPerPerson', +gram)
             })
             // следим за изменением subject qty
@@ -958,7 +958,7 @@
             })
             //
             watch(searchSelectedProduct, (SelectedProduct) => {
-                console.log(SelectedProduct)
+                // console.log(SelectedProduct)
             })
             //
             watch(searchRecipe, () => {

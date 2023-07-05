@@ -17,6 +17,8 @@ export const translateRecipeID = (value, array) => {
     if(value === '111') {
         return 'Без рецепта';
     } else {
+        // console.log(value)
+        // console.log(array)
         let recipeName;
         array.forEach(recipe => {
             if(recipe.uid === value) {
@@ -24,6 +26,7 @@ export const translateRecipeID = (value, array) => {
                 return recipeName;
             }
         });
+        console.log(recipeName)
         return recipeName;
     }
 };

@@ -151,7 +151,8 @@
                                 <ion-label style="font-size: 12px">
                                     x{{item.productQuantity}}
                                 </ion-label>
-                                <ion-text style="white-space: normal">{{ showSelectedRecipe(item.recipe) }}</ion-text>
+                                <!-- <ion-text style="white-space: normal">{{ showSelectedRecipe(item.recipe) }}</ion-text> -->
+                                <ion-text style="white-space: normal">{{ item.tempRecipeName }}</ion-text>
                             </ion-card>
                             <!-- Открываем меню создания предмета к делу -->
                             <ion-card class="ion-padding card-center card-add" @click="openCreateSubjectModal()">
@@ -672,9 +673,9 @@
                 }
                 const data = eventDate;
                 const formattedString = format(parseISO(data), 'd MMMM Y к HH:mm');
-                // const formattedString = format(parseISO(data), 'd MMMM Y к HH:mm', { locale: ru });
-                console.log(formattedString)
+
                 // console.log(formattedString)
+
                 return formattedString
             }
             // Поиск при выборе контакта по делу
@@ -803,6 +804,7 @@
             const isAttributesMenuOpened = ref(false);
             //
             const addNewSubject = (subjectData, isMenuOpened) => {
+                console.log(subjectData)
                 // Выдумать варианты валидации
                 if (currentSubject.value.selectedProduct === '' ) {
                     alert('NewDeal-modalCreate: Вы не выбрали предмет дела')
@@ -1408,11 +1410,12 @@
             //
             // 
             const recipeArray = ref([])
-            const showSelectedRecipe = (recipeID) => {
-                recipeArray.value = props.userRecipeArray
-                // console.log(recipeArray.value)
+            const showSelectedRecipe = async (recipeID) => {
+                // console.log(recipeID)
+                await store.methods.getUserRecipesFromBD();
+                recipeArray.value = store.state.userRecipeArray;
+
                 return translateRecipeID(recipeID, recipeArray.value)
-                // return recipeID
             }
 
             //
