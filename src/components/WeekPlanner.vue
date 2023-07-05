@@ -9,7 +9,6 @@
         today-button
         small
         :special-hours="dailyHours"
-        hide-weekends 
         :disable-views="['years', 'month', 'weeks', 'year', 'day']"  
         :events="events"
         :cell-click-hold="false"
