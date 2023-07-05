@@ -78,6 +78,7 @@
                 {{ addressesArrayValue[currentAddressIndexValue] }}
                 {{ currentAddressIndexValue }}
             </div> -->
+            <div style="opacity: 0;">{{ deliveryAddress }}</div>
 
             <!-- Кнопка Добавить -->
             <div style="position:fixed; bottom: 0; left: 0; width: 100%; background-color: #fff; z-index: 999999" class="ion-padding">
@@ -192,6 +193,7 @@
                     alert('AddDeliveryAddressMenu: У здания должен быть номер')
                 } else {
                     props.addressesArray[props.currentAddressIndex] = deliveryAddress.value
+
                     emit('closeModal')
                     // deliveryAddress.value = {
                     //     city: '',
