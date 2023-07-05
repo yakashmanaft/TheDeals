@@ -136,7 +136,6 @@
 
                 // ИСПРАВИТЬ: ИСКЛЮЧИТЬ ОШИБКУ УСЛОВИЕМ 
                 await downloadImage()
-
             })
             //
             const avatarUrl = ref()

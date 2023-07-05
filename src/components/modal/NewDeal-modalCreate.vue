@@ -866,16 +866,21 @@
                 dealImportance.value = props.dealData.dealImportance
             });
             //
+            // dealData.value.shipping = {
+            //         typeOfShipping: '',
+            //         shippingPrice: 0
+            // }
             currentDealType.value = dealData.value.dealType
             watch(currentDealType, (type) => {
                 // При случайном или намеренном изменении типа дела - очищаем объект дела
                 dealData.value.dealType = type
-                // console.log(currentDealType.value)
-                console.log(type)
-                // dealData.value.dealType = ''
+                console.log(currentDealType.value)
+                console.log(dealData.value.shipping)
                 dealData.value.contactID = '000'
                 dealData.value.dealsList = []
+                dealShippingType.value = ''
                 dealData.value.shipping = {
+                    typeOfShipping: '',
                     shippingPrice: 0
                 }
                 dealData.value.totalDealPrice = 0
@@ -1249,6 +1254,7 @@
                         shippingPrice: 0
                     }
                 }
+                // console.log(dealData.value.shipping)
                 // update()
             })
             // следим за измененимями цены доставки

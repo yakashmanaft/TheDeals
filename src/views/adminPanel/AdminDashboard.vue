@@ -32,14 +32,19 @@
       <ion-card>
         <!--  -->
         <ion-card-header>
-          <ion-card-title class="ion-text-start">Пользователи</ion-card-title>
+          <ion-grid class="ion-no-padding">
+            <ion-row class="ion-justify-content-between ion-align-items-center">
+              <ion-card-title class="ion-text-start">Пользователи</ion-card-title>
+              <ion-text>Всего: {{ usersQty }}</ion-text>
+            </ion-row>
+          </ion-grid>
         </ion-card-header>
 
         <!--  -->
         <ion-card-content>
           <div v-for="(user, index) in usersArray" :key="index">
-            <ion-grid class="ion-no-padding ">
-              <ion-row class="ion-justify-content-between ion-align-items-center" >
+            <ion-grid class="ion-no-padding">
+              <ion-row class="ion-justify-content-between ion-align-items-center">
     
                 <!--  -->
                 <ion-text class="ion-text-start width-sm-100">{{user.email}}</ion-text>
@@ -96,10 +101,12 @@ import { ru } from 'date-fns/locale';
       const router = useRouter();
       // Get page title
       const pageTitle = router.currentRoute._value.meta.translation;
+      const usersQty = ref(0)
 
       onMounted(async () => {
         await store.methods.getUsers();
         usersArray.value = store.state.usersArray.reverse()
+        usersQty.value = usersArray.value.length
         //
         spinner.value = false
       })
@@ -113,7 +120,7 @@ import { ru } from 'date-fns/locale';
       }
 
       return {
-        usersArray, spinner, formattedDate, router, pageTitle
+        usersArray, spinner, formattedDate, router, pageTitle, usersQty
       }
     }
   })
