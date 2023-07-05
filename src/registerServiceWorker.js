@@ -25,8 +25,10 @@ if (process.env.NODE_ENV === 'production') {
     },
     updated () {
       console.log('New content is available; please refresh.');
-      router.push({ name: 'Calendar' });
-      window.location.reload(true);
+      // router.push({ name: 'Calendar' });
+      // this.$router.push('Calendar');
+      window.location.href = "https://daybydeals.ru/";
+      // window.location.reload(true);
     },
     offline () {
       console.log('No internet connection found. App is running in offline mode.');
