@@ -1,6 +1,10 @@
 /* eslint-disable no-console */
 
-import { register } from 'register-service-worker'
+import { register } from 'register-service-worker';
+import { useRouter } from 'vue-router';
+
+// Setup ref to router
+const router = useRouter();
 
 if (process.env.NODE_ENV === 'production') {
   register(`${process.env.BASE_URL}service-worker.js`, {
@@ -22,7 +26,8 @@ if (process.env.NODE_ENV === 'production') {
     updated () {
       console.log('New content is available; please refresh.')
       // navigator.serviceWorker.addEventListener('controllerchange',  ()  => window.location.reload());
-      window.location.reload(true)
+      window.location.reload(true);
+      router.push('/')
     },
     offline () {
       console.log('No internet connection found. App is running in offline mode.')
