@@ -4,8 +4,9 @@
         <Spinner v-if="spinner"/>
 
         <!-- page header -->
-        <ViewHeader 
+        <ViewHeader
             @openDeleteMenu="setOpen(true)"
+            :isMonth="$route.params.isMonth"
         />
 
         <!-- view deal subject -->
@@ -707,7 +708,7 @@
             StarRaiting,
             AddDeliveryAddressMenu
         }, 
-        setup() {
+        setup(props, {emit}) {
             // Currency
             const currency = ref(store.state.systemCurrency.name);
             //
@@ -717,6 +718,7 @@
             const currentId = route.params.dealId;
             // console.log(route.params)
             const info = route.params;
+            // console.log(route.params.isMonth)
             const currentDeal = ref(JSON.parse(info.deal))
             // Храним на случай нажатия Отмены при редактировании контакта
             // const tempData = JSON.parse(info.deal)

@@ -4,7 +4,7 @@
         <ion-toolbar color="white">
             <ion-buttons class="color-primary" slot="start">
                 <ion-button fill="clear" v-if="edit" @click="cancelEdit">Отмена</ion-button>
-                <ion-back-button default-href="/" v-else text="Назад"></ion-back-button>
+                <ion-back-button @click="back()" default-href="/" v-else text="Назад"></ion-back-button>
                 <!-- <ion-button v-else @click="router.go(-1)">Назад</ion-button>  -->
             </ion-buttons>
             <!-- Если текущий роут НЕ View-Deal && НЕ Profile && НЕ View-Recipe-->
@@ -30,11 +30,12 @@
     import { trashOutline } from 'ionicons/icons';
     //
     import { IonHeader, IonToolbar, IonButtons, IonButton, IonBackButton, IonIcon } from '@ionic/vue';
+    import { useBackButton } from '@ionic/vue';
 
     export default defineComponent({
         name: 'ViewContactHeader',
         emits: ['openDeleteMenu'],
-        props: ['edit', 'editMode', 'update', 'cancelEdit'],
+        props: ['edit', 'editMode', 'update', 'cancelEdit', 'isMonth'],
         components: {
             IonHeader,
             IonToolbar,
@@ -58,9 +59,17 @@
                     true
                 }
             }
+            console.log(`isMonth: ${props.isMonth}`)
+            console.log(`Откуда пришли: ${router.options.history.state.back}`)
+
+            const back = () => {
+                console.log(123)
+                // router.push({name: '/', params: {isMonth: false}})
+                router.push({path: '/', query: { isMonth: false }})
+            }
 
             return {
-                route, router, trashOutline, isHasSubstring
+                route, router, trashOutline, isHasSubstring, back
             }
         }
     })

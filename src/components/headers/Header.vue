@@ -76,14 +76,18 @@
     import { menu, walletOutline, settingsOutline, qrCodeOutline, storefrontOutline, bagOutline, funnelOutline, shareOutline } from 'ionicons/icons';
 
     export default {
-        name: 'Header',
-        components: {
-            IonHeader, IonMenuToggle, IonToolbar, IonIcon, IonGrid, IonRow, IonText, IonButtons, IonButton, IonBackButton, IonTitle
-        },
-        props: ['title', 'filterBy', 'countByDealType', 'isMonth'],
-        setup(props, { emit }) {
-            const user = computed(() => store.state.user);
-            const router = useRouter();
+            name: 'Header',
+            components: {
+                IonHeader, IonMenuToggle, IonToolbar, IonIcon, IonGrid, IonRow, IonText, IonButtons, IonButton, IonBackButton, IonTitle
+            },
+            props: ['title', 'filterBy', 'countByDealType', 'isMonth'],
+            setup(props, { emit }) {
+                const user = computed(() => store.state.user);
+                const router = useRouter();
+
+                // console.log(router)
+                // console.log(props.isMonth)
+                // // isMonth !== undefined
 
             return {
                 user, router, menu, walletOutline, settingsOutline, qrCodeOutline, settingsOutline, storefrontOutline, bagOutline, funnelOutline, shareOutline

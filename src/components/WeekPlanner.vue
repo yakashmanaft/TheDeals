@@ -20,7 +20,6 @@
             120,
             { title: 'New Event', class: 'blue-event' }
         )"
-        delete: true
         :on-event-click="onEventClick"
     >
     </vue-cal>
@@ -32,6 +31,7 @@
 import { defineComponent, ref } from 'vue';
 import VueCal from 'vue-cal'
 import 'vue-cal/dist/vuecal.css'
+import { useRouter } from 'vue-router';
 
 export default defineComponent({
     name: 'WeekPlanner',
@@ -40,17 +40,28 @@ export default defineComponent({
         VueCal
     },
     setup(props, {emit}) {
+        // Setup ref to router
+        const router = useRouter();
 
-        // const isViewWeekDealOpend = ref(false)
-
+        // ЧАСЫ РАБОТЫ
         const dailyHours = { from: 7 * 60, to: 18 * 60, class: 'business-hours' }
 
+        // ФУНКЦИЯ ОТКРЫТИЯ ВЫБРАННОГО В ЕЖЕДНЕВНИКЕ ДЕЛА
         const onEventClick = (event) => {
-            // console.log(event)
-            emit('isViewWeekDealOpend', true)
-            emit('event', event)
+
+            router.push({name: 'View-Deal', params: {
+                dealId: event.fullData.id,
+                dealUid: event.fullData.uid,
+                deal: JSON.stringify(event.fullData),
+                isMonth: false
+            },
+        })
+            // console.log(event.fullData.id)
+            // console.log(event.fullData.uid)
+            // console.log(JSON.stringify(event.fullData))
         }
-        // console.log(props.deals)
+
+        // МАССИВ ДЕЛ
         const events = props.deals
         // const events = [
         //     {
@@ -80,7 +91,7 @@ export default defineComponent({
         // ]
 
         return {
-            dailyHours, events, onEventClick
+            dailyHours, events, onEventClick, router
         }
     }
 })
