@@ -178,11 +178,11 @@
                         </ion-row>
                     </ion-grid>
                     <!--  --> 
+                    
                     <ModalCalendar 
                         :is-open="isCalendarOpened" 
-                        @date-updated="(pickedDate) => executionDate = pickedDate.currentValue"
-                        @closeModal="closeModalCalendar(executionDate)"
-                        @updateDate="updateExecutionDate()"
+                        @closeModal="isCalendarOpened = false;"
+                        @updateDate="updateExecutionDate"
                         @didDismiss="isCalendarOpened = false"
                         :date="currentDeal.executionDate"
                     />
@@ -658,6 +658,7 @@
     import { translateValue, translateRecipeID } from '@/helpers/translateValue';
     import { checkRentAttr } from '@/helpers/checkRentAttr';
     import { setMarkerAttrColor } from '@/helpers/setMarkerColor';
+    import { setExecutionHours } from '../../helpers/setHours'
     //
     import Spinner from '../../components/Spinner.vue';
     import ViewHeader from '../../components/headers/HeaderViewCurrent.vue';
@@ -992,6 +993,7 @@
             // =========================== Выбираем дату ==========================
             // храним значение executionDate
             const executionDate = ref();
+            const executionDateEnd = ref();
             // и показываем ее уже в варианте с указанием времени
             const datepicker = (eventDate) => {
                 if(eventDate === '') {
@@ -1001,6 +1003,7 @@
                 const formattedString = format(parseISO(data), 'd MMMM Y к HH:mm');
                 // const formattedString = format(parseISO(data), 'd MMMM Y к HH:mm', { locale: ru });
                 return formattedString
+                return eventDate
             }
             // Управление модалкой календаря
             const isCalendarOpened = ref(false)
@@ -1011,13 +1014,15 @@
                     isCalendarOpened.value = true
                 }
             }
-            const closeModalCalendar = (executionDate) => {
-                // Может входящие данные-то и не нужны в этой функции???
-                executionDate = currentDeal.value.executionDate
-                isCalendarOpened.value = false;
-            }
-            const updateExecutionDate = async () => {
-                currentDeal.value.executionDate = executionDate.value 
+            // const closeModalCalendar = () => {
+            //     // Может входящие данные-то и не нужны в этой функции???
+            //     // executionDate = currentDeal.value.executionDate
+            //     isCalendarOpened.value = false;
+            // }
+            const updateExecutionDate = async (date) => {
+                console.log(date)
+                currentDeal.value.executionDate = date
+                currentDeal.value.executionDateEnd = setExecutionHours(date)
                 isCalendarOpened.value = false;
                 try {
                     spinner.value = true;
@@ -1025,7 +1030,8 @@
                     // console.log(`Deal ${currentId} is updated`);
                     //
                     const {error} = await supabase.from('deals').update({
-                        executionDate: executionDate.value,
+                        executionDate: currentDeal.value.executionDate,
+                        executionDateEnd: currentDeal.value.executionDateEnd
                     }).eq('id', currentId);
                     if(error) throw error;
                     // Дело успешно обновлено
@@ -1046,6 +1052,7 @@
                         contactID: dealContactID.value,
                         dealStatus: dealStatus.value,
                         executionDate: executionDate.value,
+                        executionDateEnd: executionDateEnd.value,
                         dealsList: currentDeal.value.dealsList,
                         shipping: currentDeal.value.shipping,
                         dealPaid: currentDeal.value.dealPaid,
@@ -2077,9 +2084,14 @@
                 searchContactMenu.value = false
                 router.replace({ path: '/contacts' })
             }
+            // 
+            const dateUpdated = () => {
+                console.log('clicked data')
+            }
+            
 
             return {
-                currency, spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, closeModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, setPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setNewPersonQty, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, shippingTypeList, dealShippingType, shippingPrice, shippingAddress, sumAllTotalSubjectPriceFunc, translateShippingType, translateSelectedProduct, culcSubjectWeight, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, culcBuySubjectWeight, debt, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, refreshDebtValue, finishDeal, setMarkerAttrColor, shapes, checkmarkDone, availableBalance, currentPriceSubject, personPortionGram, dealImportance, setRatingValue, addToLedger, dealComments, substructFromWarehouseToast, addToWarehouseFunc, showSelectedRecipe, userRecipeArray, openSearchContactMenu, calcTotalDealPrice, goToContact, tempContactName, isAddDeliveryAddressMenuOpened, addDeliveryAddressMenu, deleteCurrentDeliveryAddress, showCurrentDeliveryAddressInfo, currentDeliveryAddressIndex, deleteDeliveryAddressOpened, deliveryAddressToDelete, openDeleteDeliveryAddressModal, deleteDeliveryAddressButtons, contactAdressesArray, goToMyContacts, contactObject
+                currency, spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, setPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setNewPersonQty, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, shippingTypeList, dealShippingType, shippingPrice, shippingAddress, sumAllTotalSubjectPriceFunc, translateShippingType, translateSelectedProduct, culcSubjectWeight, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, culcBuySubjectWeight, debt, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, refreshDebtValue, finishDeal, setMarkerAttrColor, shapes, checkmarkDone, availableBalance, currentPriceSubject, personPortionGram, dealImportance, setRatingValue, addToLedger, dealComments, substructFromWarehouseToast, addToWarehouseFunc, showSelectedRecipe, userRecipeArray, openSearchContactMenu, calcTotalDealPrice, goToContact, tempContactName, isAddDeliveryAddressMenuOpened, addDeliveryAddressMenu, deleteCurrentDeliveryAddress, showCurrentDeliveryAddressInfo, currentDeliveryAddressIndex, deleteDeliveryAddressOpened, deliveryAddressToDelete, openDeleteDeliveryAddressModal, deleteDeliveryAddressButtons, contactAdressesArray, goToMyContacts, contactObject, dateUpdated
             }
         }
     })

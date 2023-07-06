@@ -10,7 +10,18 @@
             </ion-toolbar>
         </ion-header>
         <ion-content forceOverscroll="false">
-            {{event}}
+
+            <div>
+                {{ event.title }}
+                {{ event.start }}
+                {{ event.end }}
+                {{ event.content }}
+                {{ event.class }}
+            </div>
+            <br>
+            <div>
+                {{ event.fullData }}
+            </div>
         </ion-content>
     </ion-modal>
 </template>

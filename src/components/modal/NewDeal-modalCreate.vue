@@ -107,9 +107,8 @@
                     <!-- Компонент выбора даты -->
                     <ModalCalendar 
                         :is-open="isCalendarOpened" 
-                        @date-updated="(pickedDate) => dealData.executionDate = pickedDate.currentValue"
-                        @closeModal="closeModalCalendar()"
-                        @updateDate="updateExecutionDate(date)"
+                        @closeModal="isCalendarOpened = false"
+                        @updateDate="updateExecutionDate"
                         @didDismiss="isCalendarOpened = false"
                         :date="dealData.executionDate"
                         />
@@ -597,6 +596,7 @@
     import { setColorByDealType } from '../../helpers/setColorBy';
     import { setIconByDealType } from '../../helpers/setIconBy';
     import { translateValue, translateRecipeID } from '@/helpers/translateValue';
+    import { setExecutionHours } from '@/helpers/setHours';
     //
     export default defineComponent({
         name: 'CreateNewDeal',
@@ -662,8 +662,11 @@
                 executionDate = 'Выберите дату'
                 isCalendarOpened.value = false;
             }
-            const updateExecutionDate = () => {
+            const updateExecutionDate = (date) => {
+                console.log(date)
                 isCalendarOpened.value = false;
+                dealData.value.executionDate = date
+                dealData.value.executionDateEnd = setExecutionHours(date)
             }
             // Выбираем дату
             // и показываем ее уже в варианте с указанием времени

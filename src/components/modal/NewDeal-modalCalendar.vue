@@ -7,7 +7,7 @@
                 </ion-buttons>
                 <ion-title>Выберите дату</ion-title>
                 <ion-buttons slot="end">
-                    <ion-button @click="$emit('updateDate')">Готово</ion-button>
+                    <ion-button @click="changeDate(choosenDate)">Готово</ion-button>
                 </ion-buttons>
             </ion-toolbar>
         </ion-header>
@@ -43,8 +43,9 @@
             const pickedDate = ref();
             //
             watch(pickedDate, (currentValue) => {
-                emit('date-updated', {currentValue})
+                choosenDate.value  = currentValue
             })
+            const choosenDate = ref()
             //
             const setCurrentDate = (date) => {
                 // console.log(date)
@@ -54,9 +55,13 @@
                     return date
                 }
             }
+            const changeDate = (date) => {
+                emit('updateDate', date)
+                // console.log(date)
+            }
 
             return {
-                pickedDate, setCurrentDate
+                pickedDate, setCurrentDate, changeDate, choosenDate
             }
         }
     })

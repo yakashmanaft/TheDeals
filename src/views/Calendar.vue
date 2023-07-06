@@ -52,6 +52,7 @@
                 <WeekPlanner 
                     @isViewWeekDealOpend="isWeekDealOpendFunc"
                     @event="getEvent"    
+                    :deals="deals"
                 />
             </div>
             
@@ -110,7 +111,7 @@
 
 <script>
     import { defineComponent, ref, onMounted, watch } from 'vue';
-    import { format, parseISO, formatISO  } from 'date-fns';
+    import { format, parseISO, formatISO9075   } from 'date-fns';
     import { ru } from 'date-fns/locale';
     //
     import Header from '../components/headers/Header.vue';
@@ -148,6 +149,8 @@
     import { supabase } from '../supabase/init';
     import { useRouter } from 'vue-router';
     import { uid } from 'uid';
+    //
+    import { setExecutionHours } from '../helpers/setHours';
 
     export default defineComponent({
         name: 'calendar',
@@ -226,13 +229,10 @@
                     isMonthMode.value = false
                 }
             }
-            watch(isMonthMode, () => {
-                console.log('mode changed')
-            })
 
-            onMounted(async () => {
+            // onMounted(async () => {
 
-            })
+            // })
 
             // ФУНКЦИЯ ЗАГРУЗКИ КАЛЕНДАРЯ В РЕЖИМЕ MONTH
             const loadInMonthMode = async () => {
@@ -285,18 +285,62 @@
                 })
                 //при монтаже запускаем функцию стилей для дат
                 setCalendarStyle()
-
+                // Чистим deals.value
+                deals.value = []
             }
 
             // ФУНКЦИЯ ЗАГРУЗКИ КАЛЕНДАРЯ В РЕЖИМЕ WEEK PLANNER 
             // 
+            const deals = ref([])
+            const loadWeekMode = () => {
+                // Включаем спиннер
+                spinner.value = true
+                
+                let deal = {}
 
-            // УСЛОВИЯ ЗАПУСКАЯ ФУНКЦИЙ ЗАГРУЗКИ РЕЖИМА КАЛЕНДАРЯ
+                if(myDeals.value) {
+                    myDeals.value.forEach((item) => {
+                        deal = {
+                            // start: item.executionDate,
+                            // start: '2023-07-07 08:14',
+                            start: parseISO(item.executionDate),
+                            // end: item.executionDateEnd,
+                            // end: '2023-07-07 09:14',
+                            end: parseISO(item.executionDateEnd),
+                            title: item.contactID,
+                            content: 'content',
+                            class: item.dealType,
+
+                            // Докидываем в объект общие данные по делу
+                            fullData: item
+                        }
+                        deals.value.push(deal)
+                    })
+                }
+
+                // Данные загружены, убираем spinner
+                setTimeout(() => {
+                    spinner.value = false
+                }, 1000)
+                // console.log(deals.value)
+            }
+
+            // УСЛОВИЯ ЗАПУСКАЯ ФУНКЦИЙ ЗАГРУЗКИ РЕЖИМА КАЛЕНДАРЯ при загрузке экрана
             if(isMonthMode.value === true) {
                 loadInMonthMode()
             } else {
-
+                // loadWeekMode()
             }
+            // ПЕРЕКЛЮЧАТЕЛЬ РЕЖИМОВ при нажатии на кнопку переклюения режимов
+            watch(isMonthMode, () => {
+                if(isMonthMode.value === true) {
+                    console.log('mode: MONTH')
+                    loadInMonthMode()
+                } else {
+                    console.log('mode: WEEK')
+                    loadWeekMode()
+                }
+            })
 
             // ============================================ фильтруем дела по выбранную дату ====================================
 
@@ -389,6 +433,7 @@
                 totalDealPrice: 0,
                 // executionDate: dateCreate.value,
                 executionDate: '',
+                executionDateEnd: '',
                 dealPaid: 0,
                 cancelledReason: '',
                 dealImportance: 1,
@@ -415,6 +460,7 @@
                     },
                     totalDealPrice: 0,
                     executionDate: '',
+                    executionDateEnd: '',
                     dealPaid: 0,
                     cancelledReason: '',
                     dealImportance: 1,
@@ -432,6 +478,11 @@
                 dateCreate.value = date
                 // передаем выбранную дату в шаблон создания нового дела
                 dealData.value.executionDate = dateCreate.value
+                
+                // Set execution date end
+                dealData.value.executionDateEnd = setExecutionHours(dateCreate.value)
+                
+                console.log(`Время: ${dateCreate.value}; Время + час: ${dealData.value.executionDateEnd}`)
             }
             // Создаем новую сделку
             const called = ref(false)
@@ -492,6 +543,7 @@
                             },
                             totalDealPrice: 0,
                             executionDate: '',
+                            executionDateEnd: '',
                             dealPaid: 0,
                             cancelledReason: '',
                             dealImportance: 1,
@@ -791,7 +843,7 @@
             }
 
             return {
-                menu, user, router, pageTitle, choosenDate, spinner, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle, observer, availableBalance, addToLedger, toggleSettingsModal, isSettingsModalOpened, updateDaySaturation, userRecipes, called, toastWeekend, calendarModeFunc, isMonthMode, loadInMonthMode, isWeekDealOpend, isWeekDealOpendFunc, getEvent, choosenWeekEvent
+                menu, user, router, pageTitle, choosenDate, spinner, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle, observer, availableBalance, addToLedger, toggleSettingsModal, isSettingsModalOpened, updateDaySaturation, userRecipes, called, toastWeekend, calendarModeFunc, isMonthMode, loadInMonthMode, loadWeekMode, isWeekDealOpend, isWeekDealOpendFunc, getEvent, choosenWeekEvent, deals
             }
         }
     })

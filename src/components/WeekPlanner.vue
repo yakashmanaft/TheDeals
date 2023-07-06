@@ -35,6 +35,7 @@ import 'vue-cal/dist/vuecal.css'
 
 export default defineComponent({
     name: 'WeekPlanner',
+    props: ['deals'],
     components: {
         VueCal
     },
@@ -49,33 +50,34 @@ export default defineComponent({
             emit('isViewWeekDealOpend', true)
             emit('event', event)
         }
-
-        const events = [
-            {
-                start: '2023-07-04 10:30:00',
-                end: '2023-07-04 14:30:00',
-                // You can also define event dates with Javascript Date objects:
-                // start: new Date(2018, 11 - 1, 16, 10, 30),
-                // end: new Date(2018, 11 - 1, 16, 11, 30),
-                title: 'Doctor appointment',
-                content: '<i class="icon material-icons">local_hospital</i>',
-                class: 'health'
-            },
-            {
-                start: '2023-07-04 15:00:00',
-                end: '2023-07-04 17:00:00',
-                title: 'LUNCH',
-                class: 'lunch',
-                background: true
-            },
-            {
-                start: '2023-07-06 15:00:00',
-                end: '2023-07-06 17:00:00',
-                title: 'LUNCH',
-                class: 'lunch',
-                background: true
-            },
-        ]
+        // console.log(props.deals)
+        const events = props.deals
+        // const events = [
+        //     {
+        //         start: '2023-07-04 10:30:00', // executionDate
+        //         end: '2023-07-04 14:30:00', // executionDateEnd
+        //         // You can also define event dates with Javascript Date objects:
+        //         // start: new Date(2018, 11 - 1, 16, 10, 30),
+        //         // end: new Date(2018, 11 - 1, 16, 11, 30),
+        //         title: 'Doctor appointment', //contactID
+        //         content: '<i class="icon material-icons">local_hospital</i>',
+        //         class: 'health' //dealType
+        //     },
+        //     {
+        //         start: '2023-07-04 15:00:00',
+        //         end: '2023-07-04 17:00:00',
+        //         title: 'LUNCH',
+        //         class: 'lunch',
+        //         background: true
+        //     },
+        //     {
+        //         start: '2023-07-06 15:00:00',
+        //         end: '2023-07-06 17:00:00',
+        //         title: 'LUNCH',
+        //         class: 'lunch',
+        //         background: true
+        //     },
+        // ]
 
         return {
             dailyHours, events, onEventClick
