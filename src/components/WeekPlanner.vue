@@ -32,6 +32,7 @@ import { defineComponent, ref } from 'vue';
 import VueCal from 'vue-cal'
 import 'vue-cal/dist/vuecal.css'
 import { useRouter } from 'vue-router';
+import { format, parseISO, formatISO9075   } from 'date-fns';
 
 export default defineComponent({
     name: 'WeekPlanner',
@@ -63,9 +64,17 @@ export default defineComponent({
 
         // МАССИВ ДЕЛ
         const events = props.deals
-        const weekendDays = ['2023-07-09']
-        // const weekendDays = props.weekendDays
-        console.log(weekendDays)
+        // const weekendDays = ['2023-07-09']
+        const weekendDays = ref([])
+
+
+        const formatDate = (days) => {
+            days.forEach(element => {
+                console.log(element.date)
+            });
+        }
+        
+        formatDate(props.weekendDays)
         // const events = [
         //     {
         //         start: '2023-07-04 10:30:00', // executionDate

@@ -46,7 +46,7 @@
                     @isViewWeekDealOpend="isWeekDealOpendFunc"
                     :deals="deals"
                     @openCreateModal="openWeekCreateDeal"
-                    :weekendDays="weekendDays"
+                    :weekendDays="weekendWeekDays"
                 />
             </div>
             
@@ -204,6 +204,8 @@
             const userRecipes = ref();
             // массив с датами типа День без дел
             const weekendDays = ref([]);
+            // Для wee planner
+            const weekendWeekDays = ref([])
             // Переменная для наблюдателя по смене месяцев
             const observer = ref()
             //
@@ -234,8 +236,10 @@
                 // Дергаем из store выходные дни
                 userSettings.value = store.state.userSettings[0]
                 weekendDays.value = userSettings.value.weekendDays
+                weekendWeekDays.value = userSettings.value.weekendWeekDays
                 // console.log(weekendDays.value)
-    
+                console.log(weekendWeekDays.value)
+                console.log(weekendDays.value)
                 //
                 await store.methods.getMyDealsFromBD()
                 myDeals.value = store.state.myDealsArray
@@ -297,16 +301,8 @@
                 // Дергаем из store выходные дни
                 userSettings.value = store.state.userSettings[0]
                 weekendDays.value = userSettings.value.weekendDays
+                weekendWeekDays.value = userSettings.value.weekendWeekDays
 
-                console.log(weekendDays.value)
-                let translateWeekendDays = (days) => {
-                    days.forEach((day) => {
-                        day = new Date(day)
-                        console.log(day)
-
-                    })
-                }
-                translateWeekendDays(weekendDays.value)
                 //
                 await store.methods.getMyDealsFromBD()
                 myDeals.value = store.state.myDealsArray
@@ -637,6 +633,7 @@
                 dealData.value.dealsList = dealData.value.dealsList.filter(subject => subject.id !== id);
             }
             // ============================= Массив кнопок управления ДЕНЬ БЕЗ ДЕЛ ============================================
+            
             const changeWeekendDayButtons = ref([
                 {
                     text: 'Отменить',
@@ -646,6 +643,7 @@
                         // Надо бы удалять из массива "Дни без дел"
                         // console.log(choosenDate.value)
                         weekendDays.value = weekendDays.value.filter(day => day.date !== formattedDate(choosenDate.value));
+                        weekendWeekDays.value = weekendDays.value.filter(day => day.date !== choosenDate.value);
                         setCalendarStyle()
                         // Обновляем запись в БД
                         updateWeekendDays()
@@ -664,13 +662,14 @@
                 }
             ])
             //
-            const setWeekendDayFunc = async (date) => {
-                weekendDays.value.push({date: formattedDate(date)})
+            const setWeekendDayFunc = async (day) => {
+                weekendDays.value.push({date: formattedDate(day)})
+                weekendWeekDays.value.push({date: day})
                 // console.log(weekendDays.value)
                 // обнолвяем запись в БД
                 updateWeekendDays()
                 // закрывает
-                toastWeekend(formattedDate(date), { title: 'Выходной выбран', text: 'отмечен как выходной день' })
+                toastWeekend(formattedDate(day), { title: 'Выходной выбран', text: 'отмечен как выходной день' })
                 isViewChoosenDateOpened.value = false
                 //обнуляет
                 choosenDate.value = null
@@ -692,7 +691,8 @@
                 // обновляем в БД
                 try {
                     const { error } = await supabase.from('accountSettings').update({
-                        weekendDays: weekendDays.value
+                        weekendDays: weekendDays.value,
+                        weekendWeekDays: weekendWeekDays.value
                     }).eq('email', userEmail.value)
                     if(error) throw error;
                 } catch(error) {
@@ -905,7 +905,7 @@
 
 
             return {
-                menu, user, router, pageTitle, choosenDate, spinner, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle, observer, availableBalance, addToLedger, toggleSettingsModal, isSettingsModalOpened, updateDaySaturation, userRecipes, called, toastWeekend, calendarModeFunc, isMonthMode, loadInMonthMode, loadWeekMode, isWeekDealOpend, isWeekDealOpendFunc, deals, openWeekCreateDeal
+                menu, user, router, pageTitle, choosenDate, spinner, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle, observer, availableBalance, addToLedger, toggleSettingsModal, isSettingsModalOpened, updateDaySaturation, userRecipes, called, toastWeekend, calendarModeFunc, isMonthMode, loadInMonthMode, loadWeekMode, isWeekDealOpend, isWeekDealOpendFunc, deals, openWeekCreateDeal, weekendWeekDays
             }
         }
     })
