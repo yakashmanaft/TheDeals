@@ -46,7 +46,7 @@
                     @isViewWeekDealOpend="isWeekDealOpendFunc"
                     :deals="deals"
                     @openCreateModal="openWeekCreateDeal"
-                    :weekendDays="weekendWeekDays"
+                    :weekendDays="weekendDays"
                 />
             </div>
             
@@ -204,8 +204,6 @@
             const userRecipes = ref();
             // массив с датами типа День без дел
             const weekendDays = ref([]);
-            // Для wee planner
-            const weekendWeekDays = ref([])
             // Переменная для наблюдателя по смене месяцев
             const observer = ref()
             //
@@ -236,10 +234,7 @@
                 // Дергаем из store выходные дни
                 userSettings.value = store.state.userSettings[0]
                 weekendDays.value = userSettings.value.weekendDays
-                weekendWeekDays.value = userSettings.value.weekendWeekDays
-                // console.log(weekendDays.value)
-                console.log(weekendWeekDays.value)
-                console.log(weekendDays.value)
+
                 //
                 await store.methods.getMyDealsFromBD()
                 myDeals.value = store.state.myDealsArray
@@ -301,7 +296,6 @@
                 // Дергаем из store выходные дни
                 userSettings.value = store.state.userSettings[0]
                 weekendDays.value = userSettings.value.weekendDays
-                weekendWeekDays.value = userSettings.value.weekendWeekDays
 
                 //
                 await store.methods.getMyDealsFromBD()
@@ -396,6 +390,7 @@
                 } else {
                     if(choosenDate.value) {
                         isViewChoosenDateOpened.value = true
+                        console.log(choosenDate.value)
                         await store.methods.getMyContactsFromDB()
                         myContacts.value = store.state.myContactsArray
                     }
@@ -641,9 +636,9 @@
                         // console.log('Отменили День без дел')
                         isViewChoosenDateOpened.value = true
                         // Надо бы удалять из массива "Дни без дел"
-                        // console.log(choosenDate.value)
-                        weekendDays.value = weekendDays.value.filter(day => day.date !== formattedDate(choosenDate.value));
-                        weekendWeekDays.value = weekendDays.value.filter(day => day.date !== choosenDate.value);
+                        console.log(choosenDate.value)
+                        let dayOfWeekend = choosenDate.value.substr(0,10)
+                        weekendDays.value = weekendDays.value.filter(day => day.date !== dayOfWeekend);
                         setCalendarStyle()
                         // Обновляем запись в БД
                         updateWeekendDays()
@@ -662,10 +657,9 @@
                 }
             ])
             //
-            const setWeekendDayFunc = async (day) => {
-                weekendDays.value.push({date: formattedDate(day)})
-                weekendWeekDays.value.push({date: day})
-                // console.log(weekendDays.value)
+            const setWeekendDayFunc = (day) => {
+                let dayOfWeekend = day.substr(0, 10)
+                weekendDays.value.push({date: dayOfWeekend})
                 // обнолвяем запись в БД
                 updateWeekendDays()
                 // закрывает
@@ -674,13 +668,15 @@
                 //обнуляет
                 choosenDate.value = null
                 //
-                // console.log('Отметили как День без дел')
                 setCalendarStyle()
-                // alert('Отмечено как День без дел')
             }
             // проверяем есть ли выбранная дата в массиве дней без дел
             const checkWeekendDays = (choosenDate) => {
-                if(weekendDays.value.find((item) => item.date === formattedDate(choosenDate)) !== undefined) {
+                let dayOfWeekend;
+                if(choosenDate) {
+                    dayOfWeekend = choosenDate.substr(0,10)
+                }
+                if(weekendDays.value.find((item) => item.date === dayOfWeekend) !== undefined) {
                     return true
                 } else {
                     return false
@@ -692,7 +688,6 @@
                 try {
                     const { error } = await supabase.from('accountSettings').update({
                         weekendDays: weekendDays.value,
-                        weekendWeekDays: weekendWeekDays.value
                     }).eq('email', userEmail.value)
                     if(error) throw error;
                 } catch(error) {
@@ -718,7 +713,8 @@
                     }
                     //
                     // находим дни без дел и задаем им стили
-                    if (weekendDays.value.find(weekendDay => weekendDay.date === cutDateString)) {
+                    // format(parseISO(weekendDay), 'd MMMM yyyy', { locale: ru });
+                    if (weekendDays.value.find(weekendDay => formattedDate(weekendDay.date) === cutDateString)) {
                         // console.log(cutDateString)
                         //
                         return item.style.cssText = `
@@ -846,7 +842,7 @@
                     console.log('DB is updated')
                     //
                     const { error } = await supabase.from('accountSettings').update({
-                    daySaturation: daySaturationValue
+                        daySaturation: daySaturationValue
                     }).eq('id', userSettings.value.id)
                     if(error) throw error;
                     setCalendarStyle()
@@ -905,7 +901,7 @@
 
 
             return {
-                menu, user, router, pageTitle, choosenDate, spinner, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle, observer, availableBalance, addToLedger, toggleSettingsModal, isSettingsModalOpened, updateDaySaturation, userRecipes, called, toastWeekend, calendarModeFunc, isMonthMode, loadInMonthMode, loadWeekMode, isWeekDealOpend, isWeekDealOpendFunc, deals, openWeekCreateDeal, weekendWeekDays
+                menu, user, router, pageTitle, choosenDate, spinner, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle, observer, availableBalance, addToLedger, toggleSettingsModal, isSettingsModalOpened, updateDaySaturation, userRecipes, called, toastWeekend, calendarModeFunc, isMonthMode, loadInMonthMode, loadWeekMode, isWeekDealOpend, isWeekDealOpendFunc, deals, openWeekCreateDeal
             }
         }
     })

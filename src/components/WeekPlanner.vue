@@ -67,10 +67,10 @@ export default defineComponent({
         // const weekendDays = ['2023-07-09']
         const weekendDays = ref([])
 
-
         const formatDate = (days) => {
             days.forEach(element => {
-                console.log(element.date)
+                let str = element.date.substr(0, 10)
+                weekendDays.value.push(str)
             });
         }
         
