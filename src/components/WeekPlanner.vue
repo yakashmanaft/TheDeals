@@ -4,7 +4,7 @@
 
     <!-- https://antoniandre.github.io/vue-cal/ -->
     <vue-cal 
-        ref="vuecal"
+        ref="vueCalendar"
         locale="ru"
         today-button
         small
@@ -14,15 +14,15 @@
         :cell-click-hold="false"
         :drag-to-create-event="false"
         editable-events
- 
-        @cell-dblclick="$refs.vuecal.createEvent(
-            $event,
-            120,
-            { title: 'New Event', class: 'blue-event' }
-        )"
+        :on-event-create="deleteTempCreation"
+        @cell-dblclick="createNewDeal($event)"
         :on-event-click="onEventClick"
+        :hideViewSelector="true"
+        :disableDays="weekendDays"
     >
     </vue-cal>
+
+    <!--  -->
 
   </template>
   
@@ -35,13 +35,16 @@ import { useRouter } from 'vue-router';
 
 export default defineComponent({
     name: 'WeekPlanner',
-    props: ['deals'],
+    props: ['deals', 'weekendDays'],
+    emits: ['openCreateModal'],
     components: {
-        VueCal
+        VueCal,
     },
     setup(props, {emit}) {
         // Setup ref to router
         const router = useRouter();
+        //
+        const vueCalendar = ref(VueCal)
 
         // ЧАСЫ РАБОТЫ
         const dailyHours = { from: 7 * 60, to: 18 * 60, class: 'business-hours' }
@@ -50,19 +53,19 @@ export default defineComponent({
         const onEventClick = (event) => {
 
             router.push({name: 'View-Deal', params: {
-                dealId: event.fullData.id,
-                dealUid: event.fullData.uid,
-                deal: JSON.stringify(event.fullData),
-                isMonth: false
-            },
-        })
-            // console.log(event.fullData.id)
-            // console.log(event.fullData.uid)
-            // console.log(JSON.stringify(event.fullData))
+                    dealId: event.fullData.id,
+                    dealUid: event.fullData.uid,
+                    deal: JSON.stringify(event.fullData),
+                    isMonth: false
+                },
+            })
         }
 
         // МАССИВ ДЕЛ
         const events = props.deals
+        const weekendDays = ['2023-07-09']
+        // const weekendDays = props.weekendDays
+        console.log(weekendDays)
         // const events = [
         //     {
         //         start: '2023-07-04 10:30:00', // executionDate
@@ -90,8 +93,22 @@ export default defineComponent({
         //     },
         // ]
 
+        const createNewDeal = (event) => {
+            vueCalendar.value.createEvent(
+                event,
+                60,
+                { title: 'New Event', class: 'blue-event' }
+            )
+            // console.log(event)
+            emit('openCreateModal', event)
+        }
+
+        const deleteTempCreation = (event) => {
+                console.log(event)
+        }
+
         return {
-            dailyHours, events, onEventClick, router
+            dailyHours, events, weekendDays, onEventClick, router, vueCalendar, createNewDeal, deleteTempCreation
         }
     }
 })
@@ -106,4 +123,16 @@ export default defineComponent({
     align-items: center;
     }
     .vuecal__event.lunch .vuecal__event-time {display: none;align-items: center;}
+
+    .vuecal--week-view {
+        /* background-color: black; */
+    }
+
+    .vuecal__menu {
+        background-color: yellow;
+    }
+
+    .vuecal__event .blue-event {
+        background-color: black;
+    }
 </style>
