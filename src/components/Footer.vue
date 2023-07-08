@@ -30,7 +30,7 @@
                         </ion-button>
 
                         <!-- BURGER -->
-                        <ion-menu-toggle>
+                        <ion-menu-toggle class="ion-menu_toggle">
                             <ion-icon :icon="menu" color="system"/>
                         </ion-menu-toggle>
                     </ion-row>
@@ -86,5 +86,8 @@
     }
     .color-primary {
         color: var(--ion-color-primary)
+    }
+    .ion-menu_toggle {
+        cursor: pointer;
     }
 </style>

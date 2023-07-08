@@ -89,8 +89,13 @@
                     </div>
                 </div>
 
+                <!-- =============================== Статистика оборотов =============================== -->
+                <div v-if="isStatisticsViewOpened" class="ion-margin-top">
+                    Статистика с крудочками по всем оборотам
+                </div>
+
                 <!-- ======================================== Карточки дел ============================= -->
-                <div v-for="(day, idx) in getExecutionDate()" :key="idx" class="ion-margin-top">
+                <div v-else v-for="(day, idx) in getExecutionDate()" :key="idx" class="ion-margin-top">
                     {{day}}
                     <div 
                         v-for="deal in foundDealsByStatus" 
@@ -131,37 +136,48 @@
                                     <ion-card-content class="ion-no-padding ion-margin-top">
                                         <!-- Предмет заказа -->
                                         <ion-grid>
-                                            <ion-row style="gap: 0.8rem">
-                                                <div class="relative" v-for="(item, index) in deal.dealsList" :key="index">
-                                                    <!-- item -->
-                                                    <ion-thumbnail v-if="item.selectedProduct !== ''" style="height: 64px; width: 64px;">
-                                                        <!-- Если типа дела Продажа -->
-                                                        <div v-if="deal.dealType === 'sale'">
-                                                            <ion-img style="height: 100%" :src="`img/subjects/sale/${item.selectedProduct}.webp`"></ion-img>
+                                            <ion-row style="gap: 0.8rem" class="ion-justify-content-between ion-align-items-center">
+                                                <div>
+                                                    <div class="relative" v-for="(item, index) in deal.dealsList" :key="index">
+                                                        <!-- item -->
+                                                        <ion-thumbnail v-if="item.selectedProduct !== ''" style="height: 64px; width: 64px;">
+                                                            <!-- Если типа дела Продажа -->
+                                                            <div v-if="deal.dealType === 'sale'">
+                                                                <ion-img style="height: 100%" :src="`img/subjects/sale/${item.selectedProduct}.webp`"></ion-img>
+                                                            </div>
+                                                            <!-- Если типа дела Закупка -->
+                                                            <div v-if="deal.dealType === 'buy'">
+                                                                <ion-img style="height: 100%" :src="`img/subjects/buy/${item.selectedProduct}.webp`"></ion-img>
+                                                            </div>
+                                                        </ion-thumbnail>
+                                                        <!--  -->
+                                                        <ion-label style="font-size: 12px">
+                                                            x{{item.productQuantity}}
+                                                        </ion-label>
+                                                        <!-- mark where subject has attribute -->
+                                                        <div 
+                                                            v-if="checkRentAttr(item, deal.dealType)" 
+                                                            class="absolute mark-atribute"
+                                                        >
+                                                            <ion-icon :color="setMarkerAttrColor(item) ? 'success' : 'warning'" :icon="shapes"></ion-icon>
                                                         </div>
-                                                        <!-- Если типа дела Закупка -->
-                                                        <div v-if="deal.dealType === 'buy'">
-                                                            <ion-img style="height: 100%" :src="`img/subjects/buy/${item.selectedProduct}.webp`"></ion-img>
-                                                        </div>
-                                                    </ion-thumbnail>
-                                                    <!--  -->
-                                                    <ion-label style="font-size: 12px">
-                                                        x{{item.productQuantity}}
-                                                    </ion-label>
-                                                    <!-- mark where subject has attribute -->
-                                                    <div 
-                                                        v-if="checkRentAttr(item, deal.dealType)" 
-                                                        class="absolute mark-atribute"
-                                                    >
-                                                        <ion-icon :color="setMarkerAttrColor(item) ? 'success' : 'warning'" :icon="shapes"></ion-icon>
+                                                    </div>
+                                                    <div v-if="deal.dealsList.length" class="empty-item"></div>
+                                                    <!-- deal.dealsList is empty array -->
+                                                    <div v-if="!deal.dealsList.length">
+                                                        <ion-thumbnail class="empty-deal-list_thumbnail">
+                                                            <ion-icon class="empty-deal-list_icon" :icon="helpOutline"></ion-icon>
+                                                        </ion-thumbnail>
                                                     </div>
                                                 </div>
-                                                <div v-if="deal.dealsList.length" class="empty-item"></div>
-                                                <!-- deal.dealsList is empty array -->
-                                                <div v-if="!deal.dealsList.length">
-                                                    <ion-thumbnail class="empty-deal-list_thumbnail">
-                                                        <ion-icon class="empty-deal-list_icon" :icon="helpOutline"></ion-icon>
-                                                    </ion-thumbnail>
+                                                <div>
+                                                    <!--  сумма заказа -->
+                                                    <ion-text>
+                                                        Сумма заказа: {{ deal.totalDealPrice }}
+                                                    </ion-text>
+                                                    <div>
+                                                        Оплачено: {{ deal.dealPaid }} из {{ deal.totalDealPrice }}
+                                                    </div>
                                                 </div>
                                             </ion-row>
                                         </ion-grid>
@@ -295,7 +311,7 @@
             IonItemGroup,
             IonActionSheet
         },
-        setup() {
+        setup(props, {emit}) {
             // Currency
             const currency = ref(store.state.systemCurrency.name)
             // Get user from store
@@ -866,22 +882,37 @@
             }
             const setDealTypeMenuButtons = [
                 {
-                    text: 'Показать все',
+                    text: 'Показать все дела',
                     handler: () => {
                         dealByType.value = 'all'
+                        if(isStatisticsViewOpened.value) {
+                            isStatisticsViewOpened.value = false
+                        }
                         //Также, это является значением по умолчанию
                     }
                 },
                 {
-                    text: 'Продажи',
+                    text: 'История продаж',
                     handler: () => {
                         dealByType.value = 'sale'
+                        if(isStatisticsViewOpened.value) {
+                            isStatisticsViewOpened.value = false
+                        }
                     }
                 },
                 {
-                    text: 'Закупки',
+                    text: 'История покупок',
                     handler: () => {
                         dealByType.value = 'buy'
+                        if(isStatisticsViewOpened.value) {
+                            isStatisticsViewOpened.value = false
+                        }
+                    }
+                },
+                {
+                    text: 'Обороты',
+                    handler: () => {
+                        isStatisticsViewOpened.value = true
                     }
                 },
                 {
@@ -908,8 +939,10 @@
                 }
             }
 
+            const isStatisticsViewOpened = ref(false)
+
             return {
-                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isViewDealModalOpened, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translateValue, refreshData, myContacts, showNameByID, checkRentAttr, dealTypesList, dealByType, showDealByType, helpOutline, addSubject, deleteSubject, setIconByDealType, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, dealStatus, dealWhereChangeStatus, prevDealStatus, debt, culcDealDebt, openDealPaidMenu, isDealPaidMenuOpened, refreshDebtValue, closeDealPaidMenu, dealPaidAmountValue, setAmountValue, isAllAttrReturnedFunc, currency, isAllAttrReturned, update, setMarkerAttrColor, shapes, addToLedger, setFilterFunc, setDealTypeMenu, setDealTypeMenuButtons, addToWarehouseToast, substructFromWarehouseToast, userRecipes, goToContact, called
+                user, router, pageTitle, userEmail, createNew, myDeals, spinner, dataLoaded, isViewDealModalOpened, dealData, setOpen, setDealStatus, currentDealStatus, dealStatusList, foundDealsByStatus, daysArray, days, getExecutionDate, formattedDate, countDealByStatus, setChipColor, setChipOutline, doSomething, updateCurrentDealStatus, translateValue, refreshData, myContacts, showNameByID, checkRentAttr, dealTypesList, dealByType, showDealByType, helpOutline, addSubject, deleteSubject, setIconByDealType, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, dealStatus, dealWhereChangeStatus, prevDealStatus, debt, culcDealDebt, openDealPaidMenu, isDealPaidMenuOpened, refreshDebtValue, closeDealPaidMenu, dealPaidAmountValue, setAmountValue, isAllAttrReturnedFunc, currency, isAllAttrReturned, update, setMarkerAttrColor, shapes, addToLedger, setFilterFunc, setDealTypeMenu, setDealTypeMenuButtons, addToWarehouseToast, substructFromWarehouseToast, userRecipes, goToContact, called,isStatisticsViewOpened
             }
         }
     })

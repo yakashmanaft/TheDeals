@@ -47,7 +47,7 @@ const state = reactive({
       },
       {
           name: 'Deals',
-          title: 'Все дела',
+          title: 'История дел',
           icon: clipboardOutline
       },
       {
