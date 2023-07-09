@@ -15,6 +15,7 @@
             :filterBy="dealByType"
             :countByDealType="foundDealsByStatus.length"
             style="background-color: white"
+            :isStatisticsViewOpened="isStatisticsViewOpened"
         />
 
         <!-- Кнопка перехода к созданию нового дела -->
@@ -78,6 +79,13 @@
                 >
                 </ion-action-sheet>
 
+                <!-- =============================== Статистика оборотов =============================== -->
+                <div v-if="isStatisticsViewOpened && foundDealsByStatus.length" class="ion-margin-top">
+                    <StatisticsView
+                        :useDeals="foundDealsByStatus"
+                    />
+                </div>
+
                 <!-- Если по конкретному статусу нет дел -->
                 <div class="no-status-deal height_60vh" v-if="foundDealsByStatus.length === 0">
                     <div v-for="(status, index) in dealStatusList" :key="index">
@@ -89,13 +97,8 @@
                     </div>
                 </div>
 
-                <!-- =============================== Статистика оборотов =============================== -->
-                <div v-if="isStatisticsViewOpened" class="ion-margin-top">
-                    Статистика с крудочками по всем оборотам
-                </div>
-
                 <!-- ======================================== Карточки дел ============================= -->
-                <div v-else v-for="(day, idx) in getExecutionDate()" :key="idx" class="ion-margin-top">
+                <div v-if="!isStatisticsViewOpened" v-for="(day, idx) in getExecutionDate()" :key="idx" class="ion-margin-top">
                     {{day}}
                     <div 
                         v-for="deal in foundDealsByStatus" 
@@ -135,9 +138,7 @@
                                     <!-- Body of the card -->
                                     <ion-card-content class="ion-no-padding ion-margin-top">
                                         <!-- Предмет заказа -->
-                                        <ion-grid>
                                             <ion-row style="gap: 0.8rem" class="ion-justify-content-between ion-align-items-center">
-                                                <div>
                                                     <div class="relative" v-for="(item, index) in deal.dealsList" :key="index">
                                                         <!-- item -->
                                                         <ion-thumbnail v-if="item.selectedProduct !== ''" style="height: 64px; width: 64px;">
@@ -169,20 +170,21 @@
                                                             <ion-icon class="empty-deal-list_icon" :icon="helpOutline"></ion-icon>
                                                         </ion-thumbnail>
                                                     </div>
-                                                </div>
-                                                <div>
-                                                    <!--  сумма заказа -->
-                                                    <ion-text>
-                                                        Сумма заказа: {{ deal.totalDealPrice }}
-                                                    </ion-text>
-                                                    <div>
-                                                        Оплачено: {{ deal.dealPaid }} из {{ deal.totalDealPrice }}
-                                                    </div>
-                                                </div>
+                                            </ion-row>
+                                    </ion-card-content>
+                                        <ion-grid class="card-footer ion-padding-top ion-margin-top">
+                                            <ion-row class="ion-justify-content-between ion-align-items-center">
+                                                
+                                                <!-- Задолженность -->
+                                                <ion-text v-if="(deal.totalDealPrice - deal.dealPaid) > 0">
+                                                    К оплате: {{ (deal.totalDealPrice - deal.dealPaid).toFixed(2) }}
+                                                </ion-text>
+                                                <!--  сумма заказа -->
+                                                <ion-text>
+                                                    Сумма: {{ (+deal.totalDealPrice - deal.dealPaid + deal.dealPaid).toFixed(2) }}
+                                                </ion-text>
                                             </ion-row>
                                         </ion-grid>
-
-                                    </ion-card-content>
                                 </ion-card>
                             </router-link>
                     </div>
@@ -227,6 +229,7 @@
     import CreateNewDeal from '@/components/modal/NewDeal-modalCreate.vue';
     // import Select from '@/components/Select.vue'
     import DealPaidMenu from '@/components/DealPaidMenu.vue';
+    import StatisticsView from '../components/modal/StatisticsView.vue'
     import Footer from '@/components/Footer.vue';
     //
     import { 
@@ -283,6 +286,7 @@
             DealPaidMenu,
             CreateNewDeal,
             // Select,
+            StatisticsView,
             Footer,
             //
             IonContent, 
@@ -1053,5 +1057,8 @@
         width: 100%;
         top: 2rem;
         padding-top: 1rem;
+    }
+    .card-footer {
+        border-top: 1px solid var(--ion-color-medium);
     }
 </style>

@@ -52,8 +52,8 @@
 
                 <!-- FILTER -->
                 <ion-button v-if="router.currentRoute._value.meta.title === 'Deals'" @click="$emit('setFilter')" class="relative">
-                    <ion-icon color="primary" :icon="statsChart"></ion-icon>
-                    <div v-if="filterBy !== 'all'" class="absolute filterIndicator">
+                    <ion-icon color="primary" :icon="optionsOutline"></ion-icon>
+                    <div v-if="filterBy !== 'all' && !isStatisticsViewOpened" class="absolute filterIndicator">
                         <ion-text v-if="countByDealType" style="font-size: 14px;">{{ countByDealType }}</ion-text>
                     </div>
                 </ion-button>
@@ -73,14 +73,14 @@
     import { computed } from 'vue';
     import { useRouter } from 'vue-router';
     import { IonHeader, IonMenuToggle, IonToolbar, IonIcon, IonGrid, IonRow, IonText, IonButtons, IonButton, IonBackButton, IonTitle } from '@ionic/vue';
-    import { menu, walletOutline, settingsOutline, qrCodeOutline, storefrontOutline, bagOutline, statsChart, shareOutline } from 'ionicons/icons';
+    import { menu, walletOutline, settingsOutline, qrCodeOutline, storefrontOutline, bagOutline, optionsOutline, shareOutline } from 'ionicons/icons';
 
     export default {
             name: 'Header',
             components: {
                 IonHeader, IonMenuToggle, IonToolbar, IonIcon, IonGrid, IonRow, IonText, IonButtons, IonButton, IonBackButton, IonTitle
             },
-            props: ['title', 'filterBy', 'countByDealType', 'isMonth'],
+            props: ['title', 'filterBy', 'countByDealType', 'isMonth', 'isStatisticsViewOpened'],
             setup(props, { emit }) {
                 const user = computed(() => store.state.user);
                 const router = useRouter();
@@ -90,7 +90,7 @@
                 // // isMonth !== undefined
 
             return {
-                user, router, menu, walletOutline, settingsOutline, qrCodeOutline, settingsOutline, storefrontOutline, bagOutline, statsChart, shareOutline
+                user, router, menu, walletOutline, qrCodeOutline, settingsOutline, storefrontOutline, bagOutline, optionsOutline, shareOutline
             }
         }
     }
