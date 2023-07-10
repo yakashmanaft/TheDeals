@@ -13,7 +13,7 @@
         :events="events"
         :cell-click-hold="false"
         :drag-to-create-event="false"
-        :editable-events="{create: false}"
+        editable-events
         @cell-dblclick="createNewDeal($event)"
         :on-event-click="onEventClick"
         :hideViewSelector="true"
