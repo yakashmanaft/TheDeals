@@ -467,6 +467,7 @@
                 isViewDealModalOpened.value = !isViewDealModalOpened.value;
                 if(!isMonthMode.value) {
                     isViewChoosenDateOpened.value = false
+                    deleteTempDeal()
                 } else {
                     isViewChoosenDateOpened.value = true
                 }
@@ -894,9 +895,13 @@
 
             }
 
+            const deleteTempDeal = () => {
+                console.log('close modal clicked')
+            }
+
 
             return {
-                menu, user, router, pageTitle, choosenDate, spinner, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle, observer, availableBalance, addToLedger, toggleSettingsModal, isSettingsModalOpened, updateDaySaturation, userRecipes, called, toastWeekend, calendarModeFunc, isMonthMode, loadInMonthMode, loadWeekMode, isWeekDealOpend, isWeekDealOpendFunc, deals, openWeekCreateDeal
+                menu, user, router, pageTitle, choosenDate, spinner, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle, observer, availableBalance, addToLedger, toggleSettingsModal, isSettingsModalOpened, updateDaySaturation, userRecipes, called, toastWeekend, calendarModeFunc, isMonthMode, loadInMonthMode, loadWeekMode, isWeekDealOpend, isWeekDealOpendFunc, deals, openWeekCreateDeal, deleteTempDeal
             }
         }
     })

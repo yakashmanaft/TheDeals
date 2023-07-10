@@ -13,13 +13,13 @@
         :events="events"
         :cell-click-hold="false"
         :drag-to-create-event="false"
-        editable-events
-        :on-event-create="deleteTempCreation"
+        :editable-events="{create: false}"
         @cell-dblclick="createNewDeal($event)"
         :on-event-click="onEventClick"
         :hideViewSelector="true"
         :disableDays="weekendDays"
-    >
+        >
+        <!-- :on-event-create="deleteTempCreation" -->
     </vue-cal>
 
     <!--  -->
@@ -112,12 +112,8 @@ export default defineComponent({
             emit('openCreateModal', event)
         }
 
-        const deleteTempCreation = (event) => {
-                console.log(event)
-        }
-
         return {
-            dailyHours, events, weekendDays, onEventClick, router, vueCalendar, createNewDeal, deleteTempCreation
+            dailyHours, events, weekendDays, onEventClick, router, vueCalendar, createNewDeal
         }
     }
 })
