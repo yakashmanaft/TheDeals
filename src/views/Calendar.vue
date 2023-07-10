@@ -211,7 +211,6 @@
             // const avatarFileName = ref('')
             // const daySaturation = ref(userSettings.value.daySaturation)
             // 
-
             //  ================================================ CALENDAR MODE ================================================
             // TOGGLE CALENDAR MODE
             const isMonthMode = ref(true)
@@ -282,9 +281,7 @@
             // ФУНКЦИЯ ЗАГРУЗКИ КАЛЕНДАРЯ В РЕЖИМЕ WEEK PLANNER 
             // 
             const deals = ref([])
-            // watch(deals, () => {
-                
-            // })
+
             const loadWeekMode = async () => {
                 
                 // Включаем спиннер
@@ -300,6 +297,9 @@
                 //
                 await store.methods.getMyDealsFromBD()
                 myDeals.value = store.state.myDealsArray
+
+                await store.methods.getMyContactsFromDB()
+                myContacts.value = store.state.myContactsArray
                 // запускаем функцию расчета баланса кошелька из store
                 store.methods.calculateBalance(myDeals.value)
                 availableBalance.value = store.state.availableBalance
@@ -328,13 +328,12 @@
 
                 // Данные загружены, убираем spinner
                 spinner.value = false
-                // console.log(deals.value)
-                // console.log(deals.value.length)
+                console.log(deals.value.length)
             }
 
-            watch(myDeals, () => {
-                console.log(deals.value.length)
-            })
+            // watch(myDeals, () => {
+            //     console.log(deals.value.length)
+            // })
             
 
             // УСЛОВИЯ ЗАПУСКАЯ ФУНКЦИЙ ЗАГРУЗКИ РЕЖИМА КАЛЕНДАРЯ при загрузке экрана
@@ -511,13 +510,10 @@
             // Создаем новую сделку
             const called = ref(false)
             const createNew = async (newDealData) => {
+
                 // принимаем инфу по контакту из modal
                 dealData.value = newDealData
-                // if(isMonthMode.value === false) {
-                //     isViewChoosenDateOpened.value = false
-                // }
-                // console.log(isViewChoosenDateOpened.value)
-                // console.log(dealData.value)
+
                 // Если строки Имя Фамилия пустые или не пустые 
                 // использовать валидацию 
                 if(dealData.value.executionDate === ''){
@@ -542,16 +538,35 @@
                         await store.methods.getMyDealsFromBD()
                         myDeals.value = store.state.myDealsArray
                         // ищем созданное новое дело в массиве всех дел в store (по uid)
-                        const newDeal = myDeals.value.find(el => el.uid === dealData.value.uid)
+                        // const newDeal = myDeals.value.find(el => el.uid === dealData.value.uid)
                         // на свякий - тормозим спинер
                         spinner.value = false
                         //
                         if(dealData.value.dealPaid > 0) {
                             addToLedger(dealData.value.dealPaid, newDeal.id)
                         }
-                        // если выбранная дата еще есть, а она есть - обновляем контент к показу по этой дате
-                        if(choosenDate.value) {
+                        // если выбранная дата еще есть, а она есть - обновляем контент к показу 
+                        // по этой дате в месячном
+                        if(choosenDate.value && isMonthMode.value) {
                             dealsByChoosenDate.value = myDeals.value.filter(deal => formattedDate(deal.executionDate) === formattedDate(choosenDate.value))
+                        } 
+                        //  в недельном
+                        else if (!isMonthMode.value) {
+                            console.log('sdgdfhgdfhdgh')
+                            // console.log(deals.value.length)
+                            // deals.value = myDeals.value
+                            console.log(myDeals.value.length)
+                            console.log(deals.value.length)
+                            // deals.value = []
+                            // loadWeekMode()
+                            // обновляем массив в store
+                            await store.methods.getMyDealsFromBD();
+                            myDeals.value = store.state.myDealsArray
+                            // ищем созданное новое дело в массиве всех дел в store (по uid)
+                            const newDeal = myDeals.value.find(el => el.uid === dealData.value.uid)
+                            router.push({name: 'View-Deal', params: { dealId: newDeal.id, deal: JSON.stringify(newDeal)}})
+                            // isMonthMode.value = false
+                            console.log(isMonthMode.value)
                         }
                         //
                         dealData.value = {
@@ -583,15 +598,10 @@
                 }
                 // ЕСЛИ РЕЖИМ НЕДЕЛИ
                 if(!isMonthMode.value) {
+
                     isViewChoosenDateOpened.value = false
                     // закрываем modal создания дела
                     isViewDealModalOpened.value = false
-
-                    // setTimeout(() => {
-                    //     deals.value = []
-                    //     loadWeekMode()
-                    //     router.push({path: '/', query: { isMonth: false }})
-                    // }, 1000)
                 } 
                 // ЕСЛИ РЕЖИМИМ МЕСЯЦА
                 else {
@@ -894,9 +904,7 @@
                 //
                 dealData.value.executionDate = date
                 dealData.value.executionDateEnd = setExecutionHours(date)
-                // console.log(`Время: ${dealData.value.executionDate}; Время + час: ${dealData.value.executionDateEnd}`)
 
-                // console.log(deleteEventFunction)
             }
 
 

@@ -5,9 +5,11 @@
             <ion-buttons class="color-primary" slot="start">
                 <ion-button fill="clear" v-if="edit" @click="cancelEdit">Отмена</ion-button>
 
+                <!-- Кнопка, если возвращаемся из current view deal обратно на '/' -->
                 <ion-back-button v-else-if="router.options.history.state.back === '/' && isMonth" @click="back()" default-href="/" text="Назад"></ion-back-button>
+                <!-- Кнопка, если возвращаемся не на '/' -->
                 <ion-back-button v-else  default-href="/" text="Назад"></ion-back-button>
-                <!-- <ion-button v-else @click="router.go(-1)">Назад</ion-button>  -->
+
             </ion-buttons>
             <!-- Если текущий роут НЕ View-Deal && НЕ Profile && НЕ View-Recipe-->
             <ion-buttons class="color-primary" slot="end" v-if="(route.name !== 'View-Deal' && route.name !== 'Profile' && route.name !== 'View-Recipe' && isHasSubstring() === false)">
@@ -65,8 +67,7 @@
             console.log(`Откуда пришли: ${router.options.history.state.back}`)
 
             const back = () => {
-                console.log(123)
-                // router.push({name: '/', params: {isMonth: false}})
+
                 router.push({path: '/', query: { isMonth: false }})
             }
 
