@@ -66,7 +66,6 @@ export default defineComponent({
         const events = props.deals
         // const weekendDays = ['2023-07-09']
         const weekendDays = ref([])
-
         const formatDate = (days) => {
             days.forEach(element => {
                 let str = element.date.substr(0, 10)

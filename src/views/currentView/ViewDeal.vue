@@ -1091,7 +1091,12 @@
                             const { error } = await supabase.from('deals').delete().eq('id',currentId);
                             if(error) throw error;
                             // router.push({ name: 'Deals' })
-                            router.go(-1)
+                            if(router.options.history.state.back === '/') {
+                                // console.log(router.options.history.state.back)
+                                router.push({path: '/', query: { isMonth: false }})
+                            } else {
+                                router.go(-1)
+                            }
                             alert('View Deal: Дело удалено')
                         } catch (error) {
                             // Удалить если не понадобится

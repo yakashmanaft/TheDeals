@@ -286,7 +286,7 @@
                 
                 // Включаем спиннер
                 spinner.value = true
-
+                // deals.value = []
                 // Подтягиваем настройки аккаунта пользователя
                 await store.methods.getUserSettingsfromDB()
     
@@ -305,7 +305,7 @@
                 availableBalance.value = store.state.availableBalance
                 
                 let deal = {}
-
+                console.log(myDeals.value)
                 if(myDeals.value) {
                     myDeals.value.forEach((item) => {
                         deal = {
@@ -325,6 +325,7 @@
                         deals.value.push(deal)
                     })
                 }
+                deals.value = []
 
                 // Данные загружены, убираем spinner
                 spinner.value = false
@@ -547,27 +548,32 @@
                         }
                         // если выбранная дата еще есть, а она есть - обновляем контент к показу 
                         // по этой дате в месячном
-                        if(choosenDate.value && isMonthMode.value) {
+                        if(choosenDate.value) {
                             dealsByChoosenDate.value = myDeals.value.filter(deal => formattedDate(deal.executionDate) === formattedDate(choosenDate.value))
-                        } 
-                        //  в недельном
-                        else if (!isMonthMode.value) {
-                            console.log('sdgdfhgdfhdgh')
-                            // console.log(deals.value.length)
-                            // deals.value = myDeals.value
-                            console.log(myDeals.value.length)
-                            console.log(deals.value.length)
-                            // deals.value = []
-                            // loadWeekMode()
-                            // обновляем массив в store
-                            await store.methods.getMyDealsFromBD();
-                            myDeals.value = store.state.myDealsArray
-                            // ищем созданное новое дело в массиве всех дел в store (по uid)
-                            const newDeal = myDeals.value.find(el => el.uid === dealData.value.uid)
-                            router.push({name: 'View-Deal', params: { dealId: newDeal.id, deal: JSON.stringify(newDeal)}})
-                            // isMonthMode.value = false
-                            console.log(isMonthMode.value)
+                        } else if (!isMonthMode.value) {
+                            // console.log('123')
+                            loadWeekMode()
+                            // console.log(deal.value.length)
+                            // router.push({name: 'View-Deal', params: { dealId: newDeal.id, deal: JSON.stringify(newDeal)}})
                         }
+                        //  в недельном
+                        // else if (!isMonthMode.value) {
+                        //     console.log('sdgdfhgdfhdgh')
+                        //     // console.log(deals.value.length)
+                        //     // deals.value = myDeals.value
+                        //     console.log(myDeals.value.length)
+                        //     console.log(deals.value.length)
+                        //     // deals.value = []
+                        //     // loadWeekMode()
+                        //     // обновляем массив в store
+                        //     await store.methods.getMyDealsFromBD();
+                        //     myDeals.value = store.state.myDealsArray
+                        //     // ищем созданное новое дело в массиве всех дел в store (по uid)
+                        //     const newDeal = myDeals.value.find(el => el.uid === dealData.value.uid)
+                        //     router.push({name: 'View-Deal', params: { dealId: newDeal.id, deal: JSON.stringify(newDeal)}})
+                        //     // isMonthMode.value = false
+                        //     console.log(isMonthMode.value)
+                        // }
                         //
                         dealData.value = {
                             uid: uid(),
