@@ -229,7 +229,7 @@
                 spinner.value = true
                 // Подтягиваем настройки аккаунта пользователя
                 await store.methods.getUserSettingsfromDB()
-    
+                
                 // Дергаем из store выходные дни
                 userSettings.value = store.state.userSettings[0]
                 weekendDays.value = userSettings.value.weekendDays
@@ -240,7 +240,7 @@
                 // запускаем функцию расчета баланса кошелька из store
                 store.methods.calculateBalance(myDeals.value)
                 availableBalance.value = store.state.availableBalance
-    
+
                 // Данные загружены, убираем spinner
                 spinner.value = false
                 
@@ -248,6 +248,7 @@
                 if(choosenDate.value) {
                     dealsByChoosenDate.value = myDeals.value.filter(deal => formattedDate(deal.executionDate) === formattedDate(choosenDate.value))
                 }
+
                 // запускает функцию отрисовки стилей для дат календаря, исходя из существующих дел и загруженности дня
                 
                 // отслеживаем перелистывания месяцев в календаре
@@ -256,7 +257,7 @@
                         window.dispatchEvent(new CustomEvent('datetimeMonthDidChange', { detail: mutationRecords }));
                     }
                 });
-                // // запускаем наблюдателя
+                // запускаем наблюдателя
                 observer.observe(
                     document
                         .querySelector('ion-datetime')
@@ -552,29 +553,9 @@
                             dealsByChoosenDate.value = myDeals.value.filter(deal => formattedDate(deal.executionDate) === formattedDate(choosenDate.value))
                         } else if (!isMonthMode.value) {
                             // console.log('123')
-                            loadWeekMode()
-                            // console.log(deal.value.length)
-                            // router.push({name: 'View-Deal', params: { dealId: newDeal.id, deal: JSON.stringify(newDeal)}})
+                            // loadWeekMode()
                         }
-                        //  в недельном
-                        // else if (!isMonthMode.value) {
-                        //     console.log('sdgdfhgdfhdgh')
-                        //     // console.log(deals.value.length)
-                        //     // deals.value = myDeals.value
-                        //     console.log(myDeals.value.length)
-                        //     console.log(deals.value.length)
-                        //     // deals.value = []
-                        //     // loadWeekMode()
-                        //     // обновляем массив в store
-                        //     await store.methods.getMyDealsFromBD();
-                        //     myDeals.value = store.state.myDealsArray
-                        //     // ищем созданное новое дело в массиве всех дел в store (по uid)
-                        //     const newDeal = myDeals.value.find(el => el.uid === dealData.value.uid)
-                        //     router.push({name: 'View-Deal', params: { dealId: newDeal.id, deal: JSON.stringify(newDeal)}})
-                        //     // isMonthMode.value = false
-                        //     console.log(isMonthMode.value)
-                        // }
-                        //
+
                         dealData.value = {
                             uid: uid(),
                             email: userEmail.value,

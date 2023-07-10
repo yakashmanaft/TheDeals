@@ -57,7 +57,8 @@ export default defineComponent({
                     dealId: event.fullData.id,
                     dealUid: event.fullData.uid,
                     deal: JSON.stringify(event.fullData),
-                    isMonth: false
+                    isMonth: false,
+                    from: true
                 },
             })
         }
