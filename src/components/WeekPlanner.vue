@@ -5,6 +5,8 @@
     <!-- https://antoniandre.github.io/vue-cal/ -->
     <vue-cal 
         ref="vueCalendar"
+        :time-from="0 * 60"
+        :time-to="24 * 60"
         locale="ru"
         today-button
         small
@@ -13,15 +15,19 @@
         :events="events"
         :cell-click-hold="false"
         :drag-to-create-event="false"
-        editable-events
-        @cell-dblclick="createNewDeal($event)"
+        :editable-events="{titleEditable: false}"
+        @cell-dblclick="createTempNewDeal($event)"
         :on-event-click="onEventClick"
         :hideViewSelector="true"
         :disableDays="weekendDays"
+        show-time-in-cells
         >
+        <!-- editable-events -->
         <!-- :on-event-create="deleteTempCreation" -->
     </vue-cal>
-
+    <br>
+    <br>
+    <br>
     <!--  -->
 
   </template>
@@ -33,6 +39,7 @@ import VueCal from 'vue-cal'
 import 'vue-cal/dist/vuecal.css'
 import { useRouter } from 'vue-router';
 import { format, parseISO, formatISO9075   } from 'date-fns';
+import { IonItem } from '@ionic/vue';
 
 export default defineComponent({
     name: 'WeekPlanner',
@@ -48,7 +55,7 @@ export default defineComponent({
         const vueCalendar = ref(VueCal)
 
         // ЧАСЫ РАБОТЫ
-        const dailyHours = { from: 7 * 60, to: 18 * 60, class: 'business-hours' }
+        const dailyHours = { from: 7 * 60, to: 19 * 60, class: 'business-hours' }
 
         // ФУНКЦИЯ ОТКРЫТИЯ ВЫБРАННОГО В ЕЖЕДНЕВНИКЕ ДЕЛА
         const onEventClick = (event) => {
@@ -102,24 +109,44 @@ export default defineComponent({
         //     },
         // ]
 
-        const createNewDeal = (event) => {
+        const createTempNewDeal = (event, deleteEventFunction) => {
+
             vueCalendar.value.createEvent(
                 event,
                 60,
-                { title: 'New Event', class: 'blue-event' }
+                { 
+                    // title: 'New Event', 
+                    class: 'event new',
+                    // content: '<span>3123</span>'
+                }
             )
             // console.log(event)
             emit('openCreateModal', event)
+
         }
 
+        let weekdayLabels = document.getElementsByClassName('weekday-label')
+        console.log(weekdayLabels)
+        // if(weekdayLabels) {
+        //     weekdayLabels.forEach((item) => {
+        //         item.addEventListener('click', () => {
+        //             console.log(123)
+        //         })
+        //     })
+        // }
+
+        document.addEventListener('click', (e) => {
+            console.log(e.target)
+        })
+
         return {
-            dailyHours, events, weekendDays, onEventClick, router, vueCalendar, createNewDeal
+            dailyHours, events, weekendDays, onEventClick, router, vueCalendar, createTempNewDeal
         }
     }
 })
 </script>
 
-<style scoped>
+<style>
     .vuecal__event.lunch {
     background: repeating-linear-gradient(45deg, transparent, transparent 10px, #f2f2f2 10px, #f2f2f2 20px);/* IE 10+ */
     color: #999;
@@ -127,17 +154,31 @@ export default defineComponent({
     justify-content: center;
     align-items: center;
     }
-    .vuecal__event.lunch .vuecal__event-time {display: none;align-items: center;}
 
-    .vuecal--week-view {
-        /* background-color: black; */
+    .event {
+        border-radius: 1rem;
+        padding: 1rem;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
     }
 
-    .vuecal__menu {
-        background-color: yellow;
+    .event.new {
+        background-color: white; 
+        color: var(--ion-color-system);
+        border: 1px solid var(--ion-color-system)
     }
 
-    .vuecal__event .blue-event {
-        background-color: black;
+    .event.buy {
+        background-color: var(--ion-color-warning);
+    }
+    .event.sale {
+        background-color: var(--ion-color-success)
+    }
+
+    .vuecal__event-time {
+        display: none;
     }
 </style>

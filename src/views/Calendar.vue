@@ -43,7 +43,6 @@
             <!-- MODE WEEK PLANNER -->
             <div v-else>
                 <WeekPlanner 
-                    @isViewWeekDealOpend="isWeekDealOpendFunc"
                     :deals="deals"
                     @openCreateModal="openWeekCreateDeal"
                     :weekendDays="weekendDays"
@@ -306,7 +305,7 @@
                 availableBalance.value = store.state.availableBalance
                 
                 let deal = {}
-                console.log(myDeals.value)
+                // console.log(myDeals.value)
                 if(myDeals.value) {
                     myDeals.value.forEach((item) => {
                         deal = {
@@ -316,9 +315,9 @@
                             // end: item.executionDateEnd,
                             // end: '2023-07-07 09:14',
                             end: parseISO(item.executionDateEnd),
-                            title: item.contactID,
-                            content: 'content',
-                            class: item.dealType,
+                            // title: item.contactID,
+                            // content: 'content'
+                            class: `event ${item.dealType}`,
 
                             // Докидываем в объект общие данные по делу
                             fullData: item
@@ -880,11 +879,6 @@
                 
             }
 
-            const isWeekDealOpend = ref(false)
-            const isWeekDealOpendFunc = (boolean) => {
-                isWeekDealOpend.value = boolean
-            }
-
             const openWeekCreateDeal = (event) => {
                 let date = formatISO9075(event)
                 //
@@ -901,7 +895,7 @@
 
 
             return {
-                menu, user, router, pageTitle, choosenDate, spinner, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle, observer, availableBalance, addToLedger, toggleSettingsModal, isSettingsModalOpened, updateDaySaturation, userRecipes, called, toastWeekend, calendarModeFunc, isMonthMode, loadInMonthMode, loadWeekMode, isWeekDealOpend, isWeekDealOpendFunc, deals, openWeekCreateDeal, deleteTempDeal
+                menu, user, router, pageTitle, choosenDate, spinner, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle, observer, availableBalance, addToLedger, toggleSettingsModal, isSettingsModalOpened, updateDaySaturation, userRecipes, called, toastWeekend, calendarModeFunc, isMonthMode, loadInMonthMode, loadWeekMode, deals, openWeekCreateDeal, deleteTempDeal
             }
         }
     })
