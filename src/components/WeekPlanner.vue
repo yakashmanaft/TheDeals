@@ -21,20 +21,18 @@
         :hideViewSelector="true"
         :disableDays="weekendDays"
         show-time-in-cells
+        min-event-width="100"
         >
         <!-- editable-events -->
         <!-- :on-event-create="deleteTempCreation" -->
     </vue-cal>
-    <br>
-    <br>
-    <br>
     <!--  -->
 
   </template>
   
 <script>
 
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref, onMounted } from 'vue';
 import VueCal from 'vue-cal'
 import 'vue-cal/dist/vuecal.css'
 import { useRouter } from 'vue-router';
@@ -44,7 +42,7 @@ import { IonItem } from '@ionic/vue';
 export default defineComponent({
     name: 'WeekPlanner',
     props: ['deals', 'weekendDays'],
-    emits: ['openCreateModal'],
+    emits: ['openCreateModal', 'openDayModal'],
     components: {
         VueCal,
     },
@@ -125,15 +123,31 @@ export default defineComponent({
 
         }
 
-        let weekdayLabels = document.getElementsByClassName('weekday-label')
-        console.log(weekdayLabels)
-        // if(weekdayLabels) {
-        //     weekdayLabels.forEach((item) => {
-        //         item.addEventListener('click', () => {
-        //             console.log(123)
-        //         })
-        //     })
-        // }
+        onMounted(() => {
+
+            // 
+            let dealEvents = document.querySelectorAll('.event')
+                console.log(dealEvents)
+            if(dealEvents) {
+                // dealEvents.forEach(element => {
+                // })
+            }
+
+            // 
+            let weekdayLabels = document.querySelectorAll('.weekday-label')
+            if(weekdayLabels) {
+                // console.log(weekdayLabels)
+                weekdayLabels.forEach(element => {
+                    element.addEventListener('click', (e) => {
+                        console.log(e.target)
+                        emit('openDayModal', true)
+                    })
+                })
+            }
+
+            // 
+        })
+
 
         document.addEventListener('click', (e) => {
             console.log(e.target)
@@ -180,5 +194,76 @@ export default defineComponent({
 
     .vuecal__event-time {
         display: none;
+    }
+
+    .vuecal__title-bar {
+        background-color: white;
+        font-size: 1rem;
+    }
+
+    .vuecal__today-btn {
+        background-color: var(--ion-color-primary);
+        border-radius: 1rem;
+        padding: 0.5rem 1rem;
+        color: white;
+    }
+
+    .vuecal__today-btn span.default {
+        padding: 0;
+    }
+
+    .vuecal__weekdays-headings {
+        margin-top: 1rem;
+        border-bottom: none;
+    }
+
+    .weekday-label {
+        flex-direction: column;
+        justify-content: center;
+        font-size: 0.8rem;
+    }
+
+    .weekday-label span:last-child {
+        margin-top: 0.5rem;
+        padding: 0.5rem;
+        border-radius: 100%;
+    }
+
+    .weekday-label span:last-child {
+        color: white;
+        background-color: var(--ion-color-medium)
+    }
+
+    .today .weekday-label span:last-child {
+        color: white;
+        background-color: var(--ion-color-primary)
+    }
+
+    .vuecal__heading {
+        height: 100%;
+    }
+    
+    .weekday-label span {
+        text-align: center;
+    }
+
+    .vuecal__header {
+        /* height: 10rem; */
+    }
+
+    .vuecal__body {
+        margin-top: 1rem;
+        /* position: relative; */
+    }
+    .vuecal__no-event {
+        display: none;
+    }
+    .week-view {
+        /* height: 91vh; */
+
+    }
+    .vuecal__time-column {
+        /* position: absolute;
+        opacity: 0; */
     }
 </style>
