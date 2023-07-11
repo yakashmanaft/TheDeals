@@ -47,6 +47,7 @@
                     @openCreateModal="openWeekCreateDeal"
                     :weekendDays="weekendDays"
                     @openDayModal="openWeekendDayModaFunc"
+                    @spinnerOff="spinnerFalse"
                 />
             </div>
 
@@ -287,66 +288,21 @@
             // 
             const deals = ref([])
 
+            // Типа загрузка мода, по сути просто запускаем спинер
             const loadWeekMode = async () => {
-                
-                // Включаем спиннер
-                spinner.value = true
-                // deals.value = []
-                // Подтягиваем настройки аккаунта пользователя
-                await store.methods.getUserSettingsfromDB()
-    
-                // Дергаем из store выходные дни
-                userSettings.value = store.state.userSettings[0]
-                weekendDays.value = userSettings.value.weekendDays
-
-                //
-                await store.methods.getMyDealsFromBD()
-                myDeals.value = store.state.myDealsArray
-
-                await store.methods.getMyContactsFromDB()
-                myContacts.value = store.state.myContactsArray
-                // запускаем функцию расчета баланса кошелька из store
-                store.methods.calculateBalance(myDeals.value)
-                availableBalance.value = store.state.availableBalance
-                
-                let deal = {}
-                // console.log(myDeals.value)
-                if(myDeals.value) {
-                    myDeals.value.forEach((item) => {
-                        deal = {
-                            // start: item.executionDate,
-                            // start: '2023-07-07 08:14',
-                            start: parseISO(item.executionDate),
-                            // end: item.executionDateEnd,
-                            // end: '2023-07-07 09:14',
-                            end: parseISO(item.executionDateEnd),
-                            // title: item.contactID,
-                            // content: 'content'
-                            class: `event ${item.dealType}`,
-
-                            // Докидываем в объект общие данные по делу
-                            fullData: item
-                        }
-                        deals.value.push(deal)
-                    })
-                }
-                deals.value = []
-
-                // Данные загружены, убираем spinner
-                spinner.value = false
-                console.log(deals.value.length)
+                spinner.value = true 
             }
-
-            // watch(myDeals, () => {
-            //     console.log(deals.value.length)
-            // })
-            
+            // Отключаем спинер (это мы находимся в WeekPlanner)
+            const spinnerFalse = (boolean) => {
+                spinner.value = boolean
+            }
 
             // УСЛОВИЯ ЗАПУСКАЯ ФУНКЦИЙ ЗАГРУЗКИ РЕЖИМА КАЛЕНДАРЯ при загрузке экрана
 
             if(router.currentRoute._value.fullPath === '/?isMonth=false') {
                 isMonthMode.value = false;
-                loadWeekMode()
+                // loadWeekMode()
+                spinner.value = true
             } else {
                 isMonthMode.value = true;
                 loadInMonthMode()
@@ -360,7 +316,8 @@
                     router.replace({ query: {} })
                 } else {
                     console.log('mode: WEEK')
-                    loadWeekMode()
+                    // loadWeekMode()
+                    spinner.value = true
                 }
             })
 
@@ -556,9 +513,6 @@
                         // по этой дате в месячном
                         if(choosenDate.value) {
                             dealsByChoosenDate.value = myDeals.value.filter(deal => formattedDate(deal.executionDate) === formattedDate(choosenDate.value))
-                        } else if (!isMonthMode.value) {
-                            // console.log('123')
-                            // loadWeekMode()
                         }
 
                         dealData.value = {
@@ -904,9 +858,8 @@
                 
             }
 
-
             return {
-                menu, user, router, pageTitle, choosenDate, spinner, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle, observer, availableBalance, addToLedger, toggleSettingsModal, isSettingsModalOpened, updateDaySaturation, userRecipes, called, toastWeekend, calendarModeFunc, isMonthMode, loadInMonthMode, loadWeekMode, deals, openWeekCreateDeal, deleteTempDeal, openWeekendDayModaFunc
+                menu, user, router, pageTitle, choosenDate, spinner, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle, observer, availableBalance, addToLedger, toggleSettingsModal, isSettingsModalOpened, updateDaySaturation, userRecipes, called, toastWeekend, calendarModeFunc, isMonthMode, loadInMonthMode, loadWeekMode, deals, openWeekCreateDeal, deleteTempDeal, openWeekendDayModaFunc, spinnerFalse
             }
         }
     })

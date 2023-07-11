@@ -21,10 +21,8 @@
         :hideViewSelector="true"
         :disableDays="weekendDays"
         show-time-in-cells
-        min-event-width="100"
+        :min-event-width="100"
         >
-        <!-- editable-events -->
-        <!-- :on-event-create="deleteTempCreation" -->
     </vue-cal>
     <!--  -->
 
@@ -38,20 +36,31 @@ import 'vue-cal/dist/vuecal.css'
 import { useRouter } from 'vue-router';
 import { format, parseISO, formatISO9075   } from 'date-fns';
 import { IonItem } from '@ionic/vue';
+import { bagHandleOutline } from 'ionicons/icons';
+import store from '../store/index'
+
+import { IonIcon } from '@ionic/vue'
+import { setIconByDealType } from '../helpers/setIconBy'
 
 export default defineComponent({
     name: 'WeekPlanner',
     props: ['deals', 'weekendDays'],
-    emits: ['openCreateModal', 'openDayModal'],
+    emits: ['openCreateModal', 'openDayModal', 'spinnerOff'],
     components: {
         VueCal,
+        //
+        IonIcon,
     },
     setup(props, {emit}) {
         // Setup ref to router
         const router = useRouter();
-        //
+        
+        const deals = ref([])
         const vueCalendar = ref(VueCal)
-
+        const myDeals = ref([]);
+        const myContacts = ref([]);
+        const availableBalance = ref(0)
+        const events = deals.value
         // ЧАСЫ РАБОТЫ
         const dailyHours = { from: 7 * 60, to: 19 * 60, class: 'business-hours' }
 
@@ -69,7 +78,8 @@ export default defineComponent({
         }
 
         // МАССИВ ДЕЛ
-        const events = props.deals
+        // const events = props.deals
+        
         // const weekendDays = ['2023-07-09']
         const weekendDays = ref([])
         const formatDate = (days) => {
@@ -78,34 +88,10 @@ export default defineComponent({
                 weekendDays.value.push(str)
             });
         }
+
+        const userSettings = ref(store.state.userSettings[0])
         
         formatDate(props.weekendDays)
-        // const events = [
-        //     {
-        //         start: '2023-07-04 10:30:00', // executionDate
-        //         end: '2023-07-04 14:30:00', // executionDateEnd
-        //         // You can also define event dates with Javascript Date objects:
-        //         // start: new Date(2018, 11 - 1, 16, 10, 30),
-        //         // end: new Date(2018, 11 - 1, 16, 11, 30),
-        //         title: 'Doctor appointment', //contactID
-        //         content: '<i class="icon material-icons">local_hospital</i>',
-        //         class: 'health' //dealType
-        //     },
-        //     {
-        //         start: '2023-07-04 15:00:00',
-        //         end: '2023-07-04 17:00:00',
-        //         title: 'LUNCH',
-        //         class: 'lunch',
-        //         background: true
-        //     },
-        //     {
-        //         start: '2023-07-06 15:00:00',
-        //         end: '2023-07-06 17:00:00',
-        //         title: 'LUNCH',
-        //         class: 'lunch',
-        //         background: true
-        //     },
-        // ]
 
         const createTempNewDeal = (event, deleteEventFunction) => {
 
@@ -123,15 +109,7 @@ export default defineComponent({
 
         }
 
-        onMounted(() => {
-
-            // 
-            let dealEvents = document.querySelectorAll('.event')
-                console.log(dealEvents)
-            if(dealEvents) {
-                // dealEvents.forEach(element => {
-                // })
-            }
+        onMounted(async () => {
 
             // 
             let weekdayLabels = document.querySelectorAll('.weekday-label')
@@ -144,17 +122,76 @@ export default defineComponent({
                     })
                 })
             }
+            await loadWeekMode()
+            let dealEvents = document.querySelectorAll('.vuecal__event')
+            dealEvents.forEach(element => {
 
+                element.insertAdjacentHTML("afterbegin", `
+                    
+                <img src="img/common/dealType/bag-outline.svg">
+
+                `);
+                // `img/subjects/sale/${item.selectedProduct}.webp`
+            })
             // 
         })
+        
+        const loadWeekMode = async () => {
 
+                // Подтягиваем настройки аккаунта пользователя
+                await store.methods.getUserSettingsfromDB()
+    
+                // Дергаем из store выходные дни
+                userSettings.value = store.state.userSettings[0]
+                weekendDays.value = userSettings.value.weekendDays
 
-        document.addEventListener('click', (e) => {
-            console.log(e.target)
-        })
+                //
+                await store.methods.getMyDealsFromBD()
+                myDeals.value = store.state.myDealsArray
+
+                await store.methods.getMyContactsFromDB()
+                myContacts.value = store.state.myContactsArray
+                // запускаем функцию расчета баланса кошелька из store
+                store.methods.calculateBalance(myDeals.value)
+                availableBalance.value = store.state.availableBalance
+                
+                let deal = {}
+                // console.log(myDeals.value)
+                if(myDeals.value) {
+                    myDeals.value.forEach((item) => {
+                        deal = {
+                            // start: item.executionDate,
+                            // start: '2023-07-07 08:14',
+                            start: parseISO(item.executionDate),
+                            // end: item.executionDateEnd,
+                            // end: '2023-07-07 09:14',
+                            end: parseISO(item.executionDateEnd),
+                            // title: item.contactID,
+                            // content: 'content'
+                            class: `${item.dealType}`,
+
+                            // Докидываем в объект общие данные по делу
+                            fullData: item
+                        }
+                        deals.value.push(deal)
+                    })
+                }
+
+                // Отключаем спинер после загрузки данных
+                emit('spinnerOff', false)
+                // Очищаем временный массив с данными
+                deals.value = []
+            }
+
+        // document.addEventListener('click', (e) => {
+        //     console.log(e.target)
+        // })
+
+        // vuecal__cell vuecal__cell--disabled
+        // vuecal__cell vuecal__cell--has-events
 
         return {
-            dailyHours, events, weekendDays, onEventClick, router, vueCalendar, createTempNewDeal
+            dailyHours, events, weekendDays, onEventClick, router, vueCalendar, createTempNewDeal, loadWeekMode, deals, myDeals, myDeals, myContacts, availableBalance, setIconByDealType, bagHandleOutline
         }
     }
 })
@@ -169,7 +206,7 @@ export default defineComponent({
     align-items: center;
     }
 
-    .event {
+    .vuecal__event {
         border-radius: 1rem;
         padding: 1rem;
         cursor: pointer;
@@ -179,17 +216,28 @@ export default defineComponent({
         align-items: center;
     }
 
-    .event.new {
+    .vuecal__event.new {
         background-color: white; 
         color: var(--ion-color-system);
         border: 1px solid var(--ion-color-system)
     }
-
-    .event.buy {
+    
+    .vuecal__event.buy {
         background-color: var(--ion-color-warning);
     }
-    .event.sale {
+    
+    .vuecal__event.buy::after {
+        content: 'Покупка';
+        font-size: 0.7rem;
+    }
+
+    .vuecal__event.sale {
         background-color: var(--ion-color-success)
+    }
+
+    .vuecal__event.sale::after {
+        content: 'Продажа';
+        font-size: 0.7rem;
     }
 
     .vuecal__event-time {
@@ -224,9 +272,14 @@ export default defineComponent({
     }
 
     .weekday-label span:last-child {
+        width: 2.5rem;
+        height: 2.5rem;
         margin-top: 0.5rem;
         padding: 0.5rem;
         border-radius: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .weekday-label span:last-child {
