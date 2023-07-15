@@ -112,7 +112,7 @@ export default defineComponent({
 
             // 
             await loadWeekMode()
-            createElementStyle()
+            createElementStyle()            
             let weekdayLabels = document.querySelectorAll('.weekday-label')
             if(weekdayLabels) {
                 // console.log(weekdayLabels)
@@ -145,6 +145,7 @@ export default defineComponent({
                 availableBalance.value = store.state.availableBalance
                 let deal = {}
                 // console.log(myDeals.value)
+                createElementStyle()    
                 if(myDeals.value) {
                     myDeals.value.forEach((item) => {
                         deal = {
@@ -164,10 +165,6 @@ export default defineComponent({
                         deals.value.push(deal)
                     })
                 }
-
-
-            // 
-
                 // Отключаем спинер после загрузки данных
                 emit('spinnerOff', false)
                 // Очищаем временный массив с данными
@@ -175,7 +172,7 @@ export default defineComponent({
             }
 
         document.addEventListener('click', (e) => {
-            if(e.target.classList.contains('vuecal__arrow') === true) {
+            if(e.target.classList.contains('vuecal__arrow') === true || e.target.classList.contains('default') === true || e.target.classList.contains('angle') === true || e.target.classList.contains('vuecal__today-btn') === true) {
                 emit('spinnerOff', true)
                 loadWeekMode()
                 // createElementStyle()        
@@ -187,12 +184,15 @@ export default defineComponent({
             let dealEvents = document.querySelectorAll('.vuecal__event')
                 dealEvents.forEach(element => {
 
-                    element.insertAdjacentHTML("afterbegin", `
-                        
-                    <img src="img/common/dealType/bag-outline.svg">
-
-                    `);
-                    // `img/subjects/sale/${item.selectedProduct}.webp`
+                    let dealTypeImgArr = element.querySelectorAll('.dealTypeImg')
+                    // Если у элемент уже есть child <img>
+                    if(dealTypeImgArr.length === 0) {
+                        element.insertAdjacentHTML("afterbegin", `
+                            
+                            <img class="dealTypeImg" src="img/common/dealType/bag-outline.svg">
+    
+                        `);
+                    }
                 })
         }
 
