@@ -41,6 +41,7 @@
             </div>
 
             <!-- MODE WEEK PLANNER -->
+            <!-- :isMonthMode="isMonthMode"s -->
             <div v-else>
                 <WeekPlanner 
                     :deals="deals"

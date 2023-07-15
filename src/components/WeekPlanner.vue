@@ -1,6 +1,5 @@
+
 <template>
-
-
 
     <!-- https://antoniandre.github.io/vue-cal/ -->
     <vue-cal 
@@ -44,7 +43,7 @@ import { setIconByDealType } from '../helpers/setIconBy'
 
 export default defineComponent({
     name: 'WeekPlanner',
-    props: ['deals', 'weekendDays'],
+    props: ['deals', 'weekendDays', 'isMonthMode'],
     emits: ['openCreateModal', 'openDayModal', 'spinnerOff'],
     components: {
         VueCal,
@@ -112,6 +111,8 @@ export default defineComponent({
         onMounted(async () => {
 
             // 
+            await loadWeekMode()
+            createElementStyle()
             let weekdayLabels = document.querySelectorAll('.weekday-label')
             if(weekdayLabels) {
                 // console.log(weekdayLabels)
@@ -122,20 +123,8 @@ export default defineComponent({
                     })
                 })
             }
-            await loadWeekMode()
-            let dealEvents = document.querySelectorAll('.vuecal__event')
-            dealEvents.forEach(element => {
-
-                element.insertAdjacentHTML("afterbegin", `
-                    
-                <img src="img/common/dealType/bag-outline.svg">
-
-                `);
-                // `img/subjects/sale/${item.selectedProduct}.webp`
-            })
-            // 
         })
-        
+        // console.log(props.isMonthMode)s
         const loadWeekMode = async () => {
 
                 // Подтягиваем настройки аккаунта пользователя
@@ -154,7 +143,6 @@ export default defineComponent({
                 // запускаем функцию расчета баланса кошелька из store
                 store.methods.calculateBalance(myDeals.value)
                 availableBalance.value = store.state.availableBalance
-                
                 let deal = {}
                 // console.log(myDeals.value)
                 if(myDeals.value) {
@@ -177,21 +165,42 @@ export default defineComponent({
                     })
                 }
 
+
+            // 
+
                 // Отключаем спинер после загрузки данных
                 emit('spinnerOff', false)
                 // Очищаем временный массив с данными
                 deals.value = []
             }
 
-        // document.addEventListener('click', (e) => {
-        //     console.log(e.target)
-        // })
+        document.addEventListener('click', (e) => {
+            if(e.target.classList.contains('vuecal__arrow') === true) {
+                emit('spinnerOff', true)
+                loadWeekMode()
+                // createElementStyle()        
+            }
+            console.log(e.target)   
+        })
+
+        const createElementStyle = () => {
+            let dealEvents = document.querySelectorAll('.vuecal__event')
+                dealEvents.forEach(element => {
+
+                    element.insertAdjacentHTML("afterbegin", `
+                        
+                    <img src="img/common/dealType/bag-outline.svg">
+
+                    `);
+                    // `img/subjects/sale/${item.selectedProduct}.webp`
+                })
+        }
 
         // vuecal__cell vuecal__cell--disabled
         // vuecal__cell vuecal__cell--has-events
 
         return {
-            dailyHours, events, weekendDays, onEventClick, router, vueCalendar, createTempNewDeal, loadWeekMode, deals, myDeals, myDeals, myContacts, availableBalance, setIconByDealType, bagHandleOutline
+            dailyHours, events, weekendDays, onEventClick, router, vueCalendar, createTempNewDeal, loadWeekMode, deals, myDeals, myDeals, myContacts, availableBalance, setIconByDealType, bagHandleOutline, createElementStyle
         }
     }
 })
