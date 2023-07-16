@@ -46,6 +46,7 @@
                 <WeekPlanner 
                     :deals="deals"
                     @openCreateModal="openWeekCreateDeal"
+                    @choosenDate="choosenDateFromWeekPlanerFunc"
                     :weekendDays="weekendDays"
                     @openDayModal="openWeekendDayModaFunc"
                     @spinnerOff="spinnerFalse"
@@ -854,13 +855,27 @@
             }
 
 
+            const choosenDateFromWeekPlaner = ref({
+                date: ''
+            })
+            const choosenDateFromWeekPlanerFunc = (day) => {
+
+                if(day) {
+                    choosenDateFromWeekPlaner.value = {
+                        date: day
+                    }
+                    console.log(choosenDateFromWeekPlaner.value)
+                }
+            }
+
             const openWeekendDayModaFunc = () => {
                 console.log('opened')
+                // Надо чтобы эмиитилось каким-то образом дата выбранного дня
                 
             }
 
             return {
-                menu, user, router, pageTitle, choosenDate, spinner, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle, observer, availableBalance, addToLedger, toggleSettingsModal, isSettingsModalOpened, updateDaySaturation, userRecipes, called, toastWeekend, calendarModeFunc, isMonthMode, loadInMonthMode, loadWeekMode, deals, openWeekCreateDeal, deleteTempDeal, openWeekendDayModaFunc, spinnerFalse
+                menu, user, router, pageTitle, choosenDate, spinner, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle, observer, availableBalance, addToLedger, toggleSettingsModal, isSettingsModalOpened, updateDaySaturation, userRecipes, called, toastWeekend, calendarModeFunc, isMonthMode, loadInMonthMode, loadWeekMode, deals, openWeekCreateDeal, deleteTempDeal, openWeekendDayModaFunc, spinnerFalse, choosenDateFromWeekPlanerFunc, choosenDateFromWeekPlaner
             }
         }
     })

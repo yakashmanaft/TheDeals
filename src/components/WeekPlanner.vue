@@ -8,19 +8,19 @@
         :time-to="24 * 60"
         locale="ru"
         today-button
-        small
+
         :special-hours="dailyHours"
         :disable-views="['years', 'month', 'weeks', 'year', 'day']"  
         :events="events"
         :cell-click-hold="false"
         :drag-to-create-event="false"
-        :editable-events="{titleEditable: false}"
         @cell-dblclick="createTempNewDeal($event)"
         :on-event-click="onEventClick"
         :hideViewSelector="true"
-        :disableDays="weekendDays"
+        :disableDays="weekendDayArr"
         show-time-in-cells
         :min-event-width="100"
+        :editable-events="{titleEditable: false}"
         >
     </vue-cal>
     <!--  -->
@@ -35,22 +35,22 @@ import 'vue-cal/dist/vuecal.css'
 import { useRouter } from 'vue-router';
 import { format, parseISO, formatISO9075   } from 'date-fns';
 import { IonItem } from '@ionic/vue';
-import { bagHandleOutline } from 'ionicons/icons';
+import { bagHandleOutline, cubeOutline } from 'ionicons/icons';
 import store from '../store/index'
 
-import { IonIcon } from '@ionic/vue'
+import {  } from '@ionic/vue'
 import { setIconByDealType } from '../helpers/setIconBy'
 
 export default defineComponent({
     name: 'WeekPlanner',
     props: ['deals', 'weekendDays', 'isMonthMode'],
-    emits: ['openCreateModal', 'openDayModal', 'spinnerOff'],
+    emits: ['openCreateModal', 'openDayModal', 'spinnerOff', 'choosenDate'],
     components: {
         VueCal,
         //
-        IonIcon,
-    },
+        },
     setup(props, {emit}) {
+
         // Setup ref to router
         const router = useRouter();
         
@@ -62,7 +62,7 @@ export default defineComponent({
         const events = deals.value
         // ЧАСЫ РАБОТЫ
         const dailyHours = { from: 7 * 60, to: 19 * 60, class: 'business-hours' }
-
+            
         // ФУНКЦИЯ ОТКРЫТИЯ ВЫБРАННОГО В ЕЖЕДНЕВНИКЕ ДЕЛА
         const onEventClick = (event) => {
 
@@ -79,18 +79,23 @@ export default defineComponent({
         // МАССИВ ДЕЛ
         // const events = props.deals
         
-        // const weekendDays = ['2023-07-09']
+        // const weekendDays = ['2023-07-12', '2023-07-14']
         const weekendDays = ref([])
+        let weekendDayArr = []
         const formatDate = (days) => {
             days.forEach(element => {
-                let str = element.date.substr(0, 10)
-                weekendDays.value.push(str)
+
+                let str = element.date
+                // let str = element.date.substr(0, 10)
+                weekendDayArr.push(str)
             });
+            // console.log(weekendDayArr)
+            // return weekendDayArr
         }
 
         const userSettings = ref(store.state.userSettings[0])
-        
-        formatDate(props.weekendDays)
+        // console.log(userSettings.value.weekendDays)
+        formatDate(userSettings.value.weekendDays)
 
         const createTempNewDeal = (event, deleteEventFunction) => {
 
@@ -110,19 +115,13 @@ export default defineComponent({
 
         onMounted(async () => {
 
-            // 
+            // обновляем список дел в еженедельнике
             await loadWeekMode()
-            createElementStyle()            
-            let weekdayLabels = document.querySelectorAll('.weekday-label')
-            if(weekdayLabels) {
-                // console.log(weekdayLabels)
-                weekdayLabels.forEach(element => {
-                    element.addEventListener('click', (e) => {
-                        console.log(e.target)
-                        emit('openDayModal', true)
-                    })
-                })
-            }
+            // Обновляем стили в еженедельнике
+            createElementStyle()           
+            // оживляем клик по дням в неделе
+            // clickOnChoosenDay() 
+
         })
         // console.log(props.isMonthMode)s
         const loadWeekMode = async () => {
@@ -172,12 +171,22 @@ export default defineComponent({
             }
 
         document.addEventListener('click', (e) => {
+
+            // console.log(e.target)
+
+            // обновляем контент при переключении недели
             if(e.target.classList.contains('vuecal__arrow') === true || e.target.classList.contains('default') === true || e.target.classList.contains('angle') === true || e.target.classList.contains('vuecal__today-btn') === true) {
+                //  Отключаем спиннер
                 emit('spinnerOff', true)
-                loadWeekMode()
-                // createElementStyle()        
+                // Обновляем данные по дням
+                loadWeekMode()    
+                // Оживляем клик по выбранному дню
             }
-            console.log(e.target)   
+            
+            // Забираем строку значения выбранного дня
+            let choosenDay = e.target.textContent
+            clickOnChoosenDay(choosenDay)
+
         })
 
         const createElementStyle = () => {
@@ -185,22 +194,97 @@ export default defineComponent({
                 dealEvents.forEach(element => {
 
                     let dealTypeImgArr = element.querySelectorAll('.dealTypeImg')
-                    // Если у элемент уже есть child <img>
+
+                    // Если у элемент еще нет child <img>
                     if(dealTypeImgArr.length === 0) {
-                        element.insertAdjacentHTML("afterbegin", `
+                        if (element.classList.contains('sale')) { 
+                            element.insertAdjacentHTML("afterbegin", `
+                                
+                                <img class="dealTypeImg" src="img/common/dealType/bag-outline.svg">
+        
+                            `);
+                        } else if (element.classList.contains('buy')) {
                             
-                            <img class="dealTypeImg" src="img/common/dealType/bag-outline.svg">
+                            element.insertAdjacentHTML("afterbegin", `
+                                
+                                <img class="dealTypeImg" src="img/common/dealType/cube-outline.svg">
+        
+                            `);
+                        } else {
+
+                        }
     
-                        `);
                     }
                 })
+        }
+
+        //
+        let months = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+        //
+        const clickOnChoosenDay = (day) => {
+            let weekdayLabels = document.querySelectorAll('.weekday-label')
+            let monthYearWrapper = document.querySelector('.vuecal__title')
+            let monthYear = monthYearWrapper.querySelector('span')
+            if(weekdayLabels) {
+                // console.log(weekdayLabels)
+                weekdayLabels.forEach(element => {
+                    element.addEventListener('click', (e) => {
+                        
+                        // Просим открыть окно установки иили отмены выходного
+                        emit('openDayModal', true)
+                        
+                        // 
+                        // console.log(e)
+                    })
+                })
+            }
+            if(monthYear && monthYear !== '') {
+                if(day !== 'Месяцы' && day) {
+                    let setMonthString = (month) => {
+                        if(months.indexOf(month) + 1 < 10) {
+                            return `0${months.indexOf(month) + 1}`
+                        } else {
+                            return `${months.indexOf(month) + 1}`
+                        }
+                    }
+                    let setDatString = (day) => {
+                        if(day < 10) {
+                            return `0${day}`
+                        } else {
+                            return `${day}`
+                        }
+                    }
+                    // Создаем форматированную дату
+                    // '2023-07-14'
+                    let dirtyDateString;
+                    // Проверка на наличие двойных недель (задействовано два месяца)
+                    if(monthYear.textContent.indexOf('-') === -1) {
+                        dirtyDateString = `${monthYear.textContent} ${day.substring(1)}`
+                    } else {
+                        // Неделя 29 (Июль 2023)
+                        // Берем второй месяц, так каак при задвоение показывается переход недели в следующий месяц
+                        let tempStringArr = monthYear.textContent.split(' ')
+                        dirtyDateString = `${tempStringArr[0]} ${tempStringArr[1]} (${tempStringArr[4]} ${tempStringArr[5]} ${day.substring(1)}`
+                    }
+                    
+                    let dirtyDateStringWoBrackets = dirtyDateString.replace(/[()]/g, "")
+                    let dirtyDateArr =  dirtyDateStringWoBrackets.split(' ')
+                    let date = `${dirtyDateArr[3]}-${setMonthString(dirtyDateArr[2])}-${setDatString(dirtyDateArr[4])}`
+
+                    if (date) {
+                        emit('choosenDate', date)
+                        date = ''
+                    }
+
+                }
+            }
         }
 
         // vuecal__cell vuecal__cell--disabled
         // vuecal__cell vuecal__cell--has-events
 
         return {
-            dailyHours, events, weekendDays, onEventClick, router, vueCalendar, createTempNewDeal, loadWeekMode, deals, myDeals, myDeals, myContacts, availableBalance, setIconByDealType, bagHandleOutline, createElementStyle
+            dailyHours, events, weekendDays, onEventClick, router, vueCalendar, createTempNewDeal, loadWeekMode, deals, myDeals, myDeals, myContacts, availableBalance, setIconByDealType, bagHandleOutline, cubeOutline, createElementStyle, weekendDayArr, clickOnChoosenDay
         }
     }
 })
@@ -224,29 +308,23 @@ export default defineComponent({
         justify-content: center;
         align-items: center;
     }
-
-    .vuecal__event.new {
-        background-color: white; 
-        color: var(--ion-color-system);
-        border: 1px solid var(--ion-color-system)
-    }
     
     .vuecal__event.buy {
         background-color: var(--ion-color-warning);
-    }
-    
-    .vuecal__event.buy::after {
-        content: 'Покупка';
-        font-size: 0.7rem;
     }
 
     .vuecal__event.sale {
         background-color: var(--ion-color-success)
     }
 
-    .vuecal__event.sale::after {
-        content: 'Продажа';
-        font-size: 0.7rem;
+    .vuecal__event.new {
+        background-color: white; 
+        color: var(--ion-color-system);
+        border: 1px solid var(--ion-color-system)
+    }
+
+    .dealTypeImg {
+        color: white;
     }
 
     .vuecal__event-time {
