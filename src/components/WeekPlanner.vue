@@ -29,7 +29,7 @@
   
 <script>
 
-import { defineComponent, ref, onMounted } from 'vue';
+import { defineComponent, ref, onMounted, watch } from 'vue';
 import VueCal from 'vue-cal'
 import 'vue-cal/dist/vuecal.css'
 import { useRouter } from 'vue-router';
@@ -44,7 +44,7 @@ import { setIconByDealType } from '../helpers/setIconBy'
 export default defineComponent({
     name: 'WeekPlanner',
     props: ['deals', 'weekendDays', 'isMonthMode'],
-    emits: ['openCreateModal', 'openDayModal', 'spinnerOff', 'choosenDate'],
+    emits: ['openCreateModal', 'openDayModal', 'spinnerChangeStat', 'choosenDate'],
     components: {
         VueCal,
         //
@@ -114,7 +114,7 @@ export default defineComponent({
         }
 
         onMounted(async () => {
-
+            
             // обновляем список дел в еженедельнике
             await loadWeekMode()
             // Обновляем стили в еженедельнике
@@ -132,7 +132,7 @@ export default defineComponent({
                 // Дергаем из store выходные дни
                 userSettings.value = store.state.userSettings[0]
                 weekendDays.value = userSettings.value.weekendDays
-
+                formatDate(userSettings.value.weekendDays)
                 //
                 await store.methods.getMyDealsFromBD()
                 myDeals.value = store.state.myDealsArray
@@ -165,7 +165,7 @@ export default defineComponent({
                     })
                 }
                 // Отключаем спинер после загрузки данных
-                emit('spinnerOff', false)
+                emit('spinnerChangeStat', false)
                 // Очищаем временный массив с данными
                 deals.value = []
             }
@@ -176,8 +176,8 @@ export default defineComponent({
 
             // обновляем контент при переключении недели
             if(e.target.classList.contains('vuecal__arrow') === true || e.target.classList.contains('default') === true || e.target.classList.contains('angle') === true || e.target.classList.contains('vuecal__today-btn') === true) {
-                //  Отключаем спиннер
-                emit('spinnerOff', true)
+                // Включаем спиннер
+                emit('spinnerChangeStat', true)
                 // Обновляем данные по дням
                 loadWeekMode()    
                 // Оживляем клик по выбранному дню
@@ -186,7 +186,6 @@ export default defineComponent({
             // Забираем строку значения выбранного дня
             let choosenDay = e.target.textContent
             clickOnChoosenDay(choosenDay)
-
         })
 
         const createElementStyle = () => {
@@ -224,7 +223,10 @@ export default defineComponent({
         const clickOnChoosenDay = (day) => {
             let weekdayLabels = document.querySelectorAll('.weekday-label')
             let monthYearWrapper = document.querySelector('.vuecal__title')
-            let monthYear = monthYearWrapper.querySelector('span')
+            let monthYear;
+            if(monthYearWrapper) {
+                monthYear = monthYearWrapper.querySelector('span')
+            }
             if(weekdayLabels) {
                 // console.log(weekdayLabels)
                 weekdayLabels.forEach(element => {
@@ -232,13 +234,10 @@ export default defineComponent({
                         
                         // Просим открыть окно установки иили отмены выходного
                         emit('openDayModal', true)
-                        
-                        // 
-                        // console.log(e)
                     })
                 })
             }
-            if(monthYear && monthYear !== '') {
+            if(!props.isMonthMode && monthYear && monthYear !== '') {
                 if(day !== 'Месяцы' && day) {
                     let setMonthString = (month) => {
                         if(months.indexOf(month) + 1 < 10) {
@@ -261,10 +260,24 @@ export default defineComponent({
                     if(monthYear.textContent.indexOf('-') === -1) {
                         dirtyDateString = `${monthYear.textContent} ${day.substring(1)}`
                     } else {
-                        // Неделя 29 (Июль 2023)
-                        // Берем второй месяц, так каак при задвоение показывается переход недели в следующий месяц
+                        // Неделя 31 (Июль - Август 2023)
                         let tempStringArr = monthYear.textContent.split(' ')
-                        dirtyDateString = `${tempStringArr[0]} ${tempStringArr[1]} (${tempStringArr[4]} ${tempStringArr[5]} ${day.substring(1)}`
+                        // Если день состоит из ДВУХ символов - берем ПЕРВЫЙ (типа предыдущий который вот вот закончится) месяц из строки
+                        if(day.substring(1).length === 2) {
+                            dirtyDateString = `${tempStringArr[0]} ${tempStringArr[1]} (${tempStringArr[2]} ${tempStringArr[5]} ${day.substring(1)}`
+                        }
+                        // Если день состоит из ОДНОГО символов - берем ВТОРОЙ месяц из строки
+                        else if (day.substring(1).length === 1) {
+                            dirtyDateString = `${tempStringArr[0]} ${tempStringArr[1]} (${tempStringArr[4]} ${tempStringArr[5]} ${day.substring(1)}`
+                        }
+                        
+                        
+                        
+
+                        console.log(tempStringArr)
+
+                        // dirtyDateString = `${tempStringArr[0]} ${tempStringArr[1]} (${tempStringArr[4]} ${tempStringArr[5]} ${day.substring(1)}`
+
                     }
                     
                     let dirtyDateStringWoBrackets = dirtyDateString.replace(/[()]/g, "")
@@ -282,6 +295,10 @@ export default defineComponent({
 
         // vuecal__cell vuecal__cell--disabled
         // vuecal__cell vuecal__cell--has-events
+
+        watch(() => props.deals, (first, second) => {
+            
+        })
 
         return {
             dailyHours, events, weekendDays, onEventClick, router, vueCalendar, createTempNewDeal, loadWeekMode, deals, myDeals, myDeals, myContacts, availableBalance, setIconByDealType, bagHandleOutline, cubeOutline, createElementStyle, weekendDayArr, clickOnChoosenDay
@@ -318,9 +335,8 @@ export default defineComponent({
     }
 
     .vuecal__event.new {
-        background-color: white; 
-        color: var(--ion-color-system);
-        border: 1px solid var(--ion-color-system)
+        background-color: transparent; 
+        /* border: 1px solid var(--ion-color-medium) */
     }
 
     .dealTypeImg {
