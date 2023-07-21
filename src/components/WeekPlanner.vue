@@ -286,19 +286,20 @@ export default defineComponent({
             }
         }
 
-        window.addEventListener('click', (e) => {
-            if(e.target.classList.contains('vuecal__aarrow')) {
-                console.log(e.target)
+        // window.addEventListener('click', (e) => {
+        //     if(e.target.classList.contains('vuecal__aarrow')) {
+        //         console.log(e.target)
 
-            }
-        })
+        //     }
+        // })
 
+        // ЕСТЬ КУда ИСПОЛЬЗОВАТь???
         // vuecal__cell vuecal__cell--disabled
         // vuecal__cell vuecal__cell--has-events
 
-        watch(() => props.deals, (first, second) => {
+        // watch(() => props.deals, (first, second) => {
             
-        })
+        // })
 
         return {
             dailyHours, events, weekendDays, onEventClick, router, vueCalendar, createTempNewDeal, loadWeekMode, deals, myDeals, myDeals, myContacts, availableBalance, setIconByDealType, bagHandleOutline, cubeOutline, createElementStyle, weekendDayArr, clickOnChoosenDay
