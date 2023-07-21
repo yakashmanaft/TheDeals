@@ -270,13 +270,6 @@ export default defineComponent({
                         else if (day.substring(1).length === 1) {
                             dirtyDateString = `${tempStringArr[0]} ${tempStringArr[1]} (${tempStringArr[4]} ${tempStringArr[5]} ${day.substring(1)}`
                         }
-                        
-                        
-                        
-
-                        console.log(tempStringArr)
-
-                        // dirtyDateString = `${tempStringArr[0]} ${tempStringArr[1]} (${tempStringArr[4]} ${tempStringArr[5]} ${day.substring(1)}`
 
                     }
                     
