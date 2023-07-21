@@ -233,7 +233,7 @@ export default defineComponent({
                     element.addEventListener('click', (e) => {
                         
                         // Просим открыть окно установки иили отмены выходного
-                        emit('openDayModal', true)
+                        // emit('openDayModal', true)
                     })
                 })
             }
@@ -350,6 +350,17 @@ export default defineComponent({
         border-radius: 1rem;
         padding: 0.5rem 1rem;
         color: white;
+    }
+
+    .vuecal__arrow {
+        padding: 0;
+        margin: 1rem;
+    }
+
+    .vuecal__arrow i {
+        height: 1rem;
+        width: 1rem;
+        display: none;
     }
 
     .vuecal__today-btn span.default {
