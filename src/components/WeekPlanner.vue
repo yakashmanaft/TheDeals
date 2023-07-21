@@ -286,6 +286,13 @@ export default defineComponent({
             }
         }
 
+        window.addEventListener('click', (e) => {
+            if(e.target.classList.contains('vuecal__aarrow')) {
+                console.log(e.target)
+
+            }
+        })
+
         // vuecal__cell vuecal__cell--disabled
         // vuecal__cell vuecal__cell--has-events
 
@@ -334,6 +341,7 @@ export default defineComponent({
 
     .dealTypeImg {
         color: white;
+        max-width: 2rem;
     }
 
     .vuecal__event-time {
@@ -353,14 +361,32 @@ export default defineComponent({
     }
 
     .vuecal__arrow {
+        position: relative;
         padding: 0;
-        margin: 1rem;
+        margin: 0 1rem;
+        height: 1rem;
+        width: 1rem;
+    }
+
+    .vuecal__arrow--next {
+        margin-right: 2rem;
     }
 
     .vuecal__arrow i {
+        position: absolute;
+        top: -0.3rem;
+        left: 0;
         height: 1rem;
         width: 1rem;
         display: none;
+        width: 1.5rem;
+        height: 1.5rem;
+        border: 0;
+        border-radius: 2px;
+    }
+
+    .vuecal__arrow i::before {
+        content: '';
     }
 
     .vuecal__today-btn span.default {
