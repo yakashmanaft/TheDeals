@@ -1918,7 +1918,7 @@
                     // При создании он всеравно есть, но изначально пустой
                     // dealStatus.value = 'deal-complete'
                     // currentDeal.value.dealStatus = 'deal-complete'
-                    alert('ViewDeal: статус дела изменен на ЗАВЕРШЕН')
+                    // alert('ViewDeal: Дело Завершено')
                  } else if (isReturnData.length !== 0) {
                     // Если массив содержит невозвращенные атрибуты какого-либо предмета дела
                     if(isReturnData.includes(false)) {
