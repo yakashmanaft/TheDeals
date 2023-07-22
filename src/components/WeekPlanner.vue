@@ -297,9 +297,9 @@ export default defineComponent({
         // vuecal__cell vuecal__cell--disabled
         // vuecal__cell vuecal__cell--has-events
 
-        // watch(() => props.deals, (first, second) => {
-            
-        // })
+        watch(() => props.deals, (first, second) => {
+            console.log(props.deals)
+        })
 
         return {
             dailyHours, events, weekendDays, onEventClick, router, vueCalendar, createTempNewDeal, loadWeekMode, deals, myDeals, myDeals, myContacts, availableBalance, setIconByDealType, bagHandleOutline, cubeOutline, createElementStyle, weekendDayArr, clickOnChoosenDay
