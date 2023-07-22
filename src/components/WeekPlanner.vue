@@ -187,39 +187,49 @@ export default defineComponent({
             clickOnChoosenDay(choosenDay)
         })
 
+        const checkClass = (classList, element) => {
+
+            if(classList.contains('deal-complete')) {
+                element.insertAdjacentHTML('afterbegin', `
+                    <img class="dealTypeImg" src="img/common/week-planner-marks/checkmark-outline.svg">
+                `)
+            } else if (classList.contains('sale')) {
+                element.insertAdjacentHTML("afterbegin", `
+                
+                <img class="dealTypeImg" src="img/common/week-planner-marks/bag-outline.svg">
+                
+                `);
+            } else if (classList.contains('buy')) {
+                element.insertAdjacentHTML("afterbegin", `
+                
+                <img class="dealTypeImg" src="img/common/week-planner-marks/cube-outline.svg">
+                
+                `);
+            }
+
+        }
+
         const createElementStyle = () => {
+
             let dealEvents = document.querySelectorAll('.vuecal__event')
+
             dealEvents.forEach(element => {
+
                 let dealTypeImgArr = element.querySelectorAll('.dealTypeImg')
 
-                // Если у элемент еще нет child <img>
                 if(dealTypeImgArr.length === 0) {
-                    if(element.classList.contains('deal-complete')) {
-                        // element.insertAdjacentHTML("afterbegin", `
-                                
-                        //     <img class="dealTypeImg" src="img/common/week-planner-marks/checkmark-outline.svg">
-    
-                        // `);
-                    } else if (!element.classList.contains('deal-complete')){
-                        
-                        if (element.classList.contains('sale')) { 
-                            element.insertAdjacentHTML("afterbegin", `
-                                
-                                <img class="dealTypeImg" src="img/common/week-planner-marks/bag-outline.svg">
-        
-                            `);
-                        } else if (element.classList.contains('buy')) {
-                            
-                            element.insertAdjacentHTML("afterbegin", `
-                                
-                                <img class="dealTypeImg" src="img/common/week-planner-marks/cube-outline.svg">
-        
-                            `);
-                        }  
-                    }
+                    checkClass(element.classList, element)
                 } else {
-                    // Ничего не делаем, дабы не задублировать иконки
+
+                    let imgEl = element.querySelector('img')
+
+                    // if(imgEl) {
+    
+                        imgEl.remove(element)
+                    // }
+                    checkClass(element.classList, element)
                 }
+                
             })
         }
 
@@ -308,7 +318,7 @@ export default defineComponent({
         })
 
         return {
-            dailyHours, events, weekendDays, onEventClick, router, vueCalendar, createTempNewDeal, loadWeekMode, deals, myDeals, myDeals, myContacts, availableBalance, setIconByDealType, bagHandleOutline, cubeOutline, createElementStyle, weekendDayArr, clickOnChoosenDay, checkmarkOutline
+            dailyHours, events, weekendDays, onEventClick, router, vueCalendar, createTempNewDeal, loadWeekMode, deals, myDeals, myDeals, myContacts, availableBalance, setIconByDealType, bagHandleOutline, cubeOutline, createElementStyle, weekendDayArr, clickOnChoosenDay, checkmarkOutline, checkClass
         }
     }
 })
