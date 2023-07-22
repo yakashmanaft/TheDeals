@@ -41,7 +41,7 @@
                 </ion-button>
 
                 <!-- SETTINGS -->
-                <ion-button v-if="router.currentRoute._value.meta.title === 'Calendar'" @click="$emit('goToSettings', true)">
+                <ion-button v-if="router.currentRoute._value.meta.title === 'Calendar' && isMonth" @click="$emit('goToSettings', true)">
                     <ion-icon color="primary" :icon="settingsOutline"></ion-icon>
                 </ion-button>
 

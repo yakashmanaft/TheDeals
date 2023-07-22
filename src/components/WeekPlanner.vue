@@ -8,7 +8,6 @@
         :time-to="24 * 60"
         locale="ru"
         today-button
-
         :special-hours="dailyHours"
         :disable-views="['years', 'month', 'weeks', 'year', 'day']"  
         :events="events"
@@ -35,7 +34,7 @@ import 'vue-cal/dist/vuecal.css'
 import { useRouter } from 'vue-router';
 import { format, parseISO, formatISO9075   } from 'date-fns';
 import { IonItem } from '@ionic/vue';
-import { bagHandleOutline, cubeOutline } from 'ionicons/icons';
+import { bagHandleOutline, cubeOutline, checkmarkOutline } from 'ionicons/icons';
 import store from '../store/index'
 
 import {  } from '@ionic/vue'
@@ -144,7 +143,6 @@ export default defineComponent({
                 availableBalance.value = store.state.availableBalance
                 let deal = {}
                 // console.log(myDeals.value)
-                createElementStyle()    
                 if(myDeals.value) {
                     myDeals.value.forEach((item) => {
                         deal = {
@@ -156,14 +154,15 @@ export default defineComponent({
                             end: parseISO(item.executionDateEnd),
                             // title: item.contactID,
                             // content: 'content'
-                            class: `${item.dealType}`,
-
+                            class: `${item.dealType} importance${item.dealImportance} ${item.dealStatus}`,
+                            
                             // Докидываем в объект общие данные по делу
-                            fullData: item
+                            fullData: item,
                         }
                         deals.value.push(deal)
                     })
                 }
+                createElementStyle()    
                 // Отключаем спинер после загрузки данных
                 emit('spinnerChangeStat', false)
                 // Очищаем временный массив с данными
@@ -190,31 +189,38 @@ export default defineComponent({
 
         const createElementStyle = () => {
             let dealEvents = document.querySelectorAll('.vuecal__event')
-                dealEvents.forEach(element => {
+            dealEvents.forEach(element => {
+                let dealTypeImgArr = element.querySelectorAll('.dealTypeImg')
 
-                    let dealTypeImgArr = element.querySelectorAll('.dealTypeImg')
-
-                    // Если у элемент еще нет child <img>
-                    if(dealTypeImgArr.length === 0) {
+                // Если у элемент еще нет child <img>
+                if(dealTypeImgArr.length === 0) {
+                    if(element.classList.contains('deal-complete')) {
+                        // element.insertAdjacentHTML("afterbegin", `
+                                
+                        //     <img class="dealTypeImg" src="img/common/week-planner-marks/checkmark-outline.svg">
+    
+                        // `);
+                    } else if (!element.classList.contains('deal-complete')){
+                        
                         if (element.classList.contains('sale')) { 
                             element.insertAdjacentHTML("afterbegin", `
                                 
-                                <img class="dealTypeImg" src="img/common/dealType/bag-outline.svg">
+                                <img class="dealTypeImg" src="img/common/week-planner-marks/bag-outline.svg">
         
                             `);
                         } else if (element.classList.contains('buy')) {
                             
                             element.insertAdjacentHTML("afterbegin", `
                                 
-                                <img class="dealTypeImg" src="img/common/dealType/cube-outline.svg">
+                                <img class="dealTypeImg" src="img/common/week-planner-marks/cube-outline.svg">
         
                             `);
-                        } else {
-
-                        }
-    
+                        }  
                     }
-                })
+                } else {
+                    // Ничего не делаем, дабы не задублировать иконки
+                }
+            })
         }
 
         //
@@ -302,7 +308,7 @@ export default defineComponent({
         })
 
         return {
-            dailyHours, events, weekendDays, onEventClick, router, vueCalendar, createTempNewDeal, loadWeekMode, deals, myDeals, myDeals, myContacts, availableBalance, setIconByDealType, bagHandleOutline, cubeOutline, createElementStyle, weekendDayArr, clickOnChoosenDay
+            dailyHours, events, weekendDays, onEventClick, router, vueCalendar, createTempNewDeal, loadWeekMode, deals, myDeals, myDeals, myContacts, availableBalance, setIconByDealType, bagHandleOutline, cubeOutline, createElementStyle, weekendDayArr, clickOnChoosenDay, checkmarkOutline
         }
     }
 })
@@ -327,12 +333,32 @@ export default defineComponent({
         align-items: center;
     }
     
+    /*
     .vuecal__event.buy {
-        background-color: var(--ion-color-warning);
     }
 
     .vuecal__event.sale {
-        background-color: var(--ion-color-success)
+    }
+    */
+
+    /* Стили для раскраски важности делаа */
+    .vuecal__event.importance1,
+    .vuecal__event.importance2 {
+        background-color: var(--ion-color-success);
+    }
+
+    .vuecal__event.importance3,
+    .vuecal__event.importance4 {
+        background-color: var(--ion-color-warning);
+    }
+
+    .vuecal__event.importance5 {
+        background-color: var(--ion-color-danger)
+    }
+
+    /* Стили для раскраски по статусу дела */
+    .vuecal__event.deal-complete {
+        background-color: var(--ion-color-light);
     }
 
     .vuecal__event.new {
