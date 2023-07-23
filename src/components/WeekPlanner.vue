@@ -22,6 +22,10 @@
         :editable-events="{titleEditable: false}"
         >
     </vue-cal>
+    <br>
+    <br>
+    <br>
+    <br>
     <!--  -->
 
   </template>
@@ -43,7 +47,7 @@ import { setIconByDealType } from '../helpers/setIconBy'
 export default defineComponent({
     name: 'WeekPlanner',
     props: ['deals', 'weekendDays', 'isMonthMode'],
-    emits: ['openCreateModal', 'openDayModal', 'spinnerChangeStat', 'choosenDate'],
+    emits: ['openCreateModal', 'spinnerChangeStat', 'choosenDate'],
     components: {
         VueCal,
         //
@@ -98,15 +102,15 @@ export default defineComponent({
 
         const createTempNewDeal = (event, deleteEventFunction) => {
 
-            vueCalendar.value.createEvent(
-                event,
-                60,
-                { 
-                    // title: 'New Event', 
-                    class: 'event new',
-                    // content: '<span>3123</span>'
-                }
-            )
+            // vueCalendar.value.createEvent(
+            //     event,
+            //     60,
+            //     { 
+            //         // title: 'New Event', 
+            //         class: 'event new',
+            //         // content: '<span>3123</span>'
+            //     }
+            // )
             // console.log(event)
             emit('openCreateModal', event)
 
@@ -220,13 +224,13 @@ export default defineComponent({
                 if(dealTypeImgArr.length === 0) {
                     checkClass(element.classList, element)
                 } else {
-
-                    let imgEl = element.querySelector('img')
+                    let imgEl = element.querySelector('.dealTypeImg')
 
                     // if(imgEl) {
     
                         imgEl.remove(element)
                     // }
+
                     checkClass(element.classList, element)
                 }
                 
@@ -302,12 +306,18 @@ export default defineComponent({
             }
         }
 
-        // window.addEventListener('click', (e) => {
-        //     if(e.target.classList.contains('vuecal__aarrow')) {
-        //         console.log(e.target)
+        window.addEventListener('click', (e) => {
 
-        //     }
-        // })
+                if(e.target.parentNode !== null) {
+
+                    let cellTimeLabel = e.target.parentNode
+                    let cellColumn = cellTimeLabel.parentNode
+
+                    if(cellColumn.parentNode.classList.contains('vuecal__cell--disabled')) {
+                        alert('выходной день')
+                    }
+                }
+        })
 
         // ЕСТЬ КУда ИСПОЛЬЗОВАТь???
         // vuecal__cell vuecal__cell--disabled
@@ -484,9 +494,5 @@ export default defineComponent({
     .week-view {
         /* height: 91vh; */
 
-    }
-    .vuecal__time-column {
-        /* position: absolute;
-        opacity: 0; */
     }
 </style>

@@ -48,7 +48,6 @@
                     @openCreateModal="openWeekCreateDeal"
                     @choosenDate="dateMakeWeekendWPFunc"
                     :weekendDays="weekendDays"
-                    @openDayModal="openWeekendDayModaFunc"
                     @spinnerChangeStat="spinnerChangeStat"
                 />
             </div>
