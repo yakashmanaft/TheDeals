@@ -689,6 +689,9 @@
             const searchedContacts = computed(() => {
                 return searchFilter(myContactsArray.value, searchDealContact.value)
             })
+            watch(myContactsArray, () => {
+                console.log(myContactsArray.value)
+            })
             // ============================ управление current deal subject ================================
             const isCreateNewSubjectOpened = ref(false);
             // Открывает модалку создания нового предмета к текущему делу
@@ -864,6 +867,7 @@
             // 
             const currentDealType = ref('');
             const dealImportance = ref()
+            
             watchEffect(() => {
                 myContactsArray.value = props.myContacts;
                 dealData.value = props.dealData;
@@ -1402,25 +1406,7 @@
             watch(dealComments, () => {
                 dealData.value.comments = dealComments.value;
             })
-
-            // должна вызываться после emit то есть вызывается в: calendar.vue и deals.vue
-            // const addToLedger = async (amount) => {
-            //     try {
-            //         const { error } = await supabase.from('ledger').insert([{
-            //             dealID: dealData.value.id,
-            //             uid: dealData.value.uid,
-            //             contactID: dealData.value.contactID,
-            //             dealType: dealData.value.dealType,
-            //             amount: amount,
-            //             userEmail: dealData.value.email
-            //         }])
-            //         if(error) throw error
-            //     } catch (error) {
-            //         alert(`Error: ${error.message}`)
-            //     }
-            // }
-            //
-            // 
+ 
             const recipeArray = ref([])
             const showSelectedRecipe = async (recipeID) => {
                 // console.log(recipeID)

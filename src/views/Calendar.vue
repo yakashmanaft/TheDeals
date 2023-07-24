@@ -373,7 +373,7 @@
                 } else {
                     if(choosenDate.value) {
                         isViewChoosenDateOpened.value = true
-                        console.log(choosenDate.value)
+                        // console.log(choosenDate.value)
                         await store.methods.getMyContactsFromDB()
                         myContacts.value = store.state.myContactsArray
                     }
@@ -869,9 +869,11 @@
                 
             }
 
-            const openWeekCreateDeal = (event) => {
-
+            const openWeekCreateDeal = async (event) => {
                 isViewDealModalOpened.value = true
+                //
+                await store.methods.getMyContactsFromDB()
+                myContacts.value = store.state.myContactsArray
                 //
                 dealData.value.executionDate = formatISO(event)
                 dealData.value.executionDateEnd = setExecutionHours(formatISO9075(event))
