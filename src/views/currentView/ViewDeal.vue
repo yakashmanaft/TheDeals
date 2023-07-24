@@ -719,8 +719,8 @@
             // console.log(route.params)
             const info = route.params;
             // console.log(route.params.isMonth)
-            const currentDeal = ref(JSON.parse(info.deal))
-            console.log(currentDeal.value.executionDate)
+            const currentDeal = ref()
+            // console.log(currentDeal.value.executionDate)
             // Храним на случай нажатия Отмены при редактировании контакта
             // const tempData = JSON.parse(info.deal)
             //
@@ -745,17 +745,89 @@
             //
             const availableBalance = ref(0);
             //
+            // храним значение contactID
+            const dealContactID = ref();
+            // 
+            const dealContact = ref();
+            // 
+            const tempContactName = ref()
+            // храним значение dealStatus
+            const dealStatus = ref();
+            //
+            const dealImportance = ref()
+            // 
+            const dealComments = ref();
+            // считаем задолженность по делу
+            const debt = ref()
+            //
+            const contactObject = ref()
+            const contactAdressesArray = ref([])
+            //
+            const showNameByID = (contactID) => {
+                const contact = myContacts.value.filter(contact => contact.id === +contactID)
+                // Проверяка
+                if(contact.length !== 0) {
+                    contactAdressesArray.value = contact[0].addresses
+                    const nameByID = (contact[0].contactInfo.surname + ' ' + contact[0].contactInfo.name).toString().replace(/"/g, "")
+                    contactObject.value = contact[0]
+                    return nameByID;
+                } else if (contact.length === 0 && currentDeal.value.tempContactName) {
+                    return currentDeal.value.tempContactName
+                } else if (contact.length === 0 && !currentDeal.value.tempContactName) {
+                    const nameByID = 'Неизвестный.'
+                    return nameByID;
+                }
+            }
+
+            //
+            const uploadFunc = async () => {
+                if(info.deal) {
+
+                    currentDeal.value = JSON.parse(info.deal)
+                    dealContactID.value = currentDeal.value.contactID
+                    dealContact.value = showNameByID(dealContactID.value)
+                    dealStatus.value = currentDeal.value.dealStatus
+                    tempContactName.value = showNameByID(dealContactID.value)
+                    dealImportance.value = currentDeal.value.dealImportance
+                    dealComments.value = currentDeal.value.comments
+
+                } else if(!info.deal){
+
+                    let currentRouteFullPath = router.currentRoute._value.fullPath;
+                    let currentDealID = currentRouteFullPath.slice(11)
+
+                    await store.methods.getMyDealsFromBD();
+                    myDeals.value = store.state.myDealsArray;
+                    let deal = myDeals.value.find(e => e.id === +currentDealID)
+                    currentDeal.value = deal
+
+                    dealContactID.value = currentDeal.value.contactID
+                    dealContact.value = showNameByID(dealContactID.value)
+                    dealStatus.value = currentDeal.value.dealStatus
+                    tempContactName.value = showNameByID(dealContactID.value)
+                    dealImportance.value = currentDeal.value.dealImportance
+                    dealComments.value = currentDeal.value.comments
+
+                    await store.methods.getMyContactsFromDB()
+                    myContacts.value = store.state.myContactsArray;
+                }
+            }
+            uploadFunc()
+
             onMounted(async () => {
+                console.log(currentDeal.value.dealType)
                 if(currentDeal.value.dealType === 'buy') {
                     await store.methods.getMyDealsFromBD();
                     myDeals.value = store.state.myDealsArray;
                     // запускаем функцию расчета баланса кошелька из store
                     store.methods.calculateBalance(myDeals.value)
                     availableBalance.value = store.state.availableBalance
-                } else if (currentDeal.value.dealType === 'sale') {
+                } 
+                else if (currentDeal.value.dealType === 'sale') {
                     await store.methods.getUserRecipesFromBD();
                     userRecipeArray.value = store.state.userRecipeArray;
-                }
+                } 
+
             })
             //
             const goToContact = (id) => {
@@ -776,30 +848,11 @@
             }
 
             //
-            const contactObject = ref()
-            const contactAdressesArray = ref([])
-            const showNameByID = (contactID) => {
-                const contact = myContacts.value.filter(contact => contact.id === +contactID)
-                // Проверяка
-                if(contact.length !== 0) {
-                    contactAdressesArray.value = contact[0].addresses
-                    const nameByID = (contact[0].contactInfo.surname + ' ' + contact[0].contactInfo.name).toString().replace(/"/g, "")
-                    contactObject.value = contact[0]
-                    return nameByID;
-                } else if (contact.length === 0 && currentDeal.value.tempContactName) {
-                    return currentDeal.value.tempContactName
-                } else if (contact.length === 0 && !currentDeal.value.tempContactName) {
-                    const nameByID = 'Неизвестный.'
-                    return nameByID;
-                }
-            }
-            // храним значение contactID
-            const dealContactID = ref();
-            dealContactID.value = currentDeal.value.contactID
-            const dealContact = ref(showNameByID(dealContactID.value));
-            // храним значение dealStatus
-            const dealStatus = ref(currentDeal.value.dealStatus);
-            //
+            const culcDealDebt = (totalDealPrice, dealPaid) => {
+                // Пока так
+                debt.value = totalDealPrice - dealPaid
+                return debt.value
+            } 
             // const nextDealStatus = ref();
             // const prevDealStatus = ref();
             // следим за изменениями значения dealStatus у текущего дела и обновляем его в БД
@@ -970,7 +1023,6 @@
                 }
             }
             //
-            const tempContactName = ref(showNameByID(dealContactID.value))
             const choose = async (contact) => {
                 dealContact.value = `${contact.contactInfo.name} ${contact.contactInfo.surname}`
                 tempContactName.value = `${contact.contactInfo.name} ${contact.contactInfo.surname}`
@@ -1816,14 +1868,6 @@
                 return (weight / 1000).toFixed(3)
             }
 
-            // считаем задолженность по делу
-            const debt = ref()
-            //
-            const culcDealDebt = (totalDealPrice, dealPaid) => {
-                // Пока так
-                debt.value = totalDealPrice - dealPaid
-                return debt.value
-            } 
             // управление модалкой deal paid
             const isDealPaidMenuOpened = ref(false)
             //
@@ -1954,8 +1998,6 @@
                 }
             }
             // ================================ ВАЖНОСТЬ ДЕЛА =================================
-            //const currentDeal = ref(JSON.parse(info.deal))
-            const dealImportance = ref(currentDeal.value.dealImportance)
             //
             const setRatingValue = async (ratingValue) => {
                 if(currentDeal.value.dealStatus === 'deal-complete') {
@@ -2009,7 +2051,6 @@
                 }
             }
             //
-            const dealComments = ref(currentDeal.value.comments);
             watch(dealComments, async () => {
                 currentDeal.value.comments = dealComments.value
                 // update()
@@ -2100,7 +2141,7 @@
             
 
             return {
-                currency, spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, setPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setNewPersonQty, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, shippingTypeList, dealShippingType, shippingPrice, shippingAddress, sumAllTotalSubjectPriceFunc, translateShippingType, translateSelectedProduct, culcSubjectWeight, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, culcBuySubjectWeight, debt, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, refreshDebtValue, finishDeal, setMarkerAttrColor, shapes, checkmarkDone, availableBalance, currentPriceSubject, personPortionGram, dealImportance, setRatingValue, addToLedger, dealComments, substructFromWarehouseToast, addToWarehouseFunc, showSelectedRecipe, userRecipeArray, openSearchContactMenu, calcTotalDealPrice, goToContact, tempContactName, isAddDeliveryAddressMenuOpened, addDeliveryAddressMenu, deleteCurrentDeliveryAddress, showCurrentDeliveryAddressInfo, currentDeliveryAddressIndex, deleteDeliveryAddressOpened, deliveryAddressToDelete, openDeleteDeliveryAddressModal, deleteDeliveryAddressButtons, contactAdressesArray, goToMyContacts, contactObject, dateUpdated
+                currency, spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, setPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setNewPersonQty, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, shippingTypeList, dealShippingType, shippingPrice, shippingAddress, sumAllTotalSubjectPriceFunc, translateShippingType, translateSelectedProduct, culcSubjectWeight, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, culcBuySubjectWeight, debt, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, refreshDebtValue, finishDeal, setMarkerAttrColor, shapes, checkmarkDone, availableBalance, currentPriceSubject, personPortionGram, dealImportance, setRatingValue, addToLedger, dealComments, substructFromWarehouseToast, addToWarehouseFunc, showSelectedRecipe, userRecipeArray, openSearchContactMenu, calcTotalDealPrice, goToContact, tempContactName, isAddDeliveryAddressMenuOpened, addDeliveryAddressMenu, deleteCurrentDeliveryAddress, showCurrentDeliveryAddressInfo, currentDeliveryAddressIndex, deleteDeliveryAddressOpened, deliveryAddressToDelete, openDeleteDeliveryAddressModal, deleteDeliveryAddressButtons, contactAdressesArray, goToMyContacts, contactObject, dateUpdated, uploadFunc
             }
         }
     })

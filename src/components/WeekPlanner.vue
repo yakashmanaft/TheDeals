@@ -175,20 +175,36 @@ export default defineComponent({
 
         document.addEventListener('click', (e) => {
 
-            // console.log(e.target)
-
             // обновляем контент при переключении недели
-            if(e.target.classList.contains('vuecal__arrow') === true || e.target.classList.contains('default') === true || e.target.classList.contains('angle') === true || e.target.classList.contains('vuecal__today-btn') === true) {
-                // Включаем спиннер
-                emit('spinnerChangeStat', true)
-                // Обновляем данные по дням
-                loadWeekMode()    
-                // Оживляем клик по выбранному дню
+            if(e.target.classList != null) {
+
+                if(e.target.classList.contains('vuecal__arrow') === true || e.target.classList.contains('default') === true || e.target.classList.contains('angle') === true || e.target.classList.contains('vuecal__today-btn') === true) {
+    
+                    // Включаем спиннер
+                    emit('spinnerChangeStat', true)
+                    // Обновляем данные по дням
+                    loadWeekMode()    
+    
+                } 
             }
+            // дергаем день из weekday-label
+            if(e.target.parentNode) {
+                    // let cellTimeLabel = e.target.parentNode
+                    // let cellColumn = cellTimeLabel.parentNode
+                if (e.target.parentNode.classList.contains('weekday-label')) {
+    
+                    console.log(e.target)
+                    // Забираем строку значения выбранного дня
+                    let choosenDay = e.target.textContent
+                    clickOnChoosenDay(choosenDay)
+                } else if (e.target.parentNode.parentNode.parentNode.classList.contains('vuecal__cell--disabled')) {
+                    alert('WeekPlanner: выходной день')
+                }
+            }
+
+
+            // 
             
-            // Забираем строку значения выбранного дня
-            let choosenDay = e.target.textContent
-            clickOnChoosenDay(choosenDay)
         })
 
         const checkClass = (classList, element) => {
@@ -247,16 +263,16 @@ export default defineComponent({
             if(monthYearWrapper) {
                 monthYear = monthYearWrapper.querySelector('span')
             }
-            if(weekdayLabels) {
-                // console.log(weekdayLabels)
-                weekdayLabels.forEach(element => {
-                    element.addEventListener('click', (e) => {
+            // if(weekdayLabels) {
+            //     // console.log(weekdayLabels)
+            //     weekdayLabels.forEach(element => {
+            //         element.addEventListener('click', (e) => {
                         
-                        // Просим открыть окно установки иили отмены выходного
-                        // emit('openDayModal', true)
-                    })
-                })
-            }
+            //             // Просим открыть окно установки иили отмены выходного
+            //             // emit('openDayModal', true)
+            //         })
+            //     })
+            // }
             if(!props.isMonthMode && monthYear && monthYear !== '') {
                 if(day !== 'Месяцы' && day) {
                     let setMonthString = (month) => {
@@ -299,6 +315,7 @@ export default defineComponent({
 
                     if (date) {
                         emit('choosenDate', date)
+                        console.log(date)
                         date = ''
                     }
 
@@ -306,18 +323,19 @@ export default defineComponent({
             }
         }
 
-        window.addEventListener('click', (e) => {
+        // window.addEventListener('click', (e) => {
 
-                if(e.target.parentNode !== null) {
+        //         if(e.target.parentNode !== null) {
 
-                    let cellTimeLabel = e.target.parentNode
-                    let cellColumn = cellTimeLabel.parentNode
+        //             let cellTimeLabel = e.target.parentNode
+        //             let cellColumn = cellTimeLabel.parentNode
 
-                    if(cellColumn.parentNode.classList.contains('vuecal__cell--disabled')) {
-                        alert('выходной день')
-                    }
-                }
-        })
+        //             if(cellColumn.parentNode.classList.contains('vuecal__cell--disabled')) {
+        //                 alert('WeekPlanner: выходной день')
+        //             }
+
+        //         }
+        // })
 
         // ЕСТЬ КУда ИСПОЛЬЗОВАТь???
         // vuecal__cell vuecal__cell--disabled
