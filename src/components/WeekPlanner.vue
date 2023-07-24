@@ -101,7 +101,7 @@ export default defineComponent({
         formatDate(userSettings.value.weekendDays)
 
         const createTempNewDeal = (event, deleteEventFunction) => {
-
+            // console.log(formatDate(event))
             // vueCalendar.value.createEvent(
             //     event,
             //     60,
@@ -323,9 +323,9 @@ export default defineComponent({
         // vuecal__cell vuecal__cell--disabled
         // vuecal__cell vuecal__cell--has-events
 
-        watch(() => props.deals, (first, second) => {
-            console.log(props.deals)
-        })
+        // watch(() => props.deals, (first, second) => {
+        //     console.log(props.deals)
+        // })
 
         return {
             dailyHours, events, weekendDays, onEventClick, router, vueCalendar, createTempNewDeal, loadWeekMode, deals, myDeals, myDeals, myContacts, availableBalance, setIconByDealType, bagHandleOutline, cubeOutline, createElementStyle, weekendDayArr, clickOnChoosenDay, checkmarkOutline, checkClass

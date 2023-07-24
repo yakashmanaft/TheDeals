@@ -720,6 +720,7 @@
             const info = route.params;
             // console.log(route.params.isMonth)
             const currentDeal = ref(JSON.parse(info.deal))
+            console.log(currentDeal.value.executionDate)
             // Храним на случай нажатия Отмены при редактировании контакта
             // const tempData = JSON.parse(info.deal)
             //

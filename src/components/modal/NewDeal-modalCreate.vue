@@ -674,6 +674,9 @@
                 if(eventDate === '') {
                     return 'Выберите дату'
                 }
+                // console.log(eventDate)
+                // НАДО: 2023-07-13T11:39:00+05:00
+                // ЕСТЬ ИЗ ВИК ПЛАНЕРА: 2023-07-25 04:48:00
                 const data = eventDate;
                 const formattedString = format(parseISO(data), 'd MMMM Y к HH:mm');
 

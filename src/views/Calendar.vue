@@ -129,7 +129,7 @@
 
 <script>
     import { defineComponent, ref, onMounted, watch } from 'vue';
-    import { format, parseISO, formatISO9075   } from 'date-fns';
+    import { format, parseISO, formatISO9075, formatISO   } from 'date-fns';
     import { ru } from 'date-fns/locale';
     //
     import Header from '../components/headers/Header.vue';
@@ -870,12 +870,11 @@
             }
 
             const openWeekCreateDeal = (event) => {
-                let date = formatISO9075(event)
-                //
+
                 isViewDealModalOpened.value = true
                 //
-                dealData.value.executionDate = date
-                dealData.value.executionDateEnd = setExecutionHours(date)
+                dealData.value.executionDate = formatISO(event)
+                dealData.value.executionDateEnd = setExecutionHours(formatISO9075(event))
 
             }
 
@@ -944,8 +943,12 @@
                     } 
                     // Если выбранный день не выходной
                     else {
-                        console.log('Рабочий день')
-                        asSetWeekendDay.value = true
+                        if(isViewDealModalOpened.value) {
+
+                        } else {
+                            console.log('Рабочий день')
+                            asSetWeekendDay.value = true
+                        }
                     }
 
                 }
