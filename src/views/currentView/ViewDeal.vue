@@ -104,92 +104,6 @@
                     </ion-grid>
                 </ion-item-group>
 
-                <!-- =================================== Важность дела ====================================== -->
-                <ion-item-group class="ion-text-left ion-padding-horizontal">
-                    <!-- Заголовок -->
-                    <ion-text>
-                        <h4>Важность дела</h4>
-                    </ion-text>
-                    <!--  -->
-                    <StarRaiting
-                        :value="dealImportance"
-                        @getRatingValue="setRatingValue"
-                        :dealStatus="dealStatus"
-                    />
-                </ion-item-group>
-
-                <!-- ============================== Контакт по делу ====================================== -->
-                <ion-item-group class="ion-text-left ion-padding-horizontal">
-                    <!-- Заголовок -->
-                    <ion-text >
-                        <h4>Контакт</h4>
-                    </ion-text>
-                    <!-- Показываем контакт по делу -->
-                    <ion-grid class="ion-no-padding border-bottom">
-                        <ion-row class="ion-justify-content-between ion-align-items-center">
-                            <ion-text color="primary" style="border-bottom: 1px dashed var(--ion-color-primary)" @click.stop="goToContact(dealContactID)">{{dealContact}}</ion-text>
-                            <ion-button size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click.stop="openSearchContactMenu()">Изменить</ion-button>
-                        </ion-row>
-                    </ion-grid>
-
-                    <!-- модалка для выбора (ПОИСК КОНТАКТА) контакта по делу -->
-                    <!-- Может быть вынести в отдельны компонент? -->
-                    <ion-modal :isOpen="searchContactMenu" >
-                        <ion-searchbar class="ion-text-left" placeholder="Поиск..." v-model="searchDealContact" show-cancel-button="always" cancelButtonText="Отменить" @ionCancel="searchContactMenu = false"></ion-searchbar>
-                        <ion-content style="height: 90vh">
-                            <ion-item v-for="contact in searchedContacts" :key="contact.id" @click="choose(contact)">
-                                <ion-grid>
-                                    <ion-row>
-                                        <ion-text>{{contact.contactInfo.name}} {{contact.contactInfo.surname}}</ion-text>
-                                    </ion-row>
-                                    <ion-row>
-                                        <ion-text style="font-size: 1rem;" color="medium">{{contact.contactInfo.company}}</ion-text>
-                                    </ion-row>
-                                </ion-grid>
-                            </ion-item>
-                            <!-- Если поиском в списке контактов ничего не найдено -->
-                            <div v-if="searchedContacts.length <= 0">
-                                <ion-item lines="none" >
-                                    <ion-text color="medium">Ничего не найдено</ion-text>
-                                </ion-item>
-                                <!--  -->
-                                <div class="ion-padding-horizontal" style="display: flex; flex-direction: column; position: absolute; top: 40%; width: 100%;">
-                                    <ion-text class="ion-text-center" color="medium">Вы можете создать новый в Моих контактах</ion-text>
-                                    <ion-button color="dark" class="ion-margin-top" @click="goToMyContacts()">Перейти</ion-button>
-                                </div>
-                            </div>
-                        </ion-content>
-                    </ion-modal>
-
-                    
-                </ion-item-group>
-
-                <!-- =========================== Дата и время исполнения ================================= -->
-                <ion-item-group class="ion-text-left ion-padding-horizontal">
-                    <!-- Заголовок -->
-                    <ion-text>
-                        <h4>Дата и время исполнения</h4>
-                    </ion-text>
-                    <!-- Блок показа / редактирования даты и времени исполнения -->
-                    <ion-grid class="ion-no-padding border-bottom">
-                        <ion-row class="ion-justify-content-between ion-align-items-center">
-                            <!-- Текущая дата и время исполнения -->
-                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">{{ datepicker(currentDeal.executionDate) }}</ion-button>
-                            <!-- Кнопка активации компонента, она же показывает выбранное -->
-                            <ion-button size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click="openModalCalendar()">Изменить</ion-button>
-                        </ion-row>
-                    </ion-grid>
-                    <!--  --> 
-                    
-                    <ModalCalendar 
-                        :is-open="isCalendarOpened" 
-                        @closeModal="isCalendarOpened = false;"
-                        @updateDate="updateExecutionDate"
-                        @didDismiss="isCalendarOpened = false"
-                        :date="currentDeal.executionDate"
-                    />
-                </ion-item-group>
-
                 <!-- =========================== Предмет дела ============================================ -->
                 <ion-item-group class="ion-text-left">
                     <!-- Заголовок -->
@@ -237,7 +151,7 @@
                             </ion-card>
 
                             <!-- Добавить еще предмет к заказу -->
-                            <ion-card class="ion-padding card-center card-add" @click="openCreateSubjectModal()">
+                            <ion-card v-if="dealStatus !== 'deal-complete'" class="ion-padding card-center card-add" @click="openCreateSubjectModal()">
                                 <ion-icon :icon="addCircleOutline" color="primary" class="icon_size"></ion-icon>
                                 <ion-text class="ion-text-center ion-margin-top" color="primary">
                                     Добавить
@@ -254,6 +168,92 @@
                     @didDismiss="deleteSubject = false"
                 >
                 </ion-action-sheet>
+
+                <!-- ============================== Контакт по делу ====================================== -->
+                <ion-item-group class="ion-text-left ion-padding-horizontal">
+                    <!-- Заголовок -->
+                    <ion-text >
+                        <h4>Контакт</h4>
+                    </ion-text>
+                    <!-- Показываем контакт по делу -->
+                    <ion-grid class="ion-no-padding border-bottom">
+                        <ion-row class="ion-justify-content-between ion-align-items-center">
+                            <ion-text color="primary" style="border-bottom: 1px dashed var(--ion-color-primary)" @click.stop="goToContact(dealContactID)">{{dealContact}}</ion-text>
+                            <ion-button v-if="dealStatus !== 'deal-complete'" size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click.stop="openSearchContactMenu()">Изменить</ion-button>
+                        </ion-row>
+                    </ion-grid>
+
+                    <!-- модалка для выбора (ПОИСК КОНТАКТА) контакта по делу -->
+                    <!-- Может быть вынести в отдельны компонент? -->
+                    <ion-modal :isOpen="searchContactMenu" >
+                        <ion-searchbar class="ion-text-left" placeholder="Поиск..." v-model="searchDealContact" show-cancel-button="always" cancelButtonText="Отменить" @ionCancel="searchContactMenu = false"></ion-searchbar>
+                        <ion-content style="height: 90vh">
+                            <ion-item v-for="contact in searchedContacts" :key="contact.id" @click="choose(contact)">
+                                <ion-grid>
+                                    <ion-row>
+                                        <ion-text>{{contact.contactInfo.name}} {{contact.contactInfo.surname}}</ion-text>
+                                    </ion-row>
+                                    <ion-row>
+                                        <ion-text style="font-size: 1rem;" color="medium">{{contact.contactInfo.company}}</ion-text>
+                                    </ion-row>
+                                </ion-grid>
+                            </ion-item>
+                            <!-- Если поиском в списке контактов ничего не найдено -->
+                            <div v-if="searchedContacts.length <= 0">
+                                <ion-item lines="none" >
+                                    <ion-text color="medium">Ничего не найдено</ion-text>
+                                </ion-item>
+                                <!--  -->
+                                <div class="ion-padding-horizontal" style="display: flex; flex-direction: column; position: absolute; top: 40%; width: 100%;">
+                                    <ion-text class="ion-text-center" color="medium">Вы можете создать новый в Моих контактах</ion-text>
+                                    <ion-button color="dark" class="ion-margin-top" @click="goToMyContacts()">Перейти</ion-button>
+                                </div>
+                            </div>
+                        </ion-content>
+                    </ion-modal>
+
+                    
+                </ion-item-group>
+
+                <!-- =================================== Важность дела ====================================== -->
+                <ion-item-group class="ion-text-left ion-padding-horizontal">
+                    <!-- Заголовок -->
+                    <ion-text>
+                        <h4>Важность дела</h4>
+                    </ion-text>
+                    <!--  -->
+                    <StarRaiting
+                        :value="dealImportance"
+                        @getRatingValue="setRatingValue"
+                        :dealStatus="dealStatus"
+                    />
+                </ion-item-group>
+
+                <!-- =========================== Дата и время исполнения ================================= -->
+                <ion-item-group class="ion-text-left ion-padding-horizontal">
+                    <!-- Заголовок -->
+                    <ion-text>
+                        <h4>Дата и время исполнения</h4>
+                    </ion-text>
+                    <!-- Блок показа / редактирования даты и времени исполнения -->
+                    <ion-grid class="ion-no-padding border-bottom">
+                        <ion-row class="ion-justify-content-between ion-align-items-center">
+                            <!-- Текущая дата и время исполнения -->
+                            <ion-button color="medium" size="medium" fill="clear" class="ion-no-padding ion-no-margin">{{ datepicker(currentDeal.executionDate) }}</ion-button>
+                            <!-- Кнопка активации компонента, она же показывает выбранное -->
+                            <ion-button v-if="dealStatus !== 'deal-complete'" size="medium" fill="clear" class="ion-no-padding ion-no-margin" @click="openModalCalendar()">Изменить</ion-button>
+                        </ion-row>
+                    </ion-grid>
+                    <!--  --> 
+                    
+                    <ModalCalendar 
+                        :is-open="isCalendarOpened" 
+                        @closeModal="isCalendarOpened = false;"
+                        @updateDate="updateExecutionDate"
+                        @didDismiss="isCalendarOpened = false"
+                        :date="currentDeal.executionDate"
+                    />
+                </ion-item-group>
 
                 <!-- ========================== Доставка ================================================= -->
                 <!-- SALE -->
@@ -591,7 +591,7 @@
                     <div v-if="debt === 0 && currentDeal.dealStatus !== 'deal-complete'" class="ion-padding border-top" style="position: fixed; bottom: 0; left: 0; width: 100%; background-color: #fff; z-index: 999999">
                         <!-- Кнопка Завершить дело (если debt === 0) -->
                         <ion-button  expand="block" @click="finishDeal" class="ion-margin-top">
-                            Завершить дело
+                            Можно завершить дело
                         </ion-button>
                     
                     </div>
@@ -820,8 +820,10 @@
                 // Пытаемся отлавливать свай вправа (типа кнопка назад)
                 let x;
                 let flag = true;
-                addEventListener('touchstart', e => x = e.changedTouches[0].clientX);
-                addEventListener('touchend', e => e.changedTouches[0].clientX - x < -50 && swipeLeft());
+                // addEventListener('touchstart', e => x = e.changedTouches[0].clientX);
+                addEventListener('touchend', e => e.changedTouches[0].clientX <= 0 && swipeLeft());
+                
+                
                 // console.log(currentDeal.value.executionDate)
                 // let choosenDayCurrentDeal;
                 function swipeLeft() {
@@ -1040,11 +1042,12 @@
             const searchContactMenu = ref(false)
             // открываем меню выбора контакта
             const openSearchContactMenu = () => {
-                if(currentDeal.value.dealStatus === 'deal-complete') {
-                    alert('ViewDeal: вы не можете изменить контакт, если статус "ЗАВЕРШЕН"')
-                } else {
+                // if(currentDeal.value.dealStatus === 'deal-complete') {
+                //     alert('ViewDeal: вы не можете изменить контакт, если статус "ЗАВЕРШЕН"')
+                // } 
+                // else {
                     searchContactMenu.value = true
-                }
+                // }
             }
             //
             const choose = async (contact) => {
@@ -1087,11 +1090,12 @@
             // Управление модалкой календаря
             const isCalendarOpened = ref(false)
             const openModalCalendar = () => {
-                if(currentDeal.value.dealStatus === 'deal-complete') {
-                    alert('Viewdeal: вы не можете изменить дату, если статус "ЗАВЕРШЕН"')
-                } else {
+                // if(currentDeal.value.dealStatus === 'deal-complete') {
+                //     alert('Viewdeal: вы не можете изменить дату, если статус "ЗАВЕРШЕН"')
+                // } 
+                // else {
                     isCalendarOpened.value = true
-                }
+                // }
             }
             // const closeModalCalendar = () => {
             //     // Может входящие данные-то и не нужны в этой функции???
@@ -1334,9 +1338,10 @@
             const isCreateNewSubjectOpened = ref(false);
             // Открывает модалку создания нового предмета к текущему делу
             const openCreateSubjectModal = () => {
-                if(currentDeal.value.dealStatus === 'deal-complete') {
-                    alert('ViewDeal: вы не можете добавлять предмету к делу, если статус "ЗАВЕРШЕН"')
-                } else {
+                // if(currentDeal.value.dealStatus === 'deal-complete') {
+                //     alert('ViewDeal: вы не можете добавлять предмету к делу, если статус "ЗАВЕРШЕН"')
+                // } 
+                // else {
                     isCreateNewSubjectOpened.value = true;
                     // Обнуляем шаблон нового предмета у дела согласно dealType
                     if (currentDeal.value.dealType === 'sale') {
@@ -1370,7 +1375,7 @@
                             // tempRecipeName: '',
                         }
                     }
-                }
+                // }
             }
             // Закрываем модалку создания нового предмета к текущему делу
             const closeCreateSubjectModal = () => {

@@ -70,14 +70,10 @@
         <ion-grid>
             <ion-grid class="card-footer ion-padding-top ion-margin-top">
                 <ion-row class="ion-justify-content-between ion-align-items-center">
-                    
-                    <!-- Задолженность -->
-                    <ion-text v-if="(deal.totalDealPrice - deal.dealPaid) > 0">
-                        К оплате: {{ (deal.totalDealPrice - deal.dealPaid).toFixed(2) }}
-                    </ion-text>
-                    <!--  сумма заказа -->
+
+                    <!-- сумма заказаа и сколько внесено оплаты уже -->
                     <ion-text>
-                        Сумма: {{ (+deal.totalDealPrice - deal.dealPaid + deal.dealPaid).toFixed(2) }}
+                        {{ (deal.dealPaid).toFixed(2) }} / {{ (+deal.totalDealPrice - deal.dealPaid + deal.dealPaid).toFixed(2) }}
                     </ion-text>
                 </ion-row>
             </ion-grid>

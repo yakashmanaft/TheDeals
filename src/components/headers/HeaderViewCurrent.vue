@@ -8,8 +8,12 @@
                 <!-- Кнопка, если возвращаемся из current view deal обратно на '/' -->
                 <ion-back-button v-else-if="router.options.history.state.back === '/' || router.options.history.state.back.length > 3" @click="back()" default-href="/" text="Назад"></ion-back-button>
                 <!-- /?isMonth=false -->
+
+                <!-- Ессли пишли из Deals -->
+                <ion-back-button v-else-if="router.options.history.state.back === '/deals'" @click="back()" default-href="/" text="Назад"></ion-back-button>
+
                 <!-- Кнопка, если возвращаемся не на '/' -->
-                <!-- <ion-back-button v-else  default-href="/" text="Назад"></ion-back-button> -->
+                <ion-back-button v-else  default-href="/" text="Назад"></ion-back-button>
 
             </ion-buttons>
             <!-- Если текущий роут НЕ View-Deal && НЕ Profile && НЕ View-Recipe-->
@@ -65,7 +69,8 @@
                 }
             }
             console.log(`isMonth: ${props.isMonth}`)
-            console.log(`Откуда пришли: ${router.options.history.state.back}`)
+            console.log(`Откуда пришли: ${router.options.history.state}`)
+            console.log(router.options.history.state.back)
 
             const back = () => {
 
@@ -75,6 +80,10 @@
                     // alert(choosenDayCurrentDeal)
                 } else {
                     router.push({path: '/', query: { isMonth: false }})
+                }
+
+                if(router.options.history.state.back === '/deals') {
+                    router.push({path: '/deals'})
                 }
 
             }
