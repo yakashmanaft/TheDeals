@@ -329,6 +329,18 @@
                 loadInMonthMode()
             }
 
+            onMounted(() => {
+                // Когда из дела возвраается назад в календарь в режиме месяца
+                // console.log(route.query.day)
+                if(route.query.day) {
+                    // choosenDate.value = ''
+                    if(!isViewChoosenDateOpened.value) {
+                        choosenDate.value = route.query.day
+                        isViewChoosenDateOpened.value = true
+                    }
+                }
+            })
+
             // ПЕРЕКЛЮЧАТЕЛЬ РЕЖИМОВ при нажатии на кнопку переклюения
             watch(isMonthMode, () => {
                 if(isMonthMode.value === true) {
@@ -399,8 +411,8 @@
             // Переходим в карточку вабранного дела
             const goToChoosenDeal = (deal) => {
                 // console.log(deal)
-                isViewChoosenDateOpened.value = false
                 router.push({name: 'View-Deal', params: { dealId: deal.id, deal: JSON.stringify(deal)}})
+                isViewChoosenDateOpened.value = false
             }
             // Переходим в выбранный в карточке дела контакт
             const goToChoosenContact = (id) => {
@@ -685,117 +697,120 @@
             const setCalendarStyle = () => {
                 let calendar = document.body.getElementsByTagName('ion-datetime')
                 let dateTimeCalendar = calendar[0].shadowRoot.querySelector('.datetime-calendar')
-                let buttons = dateTimeCalendar.querySelectorAll('.calendar-day')
-                //
-                buttons.forEach(item => {
-                    let dayAndMonth = item.getAttribute('aria-label')
-                    let year = item.getAttribute('data-year')
-                    let dateString = `${dayAndMonth} ${year}`
-                    let cutDateString;
-                    // вырезаем в строке нужное значение
-                    if(item.classList.contains('calendar-day-today')) {
-                        cutDateString = dateString.split(', ')[2]
-                    } else {
-                        cutDateString = dateString.split(', ')[1]
-                    }
+                let buttons;
+                if(dateTimeCalendar) {
+                    buttons = dateTimeCalendar.querySelectorAll('.calendar-day')
                     //
-                    // находим дни без дел и задаем им стили
-                    // format(parseISO(weekendDay), 'd MMMM yyyy', { locale: ru });
-                    if (weekendDays.value.find(weekendDay => formattedDate(weekendDay.date) === cutDateString)) {
-                        // console.log(cutDateString)
+                    buttons.forEach(item => {
+                        let dayAndMonth = item.getAttribute('aria-label')
+                        let year = item.getAttribute('data-year')
+                        let dateString = `${dayAndMonth} ${year}`
+                        let cutDateString;
+                        // вырезаем в строке нужное значение
+                        if(item.classList.contains('calendar-day-today')) {
+                            cutDateString = dateString.split(', ')[2]
+                        } else {
+                            cutDateString = dateString.split(', ')[1]
+                        }
                         //
-                        return item.style.cssText = `
-                            background-color: var(--ion-color-light);
-                            opacity: 0.4;
-                            margin: 0.2rem;
-                            border-radius: 0.5rem;
-                        `
-                    } else {}
-                    // раскрашиваем даты в зависимости от кол-ва дел, запланированных на этот день и их коэффициентов важности
-                    // Определяем коэффициента загруженности
-                    let workloadValue;
-                    (() => {
-                        const workloadFunc = () => {
-                            let dealByDate = myDeals.value.filter(deal => formattedDate(deal.executionDate) === cutDateString)
+                        // находим дни без дел и задаем им стили
+                        // format(parseISO(weekendDay), 'd MMMM yyyy', { locale: ru });
+                        if (weekendDays.value.find(weekendDay => formattedDate(weekendDay.date) === cutDateString)) {
+                            // console.log(cutDateString)
                             //
-                            let ratioArray = []
-                            dealByDate.forEach(item => {
-                                ratioArray.push(item.dealImportance)
-                            })
-                            let newRatioArray = []
-                            ratioArray.forEach(rating => {
-                                if(rating === 5) {
-                                    rating = 3
-                                } else if (rating === 4) {
-                                    rating = 2.5
-                                } else if (rating === 3) {
-                                    rating = 2
-                                } else if (rating === 2) {
-                                    rating = 1.5
-                                } else if (rating === 1) {
-                                    rating = 1
-                                }
-                                newRatioArray.push(rating)
-
-                            })
-                            // console.log(newRatioArray)
-                            workloadValue = newRatioArray.reduce((a, b) => a + b, 0)
-                            // return workloadValue = dealByDate.length
-                            return workloadValue
+                            return item.style.cssText = `
+                                background-color: var(--ion-color-light);
+                                opacity: 0.4;
+                                margin: 0.2rem;
+                                border-radius: 0.5rem;
+                            `
+                        } else {}
+                        // раскрашиваем даты в зависимости от кол-ва дел, запланированных на этот день и их коэффициентов важности
+                        // Определяем коэффициента загруженности
+                        let workloadValue;
+                        (() => {
+                            const workloadFunc = () => {
+                                let dealByDate = myDeals.value.filter(deal => formattedDate(deal.executionDate) === cutDateString)
+                                //
+                                let ratioArray = []
+                                dealByDate.forEach(item => {
+                                    ratioArray.push(item.dealImportance)
+                                })
+                                let newRatioArray = []
+                                ratioArray.forEach(rating => {
+                                    if(rating === 5) {
+                                        rating = 3
+                                    } else if (rating === 4) {
+                                        rating = 2.5
+                                    } else if (rating === 3) {
+                                        rating = 2
+                                    } else if (rating === 2) {
+                                        rating = 1.5
+                                    } else if (rating === 1) {
+                                        rating = 1
+                                    }
+                                    newRatioArray.push(rating)
+    
+                                })
+                                // console.log(newRatioArray)
+                                workloadValue = newRatioArray.reduce((a, b) => a + b, 0)
+                                // return workloadValue = dealByDate.length
+                                return workloadValue
+                            } 
+                            workloadFunc()
+                        })()
+    
+                        // день с легкой загруженностью
+                        // при наличии low количества дел
+                        if(workloadValue  > 0 && workloadValue  <= setSaturationDay('low')) {
+                            return item.style.cssText = `
+                                background-color: var(--ion-color-success);
+                                margin: 0.2rem;
+                                color: white;
+                                border-radius: 0.5rem;
+                            `
                         } 
-                        workloadFunc()
-                    })()
-
-                    // день с легкой загруженностью
-                    // при наличии low количества дел
-                    if(workloadValue  > 0 && workloadValue  <= setSaturationDay('low')) {
-                        return item.style.cssText = `
-                            background-color: var(--ion-color-success);
-                            margin: 0.2rem;
-                            color: white;
-                            border-radius: 0.5rem;
-                        `
-                    } 
-                    // день с средней загруженностью
-                    // количестве между low и high значениями (не включая данные значения)
-                        else if(workloadValue  > setSaturationDay('low') && workloadValue  < setSaturationDay('high')) {
-                        return item.style.cssText = `
-                            background-color: var(--ion-color-warning);
-                            margin: 0.2rem;
-                            color: white;
-                            border-radius: 0.5rem;
-                        `
-                    } 
-                    // день с высокой загруженностью
-                    // при наличии high количества дел и более
-                    else if (workloadValue  >= setSaturationDay('high')) {
-                        return item.style.cssText = `
-                            background-color: var(--ion-color-danger-tint);
-                            margin: 0.2rem;
-                            color: white;
-                            border-radius: 0.5rem;
-                        `
-                    }
-                    // ячейка дат со статусом disabled
-                    if(item.getAttribute('disabled') === '') {
-                        return item.style.cssText = `
-                            background-color: var(--ion-color-light);
-                            margin: 0.2rem;
-                            border-radius: 0.5rem;
-                        `
-                    } 
-                    // свободные дни
-                    else {
-                        return item.style.cssText = `
-                            background-color: var(--ion-color-success);
-                            margin: 0.2rem;
-                            color: white;
-                            border-radius: 0.5rem;
-                            opacity: 0.4;
-                        `
-                    }
-                    
-                })
+                        // день с средней загруженностью
+                        // количестве между low и high значениями (не включая данные значения)
+                            else if(workloadValue  > setSaturationDay('low') && workloadValue  < setSaturationDay('high')) {
+                            return item.style.cssText = `
+                                background-color: var(--ion-color-warning);
+                                margin: 0.2rem;
+                                color: white;
+                                border-radius: 0.5rem;
+                            `
+                        } 
+                        // день с высокой загруженностью
+                        // при наличии high количества дел и более
+                        else if (workloadValue  >= setSaturationDay('high')) {
+                            return item.style.cssText = `
+                                background-color: var(--ion-color-danger-tint);
+                                margin: 0.2rem;
+                                color: white;
+                                border-radius: 0.5rem;
+                            `
+                        }
+                        // ячейка дат со статусом disabled
+                        if(item.getAttribute('disabled') === '') {
+                            return item.style.cssText = `
+                                background-color: var(--ion-color-light);
+                                margin: 0.2rem;
+                                border-radius: 0.5rem;
+                            `
+                        } 
+                        // свободные дни
+                        else {
+                            return item.style.cssText = `
+                                background-color: var(--ion-color-success);
+                                margin: 0.2rem;
+                                color: white;
+                                border-radius: 0.5rem;
+                                opacity: 0.4;
+                            `
+                        }
+                        
+                    })
+                }
                 spinner.value = false
             }
             // проводим расчет цветовой индикации загруженности дня 

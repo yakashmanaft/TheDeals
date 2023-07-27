@@ -326,28 +326,6 @@ export default defineComponent({
             }
         }
 
-        // window.addEventListener('click', (e) => {
-
-        //         if(e.target.parentNode !== null) {
-
-        //             let cellTimeLabel = e.target.parentNode
-        //             let cellColumn = cellTimeLabel.parentNode
-
-        //             if(cellColumn.parentNode.classList.contains('vuecal__cell--disabled')) {
-        //                 alert('WeekPlanner: выходной день')
-        //             }
-
-        //         }
-        // })
-
-        // ЕСТЬ КУда ИСПОЛЬЗОВАТь???
-        // vuecal__cell vuecal__cell--disabled
-        // vuecal__cell vuecal__cell--has-events
-
-        // watch(() => props.deals, (first, second) => {
-        //     console.log(props.deals)
-        // })
-
         return {
             dailyHours, events, weekendDays, onEventClick, router, vueCalendar, createTempNewDeal, loadWeekMode, deals, myDeals, myDeals, myContacts, availableBalance, setIconByDealType, bagHandleOutline, cubeOutline, createElementStyle, weekendDayArr, clickOnChoosenDay, checkmarkOutline, checkClass
         }

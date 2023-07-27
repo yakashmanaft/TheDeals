@@ -6,9 +6,10 @@
                 <ion-button fill="clear" v-if="edit" @click="cancelEdit">Отмена</ion-button>
 
                 <!-- Кнопка, если возвращаемся из current view deal обратно на '/' -->
-                <ion-back-button v-else-if="router.options.history.state.back === '/' && isMonth" @click="back()" default-href="/" text="Назад"></ion-back-button>
+                <ion-back-button v-else-if="router.options.history.state.back === '/' || router.options.history.state.back.length > 3" @click="back()" default-href="/" text="Назад"></ion-back-button>
+                <!-- /?isMonth=false -->
                 <!-- Кнопка, если возвращаемся не на '/' -->
-                <ion-back-button v-else  default-href="/" text="Назад"></ion-back-button>
+                <!-- <ion-back-button v-else  default-href="/" text="Назад"></ion-back-button> -->
 
             </ion-buttons>
             <!-- Если текущий роут НЕ View-Deal && НЕ Profile && НЕ View-Recipe-->
@@ -39,7 +40,7 @@
     export default defineComponent({
         name: 'ViewContactHeader',
         emits: ['openDeleteMenu'],
-        props: ['edit', 'editMode', 'update', 'cancelEdit', 'isMonth'],
+        props: ['edit', 'editMode', 'update', 'cancelEdit', 'isMonth', 'dayData'],
         components: {
             IonHeader,
             IonToolbar,
@@ -68,7 +69,14 @@
 
             const back = () => {
 
-                router.push({path: '/', query: { isMonth: false }})
+                if(props.isMonth === undefined) {
+                    // choosenDayCurrentDeal =  
+                    router.push({path: '/', query: { day: props.dayData }})
+                    // alert(choosenDayCurrentDeal)
+                } else {
+                    router.push({path: '/', query: { isMonth: false }})
+                }
+
             }
 
             return {

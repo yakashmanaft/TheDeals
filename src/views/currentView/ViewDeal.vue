@@ -7,6 +7,7 @@
         <ViewHeader
             @openDeleteMenu="setOpen(true)"
             :isMonth="$route.params.isMonth"
+            :dayData="currentDeal.executionDate"
         />
 
         <!-- view deal subject -->
@@ -716,8 +717,8 @@
             const router = useRouter();
             // Get current info of route
             const currentId = route.params.dealId;
-            // console.log(route.params)
             const info = route.params;
+            
             // console.log(route.params.isMonth)
             const currentDeal = ref()
             // console.log(currentDeal.value.executionDate)
@@ -815,7 +816,30 @@
             uploadFunc()
 
             onMounted(async () => {
-                console.log(currentDeal.value.dealType)
+
+                // Пытаемся отлавливать свай вправа (типа кнопка назад)
+                let x;
+                let flag = true;
+                addEventListener('touchstart', e => x = e.changedTouches[0].clientX);
+                addEventListener('touchend', e => e.changedTouches[0].clientX - x < -50 && swipeLeft());
+                // console.log(currentDeal.value.executionDate)
+                // let choosenDayCurrentDeal;
+                function swipeLeft() {
+                    
+                    if(route.params.isMonth === undefined) {
+                        if(flag) {
+
+                            router.push({path: '/', query: { day: currentDeal.value.executionDate }})
+
+                            flag = false
+                        }
+                        
+                    } else {
+                        router.push({path: '/', query: { isMonth: false }})
+                    }
+                    // choosenDayCurrentDeal = ''
+                }
+
                 if(currentDeal.value.dealType === 'buy') {
                     await store.methods.getMyDealsFromBD();
                     myDeals.value = store.state.myDealsArray;
@@ -2138,7 +2162,6 @@
             const dateUpdated = () => {
                 console.log('clicked data')
             }
-            
 
             return {
                 currency, spinner, currentId, info, currentDeal, dealContactID, isOpenRef, setOpen, deleteDealButtons, deleteDealSubjectButtons, deleteDeal, dealContact, choose, searchContactMenu, searchDealContact, searchedContacts, myContacts, dealStatusList, dealStatus, translateValue, setChipColor, executionDate, datepicker, isCalendarOpened, openModalCalendar, updateExecutionDate, addCircleOutline, setDealType, closeCircleOutline, isViewDealSubjectOpened, openCurrentDealSubject, deleteSubject, openDeleteSubjectModal, deleteCurrentDealItem, currentDealSubject, subjectToDelete, isCreateNewSubjectOpened, openCreateSubjectModal, closeCreateSubjectModal, currentSubject, addNewSubject, checkRentAttr, helpOutline, setColorByDealType, setIconByDealType, updateBD, setSubjectPrice, sumAttributesPriceValue, setSumAttributesPriceValue, calcSubjectTotalPrice, setNewSubjectPrice, calcNewSubjectTotalPrice, setNewSubjectQty, setSubjectQty, setCountQtyButtonColor, countQtyButtonColor, setPersonQty, countPersonQtyButtonColor, setCountPersonQtyButtonColor, setNewPersonQty, setGramPerPerson, setNewGramPerPerson, setSubjectDiscount, setNewSubjectDiscount, shippingTypeList, dealShippingType, shippingPrice, shippingAddress, sumAllTotalSubjectPriceFunc, translateShippingType, translateSelectedProduct, culcSubjectWeight, culcDealDebt, isDealPaidMenuOpened, openDealPaidMenu, closeDealPaidMenu, culcBuySubjectWeight, debt, setAmountValue, isAllAttrReturned, isAllAttrReturnedFunc, actionSheetDealStatus, openActionSheetDealStatusMenu, changeDealStatusMenuButtons, refreshDebtValue, finishDeal, setMarkerAttrColor, shapes, checkmarkDone, availableBalance, currentPriceSubject, personPortionGram, dealImportance, setRatingValue, addToLedger, dealComments, substructFromWarehouseToast, addToWarehouseFunc, showSelectedRecipe, userRecipeArray, openSearchContactMenu, calcTotalDealPrice, goToContact, tempContactName, isAddDeliveryAddressMenuOpened, addDeliveryAddressMenu, deleteCurrentDeliveryAddress, showCurrentDeliveryAddressInfo, currentDeliveryAddressIndex, deleteDeliveryAddressOpened, deliveryAddressToDelete, openDeleteDeliveryAddressModal, deleteDeliveryAddressButtons, contactAdressesArray, goToMyContacts, contactObject, dateUpdated, uploadFunc
