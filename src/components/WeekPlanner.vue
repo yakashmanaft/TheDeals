@@ -96,9 +96,12 @@ export default defineComponent({
             // return weekendDayArr
         }
 
-        const userSettings = ref(store.state.userSettings[0])
-        // console.log(userSettings.value.weekendDays)
-        formatDate(userSettings.value.weekendDays)
+        const userSettings = ref()
+        userSettings.value = store.state.userSettings[0]
+        if(userSettings.value) {
+            
+            formatDate(userSettings.value.weekendDays)
+        }
 
         const createTempNewDeal = (event, deleteEventFunction) => {
             // console.log(formatDate(event))
