@@ -826,7 +826,7 @@
                 // let choosenDayCurrentDeal;
                 function swipeLeft() {
                     
-                    if(route.params.isMonth === undefined) {
+                    if(route.params.isMonth === undefined && router.options.history.state.back === '/') {
                         if(flag) {
 
                             router.push({path: '/', query: { day: currentDeal.value.executionDate }})

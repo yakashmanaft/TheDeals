@@ -332,10 +332,12 @@
             onMounted(() => {
                 // Когда из дела возвраается назад в календарь в режиме месяца
                 // console.log(route.query.day)
+                console.log(isMonthMode.value)
                 if(route.query.day) {
-                    // choosenDate.value = ''
+
+                    choosenDate.value = route.query.day
+
                     if(!isViewChoosenDateOpened.value) {
-                        choosenDate.value = route.query.day
                         isViewChoosenDateOpened.value = true
                     }
                 }
@@ -343,6 +345,7 @@
 
             // ПЕРЕКЛЮЧАТЕЛЬ РЕЖИМОВ при нажатии на кнопку переклюения
             watch(isMonthMode, () => {
+                
                 if(isMonthMode.value === true) {
                     console.log('mode: MONTH')
                     loadInMonthMode()
