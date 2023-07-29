@@ -22,6 +22,24 @@
         :editable-events="{titleEditable: false}"
         >
     </vue-cal>
+
+    <!-- Модалка по установке выходного дня -->
+    <ion-action-sheet
+        :is-open="asSetWeekendDay"
+        header="Сделать этот день выходным"
+        :buttons="asSetWeekendDayButtons"
+        @didDismiss="asSetWeekendDay = false"
+    >
+    </ion-action-sheet>
+
+    <!-- Модалка по отмене выходного дня -->
+    <ion-action-sheet
+        :is-open="asCancelWeekendDay"
+        header="Отменить выходной"
+        :buttons="asCancelWeekendDayButtons"
+        @didDismiss="asCancelWeekendDay = false"
+    >
+    </ion-action-sheet>
     <br>
     <br>
     <br>
@@ -37,12 +55,16 @@ import VueCal from 'vue-cal'
 import 'vue-cal/dist/vuecal.css'
 import { useRouter } from 'vue-router';
 import { format, parseISO, formatISO9075   } from 'date-fns';
-import { IonItem } from '@ionic/vue';
-import { bagHandleOutline, cubeOutline, checkmarkOutline } from 'ionicons/icons';
+import { ru } from 'date-fns/locale';
+import { toastController } from '@ionic/vue';
+
+import { supabase } from '../supabase/init';
 import store from '../store/index'
 
-import {  } from '@ionic/vue'
+import { bagHandleOutline, cubeOutline, checkmarkOutline } from 'ionicons/icons';
 import { setIconByDealType } from '../helpers/setIconBy'
+
+import { IonActionSheet } from '@ionic/vue';
 
 export default defineComponent({
     name: 'WeekPlanner',
@@ -51,11 +73,15 @@ export default defineComponent({
     components: {
         VueCal,
         //
+        IonActionSheet,
         },
     setup(props, {emit}) {
 
         // Setup ref to router
         const router = useRouter();
+
+        store.methods.setUserEmail()
+        const userEmail = ref(store.state.userEmail)
         
         const deals = ref([])
         const vueCalendar = ref(VueCal)
@@ -82,8 +108,10 @@ export default defineComponent({
         // МАССИВ ДЕЛ
         // const events = props.deals
         
+        const userSettings = ref()
+        userSettings.value = store.state.userSettings[0]
         // const weekendDays = ['2023-07-12', '2023-07-14']
-        const weekendDays = ref([])
+        const weekendDays = ref([userSettings.value.weekendDays])
         let weekendDayArr = []
         const formatDate = (days) => {
             days.forEach(element => {
@@ -96,8 +124,6 @@ export default defineComponent({
             // return weekendDayArr
         }
 
-        const userSettings = ref()
-        userSettings.value = store.state.userSettings[0]
         if(userSettings.value) {
             
             formatDate(userSettings.value.weekendDays)
@@ -176,7 +202,7 @@ export default defineComponent({
                 deals.value = []
             }
 
-        document.addEventListener('click', (e) => {
+        document.addEventListener('click', async (e) => {
 
             // обновляем контент при переключении недели
             if(e.target.classList != null) {
@@ -186,28 +212,35 @@ export default defineComponent({
                     // Включаем спиннер
                     emit('spinnerChangeStat', true)
                     // Обновляем данные по дням
-                    loadWeekMode()    
+                    await loadWeekMode()    
     
                 } 
             }
+
             // дергаем день из weekday-label
             if(e.target.parentNode) {
                     // let cellTimeLabel = e.target.parentNode
                     // let cellColumn = cellTimeLabel.parentNode
                 if (e.target.parentNode.classList.contains('weekday-label')) {
     
-                    console.log(e.target)
                     // Забираем строку значения выбранного дня
                     let choosenDay = e.target.textContent
                     clickOnChoosenDay(choosenDay)
-                } else if (e.target.parentNode.parentNode.parentNode.classList.contains('vuecal__cell--disabled')) {
-                    alert('WeekPlanner: выходной день')
+                } else if (e.target.parentNode) {
+
+                    if(e.target.parentNode.parentNode) {
+                        if(e.target.parentNode.parentNode.parentNode) {
+
+                            // Уведомляем юзера что это выходной день
+                           if(e.target.parentNode.parentNode.parentNode.classList.contains('vuecal__cell--disabled')) {
+       
+                                   // alert('WeekPlanner: выходной день')
+                                   toastWeekend(0, { title: 'Выходной день', text: 'отмечен как выходной день' })
+                           }
+                        }
+                    }
                 }
             }
-
-
-            // 
-            
         })
 
         const checkClass = (classList, element) => {
@@ -258,7 +291,8 @@ export default defineComponent({
 
         //
         let months = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
-        //
+        
+        // Запускааем функцию при клике на кргляш с днем (над колонкой дня который)
         const clickOnChoosenDay = (day) => {
             let weekdayLabels = document.querySelectorAll('.weekday-label')
             let monthYearWrapper = document.querySelector('.vuecal__title')
@@ -276,6 +310,8 @@ export default defineComponent({
             //         })
             //     })
             // }
+
+            // Создаем форматированную дату формата '2023-07-14'
             if(!props.isMonthMode && monthYear && monthYear !== '') {
                 if(day !== 'Месяцы' && day) {
                     let setMonthString = (month) => {
@@ -292,8 +328,6 @@ export default defineComponent({
                             return `${day}`
                         }
                     }
-                    // Создаем форматированную дату
-                    // '2023-07-14'
                     let dirtyDateString;
                     // Проверка на наличие двойных недель (задействовано два месяца)
                     if(monthYear.textContent.indexOf('-') === -1) {
@@ -317,8 +351,9 @@ export default defineComponent({
                     let date = `${dirtyDateArr[3]}-${setMonthString(dirtyDateArr[2])}-${setDatString(dirtyDateArr[4])}`
 
                     if (date) {
-                        emit('choosenDate', date)
-                        console.log(date)
+                        // emit('choosenDate', date)
+                        dateMakeWeekendWPFunc(date)
+                        // console.log(date)
                         date = ''
                     }
 
@@ -326,8 +361,188 @@ export default defineComponent({
             }
         }
 
+        // Заготовка. Выбранная дата из Week Planner
+        const choosenDateFromWeekPlaner =ref({
+            date: ''
+        })
+
+        // Для мордалки по установке выходного
+        const asSetWeekendDay = ref(false)
+        const asSetWeekendDayButtons = [
+            {
+                text: 'Сделать выходным',
+                handler: () => {
+                    // проверяем что в дне нет дел
+                    // checkEmptyDay()
+                    setOrCancelWeekandDay('set')
+                }
+            },
+            {
+                text: 'Назад',
+                role: 'cancel',
+                handler: () => {
+                    console.log('Cancel clicked')
+                },
+            }
+        ]
+
+        // Для модалки по отмене выходного дня
+        const asCancelWeekendDay = ref(false)
+        const asCancelWeekendDayButtons = [
+            {
+                text: 'Отменить',
+                handler: () => {
+                    setOrCancelWeekandDay('cancel')
+                }
+            },
+            {
+                text: 'Назад',
+                role: 'cancel',
+                handler: () => {
+                    console.log('Cancel clicked')
+                }
+            }
+        ]
+
+        // Добавляет или удаляет выходной
+        const dateMakeWeekendWPFunc = (day) => {
+            // console.log(day)
+            
+            // Убедимся что day существукет и похожа на дату в нужном формате
+            if(day && day.length === 10) {
+
+                // Помещаем в перпеменную даннные
+                choosenDateFromWeekPlaner.value = {
+                    date: day
+                }
+
+                // Проверяем отмечен ли в БД как выходной день
+                let isExist = weekendDays.value.find(e => e.date === choosenDateFromWeekPlaner.value.date) !== undefined
+
+                // Если выбранный день уже является выходным
+                if(isExist) {
+
+                    // Открываем модалук отмены выходного
+                    asCancelWeekendDay.value = true
+                } 
+                // Если выбранный день не является выходным
+                else if (!isExist) {
+
+                    // Открываем модалку включения выходного дня
+                    asSetWeekendDay.value = true
+                }
+
+            }
+        }
+
+        // Ставим или отменяем выходной
+        const setOrCancelWeekandDay = async (type) => {
+
+            // Если нажимаем на сделать этот день выходным
+            if(type === 'set') {
+
+                // Проверяем день на наличии дел (если дела есть - выходной невозможен)
+                // временный массив
+                const tempArr = []
+                // собираем дела с форматированным executionDate в временный массив
+                myDeals.value.forEach(item => {
+                    // Приводим executionDate найденных дел к нужному формату
+                    let parsedExecutionDate = format(parseISO(item.executionDate), 'yyyy-MM-dd', { locale: ru })
+                    // Помещаем даты в массив
+                    tempArr.push({
+                        date: parsedExecutionDate
+                    })
+                })
+                // сравниваем выбранную дату с форматированными executionDate
+                let dealsAreExist = tempArr.find(e => e.date === choosenDateFromWeekPlaner.value.date) !== undefined
+
+                // Если есть дела в этот день
+                if(dealsAreExist) {
+                    // alert('Calendar: Какой выходной! Есть дела в этот день!')
+                    toastWeekend(choosenDateFromWeekPlaner.value.date, { title: 'Какой выходной!', text: 'Есть дела в этот день!' })
+                } 
+                
+                // Если дел в этот дент НЕТ
+                else {
+
+                    // Добавляем выбранный день в массив weekendDays
+                    weekendDays.value.push(choosenDateFromWeekPlaner.value)
+                    //  Обновляем БД
+                    updateWeekendDays()
+                    // 
+                    emit('spinnerChangeStat', true)
+                    await loadWeekMode()
+                    createElementStyle()
+
+                    // formatDate(userSettings.value.weekendDays)
+
+                    toastWeekend(choosenDateFromWeekPlaner.value.date, { title: 'Выходной выбран', text: 'отмечен как выходной день' })
+                }
+
+                //
+                console.log('Нажал Хочу сделать выходной')
+            } 
+            
+            // Если нажимаем отменить выходной
+            else if(type === 'cancel') {
+
+                // Исключаем выбранный день из массива выходных
+                weekendDays.value = weekendDays.value.filter(day => day.date !== choosenDateFromWeekPlaner.value.date)
+
+                updateWeekendDays()
+                // 
+                emit('spinnerChangeStat', true)
+                await loadWeekMode()
+                createElementStyle()
+
+                // formatDate(userSettings.value.weekendDays)
+                //
+                toastWeekend(choosenDateFromWeekPlaner.value.date, { title: 'Выходной отменен', text: 'больше не выходной' })
+
+                console.log('Нажал отменить выходной')
+            }
+        }
+
+        // update weekend days array in BD
+        const updateWeekendDays = async () => {
+            // обновляем в БД
+            try {
+                const { error } = await supabase.from('accountSettings').update({
+                    weekendDays: weekendDays.value,
+                }).eq('email', userEmail.value)
+                if(error) throw error;
+            } catch(error) {
+                alert(`Error: ${error.message}`)
+            }
+        }
+
+        // TOAST
+        const toastWeekend = async (date, content) => {
+            const toast = await toastController.create({
+                // Предметы дела будут добавлены на склад
+                message: `
+                    <h3>${ content.title }</h3>
+                    <p>${ date } ${ content.text }</p>
+                `,
+                // duration: 3000,
+                cssClass: 'custom_toast', 
+                position: 'top',
+                buttons: [
+                    {
+                        text: 'ОК',
+                        role: 'cnacel',
+                        handler: () => {
+                            console.log('toast clicked dismiss')
+                        }
+                    }
+                ]
+            });
+            await toast.present();
+            
+        }
+
         return {
-            dailyHours, events, weekendDays, onEventClick, router, vueCalendar, createTempNewDeal, loadWeekMode, deals, myDeals, myDeals, myContacts, availableBalance, setIconByDealType, bagHandleOutline, cubeOutline, createElementStyle, weekendDayArr, clickOnChoosenDay, checkmarkOutline, checkClass
+            dailyHours, events, weekendDays, onEventClick, router, vueCalendar, createTempNewDeal, loadWeekMode, deals, myDeals, myDeals, myContacts, availableBalance, setIconByDealType, bagHandleOutline, cubeOutline, createElementStyle, weekendDayArr, clickOnChoosenDay, checkmarkOutline, checkClass, dateMakeWeekendWPFunc, asSetWeekendDay, asSetWeekendDayButtons, asCancelWeekendDay, asCancelWeekendDayButtons, choosenDateFromWeekPlaner, setOrCancelWeekandDay, updateWeekendDays, userEmail, toastWeekend
         }
     }
 })

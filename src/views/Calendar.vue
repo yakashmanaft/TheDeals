@@ -46,7 +46,6 @@
                 <WeekPlanner 
                     :deals="deals"
                     @openCreateModal="openWeekCreateDeal"
-                    @choosenDate="dateMakeWeekendWPFunc"
                     :weekendDays="weekendDays"
                     @spinnerChangeStat="spinnerChangeStat"
                 />
@@ -310,6 +309,12 @@
             // Типа загрузка мода, по сути просто запускаем спинер
             const loadWeekMode = async () => {
                 spinner.value = true 
+
+                await store.methods.getUserSettingsfromDB()
+                userSettings.value = store.state.userSettings[0]
+                weekendDays.value = userSettings.value.weekendDays
+
+                spinner.value = false 
             }
 
             
@@ -464,7 +469,7 @@
                 isViewDealModalOpened.value = !isViewDealModalOpened.value;
                 if(!isMonthMode.value) {
                     isViewChoosenDateOpened.value = false
-                    deleteTempDeal()
+                    // deleteTempDeal()
                 } else {
                     isViewChoosenDateOpened.value = true
                 }
@@ -638,7 +643,7 @@
                         // console.log('Отменили День без дел')
                         isViewChoosenDateOpened.value = true
                         // Надо бы удалять из массива "Дни без дел"
-                        console.log(choosenDate.value)
+                        // console.log(choosenDate.value)
                         let dayOfWeekend = choosenDate.value.substr(0,10)
                         weekendDays.value = weekendDays.value.filter(day => day.date !== dayOfWeekend);
                         setCalendarStyle()
@@ -898,9 +903,9 @@
 
             }
 
-            const deleteTempDeal = () => {
-                console.log('close modal clicked')
-            }
+            // const deleteTempDeal = () => {
+            //     console.log('close modal clicked')
+            // }
 
             // Переключатели выходного дня
             // Для установки выходного дня
@@ -909,6 +914,7 @@
                 {
                     text: 'Сделать выходным',
                     handler: () => {
+                        // проверяем что в дне нет дел
                         checkEmptyDay()
                     }
                 },
@@ -925,9 +931,19 @@
             const asCancelWeekendDayButtons = [
                 {
                     text: 'Отменить',
-                    handler: () => {
-                        console.log('Заглушка. Нужна функция отмены выходного')
-                        alert('Calendar: В разработке')
+                    handler: async () => {
+                        // console.log('Заглушка. Нужна функция отмены выходного')
+                        // alert('Calendar: В разработке')
+                        // console.log(weekendDays.value.length)
+
+                        weekendDays.value = weekendDays.value.filter(day => day.date !== choosenDateFromWeekPlaner.value.date)
+
+                        // console.log(weekendDays.value.length)
+
+                        updateWeekendDays()
+                        toastWeekend(choosenDateFromWeekPlaner.value.date, { title: 'Выходной отменен', text: 'больше не выходной' })
+
+                        loadWeekMode()
                     }
                 },
                 {
@@ -943,6 +959,8 @@
             const choosenDateFromWeekPlaner = ref({
                 date: ''
             })
+
+            // УДАЛИТЬ ЕСЛИИ НЕ ПРИГОДИТСЯ!!!
             const dateMakeWeekendWPFunc = (day) => {
 
                 if(day && day.length === 10) {
@@ -953,7 +971,7 @@
                     let isExist = weekendDays.value.find(e => e.date === choosenDateFromWeekPlaner.value.date) !== undefined
                     // Если выбранный день уже является выходным
                     if(isExist) {
-                        console.log('День уже выходной')
+                        //  alert('WeekPlanner: выходной день')
                         asCancelWeekendDay.value = true
 
 
@@ -975,7 +993,7 @@
             }
 
             // Проверяем массив на наличиие дней с делами
-            const checkEmptyDay = () => {
+            const checkEmptyDay = async () => {
                 // Временный массив
                 const tempArr = []
                 // По этой дате есть дела (поместить хэндлер в кнопки отмены)
@@ -992,12 +1010,15 @@
                 if(dealsAreExist) {
                     alert('Calendar: Какой выходной! Есть дела в этот день!')
                 } else {
-                    console.log('НЕ ТДЕЛ!')
-                    alert('Calendar: в разработке')
+                    // console.log('НЕ ТДЕЛ!')
+                    // alert('Calendar: в разработке')
 
                     // ================ РАботаем с БД =================
-
-
+                    weekendDays.value.push(choosenDateFromWeekPlaner.value)
+                    updateWeekendDays()
+                    // закрывает
+                    toastWeekend(choosenDateFromWeekPlaner.value.date, { title: 'Выходной выбран', text: 'отмечен как выходной день' })
+                    loadWeekMode()
                 }
             }
 
@@ -1007,7 +1028,7 @@
             }
 
             return {
-                menu, user, router, pageTitle, choosenDate, spinner, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle, observer, availableBalance, addToLedger, toggleSettingsModal, isSettingsModalOpened, updateDaySaturation, userRecipes, called, toastWeekend, calendarModeFunc, isMonthMode, loadInMonthMode, loadWeekMode, deals, openWeekCreateDeal, deleteTempDeal, openWeekendDayModaFunc, spinnerChangeStat, dateMakeWeekendWPFunc, choosenDateFromWeekPlaner, asSetWeekendDay, asSetWeekendDayButtons, asCancelWeekendDay, asCancelWeekendDayButtons, checkEmptyDay
+                menu, user, router, pageTitle, choosenDate, spinner, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle, observer, availableBalance, addToLedger, toggleSettingsModal, isSettingsModalOpened, updateDaySaturation, userRecipes, called, toastWeekend, calendarModeFunc, isMonthMode, loadInMonthMode, loadWeekMode, deals, openWeekCreateDeal, openWeekendDayModaFunc, spinnerChangeStat, dateMakeWeekendWPFunc, choosenDateFromWeekPlaner, asSetWeekendDay, asSetWeekendDayButtons, asCancelWeekendDay, asCancelWeekendDayButtons, checkEmptyDay
             }
         }
     })
