@@ -27,6 +27,15 @@
       <br>
       <!-- page content -->
 
+      <!-- Clink to test calendar -->
+      <!-- <div>
+      </div> -->
+      <ion-grid class="ion-no-padding ion-padding-horizontal">
+        <ion-row class="ion-justify-content-start ion-align-items-center">
+          <router-link :to="{ name: 'TestCalendar' }">TEST CALENDAR</router-link>
+        </ion-row>
+      </ion-grid>
+
       <!-- ================================== about users ================================== -->
       <!-- Пользваотели -->
       <ion-card>

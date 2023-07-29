@@ -133,7 +133,7 @@
                 userProfile.value = store.state.userSettings[0].userWorkProfile
                 avatarFileName.value = store.state.userSettings[0].avatar_url
                 await getCurrentMenuList()
-
+                // console.log(userProfile.value)
                 // ИСПРАВИТЬ: ИСКЛЮЧИТЬ ОШИБКУ УСЛОВИЕМ 
                 await downloadImage()
             })

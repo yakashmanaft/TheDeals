@@ -229,6 +229,23 @@ const routes = [
       }
     }
   },
+  {
+    path: '/test-calendar',
+    name: 'TestCalendar',
+    component: () => import('../views/adminPanel/test/testCalendar.vue'),
+    meta: {
+      title: 'Test Calendar',
+      auth: true,
+      translation: 'Календарь',
+      type: 'View'
+    },
+    beforeEnter: (to, from) => {
+      if (store.state.user.email === store.state.adminEmail) {
+      } else {
+        router.replace('/');
+      }
+    }
+  },
 ];
 
 const router = createRouter({
