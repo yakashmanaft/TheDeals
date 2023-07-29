@@ -30,8 +30,15 @@
                 <ion-text>Пока пусто</ion-text>
             </div>
 
+            
             <!-- Data -->
             <div v-if="dataLoaded && myData.length !== 0" class="ion-text-left ion-margin-bottom">
+
+                <!--  -->
+                <div class="ion-margin-top ion-padding-horizontal"   >
+                    <br>
+                    1232
+                </div>
                 <!--  -->
                 <div v-for="(date, idx) in getTransactionDateArray()" :key="idx" class="ion-margin-top ion-padding-horizontal">
 
@@ -47,7 +54,7 @@
                     <div v-for="transaction in myData" :key="transaction.id" class="ion-margin-top" @click="openTransactionDetailsModal(transaction)">
 
                             <!--  -->
-                            <div v-if="formattedDate(transaction.created_at) === date" class="ion-no-margin ion-padding-vertical">
+                            <div v-if="formattedDate(transaction.created_at) === date" class="ion-no-margin ion-padding-vertical" style="cursor: pointer;">
 
                                 <ion-grid class="ion-no-padding">
                                     <ion-row class="ion-align-items-center ion-justify-content-between">

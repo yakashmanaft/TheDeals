@@ -32,6 +32,7 @@
             <div v-if="dataLoaded">
                 <br>
                 <br>
+                <br>
                 <div class="ion-margin-vertical" style="font-size: 2.5rem; font-weight: bold">{{availableBalance.toFixed(2)}} {{currency}}</div>
                 <br>
                 <br>
@@ -60,7 +61,7 @@
                 <ion-grid class="ion-text-left ion-padding-horizontal ion-margin-horizontal">
                     <ion-row class="ion-justify-content-between">
                         <ion-text>Моя задолженность</ion-text>
-                        <ion-text color="primary" @click="goToChoosenDeals(myDeals, 'buy')">{{myDebt.toFixed(2)}} {{ currency }}</ion-text>
+                        <ion-text style="cursor: pointer;" color="primary" @click="goToChoosenDeals(myDeals, 'buy')">{{myDebt.toFixed(2)}} {{ currency }}</ion-text>
                     </ion-row>
                 </ion-grid>
 
@@ -68,7 +69,7 @@
                 <ion-grid class="ion-text-left ion-padding-horizontal ion-margin-horizontal ion-margin-top">
                     <ion-row class="ion-justify-content-between">
                         <ion-text>Мне должны</ion-text>
-                        <ion-text color="primary" @click="goToChoosenDeals(myDeals, 'sale')">{{debtToMe.toFixed(2)}} {{ currency }}</ion-text>
+                        <ion-text style="cursor: pointer;" color="primary" @click="goToChoosenDeals(myDeals, 'sale')">{{debtToMe.toFixed(2)}} {{ currency }}</ion-text>
                     </ion-row>
                 </ion-grid>
 

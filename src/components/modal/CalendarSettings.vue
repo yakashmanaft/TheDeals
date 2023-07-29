@@ -23,8 +23,9 @@
 
             <!-- Настройки загруженности дня -->
             <div class="ion-margin-horizontal">
+                <br>
                 <ion-text>
-                    <h3>Загруженность дня</h3>
+                    <h1>Загруженность дня</h1>
                 </ion-text>
 
                 <ion-grid v-for="(item, i) in settings.daySaturation" :key="i" class="ion-no-padding ion-margin-top">

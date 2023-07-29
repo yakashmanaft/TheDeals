@@ -46,11 +46,8 @@
                     </ion-row>
                     <!--  -->
                     <ion-row class="ion-justify-content-end ion-align-items-center">
-                        <!-- <ion-text>
-                            Задолженность: 
-                        </ion-text> -->
                         <ion-text style="font-size: 1rem; font-weight: bold; padding: 0 12px 0 0" class="ion-text-right">
-                            Остаток оплаты: {{deal.totalDealPrice - deal.dealPaid}} {{currency}}
+                            {{ deal.dealPaid }} / {{ deal.totalDealPrice }} {{ currency }}
                         </ion-text>
                     </ion-row>
                 </ion-grid>

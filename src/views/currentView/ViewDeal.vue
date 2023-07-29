@@ -257,7 +257,7 @@
 
                 <!-- ========================== Доставка ================================================= -->
                 <!-- SALE -->
-                <ion-item-group class="ion-text-left ion-padding-horizontal" v-if="currentDeal.dealType === 'sale'">
+                <ion-item-group class="ion-text-left ion-padding-horizontal ion-margin-top" v-if="currentDeal.dealType === 'sale'">
                     <!-- Заголовок -->
                     <ion-text>
                         <h4 class="ion-no-margin" >Доставка</h4>
@@ -358,7 +358,7 @@
                 </ion-action-sheet>
                 
                 <!-- BUY -->
-                <ion-item-group class="ion-text-left ion-padding-horizontal" v-if="currentDeal.dealType === 'buy'">
+                <ion-item-group class="ion-text-left ion-padding-horizontal ion-margin-top" v-if="currentDeal.dealType === 'buy'">
                     <!-- Заголовок -->
                     <ion-text>
                         <h4 class="ion-no-margin" >Доставка</h4>
@@ -567,7 +567,7 @@
 
                         <!-- Задолженность -->
                         <ion-row class="ion-margin-top ion-justify-content-between ion-align-items-center">
-                            <ion-text style="font-weight: bold">Остаток: </ion-text>
+                            <ion-text style="font-weight: bold">Долг: </ion-text>
                             <ion-text>{{ (culcDealDebt(currentDeal.totalDealPrice, currentDeal.dealPaid)).toFixed(2) }} {{ currency }}</ion-text>
                         </ion-row>
                     </ion-grid>

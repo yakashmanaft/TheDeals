@@ -9,7 +9,7 @@
                 <ion-back-button v-else-if="router.options.history.state.back === '/' || router.options.history.state.back.length > 3" @click="back()" default-href="/" text="Назад"></ion-back-button>
                 <!-- /?isMonth=false -->
 
-                <!-- Ессли пишли из Deals -->
+                <!-- Ессли пришли из какого-либо currentView -->
                 <ion-back-button v-else-if="router.options.history.state.back === '/deals'" @click="back()" default-href="/" text="Назад"></ion-back-button>
 
                 <!-- Кнопка, если возвращаемся не на '/' -->
@@ -84,6 +84,10 @@
 
                 if(router.options.history.state.back === '/deals') {
                     router.push({path: '/deals'})
+                }
+
+                if(router.options.history.state.back === '/recipes') {
+                    router.push({path: '/recipes'})
                 }
 
             }

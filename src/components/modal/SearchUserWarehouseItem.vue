@@ -37,7 +37,14 @@
             <ion-item v-else lines="none">
                 <ion-text color="medium">Ничего не найдено</ion-text>
             </ion-item>
+
+            <!--  -->
+            <br>
+            <br>
+            <br>
+            <br>
         </ion-content>
+
     </ion-modal>
 </template>
 
