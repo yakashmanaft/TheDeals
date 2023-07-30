@@ -7,10 +7,17 @@
             <ion-buttons slot="start">
 
                 <!-- КНОПКА НАЗАД -->
-                <ion-back-button class="color-primary" v-if="router.currentRoute._value.meta.title !== 'Calendar' || router.currentRoute._value.meta.title === 'My finance'" default-href="/" text="Назад"></ion-back-button>
+                <ion-back-button class="color-primary" v-if="(router.currentRoute._value.meta.title !== 'Calendar' && router.currentRoute._value.meta.title !== 'Test Calendar') || router.currentRoute._value.meta.title === 'My finance'" default-href="/" text="Назад"></ion-back-button>
 
                 <!-- КНОПКА ИЗМЕНИТЬ РЕЖИМ ДЕМОНСТРАЦИИ (По месяцам... По неделям) -->
                 <div class="color-primary" v-if="router.currentRoute._value.meta.title === 'Calendar'">
+                    <ion-button v-if="isMonth" @click="$emit('calendarMode', false)">Месяцы</ion-button>
+                    <ion-button v-else @click="$emit('calendarMode', true)">Недели</ion-button>
+                </div>
+
+                <!-- ВРЕМЕННЫЙ  ТЕСТОВЫ КАЛЕНДАРЬ -->
+                <!-- КНОПКА ИЗМЕНИТЬ РЕЖИМ ДЕМОНСТРАЦИИ (По месяцам... По неделям) -->
+                <div class="color-primary" v-if="router.currentRoute._value.meta.title === 'Test Calendar'">
                     <ion-button v-if="isMonth" @click="$emit('calendarMode', false)">Месяцы</ion-button>
                     <ion-button v-else @click="$emit('calendarMode', true)">Недели</ion-button>
                 </div>

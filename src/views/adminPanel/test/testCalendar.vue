@@ -13,7 +13,10 @@
         <Header
             :title="pageTitle"
             style="background-color: white"
+            @calendarMode="calendarModeFunc"
+            :isMonth="isMonthMode"
         />
+        <!-- @goToSettings="toggleSettingsModal" -->
 
         <!--  -->
         <ion-content
@@ -29,8 +32,11 @@
             <br>
             
             <!-- CALENDAR -->
-            <div>
-                RFKTYLFHM
+            <div v-if="isMonthMode === true">
+                MONTH RFKTYLFHM
+            </div>
+            <div v-else>
+                wEEK gfkdjsbgdfkg
             </div>
 
         </ion-content>
@@ -87,6 +93,17 @@
             // Page title
             const pageTitle = router.currentRoute._value.meta.translation;
 
+            // Toggle calendar mode
+            const isMonthMode = ref(true)
+            const calendarModeFunc = (boolean) => {
+                if(boolean === true) {
+                    isMonthMode.value = true
+                    // loadInMonthMode()
+                } else {
+                    isMonthMode.value = false
+                }
+            }
+
             onMounted(() => {
 
                 // Get user email
@@ -99,7 +116,7 @@
 
 
             return {
-                spinner, user, route, router, pageTitle, userEmail
+                spinner, user, route, router, pageTitle, userEmail, isMonthMode, calendarModeFunc
             }
         }
     })
