@@ -102,22 +102,22 @@
             />
 
             <!-- Для установки выходного дня -->
-            <ion-action-sheet
+            <!-- <ion-action-sheet
                 :is-open="asSetWeekendDay"
                 header="Сделать этот день выходным"
                 :buttons="asSetWeekendDayButtons"
                 @didDismiss="asSetWeekendDay = false"
             >
-            </ion-action-sheet>
+            </ion-action-sheet> -->
 
             <!-- Для отмены выходного дня -->
-            <ion-action-sheet
+            <!-- <ion-action-sheet
                 :is-open="asCancelWeekendDay"
                 header="Отменить выходной"
                 :buttons="asCancelWeekendDayButtons"
                 @didDismiss="asCancelWeekendDay = false"
             >
-            </ion-action-sheet>
+            </ion-action-sheet> -->
 
         </ion-content>
 
@@ -909,126 +909,126 @@
 
             // Переключатели выходного дня
             // Для установки выходного дня
-            const asSetWeekendDay = ref(false)
-            const asSetWeekendDayButtons = [
-                {
-                    text: 'Сделать выходным',
-                    handler: () => {
-                        // проверяем что в дне нет дел
-                        checkEmptyDay()
-                    }
-                },
-                {
-                    text: 'Назад',
-                    role: 'cancel',
-                    handler: () => {
-                        console.log('Cancel clicked')
-                    },
-                }
-            ]
+            // const asSetWeekendDay = ref(false)
+            // const asSetWeekendDayButtons = [
+            //     {
+            //         text: 'Сделать выходным',
+            //         handler: () => {
+            //             // проверяем что в дне нет дел
+            //             checkEmptyDay()
+            //         }
+            //     },
+            //     {
+            //         text: 'Назад',
+            //         role: 'cancel',
+            //         handler: () => {
+            //             console.log('Cancel clicked')
+            //         },
+            //     }
+            // ]
             // Для отмены выходного дня
-            const asCancelWeekendDay = ref(false)
-            const asCancelWeekendDayButtons = [
-                {
-                    text: 'Отменить',
-                    handler: async () => {
-                        // console.log('Заглушка. Нужна функция отмены выходного')
-                        // alert('Calendar: В разработке')
-                        // console.log(weekendDays.value.length)
+            // const asCancelWeekendDay = ref(false)
+            // const asCancelWeekendDayButtons = [
+            //     {
+            //         text: 'Отменить',
+            //         handler: async () => {
+            //             // console.log('Заглушка. Нужна функция отмены выходного')
+            //             // alert('Calendar: В разработке')
+            //             // console.log(weekendDays.value.length)
 
-                        weekendDays.value = weekendDays.value.filter(day => day.date !== choosenDateFromWeekPlaner.value.date)
+            //             weekendDays.value = weekendDays.value.filter(day => day.date !== choosenDateFromWeekPlaner.value.date)
 
-                        // console.log(weekendDays.value.length)
+            //             // console.log(weekendDays.value.length)
 
-                        updateWeekendDays()
-                        toastWeekend(choosenDateFromWeekPlaner.value.date, { title: 'Выходной отменен', text: 'больше не выходной' })
+            //             updateWeekendDays()
+            //             toastWeekend(choosenDateFromWeekPlaner.value.date, { title: 'Выходной отменен', text: 'больше не выходной' })
 
-                        loadWeekMode()
-                    }
-                },
-                {
-                    text: 'Назад',
-                    role: 'cancel',
-                    handler: () => {
-                        console.log('Cancel clicked')
-                    },
-                }
-            ]
+            //             loadWeekMode()
+            //         }
+            //     },
+            //     {
+            //         text: 'Назад',
+            //         role: 'cancel',
+            //         handler: () => {
+            //             console.log('Cancel clicked')
+            //         },
+            //     }
+            // ]
 
             // Выбранная дата из Week Planner
-            const choosenDateFromWeekPlaner = ref({
-                date: ''
-            })
+            // const choosenDateFromWeekPlaner = ref({
+            //     date: ''
+            // })
 
             // УДАЛИТЬ ЕСЛИИ НЕ ПРИГОДИТСЯ!!!
-            const dateMakeWeekendWPFunc = (day) => {
+            // const dateMakeWeekendWPFunc = (day) => {
 
-                if(day && day.length === 10) {
-                    choosenDateFromWeekPlaner.value = {
-                        date: day
-                    }
-                    // Проверяем отмечен ли в БД как выходной день
-                    let isExist = weekendDays.value.find(e => e.date === choosenDateFromWeekPlaner.value.date) !== undefined
-                    // Если выбранный день уже является выходным
-                    if(isExist) {
-                        //  alert('WeekPlanner: выходной день')
-                        asCancelWeekendDay.value = true
-
-
-                         // ================ РАботаем с БД =================
+            //     if(day && day.length === 10) {
+            //         choosenDateFromWeekPlaner.value = {
+            //             date: day
+            //         }
+            //         // Проверяем отмечен ли в БД как выходной день
+            //         let isExist = weekendDays.value.find(e => e.date === choosenDateFromWeekPlaner.value.date) !== undefined
+            //         // Если выбранный день уже является выходным
+            //         if(isExist) {
+            //             //  alert('WeekPlanner: выходной день')
+            //             asCancelWeekendDay.value = true
 
 
-                    } 
-                    // Если выбранный день не выходной
-                    else {
-                        if(isViewDealModalOpened.value) {
+            //              // ================ РАботаем с БД =================
 
-                        } else {
-                            console.log('Рабочий день')
-                            asSetWeekendDay.value = true
-                        }
-                    }
 
-                }
-            }
+            //         } 
+            //         // Если выбранный день не выходной
+            //         else {
+            //             if(isViewDealModalOpened.value) {
+
+            //             } else {
+            //                 console.log('Рабочий день')
+            //                 asSetWeekendDay.value = true
+            //             }
+            //         }
+
+            //     }
+            // }
 
             // Проверяем массив на наличиие дней с делами
-            const checkEmptyDay = async () => {
-                // Временный массив
-                const tempArr = []
-                // По этой дате есть дела (поместить хэндлер в кнопки отмены)
-                myDeals.value.forEach(item => {
-                    // Приводит даты дел к нужному формату
-                    let parsedExecutionDate = format(parseISO(item.executionDate), 'yyyy-MM-dd', { locale: ru })
-                    // Помещаем даты в массив
-                    tempArr.push({
-                        date: parsedExecutionDate
-                    })
-                })
-                // Если есть дела
-                let dealsAreExist = tempArr.find(e => e.date === choosenDateFromWeekPlaner.value.date) !== undefined
-                if(dealsAreExist) {
-                    alert('Calendar: Какой выходной! Есть дела в этот день!')
-                } else {
-                    // console.log('НЕ ТДЕЛ!')
-                    // alert('Calendar: в разработке')
+            // const checkEmptyDay = async () => {
+            //     // Временный массив
+            //     const tempArr = []
+            //     // По этой дате есть дела (поместить хэндлер в кнопки отмены)
+            //     myDeals.value.forEach(item => {
+            //         // Приводит даты дел к нужному формату
+            //         let parsedExecutionDate = format(parseISO(item.executionDate), 'yyyy-MM-dd', { locale: ru })
+            //         // Помещаем даты в массив
+            //         tempArr.push({
+            //             date: parsedExecutionDate
+            //         })
+            //     })
+            //     // Если есть дела
+            //     let dealsAreExist = tempArr.find(e => e.date === choosenDateFromWeekPlaner.value.date) !== undefined
+            //     if(dealsAreExist) {
+            //         alert('Calendar: Какой выходной! Есть дела в этот день!')
+            //     } else {
+            //         // console.log('НЕ ТДЕЛ!')
+            //         // alert('Calendar: в разработке')
 
-                    // ================ РАботаем с БД =================
-                    weekendDays.value.push(choosenDateFromWeekPlaner.value)
-                    updateWeekendDays()
-                    // закрывает
-                    toastWeekend(choosenDateFromWeekPlaner.value.date, { title: 'Выходной выбран', text: 'отмечен как выходной день' })
-                    loadWeekMode()
-                }
-            }
+            //         // ================ РАботаем с БД =================
+            //         weekendDays.value.push(choosenDateFromWeekPlaner.value)
+            //         updateWeekendDays()
+            //         // закрывает
+            //         toastWeekend(choosenDateFromWeekPlaner.value.date, { title: 'Выходной выбран', text: 'отмечен как выходной день' })
+            //         loadWeekMode()
+            //     }
+            // }
 
-            const openWeekendDayModaFunc = () => {
-                console.log('opened')
+            // const openWeekendDayModaFunc = () => {
+            //     console.log('opened')
                 
-            }
+            // }
 
             return {
-                menu, user, router, pageTitle, choosenDate, spinner, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle, observer, availableBalance, addToLedger, toggleSettingsModal, isSettingsModalOpened, updateDaySaturation, userRecipes, called, toastWeekend, calendarModeFunc, isMonthMode, loadInMonthMode, loadWeekMode, deals, openWeekCreateDeal, openWeekendDayModaFunc, spinnerChangeStat, dateMakeWeekendWPFunc, choosenDateFromWeekPlaner, asSetWeekendDay, asSetWeekendDayButtons, asCancelWeekendDay, asCancelWeekendDayButtons, checkEmptyDay
+                menu, user, router, pageTitle, choosenDate, spinner, myDeals, dealsByChoosenDate, dealsArray, isViewChoosenDateOpened, closeViewChoosenDate, goToChoosenDeal, createNewDeal, isViewDealModalOpened, setOpen, dealData, dateCreate, createNew, myContacts, addSubject, deleteSubject, goToChoosenContact, actionSheetWeekendDayOpened, changeWeekendDayButtons, setWeekendDayFunc, weekendDays, checkWeekendDays, userSettings, updateWeekendDays, setCalendarStyle, observer, availableBalance, addToLedger, toggleSettingsModal, isSettingsModalOpened, updateDaySaturation, userRecipes, called, toastWeekend, calendarModeFunc, isMonthMode, loadInMonthMode, loadWeekMode, deals, openWeekCreateDeal, spinnerChangeStat
             }
         }
     })

@@ -77,4 +77,10 @@ ion-modal {
   backdrop-filter: blur(2px);
 } 
 
+li {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
 </style>

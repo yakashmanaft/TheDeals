@@ -33,7 +33,9 @@
             
             <!-- CALENDAR -->
             <div v-if="isMonthMode === true">
-                MONTH RFKTYLFHM
+
+                <!-- Компонент месячного календаря -->
+                <CalendarMonth/>
             </div>
             <div v-else>
                 wEEK gfkdjsbgdfkg
@@ -42,7 +44,7 @@
         </ion-content>
 
         <!-- page footer -->
-        <Footer/>
+        <Footer style="background-color: white"/>
     </div>
 </template>
 
@@ -61,6 +63,9 @@
     import Footer from '@/components/Footer.vue';
 
     //
+    import CalendarMonth from '../../../components/calendar/month/CalendarMonth.vue'
+
+    //
     import { IonContent } from '@ionic/vue'
 
     export default defineComponent({
@@ -72,6 +77,9 @@
             Header,
             NavigationMenu,
             Footer,
+
+            //
+            CalendarMonth,
 
             //
             IonContent

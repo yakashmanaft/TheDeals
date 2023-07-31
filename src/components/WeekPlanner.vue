@@ -235,7 +235,7 @@ export default defineComponent({
                            if(e.target.parentNode.parentNode.parentNode.classList.contains('vuecal__cell--disabled')) {
        
                                    // alert('WeekPlanner: выходной день')
-                                   toastWeekend(0, { title: 'Выходной день', text: 'отмечен как выходной день' })
+                                   toastWeekend('', { title: 'Выходной день', text: 'отмечен как выходной день' })
                            }
                         }
                     }
@@ -351,6 +351,7 @@ export default defineComponent({
                     let date = `${dirtyDateArr[3]}-${setMonthString(dirtyDateArr[2])}-${setDatString(dirtyDateArr[4])}`
 
                     if (date) {
+                        
                         // emit('choosenDate', date)
                         dateMakeWeekendWPFunc(date)
                         // console.log(date)
@@ -471,8 +472,8 @@ export default defineComponent({
                     updateWeekendDays()
                     // 
                     emit('spinnerChangeStat', true)
-                    await loadWeekMode()
                     createElementStyle()
+                    await loadWeekMode()
 
                     // formatDate(userSettings.value.weekendDays)
 

@@ -3,7 +3,7 @@
         <ion-toolbar class="ion-no-border" color="white">
             <ion-buttons >
                 <ion-grid class="ion-no-padding" style="margin: 0.6rem auto">
-                    <ion-row class="ion-justify-content-around">
+                    <ion-row class="ion-justify-content-around adaptive-over-768">
 
                         <!-- Профиль пользователя -->
                         <ion-button class="ion-margin-vertical" @click="goToProfile()">
@@ -89,5 +89,14 @@
     }
     .ion-menu_toggle {
         cursor: pointer;
+    }
+
+    @media (min-width: 769px)  {
+        .adaptive-over-768 {
+            justify-content: center!important;
+        }
+        .adaptive-over-768 > * {
+            margin: 0 2rem;
+        }
     }
 </style>

@@ -1,0 +1,42 @@
+<template>
+    <ol class="day-of-week">
+        <li
+            v-for="weekday in weekdays"
+            :key="weekday"
+        >
+        {{ weekday }}
+        </li>
+    </ol>
+</template>
+
+<script>
+    import { defineComponent, ref } from 'vue'
+
+    export default defineComponent({
+        name: 'CalendarWeekdays',
+        props: {},
+        emits: [],
+        components: {},
+        setup(props, { emit }) {
+
+            //
+            const weekdays = ref(["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"]);
+
+            return {
+                weekdays
+            }
+        }
+
+    })
+</script>
+
+<style scoped>
+    .day-of-week {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+    }
+    .day-of-week > * {
+        text-align: right;
+        padding-right: 5px;
+    }
+</style>
