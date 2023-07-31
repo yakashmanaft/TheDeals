@@ -87,4 +87,5 @@
         font-size: 2rem;
         /* background-color: var(--ion-color-success); */
     }
+    
 </style>

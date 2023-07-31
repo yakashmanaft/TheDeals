@@ -215,4 +215,5 @@
     grid-row-gap: 0.5rem;
     /* border-top: solid 1px var(--ion-color-primary); */
   }
+  /* https://codesandbox.io/s/monthly-calendar-vue-wdv9y?file=/src/components/CalendarMonth.vue:1837-1875 */
 </style>
