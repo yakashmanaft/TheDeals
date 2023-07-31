@@ -31,14 +31,18 @@
           :key="day.date"
           :day="day"
           :is-today="day.date === today"
+          @click="openDayModal(day.date)"
         />
+        <br>
+        <br>
+        <br>
       </ol>
 
     </div>
   </template>
 
 <script>
-  import { defineComponent, computed, ref, watch } from 'vue';
+  import { defineComponent, computed, ref, watch, onMounted } from 'vue';
 
   //
   import dayjs from "dayjs";
@@ -73,7 +77,7 @@
 
       //
       const selectedDate = ref(dayjs())
-      console.log(selectedDate.value)
+
       //
       const today = dayjs().locale('ru').format('YYYY-MM-DD')
       
@@ -86,7 +90,6 @@
       //
       const selectDate = (newSelectedDate) => {
         selectedDate.value = newSelectedDate
-        // console.log(selectedDate.value)
       }
 
       //
@@ -96,7 +99,6 @@
 
       //
       const numberOfDaysInMonth = computed(() => dayjs(selectedDate.value).daysInMonth())
-      // console.log(`numberOfDaysInMonth: ${numberOfDaysInMonth.value}`)
 
       //
       const currentMonthDays = computed(() => {
@@ -159,6 +161,73 @@
         ]
       })
 
+      onMounted(() => {
+        
+      })
+
+      
+      let xDown = null;
+      let yDown = null;
+
+      const getTouches = (evt) => {
+        return evt.touches
+      };
+
+      const handleTouchStart = (evt) => {
+        const firstTouch = getTouches(evt)[0];
+        xDown = firstTouch.clientX;
+        yDown = firstTouch.clientY;
+      }
+
+      function handleTouchMove(evt) {
+
+        // 
+        if ( ! xDown || ! yDown ) {
+          return;
+        }
+
+        // 
+        let xUp = evt.touches[0].clientX;
+        let yUp = evt.touches[0].clientY;
+
+        // 
+        let xDiff = xDown - xUp;
+        let yDiff = yDown - yUp;
+
+        // 
+        if ( Math.abs(xDiff) > Math.abs(yDiff)) {
+          ( xDiff > 0 ) ? selectedDate.value =  dayjs(selectedDate.value).add(1, "month") : selectedDate.value =  dayjs(selectedDate.value).subtract(1, "month");
+        } else {
+          // ( Math.abs(xDiff) === 0) ? alert('Up') : alert('Duwn');
+        }
+        
+
+        xDown = null;
+        yDown = null;
+
+      }
+
+
+
+
+
+      // if ( Math.abs(xDiff) 0 ) ? alert('Up') : alert('Duwn');
+      // }
+      /* свайп был, обнуляем координаты */
+      xDown = null;
+      yDown = null;
+      // };
+
+      // 
+      document.addEventListener('touchstart', handleTouchStart, false);
+      document.addEventListener('touchmove', handleTouchMove, false);
+      
+      // 
+      const openDayModal = (day) => {
+        console.log(day)
+        alert(day)
+      }
+
       watch(days, () => {
 
         month.value = Number(selectedDate.value.format("M"))
@@ -170,7 +239,7 @@
 
       return {
 
-        selectedDate, today, selectDate, getWeekday, days, month, year, numberOfDaysInMonth, currentMonthDays, previousMonthDays, nextMonthDays
+        selectedDate, today, selectDate, getWeekday, days, month, year, numberOfDaysInMonth, currentMonthDays, previousMonthDays, nextMonthDays, openDayModal, handleTouchStart, handleTouchMove, getTouches
       }
     }
   })

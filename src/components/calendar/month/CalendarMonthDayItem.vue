@@ -51,7 +51,7 @@
 <style scoped>
     .calendar-day {
         position: relative;
-        min-height: 100px;
+        min-height: 3.5rem;
         font-size: 16px;
         /* background-color: #fff; */
         background-color: var(--ion-color-success);

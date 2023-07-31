@@ -30,7 +30,7 @@
             <br>
             <br>
             <br>
-            
+            <!-- {{ nogi.content }} -->
             <!-- CALENDAR -->
             <div v-if="isMonthMode === true">
 
@@ -70,8 +70,13 @@
 
     export default defineComponent({
         name: 'TestCalendar',
+        props: {            
+            nogi: {
+                type: Object,
+                required: true
+            },
+        },
         emit: [],
-        props: {},
         components: {
             Spinner,
             Header,
@@ -85,7 +90,7 @@
             IonContent
         },
         setup(props, { emit }) {
-
+            const nogi = computed(() => props.nogi)
             //
             const spinner = ref(null)
             spinner.value = true
@@ -124,7 +129,7 @@
 
 
             return {
-                spinner, user, route, router, pageTitle, userEmail, isMonthMode, calendarModeFunc
+                spinner, user, route, router, pageTitle, userEmail, isMonthMode, calendarModeFunc, nogi
             }
         }
     })

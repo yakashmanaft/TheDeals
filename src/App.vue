@@ -1,6 +1,8 @@
 <template>
   <div v-if="appReady">
-    <router-view/>
+    <router-view
+      :nogi="con"
+    />
   </div>
 </template>
 
@@ -28,6 +30,10 @@ export default defineComponent ({
         appReady.value = true;
       }
 
+      const con = ref({
+        content: 'NOGI'
+      })
+
       // Runs when there is a auth state change
       // if user is logged in, this will fire
       supabase.auth.onAuthStateChange((_, session) => {
@@ -37,7 +43,7 @@ export default defineComponent ({
       })
 
       return {
-        appReady, user
+        appReady, user, con
       }
     }
 })
