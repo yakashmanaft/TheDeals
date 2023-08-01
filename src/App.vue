@@ -31,7 +31,7 @@ export default defineComponent ({
       }
 
       const con = ref({
-        content: 'NOGI'
+        content: 'NOGI из APP.vue'
       })
 
       // Runs when there is a auth state change
@@ -59,6 +59,10 @@ export default defineComponent ({
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: var(--ion-color-system);
+}
+
+html {
+        overflow: auto;
 }
 
 nav {

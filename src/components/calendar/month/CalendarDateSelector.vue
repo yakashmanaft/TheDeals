@@ -31,6 +31,10 @@
         name: 'CalendarDateSelector',
         emits: ['dateSelected'],
         props: {
+            isMonth: {
+                type: Boolean,
+                required: true
+            },
             currentDate: {
                 type: String,
                 required: true
@@ -46,10 +50,16 @@
             IonIcon 
         }, 
         setup(props, { emit }) {
-
+            
             // 
             const selectPrevious = () => {
-                let newSelectedDate =  dayjs(props.selectedDate).subtract(1, "month");
+                let newSelectedDate;
+
+                if(props.isMonth) {
+                    newSelectedDate =  dayjs(props.selectedDate).subtract(1, "month");
+                } else if (!props.isMonth) {
+                    newSelectedDate =  dayjs(props.selectedDate).subtract(1, "week");
+                }
                 // console.log(newSelectedDate)
                 emit('dateSelected', newSelectedDate)
             }
@@ -61,7 +71,13 @@
             }
 
             const selectNext = () => {
-                let newSelectedDate = dayjs(props.selectedDate).add(1, 'month');
+                let newSelectedDate;
+
+                if(props.isMonth) {
+                    newSelectedDate =  dayjs(props.selectedDate).add(1, "month");
+                } else if (!props.isMonth) {
+                    newSelectedDate =  dayjs(props.selectedDate).add(1, "week");
+                }
                 // console.log(newSelectedDate)
                 emit('dateSelected', newSelectedDate)
             }

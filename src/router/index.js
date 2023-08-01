@@ -232,7 +232,7 @@ const routes = [
   {
     path: '/test-calendar',
     name: 'TestCalendar',
-    component: () => import('../views/adminPanel/test/testCalendar.vue'),
+    component: () => import('../views/adminPanel/test/Calendar.vue'),
     meta: {
       title: 'Test Calendar',
       auth: true,

@@ -1,5 +1,5 @@
 <template v-show="user">
-    <ion-footer style="position:fixed; bottom: 0;" translucent="true">
+    <ion-footer style="position:fixed; bottom: 0;" translucent="true" class="ion-no-border">
         <ion-toolbar class="ion-no-border" color="white">
             <ion-buttons >
                 <ion-grid class="ion-no-padding" style="margin: 0.6rem auto">

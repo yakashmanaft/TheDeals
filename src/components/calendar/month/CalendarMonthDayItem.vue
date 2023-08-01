@@ -35,7 +35,7 @@
             }
         },
         emits: [],
-        comonents: {},
+        components: {},
         setup(props, { emit }){
 
             //
