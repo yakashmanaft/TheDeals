@@ -35,9 +35,57 @@
             <div v-if="dataLoaded && myData.length !== 0" class="ion-text-left ion-margin-bottom">
 
                 <!--  -->
-                <div class="ion-margin-top ion-padding-horizontal"   >
-                    <br>
-                    1232
+                <div v-for="(date, idx) in getTransactionDateArray()" :key="idx"  class="ion-margin-top ion-padding-horizontal">
+                        
+                    <!--  -->
+                    <ion-text>
+                        {{ date }}
+                    </ion-text>
+                    
+                    <div>
+                        Доход: <br>
+                        Расход: <br>
+                        Прибыль: <br>
+                        {{ setDayBalance(date) }}
+                    </div>
+                    <!-- <div v-for="transaction in myData" :key="transaction.id">
+
+                        <div>
+                            
+                            {{ setDayBalance(transaction, date) }}
+                        </div>
+
+                        
+
+                    </div> -->
+
+                    <!--  -->
+                    <!-- <div  v-for="transaction in myData" :key="transaction.id">
+                        {{ transaction }}
+                    </div> -->
+                    <!-- <div v-for="transaction in myData" :key="transaction.id">
+                        {{ transaction.dealType }}
+                    </div> -->
+
+                        <!-- <ion-row v-for="dayBalance in getDaysBalance()">
+                            {{ dayBalance.dealType }}
+                        </ion-row> -->
+                        <!-- 
+                        <ion-row class="ion-align-items-center">
+                            Доход:
+                            100.00
+                        </ion-row>
+
+                        <ion-row class="ion-align-items-center ion-no-margin">
+
+                        Расход:
+                        100.00
+                        </ion-row>
+                        <ion-row class="ion-align-items-center ion-no-margin">
+
+                            Прибыль:
+                            0.00
+                            </ion-row> -->
                 </div>
                 <!--  -->
                 <div v-for="(date, idx) in getTransactionDateArray()" :key="idx" class="ion-margin-top ion-padding-horizontal">
@@ -199,6 +247,8 @@
                 const dateArray = []
                 myData.value.forEach(date => {
                     dateArray.unshift(date.created_at)
+
+                    
                 })
                 // Сортируем от ближайшей даты и по удалению от сегодня
                 dateArray.sort((a, b) => {
@@ -258,8 +308,22 @@
                 }
             }
 
+            const setDayBalance = (date) => {
+                // v-if="formattedDate(transaction.created_at) === date"
+                // if(formattedDate(transaction.created_at) === date) {
+
+                //     let array = [];
+                //     array.push(transaction)
+
+
+                //     return transaction
+                // }\
+                return `<div>123_${date}</div>`
+            }
+            
+
             return {
-                user, router, pageTitle, spinner, dataLoaded, myData, daysArray, getTransactionDateArray, formattedDate, arrowUpOutline, arrowDownOutline, currency, getAmountColor, transactionDetailOpened, openTransactionDetailsModal, currentTransaction, myContacts, translateContactName
+                user, router, pageTitle, spinner, dataLoaded, myData, daysArray, getTransactionDateArray, formattedDate, arrowUpOutline, arrowDownOutline, currency, getAmountColor, transactionDetailOpened, openTransactionDetailsModal, currentTransaction, myContacts, translateContactName, setDayBalance
             }
         }
     })

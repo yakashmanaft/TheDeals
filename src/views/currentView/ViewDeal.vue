@@ -174,7 +174,7 @@
                 <ion-item-group class="ion-text-left ion-padding-horizontal">
                     <!-- Заголовок -->
                     <ion-text >
-                        <h4>Контакт</h4>
+                        <h4>Кому</h4>
                     </ion-text>
                     <!-- Показываем контакт по делу -->
                     <ion-grid class="ion-no-padding border-bottom">
