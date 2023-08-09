@@ -26,97 +26,74 @@
 
         <!-- Content -->
         <div class="wrapper">
-            
-            <div>
-                <h1 class="ion-text-start ion-no-margin header">
-                    <ion-text color="primary">Deals</ion-text><ion-text color="success">.</ion-text>
-                </h1>
-                <h3 class="ion-text-start ion-no-margin">
-                    <ion-text color="medium">...бизнес в ваших руках</ion-text>
-                </h3>
-            </div>
-            
-            <!-- Форма ввода логина и пароля -->
-            <form @submit.prevent='register()' style="height: 60%;">
-                <!-- Email -->
-                <!-- <ion-input 
-                    placeholder="Enter Email / Введите имейл"
-                    type="email" 
-                    v-model="email"    
-                    class="ion-text-start ion-padding-vertical ion-padding-horizontal"
-                ></ion-input> -->
 
-                <ion-item id="email" fill="solid" ref="item" class="ion-no-padding">
-                    <ion-label color="primary" position="floating">Адрес эл.почты</ion-label>
-                    <ion-input type="email" @ionInput="validate" @ionBlur="markTouched" v-model="email" ></ion-input>
-                    <ion-note v-if="email" slot="helper" color="success">Корректный адрес</ion-note>
-                    <ion-note slot="error">Некорректный адрес</ion-note>
-                </ion-item>
+            <LoginLogo/>
+            
+            <LogRegFrom
+                @toLogin="goToLogin"
+            />
+
+
+
+
+            <!-- <form @submit.prevent='register()' style="width: 100%"> -->
+<!-- 
+                 <div> -->
+
+                    <!-- Email -->
+                    <!-- <ion-item id="email" fill="solid" ref="item" class="ion-no-padding">
+                        <ion-label color="primary" position="floating">Адрес эл.почты</ion-label>
+                        <ion-input type="email" @ionInput="validate" @ionBlur="markTouched" v-model="email" ></ion-input>
+                        <ion-note v-if="email" slot="helper" color="success">Корректный адрес</ion-note>
+                        <ion-note slot="error">Некорректный адрес</ion-note>
+                    </ion-item> -->
     
-                <!-- Password -->
-                <!-- <ion-input 
-                    placeholder="Enter password / Введите пароль"
-                    type="password" 
-                    v-model="password"   
-                    class="ion-text-start ion-padding-vertical ion-padding-horizontal" 
-                ></ion-input> -->
-
-                <ion-item fill="solid" ref="item" class="ion-no-padding">
-                    <ion-label color="primary" position="floating">Пароль</ion-label>
-                    <ion-input type="password" v-model="password"></ion-input>
-                </ion-item>
-
-                <!-- Confirm Password -->
-                <!-- <ion-input 
-                    placeholder="Confirm password / Повторите пароль"
-                    type="password" 
-                    v-model="confirmPassword"   
-                    class="ion-text-start ion-padding-vertical ion-padding-horizontal" 
-                ></ion-input> -->
-
-                <ion-item id="confirmPassword" fill="solid" ref="item" class="ion-no-padding ion-margin-bottom">
-                    <ion-label color="primary" position="floating">Повтор пароля</ion-label>
-                    <ion-input type="password" @ionInput="confirmPasswordValidate" @ionBlur="markTouched" v-model="confirmPassword"></ion-input>
-                    <ion-note v-if="confirmPassword" slot="helper" color="success">Совпадает</ion-note>
-                    <ion-note slot="error">Не совпадает</ion-note>
-                </ion-item>
-
-                <!-- Перейти в ЛОГИН или ДАЛЕЕ -->
-                <div class="buttons-group" :class="{'z-index-none' : spinner}">
-
-                    <!-- Делаем Сабмит -->
-                    <ion-button v-if="isChooseProfileModalOpened" @click="register()" class="ion-margin">Создать аккаунт</ion-button>
+                    <!--  Пароль -->
+                    <!-- <ion-item fill="solid" ref="item" class="ion-no-padding">
+                        <ion-label color="primary" position="floating">Пароль</ion-label>
+                        <ion-input type="password" v-model="password"></ion-input>
+                    </ion-item> -->
+    
+                    <!-- Confirm Password -->
+                    <!-- <ion-item id="confirmPassword" fill="solid" ref="item" class="ion-no-padding ion-margin-bottom">
+                        <ion-label color="primary" position="floating">Повтор пароля</ion-label>
+                        <ion-input type="password" @ionInput="confirmPasswordValidate" @ionBlur="markTouched" v-model="confirmPassword"></ion-input>
+                        <ion-note v-if="confirmPassword" slot="helper" color="success">Совпадает</ion-note>
+                        <ion-note slot="error">Не совпадает</ion-note>
+                    </ion-item> -->
                     
-                    <!-- Открывает модалку выбора профиля -->
-                    <ion-button v-else @click="goToChooseProfile" color="dark" class="ion-margin">Далее</ion-button>
-
-                    <!-- Просто закрыть модалку выбора профиля -->
-
-                    <!-- Ссылка на экран логина -->
-                    <ion-button v-if="isChooseProfileModalOpened" color="primary" fill="clear" class="ion-margin" @click="isChooseProfileModalOpened = false">
-                        Назад
-                    </ion-button>
-
-                    <!-- Ссылка на экран логина -->
-                    <ion-button v-else color="primary" fill="clear" class="ion-margin" @click="goToLogin()">
-                        Уже есть аккаунт
-                        <!-- <router-link :to="{ name: 'Login' }" style="color: white">Войти</router-link> -->
-                    </ion-button>
-                </div>
+                                    <!-- Перейти в ЛОГИН или ДАЛЕЕ -->
+                    <!-- <div class="buttons-group" :class="{'z-index-none' : spinner}"> -->
+    
+                        <!-- Делаем Сабмит -->
+                        <!-- <ion-button v-if="isChooseProfileModalOpened" @click="register()" class="ion-margin">Создать аккаунт</ion-button> -->
+                        
+                        <!-- Открывает модалку выбора профиля -->
+                        <!-- <ion-button v-else @click="goToChooseProfile" color="dark" class="ion-margin">Далее</ion-button> -->
+    
+                        <!-- Просто закрыть модалку выбора профиля -->
+    
+                        <!-- Ссылка на экран логина -->
+                        <!-- <ion-button v-if="isChooseProfileModalOpened" color="primary" fill="clear" class="ion-margin" @click="isChooseProfileModalOpened = false"> -->
+                            <!-- Назад
+                        </ion-button> -->
+    
+                        <!-- Ссылка на экран логина -->
+                        <!-- <ion-button v-else color="primary" fill="clear" class="ion-margin" @click="goToLogin()"> -->
+                            <!-- Уже есть аккаунт -->
+                            <!-- <router-link :to="{ name: 'Login' }" style="color: white">Войти</router-link> -->
+                        <!-- </ion-button> -->
+                    <!-- </div>
+                </div> -->
 
                 <!-- Модалка выбора профиля -->
-                <ion-modal :isOpen="isChooseProfileModalOpened">
+                <!-- <ion-modal :isOpen="isChooseProfileModalOpened"> -->
 
                     <!--  -->
-                    <ion-header>
-
-                    </ion-header>
-
-                    <!--  -->
-                    <ion-content forceOverscroll="false">
+                    <!-- <ion-content forceOverscroll="false"> -->
 
                         <!-- Шапка профилей -->
-                        <div :class="{'display-none' : spinner}" class="header-group">
+                        <!-- <div :class="{'display-none' : spinner}" class="header-group">
                                 
                             <ion-item-group class="ion-text-center">
                                 <ion-text>
@@ -131,10 +108,10 @@
                                 </ion-text>
                             </ion-item-group>
 
-                        </div>
+                        </div> -->
 
                         <!-- Слайдер профилей -->
-                        <ion-grid style="display: flex; align-items: center; justify-content: center; height: 90%" :class="{'display-none' : spinner}">
+                        <!-- <ion-grid style="display: flex; align-items: center; justify-content: center; height: 90%" :class="{'display-none' : spinner}">
                             <swiper
                                 v-if="userWorkProfileArray.length !== 0"
                                 :modules="modules"
@@ -159,18 +136,18 @@
 
                         </ion-grid>
 
-                    </ion-content>
+                    </ion-content> -->
 
 
                     <!-- Spinner -->
-                    <Spinner v-if="spinner"/>
+                    <!-- <Spinner v-if="spinner"/>
                 </ion-modal>
 
 
                 <br>
                 <br>
 
-            </form>
+            </form> -->
 
         </div>
 
@@ -185,6 +162,8 @@
     import { IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert, IonNote, IonList, IonSelect, IonSelectOption, IonChip, IonModal, IonHeader, IonItemGroup, IonImg, IonGrid } from '@ionic/vue';
     //
     import Spinner from '../../components/Spinner.vue';
+    import LoginLogo from './LoginLogo.vue';
+    import LogRegFrom from './LogRegFrom.vue'
     //
     import { uid } from 'uid';
     //
@@ -197,7 +176,7 @@
     export default defineComponent ({
         name: 'register',
         components: { 
-            Spinner,
+            Spinner, LoginLogo, LogRegFrom,
             //
             IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert, IonNote, IonList, IonSelect, IonSelectOption, IonChip, IonModal, IonHeader, IonContent, IonItemGroup, IonImg, IonGrid,
             //
@@ -423,31 +402,30 @@
 
 <style scoped>
     .wrapper {
+        margin: 0 auto;
         height: 100vh;
         display: flex;
+        align-items: center;
         flex-direction: column;
         justify-content: space-around;
+    }
+    @media (min-width: 480px) {
+        .wrapper {
+            flex-direction: row;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .wrapper div {
+            width: 50%
+        }
     }
     .header {
         font-size: 70px;
         font-weight: bold;
     }
 
-    ion-item{
-        --inner-padding-end: 0px;
-        --padding-start:0px
-    }
-    ion-select {
-        --placeholder-opacity: 1;
-        --padding-start: 5px;
-        --padding-bottom: 0;
-        --padding-top: 0;
-        --padding-end: 5px;
-    }
-    ion-list {
-        border-radius: 20px;
-        background-color: transparent
-    }
+
+    /* 
     .buttons-group {
         display: flex; 
         flex-direction: column; 
@@ -458,6 +436,8 @@
         background-color: #fff; 
         z-index: 99999;
     }
+    */
+
 
     .header-group {
         position: fixed;

@@ -16,17 +16,20 @@
 
         <!-- Content -->
         <div class="wrapper">
-            <div>
+
+            <!--  -->
+            <LoginLogo/>
+            <!-- <div>
                 <h1 class="ion-text-start ion-no-margin header">
                     <ion-text color="primary">Deals</ion-text><ion-text color="success">.</ion-text>
                 </h1>
                 <h3 class="ion-text-start ion-no-margin">
                     <ion-text color="medium">...бизнес в ваших руках</ion-text>
                 </h3>
-            </div>
+            </div> -->
             
             <!-- Форма ввода логина и пароля -->
-            <form @submit.prevent='login()' style="height: 60%;">
+            <form @submit.prevent='login()' style="height: 60%; margin: 0 1rem;">
                 <!-- Email -->
                 <!-- <ion-input 
                     placeholder="Enter Email / Введите имейл"
@@ -37,7 +40,7 @@
 
                 <ion-item fill="solid" ref="item" class="ion-no-padding">
                     <ion-label color="primary" position="floating">Адрес эл.почты</ion-label>
-                    <ion-input type="email" @ionInput="validate" @ionBlur="markTouched" v-model="email" ></ion-input>
+                    <ion-input syle="background: none;" type="email" @ionInput="validate" @ionBlur="markTouched" v-model="email" ></ion-input>
                     <ion-note v-if="email" slot="helper" color="success">Корректный адрес</ion-note>
                     <ion-note slot="error">Некорректный адрес</ion-note>
                 </ion-item>
@@ -58,24 +61,25 @@
                 <br>
 
                 <div style="display: flex; flex-direction: column; position: fixed; bottom: 0; left: 0; width: 100%; background-color: #fff; z-index: 999999">
+                    <div class="ion-margin-horizontal">
 
-                    <!-- Button -->
-                    <ion-button 
-                        class="ion-margin-vertical ion-margin"
-                        type="submit" 
-                        color="success" 
-                        expand="block"
-                    >
-                        <ion-text color="light" >
-                            Войти
-                        </ion-text>
-                        
-                    </ion-button>
-                    <!-- Ссылка на экран регистрации -->
-                    <ion-button color="primary" fill="clear" @click="goToRegister()" class="ion-margin">
-                        Создать аккаунт
-                        <!-- <router-link :to="{ name: 'Register' }">Создать аккаунт</router-link> -->
-                    </ion-button>
+                        <!-- Button -->
+                        <ion-button 
+                            type="submit" 
+                            color="success" 
+                            expand="block"
+                        >
+                            <ion-text color="light" >
+                                Войти
+                            </ion-text>
+                            
+                        </ion-button>
+                        <!-- Ссылка на экран регистрации -->
+                        <ion-button color="primary" fill="clear" @click="goToRegister()" class="ion-no-margin ion-margin-bottom">
+                            Создать аккаунт
+                            <!-- <router-link :to="{ name: 'Register' }">Создать аккаунт</router-link> -->
+                        </ion-button>
+                    </div>
 
                 </div>
             </form>
@@ -91,10 +95,11 @@
     import { useRouter } from 'vue-router';
     import { IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert, IonNote } from '@ionic/vue';
     import Spinner from '../../components/Spinner.vue'
+    import LoginLogo from './LoginLogo.vue'
 
     export default defineComponent ({
         name: 'login',
-        components: { IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert, Spinner, IonNote },
+        components: { IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert, Spinner, IonNote, LoginLogo },
         setup() {
             // Create data / vars
             const router = useRouter();
@@ -172,10 +177,6 @@
         display: flex;
         flex-direction: column;
         justify-content: space-around;
-    }
-    .header {
-        font-size: 70px;
-        font-weight: bold;
     }
 
     ion-item{
