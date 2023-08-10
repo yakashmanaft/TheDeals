@@ -70,7 +70,7 @@ nav {
 }
 
 nav a {
-  font-weight: bold;
+
   color: var(--ion-color-system);
 }
 
@@ -92,6 +92,5 @@ li {
   margin: 0;
   list-style: none;
 }
-
 
 </style>

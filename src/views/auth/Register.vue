@@ -27,7 +27,7 @@
         <!-- Content -->
         <div class="wrapper">
 
-            <LoginLogo style="margin-top: 2rem;"/>
+            <Logo style="margin-top: 2rem;"/>
             
             <form style="width: 100%;">
                 
@@ -157,12 +157,15 @@
 
                 <br>
                 <br>
-
-            <!-- </form> -->
-
+                
+                <!-- </form> -->
+                
+            </div>
+            
         </div>
 
-    </div>
+        <!--  -->
+        <copyright/>
 </template>
 
 <script>
@@ -173,7 +176,7 @@
     import { IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert, IonNote, IonList, IonSelect, IonSelectOption, IonChip, IonModal, IonHeader, IonItemGroup, IonImg, IonGrid } from '@ionic/vue';
     //
     import Spinner from '../../components/Spinner.vue';
-    import LoginLogo from './authLogo.vue';
+    import Logo from './Logo.vue';
     import LogRegFrom from './LogRegFrom.vue';
     import setUserProfile from '@/views/auth/setUserProfile.vue'
     //
@@ -188,7 +191,7 @@
     export default defineComponent ({
         name: 'register',
         components: { 
-            Spinner, LoginLogo, LogRegFrom, setUserProfile,
+            Spinner, Logo, LogRegFrom, setUserProfile,
             //
             IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert, IonNote, IonList, IonSelect, IonSelectOption, IonChip, IonModal, IonHeader, IonContent, IonItemGroup, IonImg, IonGrid,
             //
@@ -266,52 +269,55 @@
             // Register function
             const register = async (accountProfile) => {
                 console.log(accountProfile)
-                // await store.methods.getAllSettingsFromDB()
-                // // console.log(email.value)         
-                // let allSettings = store.state.allSettings
-                // let allAccountEmails = []
-                // allSettings.forEach(account => {
-                //     allAccountEmails.push(account.email)
-                // })
+                await store.methods.getAllSettingsFromDB()     
+                let allSettings = store.state.allSettings
+                let allAccountEmails = []
+                allSettings.forEach(account => {
+                    // console.log(account.email)
+                    allAccountEmails.push(account.email)
+                })
 
-                // if (userAccountSettings.value.userWorkProfile === '') {
-                //     alert('Register: Выберите профиль')
-                // } else if (password.value !== confirmPassword.value) {
-                //     alert('Register: Пароль не совпадает')
-                // } else if (allAccountEmails.value.includes(email.value)) {
-                //     alert('Register: Аккаунт с указанным имейлом уже существует')
-                // } else if (userAccountSettings.value.userWorkProfile === 'Автозапчасти') {
-                //     alert('Register: функционал профиля Автозапчасти в стадии разработки...')
-                // } else if (password.value === confirmPassword.value) {
+                if (userAccountSettings.value.userWorkProfile === '') {
+                    alert('Register: Выберите профиль')
+                } else if (password.value !== confirmPassword.value) {
+                    alert('Register: Пароль не совпадает')
+                } else if (allAccountEmails.includes(email.value)) {
+                    alert('Register: Аккаунт с указанным имейлом уже существует')
+                } 
+                if (accountProfile === 'Автозапчасти') {
+                    alert('Register: функционал профиля Автозапчасти в стадии разработки...')
+                } 
+                else if (password.value === confirmPassword.value) {
                 //     spinner.value = true;
-                //     try {
-                //     const { error } = await supabase.auth.signUp({
-                //         email: email.value,
-                //         password: password.value
-                //     });
-                //     if (error) throw error;
-                //     setTimeout(() => {
-                //         confirmRequire.value = true
+                    try {
+                    const { error } = await supabase.auth.signUp({
+                        email: email.value,
+                        password: password.value
+                    });
+                    if (error) throw error;
+                    setTimeout(() => {
+                        confirmRequire.value = true
                 //         // router.push({ name: 'Login' })
-                //         console.log(email.value)
+                        console.log(email.value)
                 //         // Здесь имейл уже подтянулся
-                //         userAccountSettings.value.email = email.value.toLowerCase()
+                        userAccountSettings.value.email = email.value.toLowerCase()
                 //         // isChooseProfileModalOpened.value = false
-                //         createAccountSettings()
-                //     }, 3000)
-                //     } catch (error) {
-                //         errorMsg.value = error.message;
-                //         spinner.value = false
-                //         setTimeout(() => {
-                //             errorMsg.value = null;
-                //         }, 5000)
-                //     }
-                //     return;
-                // }
+                        createAccountSettings()
+                    }, 3000)
+                    } catch (error) {
+                        errorMsg.value = error.message;
+                        spinner.value = false
+                        console.log('Мы пока не можем рассылать подтверждения!')
+                        // setTimeout(() => {
+                        //     errorMsg.value = null;
+                        // }, 5000)
+                    }
+                    return;
+                }
                 // // errorMsg.value = 'Error: Passwords do not match'
-                // setTimeout(() => {
-                //     errorMsg.value = null;
-                // }, 5000)
+                setTimeout(() => {
+                    errorMsg.value = null;
+                }, 5000)
             };
 
             // confirm alert
@@ -381,7 +387,6 @@
             // ====================================== РАБОТА С МОДАЛКОЙ ВЫБОРА ПРОФИЛЯ =================================
             const isChooseProfileModalOpened = ref(false)
             const goToChooseProfile = (obj) => {
-                console.log(obj)
                 if(!obj.email || obj.mail === '') {
                     alert('Register: укажите имейл')
                 } else if (!obj.password || obj.password === '') {
@@ -390,10 +395,13 @@
                     alert('Register: пароль не совпадает')
                 } else {
                     isChooseProfileModalOpened.value = true
-
+                    
                     userWorkProfile.value = ''
                     // userAccountSettings.value.userWorkProfile = null
                     userAccountSettings.value.userWorkProfile = userWorkProfileArray.value[0]
+                    email.value = obj.email
+                    password.value = obj.password
+                    confirmPassword.value = obj.confirmPassword
                 }
             }
             // const onSlideChange = (swiper) => {

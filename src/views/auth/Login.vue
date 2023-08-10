@@ -18,7 +18,7 @@
         <div class="wrapper">
 
             <!--  -->
-            <LoginLogo/>
+            <Logo/>
             <!-- <div>
                 <h1 class="ion-text-start ion-no-margin header">
                     <ion-text color="primary">Deals</ion-text><ion-text color="success">.</ion-text>
@@ -95,11 +95,11 @@
     import { useRouter } from 'vue-router';
     import { IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert, IonNote } from '@ionic/vue';
     import Spinner from '../../components/Spinner.vue'
-    import LoginLogo from './authLogo.vue'
+    import Logo from './Logo.vue'
 
     export default defineComponent ({
         name: 'login',
-        components: { IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert, Spinner, IonNote, LoginLogo },
+        components: { IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert, Spinner, IonNote, Logo },
         setup() {
             // Create data / vars
             const router = useRouter();

@@ -89,10 +89,13 @@ export default {
   },
   methods: {
     goToLogin() {
-      this.$emit("toLogin");
+        
+        console.log('goToLogint')
+        this.$emit('toLogin');
     },
 
     goNext() {
+        console.log('goNext')
         this.$emit('chooseProfile', {
             email: this.email,
             password: this.password,

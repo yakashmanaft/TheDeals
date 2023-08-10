@@ -1,3 +1,4 @@
+
 // import { createRouter, createWebHistory } from 'vue-router'
 import { createRouter, createWebHistory } from '@ionic/vue-router';
 import { supabase } from '../supabase/init';
@@ -210,6 +211,11 @@ const routes = [
       auth: true,
       type: 'CurrentView'
     }
+  },
+  {
+    path: '/indexwebpage',
+    name: 'index-web-page',
+    component: () => import('../pages/indexweb.vue')
   },
   {
     path: '/admin',
