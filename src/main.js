@@ -1,5 +1,6 @@
 import { createApp } from 'vue';
 import App from './App.vue';
+import components from '@/components/UI'
 import './registerServiceWorker';
 import router from './router';
 import store from './store';
@@ -21,13 +22,14 @@ import '@ionic/vue/css/text-transformation.css';
 import '@ionic/vue/css/flex-utils.css';
 import '@ionic/vue/css/display.css';
 
-// import { defineCustomElements } from '@ionic/pwa-elements/loader';
-// defineCustomElements(window);
+const app = createApp(App)
 
-createApp(App).use(store).use(router).use(IonicVue).mount('#app');
+components.forEach(component => {
+    app.component(component.name, component)
+})
 
-// const app = createApp(App).use(store).use(router).use(IonicVue);
-
-// router.isReady().then(() => {
-//   app.mount('#app');
-// });
+app
+    .use(store)
+    .use(router)
+    .use(IonicVue)
+    .mount('#app');

@@ -95,7 +95,7 @@
     import { useRouter } from 'vue-router';
     import { IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert, IonNote } from '@ionic/vue';
     import Spinner from '../../components/Spinner.vue'
-    import LoginLogo from './LoginLogo.vue'
+    import LoginLogo from './authLogo.vue'
 
     export default defineComponent ({
         name: 'login',

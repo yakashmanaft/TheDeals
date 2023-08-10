@@ -16,7 +16,7 @@
             v-if="confirmRequire"
             :is-open="confirmRequire ? isOpenRef = true : isOpenRef = false"
             header="Потдвердите почту"
-            :sub-header="`На адрес ${userAccountSetting.email} был отправлен запрос-подтверждение`"
+            :sub-header="`На адрес ${userAccountSettings.email} был отправлен запрос-подтверждение`"
             :buttons="['ВОЙТИ']"
             @didDismiss="confirmRequireFunc()"
         ></ion-alert>
@@ -27,11 +27,25 @@
         <!-- Content -->
         <div class="wrapper">
 
-            <LoginLogo/>
+            <LoginLogo style="margin-top: 2rem;"/>
             
-            <LogRegFrom
-                @toLogin="goToLogin"
-            />
+            <form style="width: 100%;">
+                
+                <LogRegFrom 
+                    v-if="!isChooseProfileModalOpened"
+                    @chooseProfile="goToChooseProfile"
+                    @toLogin="goToLogin"
+                />
+    
+                <set-user-profile 
+                    v-else
+                    @toReg="goToReg"
+                    :userWorkProfileArray="userWorkProfileArray"
+                    :userWorkProfile="userAccountSettings.userWorkProfile"
+                    @makeRegister="register"
+                />
+            </form>
+
 
 
             <!-- <form @submit.prevent='register()' style="width: 100%"> -->
@@ -85,13 +99,12 @@
                 </div> -->
 
                 <!-- Модалка выбора профиля -->
-                <!-- <ion-modal :isOpen="isChooseProfileModalOpened"> -->
+                <!-- <ion-modal :isOpen="isChooseProfileModalOpened" @didDismiss="isChooseProfileModalOpened = false">
 
-                    <!--  -->
-                    <!-- <ion-content forceOverscroll="false"> -->
+                    <ion-content forceOverscroll="false">
 
-                        <!-- Шапка профилей -->
-                        <!-- <div :class="{'display-none' : spinner}" class="header-group">
+
+                        <div :class="{'display-none' : spinner}" class="header-group">
                                 
                             <ion-item-group class="ion-text-center">
                                 <ion-text>
@@ -102,14 +115,14 @@
                             
                             <ion-item-group class="ion-text-center ion-margin-vertical">
                                 <ion-text color="primary">
-                                    {{userAccountSetting.userWorkProfile}}
+                                    {{userAccountSettings.userWorkProfile}}
                                 </ion-text>
                             </ion-item-group>
 
-                        </div> -->
+                        </div> 
 
-                        <!-- Слайдер профилей -->
-                        <!-- <ion-grid style="display: flex; align-items: center; justify-content: center; height: 90%" :class="{'display-none' : spinner}">
+
+                        <ion-grid style="display: flex; align-items: center; justify-content: center; height: 90%" :class="{'display-none' : spinner}">
                             <swiper
                                 v-if="userWorkProfileArray.length !== 0"
                                 :modules="modules"
@@ -126,7 +139,7 @@
                                 >
                                     <div style="padding: 1rem; margin-bottom: 2rem;">
                                         <div style="display: flex; justify-content: center; align-items:center; border-radius: 50%; width: 100%; height: 100%; overflow: hidden; border: 1px solid var(--ion-color-light)" class="swiper-lazy-preloader-white" >
-                                            <ion-img loading="lazy" style="width: 100%; height: 100%; object-fit: contain!important;" :src="`../img/profiles/${translateUserProfileToImg(userAccountSetting.userWorkProfile)}.webp`"></ion-img>
+                                            <ion-img loading="lazy" style="width: 100%; height: 100%; object-fit: contain!important;" :src="`../img/profiles/${translateUserProfileToImg(userAccountSettings.userWorkProfile)}.webp`"></ion-img>
                                         </div>
                                     </div>
                                 </swiper-slide>
@@ -134,18 +147,18 @@
 
                         </ion-grid>
 
-                    </ion-content> -->
+                    </ion-content>
 
 
-                    <!-- Spinner -->
-                    <!-- <Spinner v-if="spinner"/>
-                </ion-modal>
+
+                    <Spinner v-if="spinner"/>
+                </ion-modal> -->
 
 
                 <br>
                 <br>
 
-            </form> -->
+            <!-- </form> -->
 
         </div>
 
@@ -160,13 +173,14 @@
     import { IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert, IonNote, IonList, IonSelect, IonSelectOption, IonChip, IonModal, IonHeader, IonItemGroup, IonImg, IonGrid } from '@ionic/vue';
     //
     import Spinner from '../../components/Spinner.vue';
-    import LoginLogo from './LoginLogo.vue';
-    import LogRegFrom from './LogRegFrom.vue'
+    import LoginLogo from './authLogo.vue';
+    import LogRegFrom from './LogRegFrom.vue';
+    import setUserProfile from '@/views/auth/setUserProfile.vue'
     //
     import { uid } from 'uid';
     //
-    import { Swiper, SwiperSlide } from 'swiper/vue';
-    import { Virtual, Pagination } from 'swiper';
+    // import { Swiper, SwiperSlide } from 'swiper/vue';
+    // import { Virtual, Pagination } from 'swiper';
     import 'swiper/css';
     import 'swiper/css/pagination';
     import '@ionic/vue/css/ionic-swiper.css';
@@ -174,11 +188,11 @@
     export default defineComponent ({
         name: 'register',
         components: { 
-            Spinner, LoginLogo, LogRegFrom,
+            Spinner, LoginLogo, LogRegFrom, setUserProfile,
             //
             IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert, IonNote, IonList, IonSelect, IonSelectOption, IonChip, IonModal, IonHeader, IonContent, IonItemGroup, IonImg, IonGrid,
             //
-            Swiper, SwiperSlide
+            // Swiper, SwiperSlide
         },
         setup() {
             // Create data / vars
@@ -204,13 +218,13 @@
                 allSettings.value.forEach(account => {
                     allAccountEmails.value.push(account.email)
                 })
-                userAccountSetting.value.userWorkProfile = userWorkProfileArray.value[0]
+                userAccountSettings.value.userWorkProfile = userWorkProfileArray.value[0]
             })
 
             //
             // const setProfile = (event) => {
             //     // console.log(event.target.value)
-            //     userAccountSetting.value.userWorkProfile = event.target.value
+            //     userAccountSettings.value.userWorkProfile = event.target.value
             //     console.log(userWorkProfile.value)
             // }
 
@@ -219,9 +233,12 @@
                 isChooseProfileModalOpened.value = false
                 router.push({ name: 'Login' })
             }
+            const goToReg = () => {
+                isChooseProfileModalOpened.value = false
+            }
 
             // Шаблон для создания строки под настройки пользваотеля в БД accountSettings
-            const userAccountSetting = ref({
+            const userAccountSettings = ref({
                 uid: uid(),
                 // Здесь еще нет имейла
                 email: email.value,
@@ -247,7 +264,8 @@
             })
 
             // Register function
-            const register = async () => {
+            const register = async (accountProfile) => {
+                console.log(accountProfile)
                 // await store.methods.getAllSettingsFromDB()
                 // // console.log(email.value)         
                 // let allSettings = store.state.allSettings
@@ -256,44 +274,44 @@
                 //     allAccountEmails.push(account.email)
                 // })
 
-            if (userAccountSetting.value.userWorkProfile === '') {
-                alert('Register: Выберите профиль')
-            } else if (password.value !== confirmPassword.value) {
-                alert('Register: Пароль не совпадает')
-            } else if (allAccountEmails.value.includes(email.value)) {
-                alert('Register: Аккаунт с указанным имейлом уже существует')
-            } else if (userAccountSetting.value.userWorkProfile === 'Автозапчасти') {
-                alert('Register: функционал профиля Автозапчасти в стадии разработки...')
-            } else if (password.value === confirmPassword.value) {
-                spinner.value = true;
-                try {
-                const { error } = await supabase.auth.signUp({
-                    email: email.value,
-                    password: password.value
-                });
-                if (error) throw error;
-                setTimeout(() => {
-                    confirmRequire.value = true
-                    // router.push({ name: 'Login' })
-                    console.log(email.value)
-                    // Здесь имейл уже подтянулся
-                    userAccountSetting.value.email = email.value.toLowerCase()
-                    // isChooseProfileModalOpened.value = false
-                    createAccountSettings()
-                }, 3000)
-                } catch (error) {
-                    errorMsg.value = error.message;
-                    spinner.value = false
-                    setTimeout(() => {
-                        errorMsg.value = null;
-                    }, 5000)
-                }
-                return;
-            }
-            // errorMsg.value = 'Error: Passwords do not match'
-            setTimeout(() => {
-                errorMsg.value = null;
-            }, 5000)
+                // if (userAccountSettings.value.userWorkProfile === '') {
+                //     alert('Register: Выберите профиль')
+                // } else if (password.value !== confirmPassword.value) {
+                //     alert('Register: Пароль не совпадает')
+                // } else if (allAccountEmails.value.includes(email.value)) {
+                //     alert('Register: Аккаунт с указанным имейлом уже существует')
+                // } else if (userAccountSettings.value.userWorkProfile === 'Автозапчасти') {
+                //     alert('Register: функционал профиля Автозапчасти в стадии разработки...')
+                // } else if (password.value === confirmPassword.value) {
+                //     spinner.value = true;
+                //     try {
+                //     const { error } = await supabase.auth.signUp({
+                //         email: email.value,
+                //         password: password.value
+                //     });
+                //     if (error) throw error;
+                //     setTimeout(() => {
+                //         confirmRequire.value = true
+                //         // router.push({ name: 'Login' })
+                //         console.log(email.value)
+                //         // Здесь имейл уже подтянулся
+                //         userAccountSettings.value.email = email.value.toLowerCase()
+                //         // isChooseProfileModalOpened.value = false
+                //         createAccountSettings()
+                //     }, 3000)
+                //     } catch (error) {
+                //         errorMsg.value = error.message;
+                //         spinner.value = false
+                //         setTimeout(() => {
+                //             errorMsg.value = null;
+                //         }, 5000)
+                //     }
+                //     return;
+                // }
+                // // errorMsg.value = 'Error: Passwords do not match'
+                // setTimeout(() => {
+                //     errorMsg.value = null;
+                // }, 5000)
             };
 
             // confirm alert
@@ -310,7 +328,7 @@
             //
             const createAccountSettings = async () => {
                 try {
-                    const { error } = await supabase.from('accountSettings').insert([userAccountSetting.value])
+                    const { error } = await supabase.from('accountSettings').insert([userAccountSettings.value])
                     if (error) throw error;
                 } catch (error) {
                     alert(`Error: ${error.message}`)
@@ -318,81 +336,82 @@
             }
 
             //
-            const validateEmail = (email) => {
-                // return email.match(/^(?=.{1,254}$)(?=.{1,64}@)[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/);
+            // const validateEmail = (email) => {
 
-                return email.match(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)
-            }
-
-            //
-            const validateConfirmPassword = (confirmPassword) => {
-                return confirmPassword.match(password.value)
-            }
+            //     return email.match(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)
+            // }
 
             //
-            const validate = (ev) => {
-                // const item = document.querySelector('ion-item');
-                const item = document.getElementById('email')
-                const value = ev.target.value;
-                item.classList.remove('ion-valid');
-                item.classList.remove('ion-invalid');
-
-                if (value === "") return;
-
-                validateEmail(value) ? item.classList.add('ion-valid') : item.classList.add('ion-invalid');
-            }
+            // const validateConfirmPassword = (confirmPassword) => {
+            //     return confirmPassword.match(password.value)
+            // }
 
             //
-            const confirmPasswordValidate = (ev) => {
-                // const item = document.querySelector('ion-item');
-                const item = document.getElementById('confirmPassword')
-                const value = ev.target.value;
-                item.classList.remove('ion-valid');
-                item.classList.remove('ion-invalid');
+            // const validate = (ev) => {
+            //     // const item = document.querySelector('ion-item');
+            //     const item = document.getElementById('email')
+            //     const value = ev.target.value;
+            //     item.classList.remove('ion-valid');
+            //     item.classList.remove('ion-invalid');
 
-                if (value === "") return;
+            //     if (value === "") return;
 
-                validateConfirmPassword(value) ? item.classList.add('ion-valid') : item.classList.add('ion-invalid');
-            }
+            //     validateEmail(value) ? item.classList.add('ion-valid') : item.classList.add('ion-invalid');
+            // }
 
             //
-            const markTouched = () => {
-                const item = document.querySelector('ion-item');
-                item.classList.add('ion-touched');
-            }
+            // const confirmPasswordValidate = (ev) => {
+            //     // const item = document.querySelector('ion-item');
+            //     const item = document.getElementById('confirmPassword')
+            //     const value = ev.target.value;
+            //     item.classList.remove('ion-valid');
+            //     item.classList.remove('ion-invalid');
+
+            //     if (value === "") return;
+
+            //     validateConfirmPassword(value) ? item.classList.add('ion-valid') : item.classList.add('ion-invalid');
+            // }
+
+            //
+            // const markTouched = () => {
+            //     const item = document.querySelector('ion-item');
+            //     item.classList.add('ion-touched');
+            // }
 
             // ====================================== РАБОТА С МОДАЛКОЙ ВЫБОРА ПРОФИЛЯ =================================
             const isChooseProfileModalOpened = ref(false)
-            const goToChooseProfile = () => {
-                if(!email.value || email.value === '') {
+            const goToChooseProfile = (obj) => {
+                console.log(obj)
+                if(!obj.email || obj.mail === '') {
                     alert('Register: укажите имейл')
-                } else if (!password.value || password.value === '') {
+                } else if (!obj.password || obj.password === '') {
                     alert('Register: укажите пароль')
-                } else if (!confirmPassword.value || confirmPassword.value !== password.value) {
+                } else if (!obj.confirmPassword || obj.confirmPassword !== obj.password) {
                     alert('Register: пароль не совпадает')
                 } else {
                     isChooseProfileModalOpened.value = true
+
                     userWorkProfile.value = ''
-                    // userAccountSetting.value.userWorkProfile = null
-                    userAccountSetting.value.userWorkProfile = userWorkProfileArray.value[0]
+                    // userAccountSettings.value.userWorkProfile = null
+                    userAccountSettings.value.userWorkProfile = userWorkProfileArray.value[0]
                 }
             }
-            const onSlideChange = (swiper) => {
-                // console.log(swiper)
-                userAccountSetting.value.userWorkProfile = userWorkProfileArray.value[swiper.activeIndex]
-            }
-            const translateUserProfileToImg = (userWorkProfile) => {
-                if(userWorkProfile) {
-                    if(userWorkProfile === 'Тортодилер') {
-                        return 'cake-backer'
-                    } else if (userWorkProfile === 'Автозапчасти') {
-                        return 'auto-parts'
-                    }
-                }
-            }
+            // const onSlideChange = (swiper) => {
+            //     // console.log(swiper)
+            //     userAccountSettings.value.userWorkProfile = userWorkProfileArray.value[swiper.activeIndex]
+            // }
+            // const translateUserProfileToImg = (userWorkProfile) => {
+            //     if(userWorkProfile) {
+            //         if(userWorkProfile === 'Тортодилер') {
+            //             return 'cake-backer'
+            //         } else if (userWorkProfile === 'Автозапчасти') {
+            //             return 'auto-parts'
+            //         }
+            //     }
+            // }
 
             return {
-                email, password, confirmPassword, spinner, confirmRequire, confirmRequireFunc, errorMsg, register, isOpenRef, isOpenRef, setOpen, userAccountSetting, createAccountSettings, validateEmail, validate, markTouched, validateConfirmPassword, confirmPasswordValidate, userWorkProfile, userWorkProfileArray, goToChooseProfile, isChooseProfileModalOpened, goToLogin, modules: [Virtual, Pagination], onSlideChange, translateUserProfileToImg
+                email, password, confirmPassword, spinner, confirmRequire, confirmRequireFunc, errorMsg, register, isOpenRef, isOpenRef, setOpen, userAccountSettings, createAccountSettings, userWorkProfile, userWorkProfileArray, goToChooseProfile, isChooseProfileModalOpened, goToLogin, goToReg
             }
         }
     })
@@ -408,7 +427,7 @@
         flex-direction: column;
         justify-content: space-around;
     }
-    @media (min-width: 480px) {
+    @media (min-width: 620px) {
         .wrapper {
             flex-direction: row;
             justify-content: space-around;
@@ -447,9 +466,7 @@
         width: 100%;
     }
 
-    .z-index-none {
-        z-index: 0;
-    }
+
 
     .display-none {
         display: none!important;

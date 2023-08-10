@@ -7,7 +7,7 @@
             <ion-text color="medium">byDay</ion-text>
         </h3>
     </div> -->
-    <div style="display: flex; align-items: center; justify-content: center; width: 100%">
+    <div style="display: flex; align-items: center; justify-content: center; width: 100%;">
 
         <div class="ion-text-center" style="display: flex; flex-direction: column; justify-content: end;">
             <div style="line-height: 4rem; font-size: 5rem; color: var(--ion-color-primary); font-weight: bold;">DAY</div> 

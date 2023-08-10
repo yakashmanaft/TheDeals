@@ -1,11 +1,15 @@
 <template>
-    <div>
-        123123
-    </div>
+    <ion-button>
+        <slot></slot>
+    </ion-button>
 </template>
 <script>
+import { IonButton } from '@ionic/vue';
 export default {
-    name: 'ButtonFill'
+    name: 'button-fill',
+    components: {
+        IonButton
+    }
 }
 </script>
 <style scoped>
