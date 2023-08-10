@@ -34,8 +34,6 @@
             />
 
 
-
-
             <!-- <form @submit.prevent='register()' style="width: 100%"> -->
 <!-- 
                  <div> -->
@@ -402,6 +400,7 @@
 
 <style scoped>
     .wrapper {
+        max-width: 1200px;
         margin: 0 auto;
         height: 100vh;
         display: flex;
