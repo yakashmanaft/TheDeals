@@ -34,7 +34,7 @@
                     <ion-col size="2">
                         <ion-row>
                             <!-- Кнопка выхода из аккаунта -->
-                            <ion-icon :icon="exitOutline" color="primary" @click="logout()"/>
+                            <ion-icon :icon="exitOutline" color="primary" @click="logout()" style="cursor: pointer; width: 1.2rem; height: 1.2rem;"/>
                         </ion-row>
                     </ion-col>
                 </ion-row>

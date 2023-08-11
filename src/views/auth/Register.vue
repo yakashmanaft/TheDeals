@@ -206,7 +206,7 @@ export default defineComponent({
         alert(
           "Register: функционал профиля Автозапчасти в стадии разработки..."
         );
-      } else if (password.value === confirmPassword.value) {
+      } else if (password.value === confirmPassword.value && !allAccountEmails.includes(email.value)) {
         spinner.value = true;
         try {
           const { error } = await supabase.auth.signUp({
@@ -226,10 +226,10 @@ export default defineComponent({
         } catch (error) {
           errorMsg.value = error.message;
           spinner.value = false;
-          console.log("Мы пока не можем рассылать подтверждения!");
-          // setTimeout(() => {
-          //     errorMsg.value = null;
-          // }, 5000)
+          // console.log("Мы пока не можем рассылать подтверждения!");
+          setTimeout(() => {
+              errorMsg.value = null;
+          }, 5000)
         }
         return;
       }

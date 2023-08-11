@@ -226,7 +226,7 @@ ion-item {
   --padding-start: 0px;
 }
 .buttons-group {
-  margin-top: 5rem;
+  margin-top: 2rem;
   display: flex;
   flex-direction: column;
 }

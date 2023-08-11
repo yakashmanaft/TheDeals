@@ -15,9 +15,15 @@ export default {
 }
 </script>
 <style scoped>
+    footer a {
+        font-size: 0.9rem;
+    }
     @media (max-width: 768px) {
         footer {
             margin-bottom: 1rem!important;
+        }
+        footer a {
+            font-size: 0.7rem;
         }
     }
 </style>

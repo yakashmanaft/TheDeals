@@ -245,7 +245,8 @@ import store from '../../store/index';
                 await store.methods.getUserSettingsfromDB();
                 userSettings.value = store.state.userSettings;
                 //
-                userWarehouseCategories.value = userSettings.value[0].userWarehouseCategories
+                // userWarehouseCategories.value = userSettings.value[0].userWarehouseCategories
+                userWarehouseCategories.value = store.state.cakeWarehouseCategoriesArray
                 // console.log(userWorkProfile.value)
             })
             //

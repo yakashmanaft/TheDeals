@@ -52,7 +52,7 @@
           <div v-if="!edit" class="ion-margin-bottom">
             <ion-row class="ion-justify-content-center ion-align-items-center">
               <h2 v-if="userSettings.userInfo.name && userSettings.userInfo.surname">
-                {{userInfo.name}} {{userInfo.surname}}
+                {{userSettings.userInfo.name}} {{userSettings.userInfo.surname}}
               </h2>
               <h2 v-else >Без имени</h2>
             </ion-row>

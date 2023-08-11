@@ -26,7 +26,7 @@
                         <ion-img
                             loading="lazy"
                             :src="`../img/profiles/${translateUserProfileToImg(slideContent)}.webp`"
-                            style="width: 100%; height: 100%; object-fit: contain!important;"
+                            style="width: 70%; height: 70%; object-fit: contain!important;"
                         />
 
                     </swiper-slide>
