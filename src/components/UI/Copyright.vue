@@ -5,7 +5,7 @@
         <a href='https://t.me/+79223000705'>
             <!-- <a href='https://t.me/+79526406146'> -->
 
-            @Anfalov Sergey, 2023
+            @Sergey Anfalov, 2023
         </a>
     </footer>
 </template>
@@ -15,5 +15,9 @@ export default {
 }
 </script>
 <style scoped>
-    
+    @media (max-width: 768px) {
+        footer {
+            margin-bottom: 1rem!important;
+        }
+    }
 </style>

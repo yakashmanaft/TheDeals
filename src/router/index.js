@@ -215,7 +215,24 @@ const routes = [
   {
     path: '/indexwebpage',
     name: 'index-web-page',
-    component: () => import('../pages/indexweb.vue')
+    component: () => import('../pages/indexweb.vue'),
+    mets: {
+      title: 'Day by deals',
+      auth: false,
+      translation: 'День в делах',
+      type: 'View'
+    }
+  },
+  {
+    path: '/rates',
+    name: 'rates',
+    component: () => import('../pages/rates.vue'),
+    mets: {
+      title: 'Rates',
+      auth: false,
+      translation: 'Тарифы',
+      type: 'View'
+    }
   },
   {
     path: '/admin',

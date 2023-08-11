@@ -4,7 +4,7 @@
 
         <router-link :to="{ path: './indexwebpage' }" class="ion-text-center" style="cursor: pointer; display: flex; flex-direction: column; justify-content: end;">
             <div style="line-height: 4rem; font-size: 5rem; color: var(--ion-color-primary); font-weight: bold;">DAY</div> 
-            <div style="color: var(--ion-color-success); text-align: right;">by deals</div>
+            <div style="color: var(--ion-color-success); text-align: center;">by deals</div>
         </router-link>
     </div>
 </template>

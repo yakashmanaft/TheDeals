@@ -18,75 +18,21 @@
         <div class="wrapper">
 
             <!--  -->
-            <Logo/>
-            <!-- <div>
-                <h1 class="ion-text-start ion-no-margin header">
-                    <ion-text color="primary">Deals</ion-text><ion-text color="success">.</ion-text>
-                </h1>
-                <h3 class="ion-text-start ion-no-margin">
-                    <ion-text color="medium">...бизнес в ваших руках</ion-text>
-                </h3>
-            </div> -->
-            
-            <!-- Форма ввода логина и пароля -->
-            <form @submit.prevent='login()' style="height: 60%; margin: 0 1rem;">
-                <!-- Email -->
-                <!-- <ion-input 
-                    placeholder="Enter Email / Введите имейл"
-                    type="email" 
-                    v-model="email"    
-                    class="ion-text-start ion-padding-vertical ion-padding-horizontal"
-                ></ion-input> -->
+            <Logo style="margin-top: 2rem;"/>
 
-                <ion-item fill="solid" ref="item" class="ion-no-padding">
-                    <ion-label color="primary" position="floating">Адрес эл.почты</ion-label>
-                    <ion-input syle="background: none;" type="email" @ionInput="validate" @ionBlur="markTouched" v-model="email" ></ion-input>
-                    <ion-note v-if="email" slot="helper" color="success">Корректный адрес</ion-note>
-                    <ion-note slot="error">Некорректный адрес</ion-note>
-                </ion-item>
-    
-                <!-- Password -->
-                <!-- <ion-input 
-                    placeholder="Enter password / Введите пароль"
-                    type="password" 
-                    v-model="password"   
-                    class="ion-text-start ion-padding-vertical ion-padding-horizontal" 
-                ></ion-input> -->
-
-                <ion-item fill="solid" ref="item" class="ion-no-padding">
-                    <ion-label color="primary" position="floating">Пароль</ion-label>
-                    <ion-input type="password" v-model="password"></ion-input>
-                </ion-item>
-                <br>
-                <br>
-
-                <div style="display: flex; flex-direction: column; position: fixed; bottom: 0; left: 0; width: 100%; background-color: #fff; z-index: 999999">
-                    <div class="ion-margin-horizontal">
-
-                        <!-- Button -->
-                        <ion-button 
-                            type="submit" 
-                            color="success" 
-                            expand="block"
-                        >
-                            <ion-text color="light" >
-                                Войти
-                            </ion-text>
-                            
-                        </ion-button>
-                        <!-- Ссылка на экран регистрации -->
-                        <ion-button color="primary" fill="clear" @click="goToRegister()" class="ion-no-margin ion-margin-bottom">
-                            Создать аккаунт
-                            <!-- <router-link :to="{ name: 'Register' }">Создать аккаунт</router-link> -->
-                        </ion-button>
-                    </div>
-
-                </div>
+            <!--  -->
+            <form style="width: 100%">
+                <LogRegFrom
+                    :fullPath="fullPath"
+                    @ToRegister="goToRegister"
+                    @login="login"
+                />
             </form>
-
         </div>
-
     </div>
+
+    <!--  -->
+    <copyright/>
 </template>
 
 <script>
@@ -94,28 +40,41 @@
     import { supabase } from '../../supabase/init';
     import { useRouter } from 'vue-router';
     import { IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert, IonNote } from '@ionic/vue';
+    //
     import Spinner from '../../components/Spinner.vue'
-    import Logo from './Logo.vue'
+    import Logo from './Logo.vue';
+    import LogRegFrom from '../auth/LogRegFrom.vue'
 
     export default defineComponent ({
         name: 'login',
-        components: { IonContent, IonLabel, IonInput, IonItem, IonButton, IonText, IonAlert, Spinner, IonNote, Logo },
+        components: { 
+            IonContent, 
+            IonLabel, 
+            IonInput, 
+            IonItem, 
+            IonButton, 
+            IonText, 
+            IonAlert,
+            IonNote, 
+            //
+            Spinner,  
+            Logo,
+            LogRegFrom
+        },
         setup() {
             // Create data / vars
             const router = useRouter();
-            const email = ref(null);
-            const password = ref(null);
+            const fullPath = router.currentRoute._value.fullPath
             const errorMsg = ref(null);
-            const isOpenRef = ref(false);
             const spinner = ref(null)
 
             // Login function
-            const login = async () => {
+            const login = async (obj) => {
                 spinner.value = true
                 try {
                     const { error } = await supabase.auth.signIn({
-                        email: email.value,
-                        password: password.value
+                        email: obj.email,
+                        password: obj.password
                     });
                     if (error) throw error;
                     setTimeout(() => {
@@ -133,39 +92,13 @@
 
             // 
             const goToRegister = () => {
-                // :to="{ name: 'Register' }"
+
                 router.push({ name: 'Register' })
             }
 
-            // show alert of errorMsg
-            const setOpen = () => isOpenRef.value = !isOpenRef.value; 
-
-            //
-            const validateEmail = (email) => {
-                // return email.match(/^(?=.{1,254}$)(?=.{1,64}@)[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/);
-
-                return email.match(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)
-            }
-
-            //
-            const validate = (ev) => {
-                const item = document.querySelector('ion-item');
-                const value = ev.target.value;
-                item.classList.remove('ion-valid');
-                item.classList.remove('ion-invalid');
-
-                if (value === "") return;
-
-                validateEmail(value) ? item.classList.add('ion-valid') : item.classList.add('ion-invalid');
-            }
-
-            const markTouched = () => {
-                const item = document.querySelector('ion-item');
-                item.classList.add('ion-touched');
-            }
 
             return {
-                email, password, errorMsg, login, spinner, isOpenRef, setOpen, validateEmail, validate, markTouched, goToRegister
+                errorMsg, login, spinner, goToRegister, fullPath
             }
         }
     })
@@ -173,10 +106,23 @@
 
 <style scoped>
     .wrapper {
+        max-width: 1200px;
+        margin: 0 auto;
         height: 100vh;
         display: flex;
+        align-items: center;
         flex-direction: column;
         justify-content: space-around;
+    }
+    @media (min-width: 620px) {
+        .wrapper {
+            flex-direction: row;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .wrapper div {
+            width: 50%
+        }
     }
 
     ion-item{

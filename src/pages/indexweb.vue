@@ -1,21 +1,16 @@
 <template>
+    <div class="wrapper">
 
-    <nav style="display: flex; gap: 1rem; position: fixed; top: 0;">
-        <div v-for="(link, index) in navLinks" :key="index">
-            <router-link :to="{ path: `${link.path}`}" >
-
-                {{ link.title }}
-            </router-link>
-        </div>
-    </nav>
-
-    <main class="wrapper">
-        
-        <Logo/>
-
-    </main>
-
-    <copyright/>
+        <navbar/>
+    
+        <main class="wrapper">
+            
+            <Logo/>
+    
+        </main>
+    
+        <copyright/>
+    </div>
 </template>
 <script>
 import Logo from '../views/auth/Logo.vue'
@@ -28,23 +23,14 @@ export default {
     },
     data() {
         return {
-            navLinks: [
-                {
-                    title: 'Войти',
-                    path: '/'
-                },
-                {
-                    title: 'Тарифы',
-                    path: '/rates'
-                }
-            ]
+
         }
     }
 }
 </script>
 <style scoped>
 .wrapper {
-    max-width: 1600px;
+    max-width: 100px;
     margin: 0 auto;
     height: 100vh;
     display: flex;

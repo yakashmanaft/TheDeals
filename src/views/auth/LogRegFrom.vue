@@ -31,6 +31,7 @@
 
       <!-- Confirm Password -->
       <ion-item
+        v-show="$props.fullPath === '/register'"
         id="confirmPassword"
         fill="none"
         ref="item"
@@ -50,19 +51,33 @@
 
       <!-- Перейти в ЛОГИН или ДАЛЕЕ -->
       <div class="buttons-group" :class="{ 'z-index-none': spinner }">
+
+        <!--  -->
+
         <!-- Делаем Сабмит -->
-        <ion-button v-if="isChooseProfileModalOpened" @click="register()"
+        <ion-button v-if="isChooseProfileModalOpened && $props.fullPath === '/register'" @click="register()"
           >Создать аккаунт</ion-button
         >
 
         <!-- Открывает модалку выбора профиля -->
-        <button-fill v-else color="dark" @click="goNext"
+        <button-fill v-if="!isChooseProfileModalOpened && $props.fullPath === '/register'" color="dark" @click="goNext"
           >Далее</button-fill
         >
 
         <!-- Ссылка на экран логина -->
-        <button-fill fill="clear" color="medium" @click="goToLogin()"
+        <button-fill v-if="!isChooseProfileModalOpened && $props.fullPath === '/register'" fill="clear" color="medium" @click="goToLogin()"
           >Уже есть аккаунт</button-fill
+        >
+
+
+        <!--  -->
+
+        <!-- Кнопка войти -->
+        <button-fill color="dark" v-if="!isChooseProfileModalOpened && $props.fullPath === '/login'" @click="login()">Войти</button-fill>
+
+        <!-- ссылка на экран регистраии -->
+        <button-fill v-if="!isChooseProfileModalOpened && $props.fullPath === '/login'" fill="clear" color="medium" @click="goToRegister()"
+          >Создать аккаунт</button-fill
         >
       </div>
     </div>
@@ -80,27 +95,50 @@ export default {
     IonNote,
     IonButton,
   },
+  props: {
+    isChooseProfileModalOpened: {
+      type: Boolean,
+      required: false,
+    },
+    spinner: {
+      // type: Boolean,
+      // required: true
+    },
+    fullPath: {
+      type: String,
+      required: true
+    }
+  },
   data() {
     return {
         email: null,
         password: null,
-        confirmPassword: null
+        confirmPassword: null,
     };
   },
   methods: {
     goToLogin() {
         
-        console.log('goToLogint')
         this.$emit('toLogin');
     },
 
+    goToRegister() {
+      this.$emit('ToRegister')
+    },
+
     goNext() {
-        console.log('goNext')
         this.$emit('chooseProfile', {
             email: this.email,
             password: this.password,
             confirmPassword: this.confirmPassword
         })
+    },
+
+    login() {
+      this.$emit('login', {
+        email: this.email,
+        password: this.password,
+      })
     },
 
     // Валидируем имейл
