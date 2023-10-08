@@ -66,6 +66,7 @@
                 @createNewDeal="createNewDeal"
                 @goToChoosenContact="goToChoosenContact"
                 @setWeekendDay="setWeekendDayFunc"
+                @didDismiss="closeViewChoosenDate"
             />
 
             <!-- Модалка по созданию нового дела -->

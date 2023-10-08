@@ -530,6 +530,6 @@
     }
 
     .card-footer {
-        border-top: 1px solid var(--ion-color-medium);
+        border-top: 1px solid var(--ion-color-medium, 0.2);
     }
 </style>

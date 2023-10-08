@@ -1,6 +1,6 @@
 <template>
     <ion-modal>
-        <ion-header>
+        <ion-header class="ion-no-border">
             <ion-toolbar>
 
                 <ion-buttons slot="start">
@@ -44,7 +44,7 @@
             </ion-card>
             <!-- Карточки дел -->
             <!-- =================================== Если в реализации ===================================== -->
-            <div v-for="deal in deals" :key="deal.id" class="modal-elements ion-margin-bottom">
+            <div v-for="deal in deals" :key="deal.id" class="ion-margin-bottom">
                 <DealCard
                     v-if="deal.dealStatus !== 'deal-cancelled' && deal.dealStatus !== 'deal-complete'"
                     @click="$emit('viewChoosenDeal', deal)"
@@ -57,7 +57,7 @@
             <div v-if="checkStatus('deal-complete')" class="ion-margin-top ion-text-center">
                 <ion-text color="medium">Завершенные</ion-text>
             </div>
-            <div v-for="deal in deals" :key="deal.id" class="modal-elements">
+            <div v-for="deal in deals" :key="deal.id">
                 <DealCard
                     v-if="deal.dealStatus === 'deal-complete'" 
                     @click="$emit('viewChoosenDeal', deal)"
@@ -71,7 +71,7 @@
             <div v-if="checkStatus('deal-cancelled')" class="ion-margin-top ion-text-center">
                 <ion-text color="medium">Отмененные</ion-text>
             </div>
-            <div v-for="deal in deals" :key="deal.id" class="modal-elements">
+            <div v-for="deal in deals" :key="deal.id">
                 <DealCard
                     v-if="deal.dealStatus === 'deal-cancelled'" 
                     @click="$emit('viewChoosenDeal', deal)"
@@ -225,20 +225,6 @@
 
     @media screen and (min-width: 768px) {
 
-        ion-modal::part(content) {
-            height: 100%;
-            width: 50%;
-            transform: translateX(200px);
-        }
-
-        .modal-elements {
-            display: flex;
-
-        }
-
-        .deal-cover {
-            width: 250px;
-        }
     }
 
 </style>
