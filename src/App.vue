@@ -75,7 +75,8 @@ nav a {
 }
 
 nav a.router-link-exact-active {
-  color: #42b983;
+  color: var(--ion-color-system);
+  font-weight: bold;
 }
 
 a {

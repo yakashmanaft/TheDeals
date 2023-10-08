@@ -2,12 +2,16 @@
     <ion-modal>
         <ion-header>
             <ion-toolbar>
-                <ion-title>{{formattedDate(date)}}</ion-title>
+
                 <ion-buttons slot="start">
                     <ion-button @click="$emit('closeModal')">Закрыть</ion-button>
                 </ion-buttons>
+
+                <ion-title>{{formattedDate(date)}}</ion-title>
+
             </ion-toolbar>
         </ion-header>
+
         <ion-content forceOverscroll="false" style="position: relative">
 
             <!-- Кнопка перехода к созданию нового дела -->
@@ -40,7 +44,7 @@
             </ion-card>
             <!-- Карточки дел -->
             <!-- =================================== Если в реализации ===================================== -->
-            <div v-for="deal in deals" :key="deal.id" class="ion-margin-bottom">
+            <div v-for="deal in deals" :key="deal.id" class="modal-elements ion-margin-bottom">
                 <DealCard
                     v-if="deal.dealStatus !== 'deal-cancelled' && deal.dealStatus !== 'deal-complete'"
                     @click="$emit('viewChoosenDeal', deal)"
@@ -53,7 +57,7 @@
             <div v-if="checkStatus('deal-complete')" class="ion-margin-top ion-text-center">
                 <ion-text color="medium">Завершенные</ion-text>
             </div>
-            <div v-for="deal in deals" :key="deal.id">
+            <div v-for="deal in deals" :key="deal.id" class="modal-elements">
                 <DealCard
                     v-if="deal.dealStatus === 'deal-complete'" 
                     @click="$emit('viewChoosenDeal', deal)"
@@ -67,7 +71,7 @@
             <div v-if="checkStatus('deal-cancelled')" class="ion-margin-top ion-text-center">
                 <ion-text color="medium">Отмененные</ion-text>
             </div>
-            <div v-for="deal in deals" :key="deal.id">
+            <div v-for="deal in deals" :key="deal.id" class="modal-elements">
                 <DealCard
                     v-if="deal.dealStatus === 'deal-cancelled'" 
                     @click="$emit('viewChoosenDeal', deal)"
@@ -217,6 +221,24 @@
     .deal-cover-success:after {
         content: '';
         background-color: rgba(45, 211, 111, 20%);
+    }
+
+    @media screen and (min-width: 768px) {
+
+        ion-modal::part(content) {
+            height: 100%;
+            width: 50%;
+            transform: translateX(200px);
+        }
+
+        .modal-elements {
+            display: flex;
+
+        }
+
+        .deal-cover {
+            width: 250px;
+        }
     }
 
 </style>
